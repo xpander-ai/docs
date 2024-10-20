@@ -1,0 +1,49 @@
+---
+title: 'Execute Operation'
+openapi: xpander POST {agent_id}/operations/{operation_id}
+---
+
+Execute a specific operation for an agent with the provided parameters.
+
+<Parameters>
+  <Parameter name="agent_id" type="string" required="true">
+    The ID of the agent.
+  </Parameter>
+  <Parameter name="operation_id" type="string" required="true">
+    The ID of the operation to invoke.
+  </Parameter>
+</Parameters>
+
+<RequestBody>
+  The request body contains the parameters for the operation execution. This can
+  be an object or `null`.
+</RequestBody>
+
+<RequestExample>
+
+```bash Request
+curl --request POST \
+  --url https://inbound.xpander.ai/agents/{agent_id}/operations/{operation_id} \
+  --header "X-API-KEY: your_api_key" \
+  --data '{"param1": "value1", "param2": "value2"}'
+```
+
+</RequestExample>
+
+<Responses>
+  <Response code="200" description="Successful Response">
+    <ResponseExample>
+    ```
+    {
+      "result": "Operation executed successfully",
+      "output": { "status": "ok" }
+    }
+    ```
+    </ResponseExample>
+  </Response>
+
+  <Response code="422" description="Validation Error">
+    The request did not pass validation. Ensure the operation ID and agent ID are correct.
+  </Response>
+</Responses>
+```

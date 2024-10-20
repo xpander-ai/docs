@@ -1,0 +1,48 @@
+---
+title: 'Get Tools'
+openapi: 'POST /{agent_id}/tools'
+---
+
+Retrieve agent tools in a normalized and minimized structure.
+
+<Tooltip tip="Agent ID is required to fetch tools for the specified agent.">
+  You need the agent_id as part of the path.
+</Tooltip>
+
+<Parameters>
+  <Parameter name="agent_id" type="string" required="true">
+    The ID of the agent.
+  </Parameter>
+</Parameters>
+
+<RequestExample>
+
+```bash Request
+curl --request POST \
+  --url https://inbound.xpander.ai/agents/{agent_id}/tools \
+  --header "X-API-KEY: your_api_key"
+```
+
+</RequestExample>
+
+<Responses>
+  <Response code="200" description="Successful Response">
+    <ResponseExample>
+    ```
+    {
+      "tools": [
+        {
+          "name": "Notion",
+          "type": "content"
+        }
+      ]
+    }
+    ```
+    </ResponseExample>
+  </Response>
+
+  <Response code="422" description="Validation Error">
+    The request did not pass validation. Ensure all required fields are properly included.
+  </Response>
+</Responses>
+```
