@@ -1,0 +1,13 @@
+## I've been chatting to the AI App builder in the console, and it's very similar to ChatGPT. What's the difference?
+
+The xpander AI App builder experience builds on top of the xpander AI-ready connectors. We have built unique technology that generates and/or enriches connectors to any system, so that LLM based Agentic applications are able to use systems as tools in a much more reliable and accurate way. We will share much more about this novel technology soon. The chat experience does feel similar because the AI App builder uses OpenAI GPT models and the Assistants API behind the scenes, but the session is equipped with the Connectors and Tools that you as a user select on the xpander side.
+
+For example, from our tests, using the Notion connector to chat with Notion data yields far superior results than using the same prompts with the built-in Notion AI. This is attributed to how the xpander platform generated the Notion connector and how calls to the Notion API are made when using the xpander Notion connector.
+
+## How much does it cost?
+
+Currently, and during the early access program, using the platform is free. This means that all your use in the AI App builder is free, but if you use the xpander SDK in your own code and generate calls to OpenAI/Bedrock/etc, you will be charged separately and as your normally do. Same for payment for OpenAI GPTs or Amazon Q Business.
+
+## How does authentication and authorization work?
+
+During the early access program, your xpander account is a single-user account. When you enable a connector via Oauth2 or API configuration, it apples to your xpander.ai single-user account only, and no other users have access to the connectors that you enabled.

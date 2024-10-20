@@ -24,7 +24,7 @@
   "tabs": [
     {
       "name": "Welcome",
-      "url": "introduction"
+      "url": "welcome"
     },
     {
       "name": "Release Notes",
@@ -51,7 +51,7 @@
     {
       "name": "Welcome",
       "icon": "book-open",
-      "url": "introduction"
+      "url": "welcome/introduction"
     },
     {
       "name": "API Reference",
@@ -72,7 +72,7 @@
   "navigation": [
     {
       "group": "Getting Started",
-      "pages": ["introduction", "welcome/quickstart"]
+      "pages": ["welcome/introduction", "welcome/quickstart", "welcome/Early-access-program", "welcome/Frequently-asked-questions"]
     },
     {
       "group": "Release Notes",
@@ -93,15 +93,7 @@
     },
     {
       "group": "User Guides",
-      "pages": [
-        "userguides/userguides",
-        "essentials/markdown",
-        "essentials/code",
-        "essentials/images",
-        "essentials/settings",
-        "essentials/navigation",
-        "essentials/reusable-snippets"
-      ]
+      "pages": ["userguides/userguides","userguides/use-ai-app-builder-to-build-a-daily-email-digest", "userguides/use-ai-apps-to-connect-actions-to-openai-gpts", "userguides/use-ai-apps-to-create-custom-plugins-in-amazon-q-business", "userguides/use-ai-apps-to-build-custom-ai-agents", "userguides/use-ai-apps-to-build-custom-ai-agents-with-nvidia-nim", "userguides/generating-a-har-to-use-when-creating-a-custom-connector", "userguides/custom-hubspot-ai-with-xpander-ai", "userguides/hubspot-tutorials"]
     }
   ],
   "footerSocials": {

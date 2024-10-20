@@ -1,0 +1,65 @@
+# Welcome
+
+Welcome to the [xpander.ai](http://xpander.ai) early access program. We’re happy to onboard you to the platform and to get your feedback.
+
+[xpander.ai](http://xpander.ai) enables building AI Apps with reliable Agentic tools, so you don’t have to worry about the grunt work of building function calling for the target systems in your AI App. The platform provides Connectors which have been enriched and adjusted for tool calling. You can also build a custom connector to any target system, such as a home-grown system or a SaaS product that we don’t yet have a pre-built connector for, and the xpander.ai platform will create an Agentic connector to that system.
+
+Using the AI App builder in the xpander console, you can build and run an Agent which is equipped with xpander connectors and tools in under a minute. Read on to get started.
+
+# Terminology
+
+Let’s go over the basic terms, so it would be easier to understand this user guide and to get started quickly.
+
+1. **AI Apps** are the glue between xpander AI-ready connectors, and your AI Agents and Conversational AI solutions. For example, you can build an AI App that connects your AI Agent or OpenAI GPT to any pre-built xpander connector, or a custom connector that you generate within the xpander platform.
+2. **Connectors** are pre-built integrations, specifically built for Agentic applications, that facilitate communication between [xpander.ai](http://xpander.ai/) AI Apps and third-party systems such as SaaS application and home-grown systems and APIs. You can use Connectors from the pre-built xpander connector library, or use the Custom connector generator to create a connector to any target system of your choice. Connectors are represented as Tools or Functions, depending on which AI Framework you’re using to develop your AI application.
+3. **Custom connector generator** allows you to create connectors that integrate with external systems that are not already supported in the xpander connector library. By providing some details such as OpenAPI Specs, Postman collection, or browsing session examples, the xpander custom connector generator is able to create a connector which is enriched and adjusted for Agentic use-cases.
+4. **xpander Tools** are a variant of connectors and behave very similarly, but do not require you to enable a connector by providing your credentials to the target system (i.e., HubSpot, Asana, Google Calendar). Instead, tools are pre-configured functions by xpander, that fetch data from external systems like stock market and weather information. Use these tools to get started easily and quickly when building AI Apps.
+5. **AI App builder** is a chat interface that allows you to first chat with your APIs by selecting connectors and tools, and then transform the chat into an Agentic automation which can be triggered according to a schedule that you select. For example, you can chat with your CRM system and product backend to compose a report with users’ feature adoption information. Then, you can easily transform the chat to be saved as an Agentic automation that will send the report to your Slack or Email account. When using the AI App builder, an Agentic application is saved and run by xpander.
+
+# Getting Started
+
+## Sign-up
+
+Click the link in the invitation email you received and complete the sign-up process.
+
+## What You Can Do
+
+You can currently use the xpander platform in several ways.
+
+### 1. AI App Builder
+
+Use the AI App builder to chat with your APIs and build Agentic automation use-cases. For example, you can enable Connectors like your email or note-taking application, and save the chat scenario as an Automation agent that wakes up based on scheduling.
+
+To build an AI App in the builder, follow these steps:
+
+1. In the [xpander.ai](http://xpander.ai) console, go to the AI App builder in the left navigation menu.
+2. Click the connectors button to select the connectors and tools you would like to chat with. If you don’t see the system you want to use, first go to the Connector section and enable the relevant connector (see details below in this guide).
+3. You can now chat with the target systems you selected via the connector. For example, if you selected the Notion connector, try prompting the AI App builder with things like “What is the latest page that was created in Notion”, or a use-case specific prompt like “Which R&D Tasks are assigned to me”. If you enabled a tool such as stock or weather data, you can prompt those with simple prompts like asking for specific stock tickers or weather data.
+4. Click the "Save as AI App" button. You can provide a name and schedule for when the Agentic automation will run. You will see the summary of what the Agentic automation will carry out. You can modify these instructions, or go to the chat and re-create a scenario to save better instructions.
+5. To transform the chat scenario into an Agentic automation workflow, we recommend starting a new session so your previous experimentations in the chat will not be used.
+6. After the Agentic automation runs according to your schedule, use the History button to see its run history.
+
+### 2. Provide Agentic Tools to Your AI Application
+
+Use the AI Apps section in the xpander console to select relevant connectors and integrate them into your own application that you’re building with OpenAI SDK or Langchain, and other frameworks and SDKs in the future. This functionality is enabled by using the xpander SDK, and you get the code snippet required for the integration by following the steps in the AI App creation wizard.
+
+1. Under the AI Apps section, click “New AI App” and click "Build" on OpenAI Python SDK or LangChain Python SDK.
+2. Follow the wizard to select connectors and get the required snippet in order to connect your AI Application to the AI App you created on xpander.
+3. Download the xpander SDK from [here](https://d5c460mis2sht.cloudfront.net/xpander-sdk.tar.gz) and run `pip install xpander-sdk.tar.gz`.
+4. Run your agent and go to the Logs section in the xpander console to see the requests that come from your application to the xpander platform.
+
+### 3. Provide Agentic Tools to Your AI Assistant or Conversational AI Solution
+
+Use the AI Apps section in the xpander console to select relevant connectors and integrate them into off-the-shelf AI Assistants and Conversational AI solutions such as OpenAI GPTs, Amazon Q Business, and more in the future.
+
+1. Under the AI Apps section, click “New AI App” and click "Connect" on OpenAI GPTs or Amazon Q Business.
+2. The steps in the wizard vary depending on the solution you want to connect to. Follow the steps until you complete the wizard.
+3. Use your GPT or Amazon Q Business application and go to the Logs section in the xpander console to see the requests that come to the xpander platform.
+
+# Keep in Touch
+
+We would love to talk to you about your experience with the [xpander.ai](http://xpander.ai) platform at any step of the early access program.
+
+1. Join our [community Slack workspace](https://join.slack.com/t/xpandercommunity/shared_invite/zt-2mt2xkxkz-omM7f~_h2jcuzFudrYtZQQ) or [Discord server](https://discord.gg/CUcp4WWh5g).
+2. Email us at [contact@xpander.ai](mailto:contact@xpander.ai).
+3. Set up a [meeting with us](https://e.xpander.ai/meetings/xpander/book-a-demo).

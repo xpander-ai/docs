@@ -1,0 +1,260 @@
+#Use AI Apps to build custom AI Agents
+
+This guide will help you set up and run and build Custom AI Agent that has access to connectors
+
+## Prerequisites
+
+1. **Create Connectors**:
+   - Log in to your Xpander account.
+   - Go to the **Connectors** section.
+   - Create connectors for **Notion** and **Slack**. Follow the respective instructions to authorize access.
+2. **Define Your AI App**:
+   - In Xpander, create a new AI App type "OpenAI Python SDK" or "LangChain Python SDK" named for example **"Notion AI Agent"**.
+   - Set up the AI App to have access to your Notion and Slack connectors.
+   - Obtain the AI App API key from the xpander dashboard.
+3. **API Keys**: Obtain your API keys from Xpander AI App and your LLM Provider.
+
+## Choosing Between Single Agent and Multi-Agent Setups
+
+### Single Agent Setup
+
+- **Simplicity**: Involves only one agent and is straightforward to set up.
+- **Direct API Calls**: The OpenAI client directly handles the API calls and responses.
+- **Use Case**: Ideal for simpler tasks where a single AI interaction suffices.
+
+### Multi-Agent Setup
+
+- **Complexity**: Involves multiple agents (Planner, Tool Selector, Parser) for handling different aspects of the query.
+- **Modular Approach**: Breaks down the task into smaller components managed by different agents.
+- **Use Case**: Suitable for complex tasks requiring multiple steps and interactions with various tools.
+
+## Single Agent Example
+
+Step 1 : create python virtual environment and install xpander-sdk library 
+
+```Text bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install https://assets.xpanderai.io/xpander-sdk.tar.gz
+pip freeze > requirements.txt #Optional
+```
+
+Create a Python script (e.g., `single_agent_example.py`) and add the following code:
+
+```python
+import os
+from dotenv import load_dotenv  # Optional: Used for loading environment variables from a .env file
+from xpander_sdk import XpanderClient, LLMProvider  # SDK for interacting with Xpander services
+from openai import OpenAI  # SDK for interacting with OpenAI services
+from loguru import logger  # Optional: Logging library for detailed logging
+
+# Load environment variables from a .env file (if available)
+load_dotenv()  # Optional
+
+# Initialize the XpanderClient with your agent key and URL
+xpanderAPIKey = os.environ.get("XPANDER_API_KEY", "")
+client = XpanderClient(
+    agent_key=xpanderAPIKey,
+    agent_url="https://inbound.xpander.ai/agent/5d<AgentID>4", # get it from app.xpander.ai
+    llm_provider=LLMProvider.OPEN_AI  # Specify the LLM provider
+)
+
+# Retrieve available tools for the OpenAI plugin from Xpander
+tools = client.tools(llm_provider=LLMProvider.OPEN_AI)
+
+# Initialize the OpenAI client with your API key
+OpenAPIKey = os.environ.get("OPENAI_API_KEY", "")
+openai_client = OpenAI(api_key=OpenAPIKey)
+
+# Define the messages to be sent to the OpenAI API
+messages = [
+    {
+        "role": "user",
+        "content": "Get the last blogpost from ContentDB"
+    }
+]
+
+# Create a chat completion request using the OpenAI client
+response = openai_client.chat.completions.create(
+    model="gpt-4o",
+    messages=messages,
+    tools=tools,  # Provide the tools retrieved from Xpander
+    tool_choice="required"  # Indicate that tool usage is required
+)
+
+# Process the chat completion response with the Xpander client
+tool_responses = client.xpander_tool_call(tool_selector_response=response.model_dump())
+
+# Output the responses from the tools
+for tool_response in tool_responses:
+    print(tool_response.response_message)
+```
+
+### Running the Single Agent Example
+
+1. **Run the Python script**:
+   ```bash
+   python single_agent_example.py
+   ```
+
+2. **View the response**:  
+   The script will retrieve the last blog post from your Content DB Database in Notion using the configured Notion and OpenAI integrations.
+
+## Multi Agent Setup (Experimental)
+
+Step 1 : create python virtual environment and install xpander-community and the xpander-sdk library.
+
+```bash bash
+python3 -m venv .venv  
+source .venv/bin/activate  
+pip install https://assets.xpanderai.io/xpander-community.tar.gz
+pip install https://assets.xpanderai.io/xpander-sdk.tar.gz
+pip freeze > requirements.txt #Optional
+```
+
+Create a `.env` file in the root of your project and add your API keys:
+
+```plaintext
+XPANDER_API_KEY=your_xpander_api_key
+OPENAI_API_KEY=your_openai_api_key
+```
+
+Create a Python script (e.g., `multi_agent.py`) and add the following code:
+
+```python
+import os
+from dotenv import load_dotenv
+
+from xpander_sdk import XpanderClient, LLMProvider, OpenAISupportedModels
+from xpander_community import Credentials, ParserAgent, PlannerAgent, ToolSelectorAgent, MemoryMessaging, Logger, LLMProvider as CommunityLLMProvider
+
+# Constants
+MAX_LENGTH = 300
+
+# Load environment variables from a .env file
+load_dotenv()
+xpanderAPIKey = os.environ.get("XPANDER_API_KEY", "")
+llm_api_key = os.environ.get("OPENAI_API_KEY", "")
+
+# Initialize XpanderClient
+xpander_client = XpanderClient(
+    agent_key=xpanderAPIKey,
+    agent_url="https://inbound.xpander.ai/agent/<Your-agent-id>",
+    llm_provider=LLMProvider.OPEN_AI
+)
+
+# Model parameters
+model_params = {"model": OpenAISupportedModels.GPT_4_O}
+
+# Retrieve tools for the specified LLM provider
+tools = xpander_client.tools()
+
+# Set up loggers
+query_logger = Logger(color="MAGENTA", logger_name="Input User")
+xpander_logger = Logger(color="BLUE", logger_name="Xpander Action Provider")
+
+# Set up LLM credentials
+llm_credentials = Credentials()
+llm_credentials.open_ai.api_key = llm_api_key
+
+# Initialize agents
+planner_agent = PlannerAgent(
+    llm_provider=CommunityLLMProvider.OPEN_AI, tools=tools, llm_credentials=llm_credentials, model_params=model_params)
+
+tool_selector = ToolSelectorAgent(
+    llm_provider=CommunityLLMProvider.OPEN_AI, tools=tools, llm_credentials=llm_credentials, model_params=model_params)
+
+parser_agent = ParserAgent(
+    llm_provider=CommunityLLMProvider.OPEN_AI, tools=tools, llm_credentials=llm_credentials, model_params=model_params)
+
+# Initialize memory messaging
+memory = MemoryMessaging()
+
+# User query
+query = "list all tags"
+memory.add_message(f"User Query: {query}")
+planner_response = planner_agent.invoke_llm(memory=memory)
+
+# Utility functions
+def truncate(text, max_length=MAX_LENGTH):
+    return text[:max_length] + '...' if len(text) > max_length else text
+
+def extract_tool_info(xpander_tool_response):
+    tool_message = ""
+    selected_tool = None
+    if len(xpander_tool_response) > 0:
+        tool_response = xpander_tool_response[0]
+        tool_message = tool_response.response_message
+        selected_tool = tool_response.filtered_tool
+        xpander_logger.info(
+            f"Selected Tool: {selected_tool[0]['function']['name']} params {truncate(selected_tool[0]['function'])}. \n\nReturned with message: {truncate(tool_message)}")
+    return tool_message, selected_tool
+
+# Main loop to process the query
+while not planner_agent.finished():
+    tool_select_response = tool_selector.invoke_llm(memory=memory, add_to_memory=False)
+    xpander_tool_response = xpander_client.xpander_tool_call(tool_select_response)
+    tool_message, selected_tool = extract_tool_info(xpander_tool_response)
+    parser_response = parser_agent.invoke_llm(memory=memory, new_message=tool_message, tmp_tools=selected_tool)
+    planner_response = planner_agent.invoke_llm(memory=memory)
+
+# Log final response
+query_logger.info(planner_agent.final_response())
+```
+
+## Running the Solution
+
+1. **Run the Python script**:
+   ```bash
+   python multi_agent.py
+   ```
+
+2. **Input your query** when prompted:
+   ```text
+   Please input your query and press ENTER:
+   ```
+
+3. **View the response**:  
+   The script will log the input query and process it through the Xpander AI solution, utilizing various agents and tools.
+
+### Notion Side kick Example
+
+**Input Query**:
+
+```text
+Add a new task in Notion: "Complete the project documentation by end of the week."
+```
+
+**Expected Behavior**:
+
+The Notion AI Agent will use the Notion connector to create a new task in your Notion workspace with the specified details and it will navigate across Notion's API until it will succeed
+
+```markdown
+`2024-07-22T21:42:39.926Z - ToolSelectorAgent - INFO: Finish Reason: tool_calls
+Message: 
+call function "Notion-content-management-pages-createNewPage" params \body_params\:\parent\:\database_id\:\d36d51cc-f9c1-45b6-99a3-526cf5bcd3c7\,\properties\:\Name\:\title\:[\text\:\content\:\Blogpost about xpander.ai\],\Status\:\status\:\name\:\Draft\
+2024-07-22T21:42:45.568Z - Xpander Tool - INFO: 
+2024-07-22T21:42:48.472Z - ParserAgent - INFO: Plan Fulfilled 9: 
+
+The new page titled "Blogpost about xpander.ai" has been successfully created in the ContentDB and marked as draft.
+
+Details:
+- **Page ID**: `0***5`
+- **Status**: Draft
+- **Title**: Blogpost about xpander.ai
+- **Created by**: xpander AI
+- **URL**: [...
+2024-07-22T21:42:52.417Z - PlannerAgent - INFO: Final Answer: The new page titled "Blogpost about xpander.ai" has been successfully created in the ContentDB, assigned to David Twizer, and marked as draft.
+
+Page Details:
+- **Page ID**: `0c****
+- **Status**: Draft
+- **Title**: Blogpost about xpander.ai
+- **Created by*...
+```
+
+## Summary
+
+You've successfully set up and run the Xpander AI solution. You can modify the script to fit your specific needs and explore the capabilities of the Xpander SDK and community tools.
+
+For further information, refer to the [xpander SDK Documentation](https://docs.xpander.ai/reference/introduction).
