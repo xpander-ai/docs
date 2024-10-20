@@ -2,12 +2,12 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "Starter Kit",
   "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
+    "dark": "/logo/purple-black.svg",
+    "light": "/logo/purple-black.svg"
   },
   "favicon": "/favicon.svg",
   "colors": {
-    "primary": "#0D9373",
+    "primary": "#753fcc",
     "light": "#07C983",
     "dark": "#0D9373",
     "anchors": {
@@ -18,49 +18,83 @@
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:hi@mintlify.com"
+      "url": "mailto:support@xpander.ai"
     }
   ],
-  "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
-  },
   "tabs": [
+    {
+      "name": "Welcome",
+      "url": "introduction"
+    },
+    {
+      "name": "Release Notes",
+      "url": "release-notes/release-notes"
+    },
     {
       "name": "API Reference",
       "url": "api-reference"
+    },
+    {
+      "name": "Agent Hub",
+      "url": "agent-hub"
+    },
+    {
+      "name": "User Guides",
+      "url": "userguides"
     }
   ],
+  "topbarCtaButton": {
+    "name": "xpander.ai",
+    "url": "https://xpander.ai"
+  },
   "anchors": [
     {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
+      "name": "Welcome",
+      "icon": "book-open",
+      "url": "introduction"
     },
     {
-      "name": "Community",
-      "icon": "slack",
-      "url": "https://mintlify.com/community"
+      "name": "API Reference",
+      "icon": "code",
+      "url": "api-reference"
     },
     {
-      "name": "Blog",
-      "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
+      "name": "Agent Hub",
+      "icon": "users",
+      "url": "agent-hub/agent-hub"
+    },
+    {
+      "name": "User Guides",
+      "icon": "book",
+      "url": "userguides/userguides"
     }
   ],
   "navigation": [
     {
-      "group": "Get Started",
+      "group": "Getting Started",
+      "pages": ["introduction", "welcome/quickstart"]
+    },
+    {
+      "group": "Release Notes",
+      "pages": ["release-notes/release-notes"]
+    },
+    {
+      "group": "API Reference",
       "pages": [
-        "introduction",
-        "quickstart",
-        "development",
-        "agent-hub"
+        "api-reference/introduction",
+        "api-reference/endpoint/get",
+        "api-reference/endpoint/create",
+        "api-reference/endpoint/delete"
       ]
     },
     {
-      "group": "Essentials",
+      "group": "Agent Hub",
+      "pages": ["agent-hub/agent-hub"]
+    },
+    {
+      "group": "User Guides",
       "pages": [
+        "userguides/userguides",
         "essentials/markdown",
         "essentials/code",
         "essentials/images",
@@ -68,25 +102,11 @@
         "essentials/navigation",
         "essentials/reusable-snippets"
       ]
-    },
-    {
-      "group": "API Documentation",
-      "pages": [
-        "api-reference/introduction"
-      ]
-    },
-    {
-      "group": "Endpoint Examples",
-      "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
-      ]
     }
   ],
   "footerSocials": {
-    "x": "https://x.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://linkedin.com/company/mintlify"
+    "x": "https://x.com/xpander_ai",
+    "github": "https://github.com/xpander-ai",
+    "linkedin": "https://www.linkedin.com/company/104346002"
   }
 }
