@@ -1,67 +1,75 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Starter Kit",
+  "name": "Xpander AI",
+  "theme": "venus",
   "logo": {
-    "dark": "/logo/purple-black.svg",
-    "light": "/logo/purple-black.svg"
+    "dark": "/logo/logo-dark-mode.png",
+    "light": "/logo/logo.png"
   },
   "favicon": "/favicon.svg",
   "colors": {
-    "primary": "#753fcc",
-    "light": "#07C983",
-    "dark": "#0D9373",
-    "anchors": {
-      "from": "#0D9373",
-      "to": "#07C983"
-    }
+    "primary": "#753CFF",
+    "light": "#9B70FF",
+    "dark": "#4A2C99"
   },
-  "topbarLinks": [
-    {
-      "name": "Support",
-      "url": "mailto:support@xpander.ai"
-    }
-  ],
   "tabs": [
     {
       "name": "Welcome",
       "url": "welcome"
     },
     {
-      "name": "Release Notes",
-      "url": "release-notes/release-notes"
+      "name": "User Guides",
+      "url": "userguides"
     },
-    {
-      "name": "API Reference",
-      "url": "api-reference"
-    },
-    {
+        {
       "name": "Agent Hub",
       "url": "agent-hub"
     },
     {
-      "name": "User Guides",
-      "url": "userguides"
+      "name": "API and SDK Reference",
+      "url": "api-reference"
     }
+
   ],
   "topbarCtaButton": {
-    "name": "xpander.ai",
-    "url": "https://xpander.ai"
+    "type": "github",
+    "url": "https://github.com/xpander-ai/xpander-sdk"
   },
   "anchors": [
+    {
+      "name": "Developer Console",
+      "icon": "code",
+      "url": "https://app.xpander.ai",
+      "iconType": "regular"
+    },
+    {
+      "name": "Developer Discord",
+      "icon": "discord",
+      "url": "https://app.xpander.ai",
+      "iconType": "regular"
+    },
+    {
+      "name": "Support",
+      "icon": "headset",
+      "url": "https://app.xpander.ai",
+      "iconType": "regular"
+    },
+    {
+      "name": "SDK Reference",
+      "icon": "code",
+      "url": "api-reference",
+      "iconType": "regular"
+    },
     {
       "name": "Welcome",
       "icon": "book-open",
       "url": "welcome/introduction"
     },
-    {
-      "name": "API Reference",
-      "icon": "code",
-      "url": "api-reference"
-    },
+
     {
       "name": "Agent Hub",
       "icon": "users",
-      "url": "agent-hub/agent-hub"
+      "url": "agent-hub/agent-hub"  
     },
     {
       "name": "User Guides",
@@ -71,20 +79,14 @@
   ],
   "navigation": [
     {
-      "group": "Getting Started",
-      "pages": ["welcome/introduction", "welcome/quickstart", "welcome/Early-access-program", "welcome/Frequently-asked-questions"]
-    },
-    {
-      "group": "Release Notes",
-      "pages": ["release-notes/release-notes"]
+      "group": "Welcome",
+      "pages": ["welcome/introduction"]
     },
     {
       "group": "API Reference",
       "pages": [
-        "api-reference/introduction",
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
+        "api-reference/endpoint/get-tools",
+        "api-reference/endpoint/execute-operation"
       ]
     },
     {
@@ -93,7 +95,9 @@
     },
     {
       "group": "User Guides",
-      "pages": ["userguides/userguides","userguides/use-ai-app-builder-to-build-a-daily-email-digest", "userguides/use-ai-apps-to-connect-actions-to-openai-gpts", "userguides/use-ai-apps-to-create-custom-plugins-in-amazon-q-business", "userguides/use-ai-apps-to-build-custom-ai-agents", "userguides/use-ai-apps-to-build-custom-ai-agents-with-nvidia-nim", "userguides/generating-a-har-to-use-when-creating-a-custom-connector", "userguides/custom-hubspot-ai-with-xpander-ai", "userguides/hubspot-tutorials"]
+      "pages": [
+        "userguides/use-ai-apps-to-build-custom-ai-agents"
+      ]
     }
   ],
   "footerSocials": {
