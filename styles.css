@@ -1,0 +1,31 @@
+@font-face {
+    font-family: 'Helvetica Thin';
+    src: url('/fonts/Helvetica-Thin.woff2') format('woff2'),
+         url('/fonts/Helvetica-Thin.woff') format('woff'),
+         url('/fonts/Helvetica-Thin.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+  }
+  
+  body, p, span, a, li {
+    font-family: 'Helvetica Thin', Arial, sans-serif;
+    font-weight: 100;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Helvetica Thin', Arial, sans-serif;
+    font-weight: 100;
+  }
+  
+  .topbar   -cta-button {
+    background-color: #753fcc; /* Button background color */
+    color: #ffffff;            /* Button text color */
+  }
+  .topbarCtaButton a {
+    background-color: #753fcc; /* Button background color */
+    color: #ffffff !important; /* Button text color */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+  }

@@ -1,0 +1,792 @@
+#Getting started
+How to install and use the xpander AI SDK
+
+# Overview
+
+This library provides a Python client to interact with xpander AI's platform and retrieve tools, invoke tools and use local tools for function calling against various of LLM Providers such as Nvidia NIM, OpenAI and Amazon Bedrock
+
+> 📘 The library runs as a NodeJS app under the hood and compiled safely using [Projen](https://projen.io/) In order to run our SDK smoothly you must have [NodeJS](https://nodejs.org/en/download/package-manager)  installed.
+
+# Installing the SDK
+
+```shell PIP
+pip install https://assets.xpanderai.io/xpander-sdk.tar.gz
+```
+```shell Conda
+conda install -c xpanderai xpander-sdk
+```
+```shell NPM
+npm install https://assets.xpanderai.io/xpander-sdk.tar.gz
+```
+```shell NuGet
+Install-Package Xpander.Sdk -Source https://assets.xpanderai.io/nuget
+```
+```xml Maven
+<dependency>
+    <groupId>ai.xpander</groupId>
+    <artifactId>xpander-sdk</artifactId>
+    <version>1.0.0</version>
+</dependency>
+<repositories>
+    <repository>
+        <id>xpander-repo</id>
+        <url>https://assets.xpanderai.io/maven</url>
+    </repository>
+</repositories>
+
+```
+
+# Retrieving the SDK's agent Key and agent URL
+
+In the xpander AI's platform, go to AI Apps > New AI App > choose your Agent.  
+Copy the agent key and agent url from the platform.
+
+# Initializing the SDK
+
+```python Python
+from xpander_sdk import XpanderClient, LLMProvider,OpenAISupportedModels
+
+xpander_client = XpanderClient(
+    agent_key="XPANDER_AI_AGENT_KEY",
+    agent_url="XPANDER_AI_AGENT_URL",
+    llm_provider=LLMProvider.OPEN_AI # or use any other provider you want (NVIDIA_NIM, AMAZON_BEDROCK)
+)
+```
+```node NodeJS
+import { XpanderClient } from 'xpander-sdk'
+
+xpanderClient = new XpanderClient(
+    "XPANDER_AI_AGENT_KEY",
+    "XPANDER_AI_AGENT_URL",
+    LLMProvider.OPEN_AI /* or use any other provider you want (NVIDIA_NIM, AMAZON_BEDROCK)*/
+)
+```
+```csharp .NET
+using Xpander.AI.Sdk;
+
+XpanderClient xpanderClient = new XpanderClient(
+  "XPANDER_AI_AGENT_KEY",
+  "XPANDER_AI_AGENT_URL",
+  LLMProvider.OPEN_AI);
+```
+```java Java
+import ai.xpander.sdk.XpanderClient;
+
+XpanderClient xpanderClient = new XpanderClient(
+    "XPANDER_AI_AGENT_KEY",
+    "XPANDER_AI_AGENT_URL",
+    LLMProvider.OPEN_AI /* or use any other provider you want (NVIDIA_NIM, AMAZON_BEDROCK)*/
+);
+```
+
+# SDK Methods
+
+## Get tools
+
+our SDK allows you to retrieve tools connected in the xpander ai's platform and use it with ease.  
+when creating an AI App you need to choose connectors that you want to communicate with.
+
+### Request
+
+```python Python
+# API Reference https://docs.xpander.ai/reference/python-sdk#xpander-sdk.XpanderClient.tools
+tools = xpander_client.tools()
+```
+```node NodeJS
+// API Reference https://docs.xpander.ai/reference/nodejs-sdk#xpander-sdk.XpanderClient.tools
+tools = xpanderClient.tools()
+```
+```csharp .NET
+// API Reference https://docs.xpander.ai/reference/net-sdk#xpander-sdk.XpanderClient.tools
+IOpenAIToolOutput[] tools = xpanderClient.Tools();
+```
+```java Java
+// API Reference https://docs.xpander.ai/reference/java-sdk#xpander-sdk.XpanderClient.tools
+IOpenAIToolOutput[] tools = xpanderClient.tools();
+```
+
+### Response (List\[[IOpenAIToolOutput](https://docs.xpander.ai/reference/python-sdk#xpander-sdk.IOpenAIToolOutput)] | List\[[IBedrockToolOutput](https://docs.xpander.ai/reference/python-sdk#xpander-sdk.IBedrockToolOutput)])
+
+```json OpenAI Handler
+[
+    {
+        "type": "function",
+        "function": {
+            "name": "Conduit-article-management-createNewArticleWithTags",
+            "description": "creates new article system. Article body, description, title mandatory . run Conduit-article-management-retrieveArticlesWithOptionalFilters . IMPORTANT! make sure to use body_params, query_params, path_params. these are crucial for ensuring function calling works!",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query_params": {
+                        "type": "object",
+                        "properties": {},
+                        "required": []
+                    },
+                    "path_params": {
+                        "type": "object",
+                        "properties": {},
+                        "required": []
+                    },
+                    "body_params": {
+                        "type": "object",
+                        "properties": {
+                            "article": {
+                                "type": "object",
+                                "description": "article",
+                                "properties": {
+                                    "body": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "tagList": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "title": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "required": [
+                            "article"
+                        ]
+                    }
+                },
+                "required": [
+                    "query_params",
+                    "path_params",
+                    "body_params"
+                ]
+            }
+        }
+    }
+]
+```
+```json Nvidia NIM Handler
+[
+    {
+        "type": "function",
+        "function": {
+            "name": "Conduit-article-management-createNewArticleWithTags",
+            "description": "creates new article system. Requires authentication. Article body, description, title r mandatory . run Conduit-article-management-retrieveArticlesWithOptionalFilters . IMPORTANT! make sure to use body_params, query_params, path_params. these are crucial for ensuring function calling works!",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query_params": {
+                        "type": "object",
+                        "properties": {},
+                        "required": []
+                    },
+                    "path_params": {
+                        "type": "object",
+                        "properties": {},
+                        "required": []
+                    },
+                    "body_params": {
+                        "type": "object",
+                        "properties": {
+                            "article": {
+                                "type": "object",
+                                "description": "article",
+                                "properties": {
+                                    "body": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "tagList": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "title": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "required": [
+                            "article"
+                        ]
+                    }
+                },
+                "required": [
+                    "query_params",
+                    "path_params",
+                    "body_params"
+                ]
+            }
+        }
+    }
+]
+```
+```json Amazon Bedrock Handler
+[
+    {
+        "toolSpec": {
+            "name": "Conduit_article_management_createNewArticleWithTags",
+            "description": "creates new article system. Requires authentication. Article body, description, title r mandatory . run Conduit-article-management-retrieveArticlesWithOptionalFilters . IMPORTANT! make sure to use body_params, query_params, path_params. these are crucial for ensuring function calling works!",
+            "inputSchema": {
+                "json": {
+                    "type": "object",
+                    "properties": {
+                        "query_params": {
+                            "type": "object",
+                            "properties": {},
+                            "required": []
+                        },
+                        "path_params": {
+                            "type": "object",
+                            "properties": {},
+                            "required": []
+                        },
+                        "body_params": {
+                            "type": "object",
+                            "properties": {
+                                "article": {
+                                    "type": "object",
+                                    "description": "article",
+                                    "properties": {
+                                        "body": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "type": "string"
+                                        },
+                                        "tagList": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "title": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            },
+                            "required": [
+                                "article"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "query_params",
+                        "path_params",
+                        "body_params"
+                    ]
+                }
+            }
+        }
+    }
+]
+```
+
+***
+
+## Using local functions
+
+Our SDK allows you to retrieve tools connected in the xpander ai's platform and use it with ease.  
+sometime you might need your own local functions, here's the way to do it.
+
+> 👍 With local function support, you can create AI Agents utilizing the xpander connector library. When an LLM needs to invoke a locally stored function, such as for mathematical calculations, our SDK will return an object ready for local execution.
+
+### Request (List\[[ILocalTool](https://docs.xpander.ai/reference/python-sdk#xpander-sdk.ILocalTool)])
+
+```python Python
+# API Reference https://docs.xpander.ai/reference/python-sdk#xpander-sdk.XpanderClient.tools
+
+local_tools = [
+    {
+        'type': 'function',
+        'function': {
+            'name': 'greet-by-name',
+            'description': 'Returns a greet to a user with name',
+            'parameters': {
+                'type': 'object',
+                'properties': {
+                    'userName': {
+                        'type': 'string',
+                        'description': "The user's name",
+                    },
+                },
+                'required': ['userName'],
+                'additionalProperties': False,
+            },
+        },
+    },
+]
+
+xpander_client.add_local_tools(local_tools)
+tools = xpander_client.tools()
+
+```
+```node NodeJS
+// API Reference https://docs.xpander.ai/reference/nodejs-sdk#xpander-sdk.XpanderClient.tools
+tools = xpanderClient.tools()
+```
+```csharp .NET
+// API Reference https://docs.xpander.ai/reference/net-sdk#xpander-sdk.XpanderClient.tools
+IOpenAIToolOutput[] tools = xpanderClient.Tools();
+```
+```java Java
+// API Reference https://docs.xpander.ai/reference/java-sdk#xpander-sdk.XpanderClient.tools
+IOpenAIToolOutput[] tools = xpanderClient.tools();
+```
+
+### Response (List\[[IOpenAIToolOutput](https://docs.xpander.ai/reference/python-sdk#xpander-sdk.IOpenAIToolOutput)] | List\[[IBedrockToolOutput](https://docs.xpander.ai/reference/python-sdk#xpander-sdk.IBedrockToolOutput)])
+
+```json OpenAI Handler
+[
+    {
+        "type": "function",
+        "function": {
+            "name": "Conduit-article-management-createNewArticleWithTags",
+            "description": "creates new article system. Requires authentication. Article body, description, title r mandatory . run Conduit-article-management-retrieveArticlesWithOptionalFilters . IMPORTANT! make sure to use body_params, query_params, path_params. these are crucial for ensuring function calling works!",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query_params": {
+                        "type": "object",
+                        "properties": {},
+                        "required": []
+                    },
+                    "path_params": {
+                        "type": "object",
+                        "properties": {},
+                        "required": []
+                    },
+                    "body_params": {
+                        "type": "object",
+                        "properties": {
+                            "article": {
+                                "type": "object",
+                                "description": "article",
+                                "properties": {
+                                    "body": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "tagList": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "title": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "required": [
+                            "article"
+                        ]
+                    }
+                },
+                "required": [
+                    "query_params",
+                    "path_params",
+                    "body_params"
+                ]
+            }
+        }
+    }
+]
+```
+```json Nvidia NIM Handler
+[
+    {
+        "type": "function",
+        "function": {
+            "name": "Conduit-article-management-createNewArticleWithTags",
+            "description": "creates new article system. Requires authentication. Article body, description, title r mandatory . run Conduit-article-management-retrieveArticlesWithOptionalFilters . IMPORTANT! make sure to use body_params, query_params, path_params. these are crucial for ensuring function calling works!",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query_params": {
+                        "type": "object",
+                        "properties": {},
+                        "required": []
+                    },
+                    "path_params": {
+                        "type": "object",
+                        "properties": {},
+                        "required": []
+                    },
+                    "body_params": {
+                        "type": "object",
+                        "properties": {
+                            "article": {
+                                "type": "object",
+                                "description": "article",
+                                "properties": {
+                                    "body": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "tagList": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "title": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "required": [
+                            "article"
+                        ]
+                    }
+                },
+                "required": [
+                    "query_params",
+                    "path_params",
+                    "body_params"
+                ]
+            }
+        }
+    }
+]
+```
+```json Amazon Bedrock Handler
+[
+    {
+        "toolSpec": {
+            "name": "Conduit_article_management_createNewArticleWithTags",
+            "description": "creates new article system. Requires authentication. Article body, description, title r mandatory . run Conduit-article-management-retrieveArticlesWithOptionalFilters . IMPORTANT! make sure to use body_params, query_params, path_params. these are crucial for ensuring function calling works!",
+            "inputSchema": {
+                "json": {
+                    "type": "object",
+                    "properties": {
+                        "query_params": {
+                            "type": "object",
+                            "properties": {},
+                            "required": []
+                        },
+                        "path_params": {
+                            "type": "object",
+                            "properties": {},
+                            "required": []
+                        },
+                        "body_params": {
+                            "type": "object",
+                            "properties": {
+                                "article": {
+                                    "type": "object",
+                                    "description": "article",
+                                    "properties": {
+                                        "body": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "type": "string"
+                                        },
+                                        "tagList": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "title": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            },
+                            "required": [
+                                "article"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "query_params",
+                        "path_params",
+                        "body_params"
+                    ]
+                }
+            }
+        }
+    }
+]
+```
+
+<br />
+
+***
+
+## Invoke tools
+
+when an LLM choose a tool, the tool should be invoked.  
+this is how you do it.
+
+### Request
+
+```python Python
+xpander_client.xpander_tool_call(tool_selector_response=dict(llm_response))
+```
+```node NodeJS
+const toolResponse = xpanderClient.xpanderToolCall(llmResponse);
+```
+```csharp .NET
+ToolResponse[] toolResponses = xpanderClient.XpanderToolCall(llmResponse);
+```
+```java Java
+ToolResponse[] toolResponses = xpanderClient.xpanderToolCall(llmResponse);
+```
+
+### Response (List\[[ToolResponse](https://docs.xpander.ai/reference/python-sdk#xpander-sdk.ToolResponse)])
+
+```json OpenAI Handler
+[
+    {
+        "name": "Conduit-article-management-getAllTagsForArticles",
+        "payload_property1": null,
+        "payload_property2": null,
+        "raw_response": "{\"tags\":[\"Pet Adventures\",\"BYD\",\"Xpander\",\"dogs\",\"nutrition\",\"Culture\",\"test-oren\",\"test\",\"workshop\",\"xpander.ai\",\"xpanderAI Agent\",\"Lucky\",\"Generative AI\",\"culinary\",\"quantum computing\",\"Rosy\",\"workflow automation\",\"xpanderAI\",\"pet\",\"Issues\",\"example\",\"gig economy\",\"business\",\"??????\",\"electric vehicle\",\"automotive\",\"AWS\",\"ert\",\"Leo\",\"AI Integration\",\"climate change\",\"animals\",\"urban planning\",\"pets\",\"Freddy\",\"fruits\",\"GitHub\",\"augmented reality\",\"conference\",\"Data Pipelines\",\"remote work\",\"history\",\"Testing\",\"animal\",\"Jewel\",\"DriveNets\",\"Nature\",\"Customer Service\",\"Bird\",\"tag1,tag2\",\"Machine Learning\",\"tag1\",\"Collaboration\",\"Lizard\",\"success\",\"apples\",\"adventures\",\"biotechnology\",\"Data Science\",\"gaming\",\"story\",\"computers\",\"sustainable agriculture\",\"AI\",\"Customer Support\",\"Network Management\",\"mental health\",\"5G\",\"Data Security\",\"funny stories\",\"sustainable fashion\",\"smart cities\",\"technology\",\"Ecology\",\"health\",\"adventure\",\"App4\",\"Fun\",\"Summary\",\"space exploration\",\"\\\"training\\\"]\",\"artificial intelligence\"]}",
+        "response_message": "{\"tags\":[\"Pet Adventures\",\"BYD\",\"Xpander\",\"dogs\",\"nutrition\",\"Culture\",\"test-oren\",\"test\",\"workshop\",\"xpander.ai\",\"xpanderAI Agent\",\"Lucky\",\"Generative AI\",\"culinary\",\"quantum computing\",\"Rosy\",\"workflow automation\",\"xpanderAI\",\"pet\",\"Issues\",\"example\",\"gig economy\",\"business\",\"??????\",\"electric vehicle\",\"automotive\",\"AWS\",\"ert\",\"Leo\",\"AI Integration\",\"climate change\",\"animals\",\"urban planning\",\"pets\",\"Freddy\",\"fruits\",\"GitHub\",\"augmented reality\",\"conference\",\"Data Pipelines\",\"remote work\",\"history\",\"Testing\",\"animal\",\"Jewel\",\"DriveNets\",\"Nature\",\"Customer Service\",\"Bird\",\"tag1,tag2\",\"Machine Learning\",\"tag1\",\"Collaboration\",\"Lizard\",\"success\",\"apples\",\"adventures\",\"biotechnology\",\"Data Science\",\"gaming\",\"story\",\"computers\",\"sustainable agriculture\",\"AI\",\"Customer Support\",\"Network Management\",\"mental health\",\"5G\",\"Data Security\",\"funny stories\",\"sustainable fashion\",\"smart cities\",\"technology\",\"Ecology\",\"health\",\"adventure\",\"App4\",\"Fun\",\"Summary\",\"space exploration\",\"\\\"training\\\"]\",\"artificial intelligence\"]}",
+        "role": "tool",
+        "tool_call_id": "tooluse_8ZEYkp2qS_aBpx5cR9XDzA"
+    }
+]
+```
+```json Nvidia NIM Handler
+[
+    {
+        "name": "Conduit-article-management-getAllTagsForArticles",
+        "payload_property1": null,
+        "payload_property2": null,
+        "raw_response": "{\"tags\":[\"Pet Adventures\",\"BYD\",\"Xpander\",\"dogs\",\"nutrition\",\"Culture\",\"test-oren\",\"test\",\"workshop\",\"xpander.ai\",\"xpanderAI Agent\",\"Lucky\",\"Generative AI\",\"culinary\",\"quantum computing\",\"Rosy\",\"workflow automation\",\"xpanderAI\",\"pet\",\"Issues\",\"example\",\"gig economy\",\"business\",\"??????\",\"electric vehicle\",\"automotive\",\"AWS\",\"ert\",\"Leo\",\"AI Integration\",\"climate change\",\"animals\",\"urban planning\",\"pets\",\"Freddy\",\"fruits\",\"GitHub\",\"augmented reality\",\"conference\",\"Data Pipelines\",\"remote work\",\"history\",\"Testing\",\"animal\",\"Jewel\",\"DriveNets\",\"Nature\",\"Customer Service\",\"Bird\",\"tag1,tag2\",\"Machine Learning\",\"tag1\",\"Collaboration\",\"Lizard\",\"success\",\"apples\",\"adventures\",\"biotechnology\",\"Data Science\",\"gaming\",\"story\",\"computers\",\"sustainable agriculture\",\"AI\",\"Customer Support\",\"Network Management\",\"mental health\",\"5G\",\"Data Security\",\"funny stories\",\"sustainable fashion\",\"smart cities\",\"technology\",\"Ecology\",\"health\",\"adventure\",\"App4\",\"Fun\",\"Summary\",\"space exploration\",\"\\\"training\\\"]\",\"artificial intelligence\"]}",
+        "response_message": "{\"tags\":[\"Pet Adventures\",\"BYD\",\"Xpander\",\"dogs\",\"nutrition\",\"Culture\",\"test-oren\",\"test\",\"workshop\",\"xpander.ai\",\"xpanderAI Agent\",\"Lucky\",\"Generative AI\",\"culinary\",\"quantum computing\",\"Rosy\",\"workflow automation\",\"xpanderAI\",\"pet\",\"Issues\",\"example\",\"gig economy\",\"business\",\"??????\",\"electric vehicle\",\"automotive\",\"AWS\",\"ert\",\"Leo\",\"AI Integration\",\"climate change\",\"animals\",\"urban planning\",\"pets\",\"Freddy\",\"fruits\",\"GitHub\",\"augmented reality\",\"conference\",\"Data Pipelines\",\"remote work\",\"history\",\"Testing\",\"animal\",\"Jewel\",\"DriveNets\",\"Nature\",\"Customer Service\",\"Bird\",\"tag1,tag2\",\"Machine Learning\",\"tag1\",\"Collaboration\",\"Lizard\",\"success\",\"apples\",\"adventures\",\"biotechnology\",\"Data Science\",\"gaming\",\"story\",\"computers\",\"sustainable agriculture\",\"AI\",\"Customer Support\",\"Network Management\",\"mental health\",\"5G\",\"Data Security\",\"funny stories\",\"sustainable fashion\",\"smart cities\",\"technology\",\"Ecology\",\"health\",\"adventure\",\"App4\",\"Fun\",\"Summary\",\"space exploration\",\"\\\"training\\\"]\",\"artificial intelligence\"]}",
+        "role": "tool",
+        "tool_call_id": "tooluse_8ZEYkp2qS_aBpx5cR9XDzA"
+    }
+]
+```
+```json Amazon Bedrock Handler
+[
+    {
+        "name": "Conduit-article-management-getAllTagsForArticles",
+        "payload_property1": null,
+        "payload_property2": null,
+        "raw_response": "{\"tags\":[\"Pet Adventures\",\"BYD\",\"Xpander\",\"dogs\",\"nutrition\",\"Culture\",\"test-oren\",\"test\",\"workshop\",\"xpander.ai\",\"xpanderAI Agent\",\"Lucky\",\"Generative AI\",\"culinary\",\"quantum computing\",\"Rosy\",\"workflow automation\",\"xpanderAI\",\"pet\",\"Issues\",\"example\",\"gig economy\",\"business\",\"??????\",\"electric vehicle\",\"automotive\",\"AWS\",\"ert\",\"Leo\",\"AI Integration\",\"climate change\",\"animals\",\"urban planning\",\"pets\",\"Freddy\",\"fruits\",\"GitHub\",\"augmented reality\",\"conference\",\"Data Pipelines\",\"remote work\",\"history\",\"Testing\",\"animal\",\"Jewel\",\"DriveNets\",\"Nature\",\"Customer Service\",\"Bird\",\"tag1,tag2\",\"Machine Learning\",\"tag1\",\"Collaboration\",\"Lizard\",\"success\",\"apples\",\"adventures\",\"biotechnology\",\"Data Science\",\"gaming\",\"story\",\"computers\",\"sustainable agriculture\",\"AI\",\"Customer Support\",\"Network Management\",\"mental health\",\"5G\",\"Data Security\",\"funny stories\",\"sustainable fashion\",\"smart cities\",\"technology\",\"Ecology\",\"health\",\"adventure\",\"App4\",\"Fun\",\"Summary\",\"space exploration\",\"\\\"training\\\"]\",\"artificial intelligence\"]}",
+        "response_message": "{\"tags\":[\"Pet Adventures\",\"BYD\",\"Xpander\",\"dogs\",\"nutrition\",\"Culture\",\"test-oren\",\"test\",\"workshop\",\"xpander.ai\",\"xpanderAI Agent\",\"Lucky\",\"Generative AI\",\"culinary\",\"quantum computing\",\"Rosy\",\"workflow automation\",\"xpanderAI\",\"pet\",\"Issues\",\"example\",\"gig economy\",\"business\",\"??????\",\"electric vehicle\",\"automotive\",\"AWS\",\"ert\",\"Leo\",\"AI Integration\",\"climate change\",\"animals\",\"urban planning\",\"pets\",\"Freddy\",\"fruits\",\"GitHub\",\"augmented reality\",\"conference\",\"Data Pipelines\",\"remote work\",\"history\",\"Testing\",\"animal\",\"Jewel\",\"DriveNets\",\"Nature\",\"Customer Service\",\"Bird\",\"tag1,tag2\",\"Machine Learning\",\"tag1\",\"Collaboration\",\"Lizard\",\"success\",\"apples\",\"adventures\",\"biotechnology\",\"Data Science\",\"gaming\",\"story\",\"computers\",\"sustainable agriculture\",\"AI\",\"Customer Support\",\"Network Management\",\"mental health\",\"5G\",\"Data Security\",\"funny stories\",\"sustainable fashion\",\"smart cities\",\"technology\",\"Ecology\",\"health\",\"adventure\",\"App4\",\"Fun\",\"Summary\",\"space exploration\",\"\\\"training\\\"]\",\"artificial intelligence\"]}",
+        "role": "tool",
+        "tool_call_id": "tooluse_8ZEYkp2qS_aBpx5cR9XDzA"
+    }
+]
+```
+
+### Local tool invocation response (List\[[ToolResponse](https://docs.xpander.ai/reference/python-sdk#xpander-sdk.ToolResponse)])
+
+> 📘 in case of local tools, invocation should occur manually
+
+```json OpenAI Handler
+[
+    {
+        "toolCallId": [
+            {
+                "id": "call_U9cbQK8FO8tY97MuqI6mH0dr",
+                "type": "function",
+                "function": {
+                    "name": "Conduit-article-management-getAllTagsForArticles",
+                    "arguments": "{}"
+                }
+            },
+            {
+                "id": "call_jjZgVbbW8FQqhilB5ud54jUJ",
+                "type": "function",
+                "function": {
+                    "name": "greet-by-name",
+                    "arguments": "{\"userName\": \"David\"}"
+                }
+            }
+        ],
+        "role": {
+            "userName": "David"
+        },
+        "name": "tool",
+        "responseMessage": "",
+        "filteredTool": {},
+        "payloadRequest": "{\"userName\":\"David\"}"
+    }
+]
+```
+```json Nvidia NIM Handler
+[
+    {
+        "toolCallId": [
+            {
+                "id": "call_U9cbQK8FO8tY97MuqI6mH0dr",
+                "type": "function",
+                "function": {
+                    "name": "Conduit-article-management-getAllTagsForArticles",
+                    "arguments": "{}"
+                }
+            },
+            {
+                "id": "call_jjZgVbbW8FQqhilB5ud54jUJ",
+                "type": "function",
+                "function": {
+                    "name": "greet-by-name",
+                    "arguments": "{\"userName\": \"David\"}"
+                }
+            }
+        ],
+        "role": {
+            "userName": "David"
+        },
+        "name": "tool",
+        "responseMessage": "",
+        "filteredTool": {},
+        "payloadRequest": "{\"userName\":\"David\"}"
+    }
+]
+```
+```json Amazon Bedrock Handler
+[
+    {
+        "toolCallId": "tooluse_Ik0QhuxcRAqAsT6P9o5_7w",
+        "role": "",
+        "name": "tool",
+        "responseMessage": "",
+        "filteredTool": {},
+        "payloadRequest": "{\"userName\":\"David\"}"
+    }
+]
+```
+
+## Manual Tool Invocation
+
+In some scenarios, LLM parsing is not required, and you may prefer to manually invoke functions that exist within the xpander connector.
+
+### Request
+
+```python Python
+# API Reference https://docs.xpander.ai/reference/python-sdk#xpander-sdk.XpanderClient.xpanderSingleToolInvoke
+
+payload = {
+  "body_params":{
+    "BODY_PARAM": "VALUE"
+  },
+  "path_params":{
+    "PATH_PARAM": "VALUE"
+  },
+  "query_params":{
+  	"QUERY_PARAM": "VALUE"
+  }
+}
+
+xpander_client.xpander_single_tool_invoke(tool_id="TOOL_ID_TO_INVOKE",payload=tool_invocation_payload)
+```
+```node NodeJS
+# API Reference https://docs.xpander.ai/reference/nodejs-sdk#xpander-sdk.XpanderClient.xpanderSingleToolInvoke
+
+const payload = {
+  body_params:{
+    BODY_PARAM: "VALUE"
+  },
+  path_params:{
+    PATH_PARAM: "VALUE"
+  },
+  query_params:{
+  	QUERY_PARAM: "VALUE"
+  }
+}
+
+const toolResponse = xpanderClient.xpanderSingleToolInvoke("TOOL_ID_TO_INVOKE", payload);
+```
+```csharp .NET
+var payload = new Dictionary<string, object>
+        {
+            { "body_params", new Dictionary<string, string>
+                {
+                    { "BODY_PARAM", "VALUE" }
+                }
+            },
+            { "path_params", new Dictionary<string, string>
+                {
+                    { "PATH_PARAM", "VALUE" }
+                }
+            },
+            { "query_params", new Dictionary<string, string>
+                {
+                    { "QUERY_PARAM", "VALUE" }
+                }
+            }
+        };
+
+ToolResponse toolResponse = xpanderClient.XpanderSingleToolInvoke("TOOL_ID_TO_INVOKE", JsonConvert.SerializeObject(payload));
+```
+```java Java
+Map<String, Map<String, String>> payload = new HashMap<>();
+
+Map<String, String> bodyParams = new HashMap<>();
+bodyParams.put("BODY_PARAM", "VALUE");
+
+Map<String, String> pathParams = new HashMap<>();
+pathParams.put("PATH_PARAM", "VALUE");
+
+Map<String, String> queryParams = new HashMap<>();
+queryParams.put("QUERY_PARAM", "VALUE");
+
+payload.put("body_params", bodyParams);
+payload.put("path_params", pathParams);
+payload.put("query_params", queryParams);
+
+ToolResponse[] toolResponses = xpanderClient.xpanderSingleToolInvoke("TOOL_ID_TO_INVOKE", payload);
+```
+
+### Response (\[[ToolResponse](https://docs.xpander.ai/reference/python-sdk#xpander-sdk.ToolResponse)])
+
+```json OpenAI Handler
+ {
+        "name": "INVOKED_TOOL_ID",
+        "payload_property1": null,
+        "payload_property2": null,
+        "raw_response": "YOUR_TOOL_RAW_RESPONSE",
+        "response_message": "YOUR_TOOL_RESPONSE",
+        "role": "tool",
+        "tool_call_id": ""
+ }
+```
+```json Nvidia NIM Handler
+[
+    {
+        "name": "INVOKED_TOOL_ID",
+        "payload_property1": null,
+        "payload_property2": null,
+        "raw_response": "YOUR_TOOL_RAW_RESPONSE",
+        "response_message": "YOUR_TOOL_RESPONSE",
+        "role": "tool",
+        "tool_call_id": ""
+    }
+]
+```
+```json Amazon Bedrock Handler
+[
+    {
+        "name": "INVOKED_TOOL_ID",
+        "payload_property1": null,
+        "payload_property2": null,
+        "raw_response": "YOUR_TOOL_RAW_RESPONSE",
+        "response_message": "YOUR_TOOL_RESPONSE",
+        "role": "tool",
+        "tool_call_id": ""
+    }
+]
+```

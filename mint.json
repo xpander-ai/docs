@@ -1,92 +1,108 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Starter Kit",
+  "name": "Xpander AI",
+  "theme": "venus",
   "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
+    "dark": "/logo/logo-dark-mode.png",
+    "light": "/logo/logo.png"
   },
   "favicon": "/favicon.svg",
   "colors": {
-    "primary": "#0D9373",
-    "light": "#07C983",
-    "dark": "#0D9373",
-    "anchors": {
-      "from": "#0D9373",
-      "to": "#07C983"
-    }
-  },
-  "topbarLinks": [
-    {
-      "name": "Support",
-      "url": "mailto:hi@mintlify.com"
-    }
-  ],
-  "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "primary": "#753CFF",
+    "light": "#9B70FF",
+    "dark": "#4A2C99"
   },
   "tabs": [
     {
-      "name": "API Reference",
+      "name": "Welcome",
+      "url": "welcome"
+    },
+    {
+      "name": "User Guides",
+      "url": "userguides"
+    },
+        {
+      "name": "Agent Hub",
+      "url": "agent-hub"
+    },
+    {
+      "name": "API and SDK Reference",
       "url": "api-reference"
     }
+
   ],
+  "topbarCtaButton": {
+    "type": "github",
+    "url": "https://github.com/xpander-ai/xpander-sdk"
+  },
   "anchors": [
     {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
+      "name": "Developer Console",
+      "icon": "code",
+      "url": "https://app.xpander.ai",
+      "iconType": "regular"
     },
     {
-      "name": "Community",
-      "icon": "slack",
-      "url": "https://mintlify.com/community"
+      "name": "Developer Discord",
+      "icon": "discord",
+      "url": "https://app.xpander.ai",
+      "iconType": "regular"
     },
     {
-      "name": "Blog",
-      "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
+      "name": "Support",
+      "icon": "headset",
+      "url": "https://app.xpander.ai",
+      "iconType": "regular"
+    },
+    {
+      "name": "SDK Reference",
+      "icon": "code",
+      "url": "api-reference",
+      "iconType": "regular"
+    },
+    {
+      "name": "Welcome",
+      "icon": "book-open",
+      "url": "welcome/introduction"
+    },
+
+    {
+      "name": "Agent Hub",
+      "icon": "users",
+      "url": "agent-hub/agent-hub"  
+    },
+    {
+      "name": "User Guides",
+      "icon": "book",
+      "url": "userguides/userguides"
     }
   ],
   "navigation": [
     {
-      "group": "Get Started",
+      "group": "Welcome",
+      "pages": ["welcome/introduction"]
+    },
+    {
+      "group": "API Reference",
       "pages": [
-        "introduction",
-        "quickstart",
-        "development",
-        "agent-hub"
+        "api-reference/endpoint/get-tools",
+        "api-reference/endpoint/execute-operation"
       ]
     },
     {
-      "group": "Essentials",
-      "pages": [
-        "essentials/markdown",
-        "essentials/code",
-        "essentials/images",
-        "essentials/settings",
-        "essentials/navigation",
-        "essentials/reusable-snippets"
-      ]
+      "group": "Agent Hub",
+      "pages": ["agent-hub/agent-hub"]
     },
     {
-      "group": "API Documentation",
+      "group": "User Guides",
       "pages": [
-        "api-reference/introduction"
-      ]
-    },
-    {
-      "group": "Endpoint Examples",
-      "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
+        "userguides/use-ai-apps-to-build-custom-ai-agents"
       ]
     }
   ],
   "footerSocials": {
-    "x": "https://x.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://linkedin.com/company/mintlify"
+    "x": "https://x.com/xpander_ai",
+    "github": "https://github.com/xpander-ai",
+    "linkedin": "https://www.linkedin.com/company/104346002"
   }
 }
