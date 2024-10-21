@@ -74,7 +74,7 @@
     {
       "name": "User Guides",
       "icon": "book",
-      "url": "userguides/userguides"
+      "url": "userguides"
     }
   ],
   "navigation": [
@@ -83,10 +83,18 @@
       "pages": ["welcome/introduction"]
     },
     {
+      "group": "SDK Reference",
+      "pages": [
+        "api-reference/SDK/getting-started",
+        "api-reference/SDK/sdk-function-calling",
+        "api-reference/SDK/sdk-local-functions"
+      ]
+    },
+    {
       "group": "API Reference",
       "pages": [
-        "api-reference/endpoint/get-tools",
-        "api-reference/endpoint/execute-operation"
+        "api-reference/API/get-tools",
+        "api-reference/API/execute-operation"
       ]
     },
     {
@@ -97,6 +105,12 @@
       "group": "User Guides",
       "pages": [
         "userguides/use-ai-apps-to-build-custom-ai-agents"
+      ]
+    },
+    {
+      "group": "Tutorials",
+      "pages": [
+        "userguides/guides/build-no-code-custom-gpt-agent"
       ]
     }
   ],

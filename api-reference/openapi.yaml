@@ -1,0 +1,97 @@
+components:
+  parameters:
+    agentId:
+      description: The Agent ID configured in xpander with permissions to invoke the tool
+      in: path
+      name: agentId
+      required: true
+      schema:
+        type: string
+    toolName:
+      description: The specific name of the tool to be invoked. This should match one of the tool names returned by the /tools endpoint. The LLM agent should select an appropriate tool based on the current task or query.
+      in: path
+      name: toolName
+      required: true
+      schema:
+        type: string
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+info:
+  description: The Xpander Tool Calling Agent API facilitates dynamic tool invocation and management within the Xpander ecosystem. It provides endpoints for invoking specific tools with custom parameters and payloads, as well as managing the tool inventory. Key functionalities include tool execution, parameter handling, and tool discovery. The API supports flexible integration of various tools, enabling seamless automation and extensibility in agent-based systems.
+  title: Xpander Tool Calling Agent API
+  version: 1.0.0
+openapi: 3.1.0
+paths:
+  /{agentId}/operations/{toolName}:
+    parameters:
+    - $ref: '#/components/parameters/agentId'
+    - $ref: '#/components/parameters/toolName'
+    post:
+      description: Invokes a specific tool / function on the xpander.ai agent with given parameters.
+      security:
+      - ApiKeyAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              example: {}
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              example:
+              - id: 1
+                name: cat
+              - id: 2
+                name: dog
+              - id: 3
+                name: lizard
+              - id: 4
+                name: snake
+              - id: 5
+                name: bird
+              - id: 6
+                name: hamster
+              - id: 100
+                name: fish
+              schema:
+                type: object
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                example: application/json
+                type: string
+      summary: 'Execute specific Xpander agent tool with given parameters.'
+      tags:
+      - default
+      x-pretty-description: 'Invokes a specific tool on the Xpander agent with given parameters'
+      x-pretty-name: 'Execute Tool with Parameters '
+  /{agentId}/tools:
+    parameters:
+    - $ref: '#/components/parameters/agentId'
+    post:
+      description: Gets all tools / function calling available for the agent
+      operationId: xpander-get-all-tools-for-agent
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Successful response
+      summary: 'Gets all tools / function calling available for the agent.'
+      tags:
+      - default
+      x-pretty-description: 'Gets all tools / function calling available for the agent'
+servers:
+- url: https://inbound.xpander.ai/agent
+security:
+- ApiKeyAuth: []
