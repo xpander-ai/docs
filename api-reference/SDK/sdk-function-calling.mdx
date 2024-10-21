@@ -1,0 +1,280 @@
+---
+title: 'SDK Function calling'
+description: 'How to use the xpander AI SDK to call functions'
+---
+
+## Get tools
+
+Our SDK allows you to retrieve tools connected in the xpander ai's platform and use them with ease.
+
+### Request
+
+<CodeGroup>
+
+```python Python
+# API Reference https://docs.xpander.ai/reference/python-sdk#xpander-sdk.XpanderClient.tools
+tools = xpander_client.tools()
+```
+
+```javascript NodeJS
+// API Reference https://docs.xpander.ai/reference/nodejs-sdk#xpander-sdk.XpanderClient.tools
+tools = xpanderClient.tools();
+```
+
+```csharp .NET
+// API Reference https://docs.xpander.ai/reference/net-sdk#xpander-sdk.XpanderClient.tools
+IOpenAIToolOutput[] tools = xpanderClient.Tools();
+```
+
+```java Java
+// API Reference https://docs.xpander.ai/reference/java-sdk#xpander-sdk.XpanderClient.tools
+IOpenAIToolOutput[] tools = xpanderClient.tools();
+```
+
+</CodeGroup>
+
+### Response
+
+<CodeGroup>
+
+```json OpenAI Handler
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "Conduit-article-management-createNewArticleWithTags",
+      "description": "creates new article system. Article body, description, title mandatory . run Conduit-article-management-retrieveArticlesWithOptionalFilters . IMPORTANT! make sure to use body_params, query_params, path_params. these are crucial for ensuring function calling works!",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query_params": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "path_params": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "body_params": {
+            "type": "object",
+            "properties": {
+              "article": {
+                "type": "object",
+                "description": "article",
+                "properties": {
+                  "body": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "tagList": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "title": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "required": ["article"]
+          }
+        },
+        "required": ["query_params", "path_params", "body_params"]
+      }
+    }
+  }
+]
+```
+
+```json Nvidia NIM Handler
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "Conduit-article-management-createNewArticleWithTags",
+      "description": "creates new article system. Requires authentication. Article body, description, title r mandatory . run Conduit-article-management-retrieveArticlesWithOptionalFilters . IMPORTANT! make sure to use body_params, query_params, path_params. these are crucial for ensuring function calling works!",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query_params": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "path_params": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "body_params": {
+            "type": "object",
+            "properties": {
+              "article": {
+                "type": "object",
+                "description": "article",
+                "properties": {
+                  "body": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "tagList": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "title": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "required": ["article"]
+          }
+        },
+        "required": ["query_params", "path_params", "body_params"]
+      }
+    }
+  }
+]
+```
+
+```json Amazon Bedrock Handler
+[
+  {
+    "toolSpec": {
+      "name": "Conduit_article_management_createNewArticleWithTags",
+      "description": "creates new article system. Requires authentication. Article body, description, title r mandatory . run Conduit-article-management-retrieveArticlesWithOptionalFilters . IMPORTANT! make sure to use body_params, query_params, path_params. these are crucial for ensuring function calling works!",
+      "inputSchema": {
+        "json": {
+          "type": "object",
+          "properties": {
+            "query_params": {
+              "type": "object",
+              "properties": {},
+              "required": []
+            },
+            "path_params": {
+              "type": "object",
+              "properties": {},
+              "required": []
+            },
+            "body_params": {
+              "type": "object",
+              "properties": {
+                "article": {
+                  "type": "object",
+                  "description": "article",
+                  "properties": {
+                    "body": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "tagList": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "title": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "required": ["article"]
+            }
+          },
+          "required": ["query_params", "path_params", "body_params"]
+        }
+      }
+    }
+  }
+]
+```
+
+</CodeGroup>
+
+## Invoke tools
+
+When an LLM chooses a tool, you can use `xpander_tool_call` to automatically parse the tool cool from the LLM Repsonse and invoke it.
+
+### Request
+
+<CodeGroup>
+
+```python Python
+xpander_client.xpander_tool_call(tool_selector_response=dict(llm_response))
+```
+
+```javascript NodeJS
+const toolResponse = xpanderClient.xpanderToolCall(llmResponse);
+```
+
+```csharp .NET
+ToolResponse[] toolResponses = xpanderClient.XpanderToolCall(llmResponse);
+```
+
+```java Java
+ToolResponse[] toolResponses = xpanderClient.xpanderToolCall(llmResponse);
+```
+
+</CodeGroup>
+
+### Response
+
+<CodeGroup>
+
+```json OpenAI Handler
+[
+  {
+    "name": "Conduit-article-management-getAllTagsForArticles",
+    "payload_property1": null,
+    "payload_property2": null,
+    "raw_response": "{\"tags\":[\"Pet Adventures\",\"BYD\",\"Xpander\",\"dogs\",\"nutrition\",\"Culture\",\"test-oren\",\"test\",\"workshop\",\"xpander.ai\",\"xpanderAI Agent\",\"Lucky\",\"Generative AI\",\"culinary\",\"quantum computing\",\"Rosy\",\"workflow automation\",\"xpanderAI\",\"pet\",\"Issues\",\"example\",\"gig economy\",\"business\",\"??????\",\"electric vehicle\",\"automotive\",\"AWS\",\"ert\",\"Leo\",\"AI Integration\",\"climate change\",\"animals\",\"urban planning\",\"pets\",\"Freddy\",\"fruits\",\"GitHub\",\"augmented reality\",\"conference\",\"Data Pipelines\",\"remote work\",\"history\",\"Testing\",\"animal\",\"Jewel\",\"DriveNets\",\"Nature\",\"Customer Service\",\"Bird\",\"tag1,tag2\",\"Machine Learning\",\"tag1\",\"Collaboration\",\"Lizard\",\"success\",\"apples\",\"adventures\",\"biotechnology\",\"Data Science\",\"gaming\",\"story\",\"computers\",\"sustainable agriculture\",\"AI\",\"Customer Support\",\"Network Management\",\"mental health\",\"5G\",\"Data Security\",\"funny stories\",\"sustainable fashion\",\"smart cities\",\"technology\",\"Ecology\",\"health\",\"adventure\",\"App4\",\"Fun\",\"Summary\",\"space exploration\",\"\\\"training\\\"]\",\"artificial intelligence\"]}",
+    "response_message": "{\"tags\":[\"Pet Adventures\",\"BYD\",\"Xpander\",\"dogs\",\"nutrition\",\"Culture\",\"test-oren\",\"test\",\"workshop\",\"xpander.ai\",\"xpanderAI Agent\",\"Lucky\",\"Generative AI\",\"culinary\",\"quantum computing\",\"Rosy\",\"workflow automation\",\"xpanderAI\",\"pet\",\"Issues\",\"example\",\"gig economy\",\"business\",\"??????\",\"electric vehicle\",\"automotive\",\"AWS\",\"ert\",\"Leo\",\"AI Integration\",\"climate change\",\"animals\",\"urban planning\",\"pets\",\"Freddy\",\"fruits\",\"GitHub\",\"augmented reality\",\"conference\",\"Data Pipelines\",\"remote work\",\"history\",\"Testing\",\"animal\",\"Jewel\",\"DriveNets\",\"Nature\",\"Customer Service\",\"Bird\",\"tag1,tag2\",\"Machine Learning\",\"tag1\",\"Collaboration\",\"Lizard\",\"success\",\"apples\",\"adventures\",\"biotechnology\",\"Data Science\",\"gaming\",\"story\",\"computers\",\"sustainable agriculture\",\"AI\",\"Customer Support\",\"Network Management\",\"mental health\",\"5G\",\"Data Security\",\"funny stories\",\"sustainable fashion\",\"smart cities\",\"technology\",\"Ecology\",\"health\",\"adventure\",\"App4\",\"Fun\",\"Summary\",\"space exploration\",\"\\\"training\\\"]\",\"artificial intelligence\"]}",
+    "role": "tool",
+    "tool_call_id": "tooluse_8ZEYkp2qS_aBpx5cR9XDzA"
+  }
+]
+```
+
+```json Nvidia NIM Handler
+[
+  {
+    "name": "Conduit-article-management-getAllTagsForArticles",
+    "payload_property1": null,
+    "payload_property2": null,
+    "raw_response": "{\"tags\":[\"Pet Adventures\",\"BYD\",\"Xpander\",\"dogs\",\"nutrition\",\"Culture\",\"test-oren\",\"test\",\"workshop\",\"xpander.ai\",\"xpanderAI Agent\",\"Lucky\",\"Generative AI\",\"culinary\",\"quantum computing\",\"Rosy\",\"workflow automation\",\"xpanderAI\",\"pet\",\"Issues\",\"example\",\"gig economy\",\"business\",\"??????\",\"electric vehicle\",\"automotive\",\"AWS\",\"ert\",\"Leo\",\"AI Integration\",\"climate change\",\"animals\",\"urban planning\",\"pets\",\"Freddy\",\"fruits\",\"GitHub\",\"augmented reality\",\"conference\",\"Data Pipelines\",\"remote work\",\"history\",\"Testing\",\"animal\",\"Jewel\",\"DriveNets\",\"Nature\",\"Customer Service\",\"Bird\",\"tag1,tag2\",\"Machine Learning\",\"tag1\",\"Collaboration\",\"Lizard\",\"success\",\"apples\",\"adventures\",\"biotechnology\",\"Data Science\",\"gaming\",\"story\",\"computers\",\"sustainable agriculture\",\"AI\",\"Customer Support\",\"Network Management\",\"mental health\",\"5G\",\"Data Security\",\"funny stories\",\"sustainable fashion\",\"smart cities\",\"technology\",\"Ecology\",\"health\",\"adventure\",\"App4\",\"Fun\",\"Summary\",\"space exploration\",\"\\\"training\\\"]\",\"artificial intelligence\"]}",
+    "response_message": "{\"tags\":[\"Pet Adventures\",\"BYD\",\"Xpander\",\"dogs\",\"nutrition\",\"Culture\",\"test-oren\",\"test\",\"workshop\",\"xpander.ai\",\"xpanderAI Agent\",\"Lucky\",\"Generative AI\",\"culinary\",\"quantum computing\",\"Rosy\",\"workflow automation\",\"xpanderAI\",\"pet\",\"Issues\",\"example\",\"gig economy\",\"business\",\"??????\",\"electric vehicle\",\"automotive\",\"AWS\",\"ert\",\"Leo\",\"AI Integration\",\"climate change\",\"animals\",\"urban planning\",\"pets\",\"Freddy\",\"fruits\",\"GitHub\",\"augmented reality\",\"conference\",\"Data Pipelines\",\"remote work\",\"history\",\"Testing\",\"animal\",\"Jewel\",\"DriveNets\",\"Nature\",\"Customer Service\",\"Bird\",\"tag1,tag2\",\"Machine Learning\",\"tag1\",\"Collaboration\",\"Lizard\",\"success\",\"apples\",\"adventures\",\"biotechnology\",\"Data Science\",\"gaming\",\"story\",\"computers\",\"sustainable agriculture\",\"AI\",\"Customer Support\",\"Network Management\",\"mental health\",\"5G\",\"Data Security\",\"funny stories\",\"sustainable fashion\",\"smart cities\",\"technology\",\"Ecology\",\"health\",\"adventure\",\"App4\",\"Fun\",\"Summary\",\"space exploration\",\"\\\"training\\\"]\",\"artificial intelligence\"]}",
+    "role": "tool",
+    "tool_call_id": "tooluse_8ZEYkp2qS_aBpx5cR9XDzA"
+  }
+]
+```
+
+```json Amazon Bedrock Handler
+[
+  {
+    "name": "Conduit-article-management-getAllTagsForArticles",
+    "payload_property1": null,
+    "payload_property2": null,
+    "raw_response": "{\"tags\":[\"Pet Adventures\",\"BYD\",\"Xpander\",\"dogs\",\"nutrition\",\"Culture\",\"test-oren\",\"test\",\"workshop\",\"xpander.ai\",\"xpanderAI Agent\",\"Lucky\",\"Generative AI\",\"culinary\",\"quantum computing\",\"Rosy\",\"workflow automation\",\"xpanderAI\",\"pet\",\"Issues\",\"example\",\"gig economy\",\"business\",\"??????\",\"electric vehicle\",\"automotive\",\"AWS\",\"ert\",\"Leo\",\"AI Integration\",\"climate change\",\"animals\",\"urban planning\",\"pets\",\"Freddy\",\"fruits\",\"GitHub\",\"augmented reality\",\"conference\",\"Data Pipelines\",\"remote work\",\"history\",\"Testing\",\"animal\",\"Jewel\",\"DriveNets\",\"Nature\",\"Customer Service\",\"Bird\",\"tag1,tag2\",\"Machine Learning\",\"tag1\",\"Collaboration\",\"Lizard\",\"success\",\"apples\",\"adventures\",\"biotechnology\",\"Data Science\",\"gaming\",\"story\",\"computers\",\"sustainable agriculture\",\"AI\",\"Customer Support\",\"Network Management\",\"mental health\",\"5G\",\"Data Security\",\"funny stories\",\"sustainable fashion\",\"smart cities\",\"technology\",\"Ecology\",\"health\",\"adventure\",\"App4\",\"Fun\",\"Summary\",\"space exploration\",\"\\\"training\\\"]\",\"artificial intelligence\"]}",
+    "response_message": "{\"tags\":[\"Pet Adventures\",\"BYD\",\"Xpander\",\"dogs\",\"nutrition\",\"Culture\",\"test-oren\",\"test\",\"workshop\",\"xpander.ai\",\"xpanderAI Agent\",\"Lucky\",\"Generative AI\",\"culinary\",\"quantum computing\",\"Rosy\",\"workflow automation\",\"xpanderAI\",\"pet\",\"Issues\",\"example\",\"gig economy\",\"business\",\"??????\",\"electric vehicle\",\"automotive\",\"AWS\",\"ert\",\"Leo\",\"AI Integration\",\"climate change\",\"animals\",\"urban planning\",\"pets\",\"Freddy\",\"fruits\",\"GitHub\",\"augmented reality\",\"conference\",\"Data Pipelines\",\"remote work\",\"history\",\"Testing\",\"animal\",\"Jewel\",\"DriveNets\",\"Nature\",\"Customer Service\",\"Bird\",\"tag1,tag2\",\"Machine Learning\",\"tag1\",\"Collaboration\",\"Lizard\",\"success\",\"apples\",\"adventures\",\"biotechnology\",\"Data Science\",\"gaming\",\"story\",\"computers\",\"sustainable agriculture\",\"AI\",\"Customer Support\",\"Network Management\",\"mental health\",\"5G\",\"Data Security\",\"funny stories\",\"sustainable fashion\",\"smart cities\",\"technology\",\"Ecology\",\"health\",\"adventure\",\"App4\",\"Fun\",\"Summary\",\"space exploration\",\"\\\"training\\\"]\",\"artificial intelligence\"]}",
+    "role": "tool",
+    "tool_call_id": "tooluse_8ZEYkp2qS_aBpx5cR9XDzA"
+  }
+]
+```
+
+</CodeGroup>

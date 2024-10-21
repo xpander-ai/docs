@@ -1,0 +1,111 @@
+---
+title: 'Getting started'
+description: 'How to install and use the xpander AI SDK'
+---
+
+This library provides a Python client to interact with xpander AI's platform and retrieve tools, invoke tools and use local tools for function calling against various LLM Providers such as Nvidia NIM, OpenAI and Amazon Bedrock.
+
+<Info>
+  The library runs as a NodeJS app under the hood and is compiled safely using
+  [Projen](https://projen.io/). In order to run our SDK smoothly, you must have
+  [NodeJS](https://nodejs.org/en/download/package-manager) installed.
+</Info>
+
+# Installing the SDK
+
+<CodeGroup>
+
+```bash PIP
+pip install xpander-sdk
+```
+
+```bash Conda
+conda install -c xpanderai xpander-sdk
+```
+
+```bash NPM
+npm install xpander-sdk
+```
+
+```bash NuGet
+Install-Package Xpander.Sdk -Source https://assets.xpanderai.io/nuget
+```
+
+```xml Maven
+<dependency>
+    <groupId>ai.xpander</groupId>
+    <artifactId>xpander-sdk</artifactId>
+    <version>1.0.0</version>
+</dependency>
+<repositories>
+    <repository>
+        <id>xpander-repo</id>
+        <url>https://assets.xpanderai.io/maven</url>
+    </repository>
+</repositories>
+
+```
+
+</CodeGroup>
+
+<frame>
+
+</frame>
+
+# Get the Agent Key and Agent ID
+
+Go to https://app.xpander.ai/workbench, click on add new Source Node and select the SDK source.
+
+<video
+  autoPlay
+  muted
+  loop
+  playsInline
+  className="w-full"
+  src="/static/videos/sdk-source-node.mov"
+></video>
+
+# Initializing the SDK
+
+<CodeGroup>
+
+```python Python
+from xpander_sdk import XpanderClient, LLMProvider, OpenAISupportedModels
+
+xpander_client = XpanderClient(
+    agent_key="XPANDER_AI_AGENT_KEY",
+    agent_url="XPANDER_AI_AGENT_URL",
+    llm_provider=LLMProvider.OPEN_AI # or use any other provider you want (NVIDIA_NIM, AMAZON_BEDROCK)
+)
+```
+
+```javascript NodeJS
+import { XpanderClient } from 'xpander-sdk';
+
+xpanderClient = new XpanderClient(
+  'XPANDER_AI_AGENT_KEY',
+  'XPANDER_AI_AGENT_URL',
+  LLMProvider.OPEN_AI /* or use any other provider you want (NVIDIA_NIM, AMAZON_BEDROCK)*/
+);
+```
+
+```csharp .NET
+using Xpander.AI.Sdk;
+
+XpanderClient xpanderClient = new XpanderClient(
+  "XPANDER_AI_AGENT_KEY",
+  "XPANDER_AI_AGENT_URL",
+  LLMProvider.OPEN_AI);
+```
+
+```java Java
+import ai.xpander.sdk.XpanderClient;
+
+XpanderClient xpanderClient = new XpanderClient(
+    "XPANDER_AI_AGENT_KEY",
+    "XPANDER_AI_AGENT_URL",
+    LLMProvider.OPEN_AI /* or use any other provider you want (NVIDIA_NIM, AMAZON_BEDROCK)*/
+);
+```
+
+</CodeGroup>

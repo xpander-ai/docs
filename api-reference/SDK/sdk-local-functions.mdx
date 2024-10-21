@@ -1,0 +1,228 @@
+---
+title: 'SDK Local functions'
+description: 'How to use local functions with the xpander AI SDK'
+---
+
+With local function support, you can create AI Agents utilizing the xpander connector library. When an LLM needs to invoke a locally stored function, such as for mathematical calculations, our SDK will return an object ready for local execution.
+
+### Request
+
+<CodeGroup>
+
+```python Python
+# API Reference https://docs.xpander.ai/reference/python-sdk#xpander-sdk.XpanderClient.tools
+
+local_tools = [
+    {
+        'type': 'function',
+        'function': {
+            'name': 'greet-by-name',
+            'description': 'Returns a greet to a user with name',
+            'parameters': {
+                'type': 'object',
+                'properties': {
+                    'userName': {
+                        'type': 'string',
+                        'description': "The user's name",
+                    },
+                },
+                'required': ['userName'],
+                'additionalProperties': False,
+            },
+        },
+    },
+]
+
+xpander_client.add_local_tools(local_tools)
+tools = xpander_client.tools()
+
+```
+
+```javascript NodeJS
+// API Reference https://docs.xpander.ai/reference/nodejs-sdk#xpander-sdk.XpanderClient.tools
+tools = xpanderClient.tools();
+```
+
+```csharp .NET
+// API Reference https://docs.xpander.ai/reference/net-sdk#xpander-sdk.XpanderClient.tools
+IOpenAIToolOutput[] tools = xpanderClient.Tools();
+```
+
+```java Java
+// API Reference https://docs.xpander.ai/reference/java-sdk#xpander-sdk.XpanderClient.tools
+IOpenAIToolOutput[] tools = xpanderClient.tools();
+```
+
+</CodeGroup>
+
+### Response
+
+<CodeGroup>
+
+```json OpenAI Handler
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "Conduit-article-management-createNewArticleWithTags",
+      "description": "creates new article system. Requires authentication. Article body, description, title r mandatory . run Conduit-article-management-retrieveArticlesWithOptionalFilters . IMPORTANT! make sure to use body_params, query_params, path_params. these are crucial for ensuring function calling works!",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query_params": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "path_params": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "body_params": {
+            "type": "object",
+            "properties": {
+              "article": {
+                "type": "object",
+                "description": "article",
+                "properties": {
+                  "body": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "tagList": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "title": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "required": ["article"]
+          }
+        },
+        "required": ["query_params", "path_params", "body_params"]
+      }
+    }
+  }
+]
+```
+
+```json Nvidia NIM Handler
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "Conduit-article-management-createNewArticleWithTags",
+      "description": "creates new article system. Requires authentication. Article body, description, title r mandatory . run Conduit-article-management-retrieveArticlesWithOptionalFilters . IMPORTANT! make sure to use body_params, query_params, path_params. these are crucial for ensuring function calling works!",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query_params": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "path_params": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "body_params": {
+            "type": "object",
+            "properties": {
+              "article": {
+                "type": "object",
+                "description": "article",
+                "properties": {
+                  "body": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "tagList": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "title": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "required": ["article"]
+          }
+        },
+        "required": ["query_params", "path_params", "body_params"]
+      }
+    }
+  }
+]
+```
+
+```json Amazon Bedrock Handler
+[
+  {
+    "toolSpec": {
+      "name": "Conduit_article_management_createNewArticleWithTags",
+      "description": "creates new article system. Requires authentication. Article body, description, title r mandatory . run Conduit-article-management-retrieveArticlesWithOptionalFilters . IMPORTANT! make sure to use body_params, query_params, path_params. these are crucial for ensuring function calling works!",
+      "inputSchema": {
+        "json": {
+          "type": "object",
+          "properties": {
+            "query_params": {
+              "type": "object",
+              "properties": {},
+              "required": []
+            },
+            "path_params": {
+              "type": "object",
+              "properties": {},
+              "required": []
+            },
+            "body_params": {
+              "type": "object",
+              "properties": {
+                "article": {
+                  "type": "object",
+                  "description": "article",
+                  "properties": {
+                    "body": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "tagList": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "title": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "required": ["article"]
+            }
+          },
+          "required": ["query_params", "path_params", "body_params"]
+        }
+      }
+    }
+  }
+]
+```
+
+</CodeGroup>
