@@ -7,7 +7,7 @@
     font-style: normal;
   }
   
-  body, p, span, a, li {
+  body, p, span, a, li, language-* {
     font-family: 'Helvetica Thin', Arial, sans-serif;
     font-weight: 100;
   }
