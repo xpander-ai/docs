@@ -5,37 +5,28 @@ mode: 'wide'
 
 <Steps>
   <Step title="Prerequisite 1: Install xpander-sdk and build ">
-    Log in to your Xpander account. - Navigate to the **Connectors** section.
-    Create connectors for **Notion** and **Slack**. Follow the provided
-    instructions to authorize access.
+    Log in to your Xpander account. - Navigate to the **Connectors** section and enable few connectors
   </Step>
 
-<Step title="Prerequisite 2: Define Your AI App">
-  - In Xpander, create a new AI App (e.g., **Notion AI Agent**) using **OpenAI
-  Python SDK** or **LangChain Python SDK**. - Set up the AI App to access your
-  Notion and Slack connectors. - Obtain the API key for the AI App from the
-  Xpander dashboard.
-</Step>
-
-  <Step title="Prerequisite 3: Obtain API Keys">
-    - Obtain API keys from both your Xpander AI App and your LLM provider.
+  <Step title="Prerequisite 2: Obtain API Keys for xpander Agent and LLM">
+    Use the workbench to add source node and the connectors from step 1.
   </Step>
 </Steps>
 
-<Tooltip tip="Make sure you have xpander-sdk installed!">
-  Here's how to set up your environment:
-</Tooltip>
+# Start coding AI Agents
 
-```bash
+Here's how to set up your environment:
+
+```bash python
 python3 -m venv .venv
 source .venv/bin/activate
-pip install https://assets.xpanderai.io/xpander-sdk.tar.gz
+pip install xpander.sdk
 pip freeze > requirements.txt #Optional
 ```
 
 Next, create a Python script (agent_example.py):
 
-```python
+```python agent_example.py
 import os
 from dotenv import load_dotenv  # Optional: Used for loading environment variables from a .env file
 from xpander_sdk import XpanderClient, LLMProvider  # SDK for interacting with Xpander services
@@ -83,8 +74,6 @@ tool_responses = client.xpander_tool_call(tool_selector_response=response.model_
 for tool_response in tool_responses:
     print(tool_response.response_message)
 ```
-
-Running the Single Agent Example
 
 Run the Python script:
 
