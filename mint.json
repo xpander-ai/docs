@@ -100,7 +100,7 @@
     },
     {
       "group": "Agent Hub",
-      "pages": ["agent-hub/agent-hub"]
+      "pages": ["agent-hub/agent-hub","agent-hub/Multi-step-employee-agent"]
     },
     {
       "group": "User Guides",
