@@ -1,0 +1,42 @@
+---
+title: 'Core Concepts'
+---
+
+# What is an AI Agent
+
+An AI Agent in xpander.ai is designed to autonomously perform tasks by dynamically navigating through a graph of actions. Each node in this graph represents a specific function or step in the workflow, and as the AI Agent progresses through the graph, it exposes new functions or operations based on the current task context.
+
+This graph-based approach enables AI Agents to handle complex, multi-step processes where each action is determined by the output of the previous steps. As the agent moves further along the graph, it can branch into sub-graphs, where additional logic or steps are required. These sub-graphs act as specialized segments, allowing the agent to handle more intricate tasks or workflows in a structured yet dynamic way.
+
+Prompt groups are enforced as the agent transitions into sub-agent graphs, ensuring that specific actions are executed within a controlled context. This mechanism allows the AI to make intelligent decisions at each step while maintaining consistency and coherence across the workflow, adapting as needed to the evolving task or data.
+
+# Agent Builder
+
+The Agent Builder in xpander.ai allows developers to design and deploy AI Agents that can autonomously perform tasks. It provides a visual and intuitive interface, helping developers define workflows where each step and parameter is dynamically selected by the AI. This flexibility enables the rapid development of intelligent agents without needing to predefine every possible workflow or scenario.
+
+## AI Connectors
+
+AI Connectors are pre-built or custom integration points that allow AI Agents to interact with external systems. These connectors enrich the Agent’s capabilities by providing access to APIs, data sources, and services. The AI dynamically retrieves and uses the required data or services from these connectors, selecting appropriate parameters based on task requirements.
+
+## Agent Graph System
+
+The Agent Graph System is the core mechanism that defines how AI Agents execute tasks. Instead of following static workflows, the system allows the AI to dynamically choose each step in the task flow. The graph represents tasks as nodes (actions, API calls), and the AI Agent navigates this graph in real-time, selecting the next step and required parameters based on current data and conditions.
+
+## Source nodes
+
+Source nodes represent the entry points for data or actions within the Agent Graph. Each AI Agent can have multiple source nodes as follows : 
+
+- Slack Bot
+- Teams Bot
+- Webhook
+- WebUI
+- SDK
+
+
+# Types of AI Agents
+
+## Serverless AI Agents
+
+## Custom AI Agents
+
+
