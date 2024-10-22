@@ -37,7 +37,7 @@
   },
   "anchors": [
     {
-      "name": "Developer Console",
+      "name": "xpander.ai Console",
       "icon": "code",
       "url": "https://app.xpander.ai",
       "iconType": "regular"
@@ -45,41 +45,13 @@
     {
       "name": "Developer Discord",
       "icon": "discord",
-      "url": "https://app.xpander.ai",
+      "url": "https://discord.gg/CUcp4WWh5g",
       "iconType": "regular"
-    },
-    {
-      "name": "Support",
-      "icon": "headset",
-      "url": "https://app.xpander.ai",
-      "iconType": "regular"
-    },
-    {
-      "name": "SDK Reference",
-      "icon": "code",
-      "url": "api-reference",
-      "iconType": "regular"
-    },
-    {
-      "name": "Welcome",
-      "icon": "book-open",
-      "url": "welcome/introduction"
-    },
-
-    {
-      "name": "Agent Hub",
-      "icon": "users",
-      "url": "agent-hub/agent-hub"  
-    },
-    {
-      "name": "User Guides",
-      "icon": "book",
-      "url": "userguides"
     }
   ],
   "navigation": [
     {
-      "group": "Welcome",
+      "group": "Get Started",
       "pages": ["welcome/introduction"]
     },
     {
