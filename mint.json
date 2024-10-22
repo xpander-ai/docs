@@ -87,7 +87,8 @@
       "pages": [
         "api-reference/SDK/getting-started",
         "api-reference/SDK/sdk-function-calling",
-        "api-reference/SDK/sdk-local-functions"
+        "api-reference/SDK/sdk-local-functions",
+        "api-reference/SDK/xpander-client"
       ]
     },
     {
