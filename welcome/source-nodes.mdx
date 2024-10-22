@@ -1,0 +1,18 @@
+---
+title: 'Source Nodes'
+---
+
+Source Nodes in xpander.ai serve as the entry points for AI Agents, initiating tasks and workflows by receiving input from various systems or platforms. Unlike connectors, which enable AI Agents to interact with external systems, Source Nodes specifically handle the entry and starting conditions for AI Agents. They provide the interface through which an AI Agent accesses the Agent Graph System, dynamically invoking graph nodes through function calling.
+
+Key Features of Source Nodes:
+
+- Interface for Graph Nodes: When using the xpander SDK, Source Nodes act as the interface for accessing graph nodes in the form of function calling. This allows AI Agents to dynamically retrieve and execute specific tasks within a workflow based on real-time inputs or events. The SDK simplifies the interaction between the source node and the agent, ensuring smooth execution of tasks.
+- Native Integration with Platforms: Source Nodes also enable native integration with platforms like Slack, allowing AI Agents to receive inputs and initiate workflows directly from these systems without requiring additional infrastructure management. For example, a Slack Source Node can listen for messages, commands, or events in Slack, triggering workflows and connecting to the necessary systems via xpander’s AI Connectors—all without the need to manage or host servers.
+- Event-Driven Workflow Initiation: Source Nodes are designed for event-driven workflows, meaning they respond to specific events or inputs to kickstart the AI Agent’s tasks. For example, a Source Node connected to Slack could trigger a workflow when a user sends a specific message or command, or a Source Node connected to an API could react to a new data input, such as a CRM update or calendar event.
+
+## Types of Source Nodes:
+
+1. SDK Source Nodes: When using the xpander SDK, Source Nodes provide the interface through which the AI Agent interacts with graph nodes. These source nodes facilitate function calling for dynamically generated tasks, allowing the AI Agent to retrieve the necessary graph nodes based on the context of the workflow and the inputs it receives.
+2. Slack Source Nodes: Slack Source Nodes provide native integration with Slack, enabling AI Agents to directly interact with Slack users through channels, commands, or messages. These source nodes handle the events and pass them to the AI Agent, which can then perform workflows using Slack without the need for server management, making it easy to deploy intelligent agents for Slack-based workflows.
+3. Webhook Source Nodes: These nodes listen for webhook triggers from external systems, allowing AI Agents to initiate tasks based on specific events like form submissions, updates to third-party tools, or new entries in a database.
+4. WebUi Source Nodes: WebUi Source Nodes provide a user interface for AI Agents to interact with users through a web application. These source nodes handle the events and pass them to the AI Agent, which can then perform workflows using the web UI without the need for server management, making it easy to deploy intelligent agents for web-based workflows.
