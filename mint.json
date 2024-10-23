@@ -2,7 +2,6 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "Xpander AI",
   "theme": "venus",
-  "feedback.thumbsRating": true,
   "logo": {
     "dark": "/logo/logo-dark-mode.png",
     "light": "/logo/logo.png"
@@ -15,14 +14,14 @@
   },
   "tabs": [
     {
-      "name": "Welcome",
-      "url": "welcome"
-    },
-    {
-      "name": "User Guides",
+      "name": "User guides",
       "url": "userguides"
     },
-        {
+    {
+      "name": "Tutorials",
+      "url": "tutorials"
+    },
+    {
       "name": "Agent Hub",
       "url": "agent-hub"
     },
@@ -52,12 +51,20 @@
   ],
   "navigation": [
     {
-      "group": "Get Started",
-      "pages": ["welcome/introduction"]
+      "group": "Welcome",
+      "pages": ["userguides/introduction"]
+    },
+    {
+      "group": "Get started",
+      "pages": [ "userguides/use-ai-apps-to-build-custom-ai-agents"]
     },
     {
       "group": "Core Concepts",
-      "pages" : ["welcome/concepts", "welcome/agent-builder", "welcome/ai-connectors","welcome/agent-graph-system","welcome/prompt-groups","welcome/source-nodes","welcome/serverless-ai-agents","welcome/custom-ai-agents"]
+      "pages" : ["userguides/concepts", "userguides/agent-builder", "userguides/ai-connectors","userguides/agent-graph-system","userguides/prompt-groups","userguides/source-nodes","userguides/serverless-ai-agents","userguides/custom-ai-agents"]
+    },
+    {
+      "group": "Tutorials",
+      "pages": ["tutorials/build-no-code-custom-gpt-agent"]
     },
     {
       "group": "SDK Reference",
@@ -78,18 +85,6 @@
     {
       "group": "Agent Hub",
       "pages": ["agent-hub/agent-hub","agent-hub/Multi-step-employee-agent"]
-    },
-    {
-      "group": "User Guides",
-      "pages": [
-        "userguides/use-ai-apps-to-build-custom-ai-agents"
-      ]
-    },
-    {
-      "group": "Tutorials",
-      "pages": [
-        "userguides/guides/build-no-code-custom-gpt-agent"
-      ]
     }
   ],
   "footerSocials": {
