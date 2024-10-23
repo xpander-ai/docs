@@ -52,15 +52,15 @@
   "navigation": [
     {
       "group": "Welcome",
-      "pages": ["userguides/introduction"]
+      "pages": ["userguides/overview/introduction"]
     },
     {
       "group": "Get started",
-      "pages": [ "userguides/use-ai-apps-to-build-custom-ai-agents"]
+      "pages": [ "userguides/get-started/use-ai-apps-to-build-custom-ai-agents"]
     },
     {
       "group": "Core Concepts",
-      "pages" : ["userguides/concepts", "userguides/agent-builder", "userguides/ai-connectors","userguides/agent-graph-system","userguides/prompt-groups","userguides/source-nodes","userguides/serverless-ai-agents","userguides/custom-ai-agents"]
+      "pages" : ["userguides/core-concepts/concepts", "userguides/core-concepts/agent-builder", "userguides/core-concepts/ai-connectors","userguides/core-concepts/agent-graph-system","userguides/core-concepts/prompt-groups","userguides/core-concepts/source-nodes","userguides/core-concepts/serverless-ai-agents","userguides/core-concepts/custom-ai-agents"]
     },
     {
       "group": "Tutorials",
