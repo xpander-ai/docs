@@ -63,6 +63,10 @@
       "pages" : ["userguides/core-concepts/concepts", "userguides/core-concepts/agent-builder", "userguides/core-concepts/ai-connectors","userguides/core-concepts/agent-graph-system","userguides/core-concepts/prompt-groups","userguides/core-concepts/source-nodes","userguides/core-concepts/serverless-ai-agents","userguides/core-concepts/custom-ai-agents"]
     },
     {
+      "group": "AI Agent Builder",
+      "pages" : ["userguides/ai-agent-builder/using-agent-builder"] 
+    },
+    {
       "group": "Tutorials",
       "pages": ["tutorials/build-no-code-custom-gpt-agent"]
     },
