@@ -114,3 +114,66 @@ XpanderClient xpanderClient = new XpanderClient(
   [Projen](https://projen.io/). In order to run our SDK smoothly, you must have
   [NodeJS](https://nodejs.org/en/download/package-manager) installed.
 </Info>
+
+# Hello world example
+
+```python Python
+from xpander_sdk import XpanderClient, LLMProvider 
+from openai import OpenAI
+
+## Load environment variables
+from dotenv import load_dotenv
+import os
+load_dotenv()
+OpenAPIKey = os.environ.get("OPENAI_API_KEY","")
+xpanderAPIKey = os.environ.get("XPANDER_API_KEY","")
+xpanderAgentURL = os.environ.get("XPANDER_AGENT_URL","")
+
+## Initialize OpenAI and Xpander clients
+openai_client = OpenAI(api_key=OpenAPIKey)
+
+xpander_client = XpanderClient(
+    agent_key=xpanderAPIKey, 
+    agent_url=xpanderAgentURL, 
+    llm_provider=LLMProvider.OPEN_AI
+)
+
+## Only needed if you want to use the session API to enforce specific behavior of prompt group to subgraph
+xpander_client.start_session(prompt="Events managements")
+
+memory = []
+
+# Explain the AI the graph structure and the tools available
+memory.append({"role": "system", "content": "You are a helpful assistant, you are running in While loop and will have access to invoke tools dynmaically to your location in the graph. If you want to stop the loop, please add ##FINAL ANSWER## in your answer"})
+
+# Add the user requess / task to the memory
+memory.append({"role": "user", "content": "Get events and send it to David on Slack"})
+number_of_calls = 1
+
+# Allows the AI to call the tools and navigate the graph
+while True:
+    llm_response = openai_client.chat.completions.create(
+        model="gpt-4o",
+        messages=memory,
+        tools=xpander_client.tools(), ## Will return all the tools available in the agent given specific location in the graph
+        tool_choice="auto", 
+        max_tokens=1024,
+    )
+
+    memory.append({"role": "assistant", "content": f'Step number: {number_of_calls}'})
+    memory.append(llm_response.choices[0].message)
+    
+    if(llm_response.choices[0].message.tool_calls): ## If the LLM has called a tool
+        tool_response = xpander_client.xpander_tool_call(tool_selector_response=llm_response.model_dump())
+        for tool_response in tool_response:
+            memory.append({"role": "tool", "content": tool_response.response_message, "tool_call_id": tool_response.tool_call_id})
+    
+    # Stop the loop if the LLM has answered the question
+    if (llm_response.choices[0].message.content):
+        if "##FINAL ANSWER##" in llm_response.choices[0].message.content:
+            break
+    number_of_calls += 1
+
+# Print the final answer
+print(llm_response.choices[0].message.content)
+```
