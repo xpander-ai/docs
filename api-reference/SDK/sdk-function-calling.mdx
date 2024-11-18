@@ -1,198 +1,72 @@
 ---
-title: 'SDK Function calling'
-description: 'How to use the xpander AI SDK to call functions'
+title: 'SDK Function Calling'
+description: 'How to use the xpander AI SDK to work with tools and function calling'
 ---
 
-## Get tools
+## Getting Tools
 
-Our SDK allows you to retrieve tools connected in the xpander ai's platform and use them with ease.
+The xpander SDK allows you to retrieve tools connected to your agent in the xpander platform.
 
 ### Request
 
 <CodeGroup>
 
 ```python Python
-tools = xpander_client.tools()
+# Get tools from a specific agent
+agent = xpander_client.agents.get(agent_id=xpanderAgentID)
+tools = agent.get_tools()
 ```
 
 ```javascript NodeJS
-tools = xpanderClient.tools();
+const agent = xpanderClient.agents.get(agentId);
+const tools = agent.getTools();
 ```
 
 ```csharp .NET
-IOpenAIToolOutput[] tools = xpanderClient.Tools();
+var agent = xpanderClient.Agents.Get(agentId);
+var tools = agent.GetTools();
 ```
 
 ```java Java
-IOpenAIToolOutput[] tools = xpanderClient.tools();
+Agent agent = xpanderClient.agents.get(agentId);
+Tool[] tools = agent.getTools();
 ```
 
 </CodeGroup>
 
 ### Response
 
+The tools are returned in the format required by your LLM provider. Here's an example response for different providers:
+
 <CodeGroup>
 
-```json OpenAI Handler
+```json OpenAI Format
 [
   {
     "type": "function",
     "function": {
-      "name": "Conduit-article-management-createNewArticleWithTags",
-      "description": "creates new article system. Article body, description, title mandatory . run Conduit-article-management-retrieveArticlesWithOptionalFilters . IMPORTANT! make sure to use body_params, query_params, path_params. these are crucial for ensuring function calling works!",
+      "name": "search_articles",
+      "description": "Search articles in the system with optional filters",
       "parameters": {
         "type": "object",
         "properties": {
           "query_params": {
             "type": "object",
-            "properties": {},
-            "required": []
-          },
-          "path_params": {
-            "type": "object",
-            "properties": {},
-            "required": []
-          },
-          "body_params": {
-            "type": "object",
             "properties": {
-              "article": {
-                "type": "object",
-                "description": "article",
-                "properties": {
-                  "body": {
-                    "type": "string"
-                  },
-                  "description": {
-                    "type": "string"
-                  },
-                  "tagList": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "title": {
-                    "type": "string"
-                  }
-                }
-              }
-            },
-            "required": ["article"]
-          }
-        },
-        "required": ["query_params", "path_params", "body_params"]
-      }
-    }
-  }
-]
-```
-
-```json Nvidia NIM Handler
-[
-  {
-    "type": "function",
-    "function": {
-      "name": "Conduit-article-management-createNewArticleWithTags",
-      "description": "creates new article system. Requires authentication. Article body, description, title r mandatory . run Conduit-article-management-retrieveArticlesWithOptionalFilters . IMPORTANT! make sure to use body_params, query_params, path_params. these are crucial for ensuring function calling works!",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "query_params": {
-            "type": "object",
-            "properties": {},
-            "required": []
-          },
-          "path_params": {
-            "type": "object",
-            "properties": {},
-            "required": []
-          },
-          "body_params": {
-            "type": "object",
-            "properties": {
-              "article": {
-                "type": "object",
-                "description": "article",
-                "properties": {
-                  "body": {
-                    "type": "string"
-                  },
-                  "description": {
-                    "type": "string"
-                  },
-                  "tagList": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "title": {
-                    "type": "string"
-                  }
-                }
-              }
-            },
-            "required": ["article"]
-          }
-        },
-        "required": ["query_params", "path_params", "body_params"]
-      }
-    }
-  }
-]
-```
-
-```json Amazon Bedrock Handler
-[
-  {
-    "toolSpec": {
-      "name": "Conduit_article_management_createNewArticleWithTags",
-      "description": "creates new article system. Requires authentication. Article body, description, title r mandatory . run Conduit-article-management-retrieveArticlesWithOptionalFilters . IMPORTANT! make sure to use body_params, query_params, path_params. these are crucial for ensuring function calling works!",
-      "inputSchema": {
-        "json": {
-          "type": "object",
-          "properties": {
-            "query_params": {
-              "type": "object",
-              "properties": {},
-              "required": []
-            },
-            "path_params": {
-              "type": "object",
-              "properties": {},
-              "required": []
-            },
-            "body_params": {
-              "type": "object",
-              "properties": {
-                "article": {
-                  "type": "object",
-                  "description": "article",
-                  "properties": {
-                    "body": {
-                      "type": "string"
-                    },
-                    "description": {
-                      "type": "string"
-                    },
-                    "tagList": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "title": {
-                      "type": "string"
-                    }
-                  }
-                }
-              },
-              "required": ["article"]
+              "tag": { "type": "string" },
+              "author": { "type": "string" }
             }
           },
-          "required": ["query_params", "path_params", "body_params"]
-        }
+          "path_params": {
+            "type": "object",
+            "properties": {}
+          },
+          "body_params": {
+            "type": "object",
+            "properties": {}
+          }
+        },
+        "required": ["query_params", "path_params", "body_params"]
       }
     }
   }
@@ -201,76 +75,76 @@ IOpenAIToolOutput[] tools = xpanderClient.tools();
 
 </CodeGroup>
 
-## Invoke tools
+## Using Tools
 
-When an LLM chooses a tool, you can use `xpander_tool_call` to automatically parse the tool cool from the LLM Repsonse and invoke it.
+To use tools with your LLM, follow these steps:
 
-### Request
+1. Get the tools from your agent
+2. Pass them to your LLM
+3. Extract and execute any tool calls
+4. Process the results
+
+### Example Implementation
 
 <CodeGroup>
 
 ```python Python
-xpander_client.xpander_tool_call(tool_selector_response=dict(llm_response))
-```
+# 1. Get tools from agent
+agent = xpander_client.agents.get(agent_id=xpanderAgentID)
+tools = agent.get_tools()
 
-```javascript NodeJS
-const toolResponse = xpanderClient.xpanderToolCall(llmResponse);
-```
+# 2. Pass tools to LLM (OpenAI example)
+llm_response = openai_client.chat.completions.create(
+    model="gpt-4",
+    messages=conversation_history,
+    tools=tools    
+)
 
-```csharp .NET
-ToolResponse[] toolResponses = xpanderClient.XpanderToolCall(llmResponse);
-```
-
-```java Java
-ToolResponse[] toolResponses = xpanderClient.xpanderToolCall(llmResponse);
-```
-
-</CodeGroup>
-
-### Response
-
-<CodeGroup>
-
-```json OpenAI Handler
-[
-  {
-    "name": "Conduit-article-management-getAllTagsForArticles",
-    "payload_property1": null,
-    "payload_property2": null,
-    "raw_response": "{\"tags\":[\"Pet Adventures\",\"BYD\",\"Xpander\",\"dogs\",\"nutrition\",\"Culture\",\"test-oren\",\"test\",\"workshop\",\"xpander.ai\",\"xpanderAI Agent\",\"Lucky\",\"Generative AI\",\"culinary\",\"quantum computing\",\"Rosy\",\"workflow automation\",\"xpanderAI\",\"pet\",\"Issues\",\"example\",\"gig economy\",\"business\",\"??????\",\"electric vehicle\",\"automotive\",\"AWS\",\"ert\",\"Leo\",\"AI Integration\",\"climate change\",\"animals\",\"urban planning\",\"pets\",\"Freddy\",\"fruits\",\"GitHub\",\"augmented reality\",\"conference\",\"Data Pipelines\",\"remote work\",\"history\",\"Testing\",\"animal\",\"Jewel\",\"DriveNets\",\"Nature\",\"Customer Service\",\"Bird\",\"tag1,tag2\",\"Machine Learning\",\"tag1\",\"Collaboration\",\"Lizard\",\"success\",\"apples\",\"adventures\",\"biotechnology\",\"Data Science\",\"gaming\",\"story\",\"computers\",\"sustainable agriculture\",\"AI\",\"Customer Support\",\"Network Management\",\"mental health\",\"5G\",\"Data Security\",\"funny stories\",\"sustainable fashion\",\"smart cities\",\"technology\",\"Ecology\",\"health\",\"adventure\",\"App4\",\"Fun\",\"Summary\",\"space exploration\",\"\\\"training\\\"]\",\"artificial intelligence\"]}",
-    "response_message": "{\"tags\":[\"Pet Adventures\",\"BYD\",\"Xpander\",\"dogs\",\"nutrition\",\"Culture\",\"test-oren\",\"test\",\"workshop\",\"xpander.ai\",\"xpanderAI Agent\",\"Lucky\",\"Generative AI\",\"culinary\",\"quantum computing\",\"Rosy\",\"workflow automation\",\"xpanderAI\",\"pet\",\"Issues\",\"example\",\"gig economy\",\"business\",\"??????\",\"electric vehicle\",\"automotive\",\"AWS\",\"ert\",\"Leo\",\"AI Integration\",\"climate change\",\"animals\",\"urban planning\",\"pets\",\"Freddy\",\"fruits\",\"GitHub\",\"augmented reality\",\"conference\",\"Data Pipelines\",\"remote work\",\"history\",\"Testing\",\"animal\",\"Jewel\",\"DriveNets\",\"Nature\",\"Customer Service\",\"Bird\",\"tag1,tag2\",\"Machine Learning\",\"tag1\",\"Collaboration\",\"Lizard\",\"success\",\"apples\",\"adventures\",\"biotechnology\",\"Data Science\",\"gaming\",\"story\",\"computers\",\"sustainable agriculture\",\"AI\",\"Customer Support\",\"Network Management\",\"mental health\",\"5G\",\"Data Security\",\"funny stories\",\"sustainable fashion\",\"smart cities\",\"technology\",\"Ecology\",\"health\",\"adventure\",\"App4\",\"Fun\",\"Summary\",\"space exploration\",\"\\\"training\\\"]\",\"artificial intelligence\"]}",
-    "role": "tool",
-    "tool_call_id": "tooluse_8ZEYkp2qS_aBpx5cR9XDzA"
-  }
-]
-```
-
-```json Nvidia NIM Handler
-[
-  {
-    "name": "Conduit-article-management-getAllTagsForArticles",
-    "payload_property1": null,
-    "payload_property2": null,
-    "raw_response": "{\"tags\":[\"Pet Adventures\",\"BYD\",\"Xpander\",\"dogs\",\"nutrition\",\"Culture\",\"test-oren\",\"test\",\"workshop\",\"xpander.ai\",\"xpanderAI Agent\",\"Lucky\",\"Generative AI\",\"culinary\",\"quantum computing\",\"Rosy\",\"workflow automation\",\"xpanderAI\",\"pet\",\"Issues\",\"example\",\"gig economy\",\"business\",\"??????\",\"electric vehicle\",\"automotive\",\"AWS\",\"ert\",\"Leo\",\"AI Integration\",\"climate change\",\"animals\",\"urban planning\",\"pets\",\"Freddy\",\"fruits\",\"GitHub\",\"augmented reality\",\"conference\",\"Data Pipelines\",\"remote work\",\"history\",\"Testing\",\"animal\",\"Jewel\",\"DriveNets\",\"Nature\",\"Customer Service\",\"Bird\",\"tag1,tag2\",\"Machine Learning\",\"tag1\",\"Collaboration\",\"Lizard\",\"success\",\"apples\",\"adventures\",\"biotechnology\",\"Data Science\",\"gaming\",\"story\",\"computers\",\"sustainable agriculture\",\"AI\",\"Customer Support\",\"Network Management\",\"mental health\",\"5G\",\"Data Security\",\"funny stories\",\"sustainable fashion\",\"smart cities\",\"technology\",\"Ecology\",\"health\",\"adventure\",\"App4\",\"Fun\",\"Summary\",\"space exploration\",\"\\\"training\\\"]\",\"artificial intelligence\"]}",
-    "response_message": "{\"tags\":[\"Pet Adventures\",\"BYD\",\"Xpander\",\"dogs\",\"nutrition\",\"Culture\",\"test-oren\",\"test\",\"workshop\",\"xpander.ai\",\"xpanderAI Agent\",\"Lucky\",\"Generative AI\",\"culinary\",\"quantum computing\",\"Rosy\",\"workflow automation\",\"xpanderAI\",\"pet\",\"Issues\",\"example\",\"gig economy\",\"business\",\"??????\",\"electric vehicle\",\"automotive\",\"AWS\",\"ert\",\"Leo\",\"AI Integration\",\"climate change\",\"animals\",\"urban planning\",\"pets\",\"Freddy\",\"fruits\",\"GitHub\",\"augmented reality\",\"conference\",\"Data Pipelines\",\"remote work\",\"history\",\"Testing\",\"animal\",\"Jewel\",\"DriveNets\",\"Nature\",\"Customer Service\",\"Bird\",\"tag1,tag2\",\"Machine Learning\",\"tag1\",\"Collaboration\",\"Lizard\",\"success\",\"apples\",\"adventures\",\"biotechnology\",\"Data Science\",\"gaming\",\"story\",\"computers\",\"sustainable agriculture\",\"AI\",\"Customer Support\",\"Network Management\",\"mental health\",\"5G\",\"Data Security\",\"funny stories\",\"sustainable fashion\",\"smart cities\",\"technology\",\"Ecology\",\"health\",\"adventure\",\"App4\",\"Fun\",\"Summary\",\"space exploration\",\"\\\"training\\\"]\",\"artificial intelligence\"]}",
-    "role": "tool",
-    "tool_call_id": "tooluse_8ZEYkp2qS_aBpx5cR9XDzA"
-  }
-]
-```
-
-```json Amazon Bedrock Handler
-[
-  {
-    "name": "Conduit-article-management-getAllTagsForArticles",
-    "payload_property1": null,
-    "payload_property2": null,
-    "raw_response": "{\"tags\":[\"Pet Adventures\",\"BYD\",\"Xpander\",\"dogs\",\"nutrition\",\"Culture\",\"test-oren\",\"test\",\"workshop\",\"xpander.ai\",\"xpanderAI Agent\",\"Lucky\",\"Generative AI\",\"culinary\",\"quantum computing\",\"Rosy\",\"workflow automation\",\"xpanderAI\",\"pet\",\"Issues\",\"example\",\"gig economy\",\"business\",\"??????\",\"electric vehicle\",\"automotive\",\"AWS\",\"ert\",\"Leo\",\"AI Integration\",\"climate change\",\"animals\",\"urban planning\",\"pets\",\"Freddy\",\"fruits\",\"GitHub\",\"augmented reality\",\"conference\",\"Data Pipelines\",\"remote work\",\"history\",\"Testing\",\"animal\",\"Jewel\",\"DriveNets\",\"Nature\",\"Customer Service\",\"Bird\",\"tag1,tag2\",\"Machine Learning\",\"tag1\",\"Collaboration\",\"Lizard\",\"success\",\"apples\",\"adventures\",\"biotechnology\",\"Data Science\",\"gaming\",\"story\",\"computers\",\"sustainable agriculture\",\"AI\",\"Customer Support\",\"Network Management\",\"mental health\",\"5G\",\"Data Security\",\"funny stories\",\"sustainable fashion\",\"smart cities\",\"technology\",\"Ecology\",\"health\",\"adventure\",\"App4\",\"Fun\",\"Summary\",\"space exploration\",\"\\\"training\\\"]\",\"artificial intelligence\"]}",
-    "response_message": "{\"tags\":[\"Pet Adventures\",\"BYD\",\"Xpander\",\"dogs\",\"nutrition\",\"Culture\",\"test-oren\",\"test\",\"workshop\",\"xpander.ai\",\"xpanderAI Agent\",\"Lucky\",\"Generative AI\",\"culinary\",\"quantum computing\",\"Rosy\",\"workflow automation\",\"xpanderAI\",\"pet\",\"Issues\",\"example\",\"gig economy\",\"business\",\"??????\",\"electric vehicle\",\"automotive\",\"AWS\",\"ert\",\"Leo\",\"AI Integration\",\"climate change\",\"animals\",\"urban planning\",\"pets\",\"Freddy\",\"fruits\",\"GitHub\",\"augmented reality\",\"conference\",\"Data Pipelines\",\"remote work\",\"history\",\"Testing\",\"animal\",\"Jewel\",\"DriveNets\",\"Nature\",\"Customer Service\",\"Bird\",\"tag1,tag2\",\"Machine Learning\",\"tag1\",\"Collaboration\",\"Lizard\",\"success\",\"apples\",\"adventures\",\"biotechnology\",\"Data Science\",\"gaming\",\"story\",\"computers\",\"sustainable agriculture\",\"AI\",\"Customer Support\",\"Network Management\",\"mental health\",\"5G\",\"Data Security\",\"funny stories\",\"sustainable fashion\",\"smart cities\",\"technology\",\"Ecology\",\"health\",\"adventure\",\"App4\",\"Fun\",\"Summary\",\"space exploration\",\"\\\"training\\\"]\",\"artificial intelligence\"]}",
-    "role": "tool",
-    "tool_call_id": "tooluse_8ZEYkp2qS_aBpx5cR9XDzA"
-  }
-]
+# 3. Extract and execute tool calls
+if llm_response.choices[0].message.tool_calls:
+    # Extract tool calls
+    tools_to_run = XpanderClient.extract_tool_calls(
+        llm_response=llm_response.model_dump()
+    )
+    
+    # Execute tools
+    tool_responses = agent.run_tools(tools_to_run)
+    
+    # 4. Process results
+    for tool_response in tool_responses:
+        result = {
+            "function_name": tool_response.function_name,
+            "status_code": tool_response.status_code,
+            "result": tool_response.result,
+            "payload": tool_response.payload,
+            "tool_call_id": tool_response.tool_call_id
+        }
+        # Add result to conversation history
+        conversation_history.append({
+            "role": "tool",
+            "content": json.dumps(tool_response.result),
+            "tool_call_id": tool_response.tool_call_id
+        })
 ```
 
 </CodeGroup>
+
+### Tool Response Structure
+
+When a tool is executed, it returns a response with the following properties:
+
+- `function_name`: Name of the function that was called
+- `status_code`: HTTP status code from the API call
+- `result`: The actual response data from the tool
+- `payload`: The parameters that were sent to the tool
+- `tool_call_id`: Unique identifier for the tool call
+
+## Best Practices
+
+1. **Error Handling**: Always check the status code in tool responses to ensure the call was successful.
+
+2. **Conversation Management**: Keep track of tool responses in your conversation history to give the LLM context about previous actions.
+
+3. **Tool Selection**: Let the LLM choose which tools to use based on the user's request rather than pre-selecting tools.
+
+4. **Validation**: Validate tool inputs before execution to prevent errors and improve reliability.

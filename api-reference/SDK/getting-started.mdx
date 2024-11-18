@@ -29,29 +29,14 @@ npm install xpander-sdk
 Install-Package Xpander.Sdk -Source https://assets.xpanderai.io/nuget
 ```
 
-```xml Maven
-<dependency>
-    <groupId>ai.xpander</groupId>
-    <artifactId>xpander-sdk</artifactId>
-    <version>1.0.0</version>
-</dependency>
-<repositories>
-    <repository>
-        <id>xpander-repo</id>
-        <url>https://assets.xpanderai.io/maven</url>
-    </repository>
-</repositories>
-
-```
-
 </CodeGroup>
 
 
-# Get the Agent Key and Agent ID
+# Get the Agent ID
 
-Go to https://app.xpander.ai/workbench, click on add new Source Node and select the SDK source.
+Go to https://app.xpander.ai/ and get the Agent Key from the Agent Settings page.
 
-<Frame>
+{/* <Frame>
   <video
   autoPlay
   muted
@@ -61,53 +46,75 @@ Go to https://app.xpander.ai/workbench, click on add new Source Node and select 
   src="https://assets.xpanderai.io/docs/static/videos/sdk-source-node.mov"
 ></video>
 
-</Frame>
+</Frame> */}
+
+
+```python Python
+from xpander_sdk import XpanderClient
+from dotenv import load_dotenv
+import os
+load_dotenv()
+
+xpanderAPIKey = os.environ.get("XPANDER_API_KEY","")
+xpanderAgentID = os.environ.get("XPANDER_AGENT_ID", "")
+```
 
 # Initializing the SDK
 
 <CodeGroup>
 
 ```python Python
-from xpander_sdk import XpanderClient, LLMProvider, OpenAISupportedModels
-
-xpander_client = XpanderClient(
-    agent_key="XPANDER_AI_AGENT_KEY",
-    agent_url="XPANDER_AI_AGENT_URL",
-    llm_provider=LLMProvider.OPEN_AI # or use any other provider you want (NVIDIA_NIM, AMAZON_BEDROCK)
-)
-```
-
-```javascript NodeJS
-import { XpanderClient } from 'xpander-sdk';
-
-xpanderClient = new XpanderClient(
-  'XPANDER_AI_AGENT_KEY',
-  'XPANDER_AI_AGENT_URL',
-  LLMProvider.OPEN_AI /* or use any other provider you want (NVIDIA_NIM, AMAZON_BEDROCK)*/
-);
-```
-
-```csharp .NET
-using Xpander.AI.Sdk;
-
-XpanderClient xpanderClient = new XpanderClient(
-  "XPANDER_AI_AGENT_KEY",
-  "XPANDER_AI_AGENT_URL",
-  LLMProvider.OPEN_AI);
-```
-
-```java Java
-import ai.xpander.sdk.XpanderClient;
-
-XpanderClient xpanderClient = new XpanderClient(
-    "XPANDER_AI_AGENT_KEY",
-    "XPANDER_AI_AGENT_URL",
-    LLMProvider.OPEN_AI /* or use any other provider you want (NVIDIA_NIM, AMAZON_BEDROCK)*/
-);
+xpander_client = XpanderClient(api_key=xpanderAPIKey)
+agent1 = xpander_client.agents.get(agent_id=xpanderAgentID)
 ```
 
 </CodeGroup>
 
+# Get tools from the agent and load them into the LLM
+
+```python Python
+tools = agent1.get_tools()
+```
+
+Will return a list of tools that can be used in the LLM. Example of a tool:
+
+```json Example of function scheme from the agent 
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "PgCrunchbaseLinkedInPerplexityDataEnrichment",
+      "description": "This operation enriches company data by integrating information from LinkedIn, Crunchbase, and Perplexity. Use it for comprehensive company analysis, retrieving employee details, or gathering the latest news and trends related to a specific company like Nvidia. It's particularly useful for market researchers, analysts, and business developers looking to enhance their understanding of a company's profile. IMPORTANT! Ensure to use body_params, query_params, path_params. These are crucial for correct function calling!",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "queryParams": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "pathParams": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "bodyParams": {
+            "type": "object",
+            "properties": {
+              "inputTask": {
+                "type": "string",
+                "description": "input user sub task based on the input query"
+              }
+            },
+            "required": []
+          }
+        },
+        "required": ["queryParams", "pathParams", "bodyParams"]
+      }
+    }
+  }
+]
+```
 
 <Info>
   The library runs as a NodeJS app under the hood and is compiled safely using
@@ -115,65 +122,108 @@ XpanderClient xpanderClient = new XpanderClient(
   [NodeJS](https://nodejs.org/en/download/package-manager) installed.
 </Info>
 
-# Hello world example
+# Hello World Example
 
-```python Python
-from xpander_sdk import XpanderClient, LLMProvider 
+Let's walk through a complete example of using the xpander SDK with OpenAI's GPT-4 model to create an intelligent agent that can perform tasks.
+
+<CodeGroup>
+```python OpenAI Integration
+from xpander_sdk import XpanderClient, LLMProvider
 from openai import OpenAI
+import json
 
-## Load environment variables
+# Load environment variables
 from dotenv import load_dotenv
 import os
 load_dotenv()
-OpenAPIKey = os.environ.get("OPENAI_API_KEY","")
-xpanderAPIKey = os.environ.get("XPANDER_API_KEY","")
-xpanderAgentURL = os.environ.get("XPANDER_AGENT_URL","")
 
-## Initialize OpenAI and Xpander clients
-openai_client = OpenAI(api_key=OpenAPIKey)
+# Configure API keys
+xpanderAPIKey = os.environ.get("XPANDER_API_KEY","")    # Your xpander API Key
+xpanderAgentID = os.environ.get("XPANDER_AGENT_ID", "") # Your Agent ID
+openAIKey = os.environ.get("OPENAI_API_KEY", "")        # Your OpenAI API Key
 
-xpander_client = XpanderClient(
-    agent_key=xpanderAPIKey, 
-    agent_url=xpanderAgentURL, 
-    llm_provider=LLMProvider.OPEN_AI
-)
+# Initialize clients
+openai_client = OpenAI(api_key=openAIKey)
+xpander_client = XpanderClient(api_key=xpanderAPIKey)
+agent1 = xpander_client.agents.get(agent_id=xpanderAgentID)
 
-## Only needed if you want to use the session API to enforce specific behavior of prompt group to subgraph
-xpander_client.start_session(prompt="Events managements")
-
+# Set up conversation memory
 memory = []
+memory.append({
+    "role": "system", 
+    "content": "You are a helpful assistant with function calling and tool access. You are running in a while loop - add ##FINAL ANSWER## when complete."
+})
+memory.append({
+    "role": "user", 
+    "content": "Get news about qwen2.5-coder"
+})
 
-# Explain the AI the graph structure and the tools available
-memory.append({"role": "system", "content": "You are a helpful assistant, you are running in While loop and will have access to invoke tools dynmaically to your location in the graph. If you want to stop the loop, please add ##FINAL ANSWER## in your answer"})
-
-# Add the user requess / task to the memory
-memory.append({"role": "user", "content": "Get events and send it to David on Slack"})
+# Main interaction loop
 number_of_calls = 1
-
-# Allows the AI to call the tools and navigate the graph
 while True:
-    llm_response = openai_client.chat.completions.create(
-        model="gpt-4o",
-        messages=memory,
-        tools=xpander_client.tools(), ## Will return all the tools available in the agent given specific location in the graph
-        tool_choice="auto", 
-        max_tokens=1024,
-    )
-
+    # Track conversation steps
     memory.append({"role": "assistant", "content": f'Step number: {number_of_calls}'})
+    
+    # Get LLM response
+    llm_response = openai_client.chat.completions.create(
+        model="gpt-4",
+        messages=memory,
+        tools=agent1.get_tools()    
+    )
     memory.append(llm_response.choices[0].message)
+
+    # Handle tool calls if present
+    if(llm_response.choices[0].message.tool_calls):
+        tools_to_run = XpanderClient.extract_tool_calls(llm_response=llm_response.model_dump())
+        tool_responses = agent1.run_tools(tools_to_run)
+        
+        for tool_response in tool_responses:
+            memory.append({
+                "role": "tool", 
+                "content": json.dumps(tool_response.result), 
+                "tool_call_id": tool_response.tool_call_id
+            })
     
-    if(llm_response.choices[0].message.tool_calls): ## If the LLM has called a tool
-        tool_response = xpander_client.xpander_tool_call(tool_selector_response=llm_response.model_dump())
-        for tool_response in tool_response:
-            memory.append({"role": "tool", "content": tool_response.response_message, "tool_call_id": tool_response.tool_call_id})
-    
-    # Stop the loop if the LLM has answered the question
-    if (llm_response.choices[0].message.content):
+    # Check for completion
+    if(llm_response.choices[0].message.content):
         if "##FINAL ANSWER##" in llm_response.choices[0].message.content:
             break
+            
     number_of_calls += 1
 
-# Print the final answer
 print(llm_response.choices[0].message.content)
 ```
+</CodeGroup>
+
+## Understanding the Code
+
+The example above demonstrates several key concepts:
+
+1. **Environment Setup**: We use environment variables to securely manage API keys for both xpander and OpenAI.
+
+2. **Client Initialization**: We create instances of both the OpenAI client and xpander client, then retrieve our agent.
+
+3. **Conversation Memory**: We maintain a list of messages that tracks the entire conversation history, including:
+   - System instructions
+   - User input
+   - Assistant responses
+   - Tool outputs
+
+4. **Interactive Loop**: The code runs in a loop that:
+   - Sends the current conversation to the LLM
+   - Processes any tool calls requested by the LLM
+   - Adds responses back to the conversation memory
+   - Continues until the LLM indicates completion with "##FINAL ANSWER##"
+
+5. **Tool Handling**: When the LLM requests to use a tool:
+   - We extract the tool calls using `XpanderClient.extract_tool_calls()`
+   - Execute them using `agent1.run_tools()`
+   - Add the results back to the conversation
+
+Each tool response includes:
+
+- Function name used
+- HTTP status code
+- Response from the target system
+- Generated payload
+- Original tool call ID
