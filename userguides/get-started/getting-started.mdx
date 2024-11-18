@@ -48,22 +48,34 @@ Use the same agent design with your preferred LLM deployment:
     1. Install Python 3.8 or higher
     2. Install node.js 18 or higher
     3. xpander account and API key
-    4. LLM provider API key (OpenAI/Ollama)
+    4. LLM provider API key
   </Step>
 
   <Step title="Installation">
     ```bash
     python3 -m venv .venv
     source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-    pip install xpander-sdk openai ollama python-dotenv
+    pip install xpander-sdk openai
     ```
   </Step>
 
-  <Step title="Environment Setup">
+  <Step title="Client Setup">
     ```env
-    XPANDER_API_KEY="your_xpander_key"
-    XPANDER_AGENT_ID="your_agent_id"
-    OPENAI_API_KEY="your_openai_key"  # If using OpenAI
+    openai_client = OpenAI(api_key=openAIKey) 
+    xpander_client = XpanderClient(api_key=xpanderAPIKey) ## Personal API Key
+    agent1 = xpander_client.agents.get(agent_id=xpanderAgentID) # Agent ID
+    ```
+  </Step>
+
+    <Step title="Run">
+    ```python
+    llm_response = openai_client.chat.completions.create(
+        model="gpt-4",
+        messages=memory,
+        tools=agent1.get_tools()    
+    )
+    tools_to_run = XpanderClient.extract_tool_calls(llm_response=llm_response.model_dump())
+    tool_responses = agent1.run_tools(tools_to_run)
     ```
   </Step>
 </Steps>
