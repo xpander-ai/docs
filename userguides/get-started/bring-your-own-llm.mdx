@@ -1,6 +1,7 @@
 ---
 title: 'Bring Your Own LLM'
 description: 'Guide to using xpander SDK with your own LLM deployment'
+mode: 'wide'
 ---
 
 While xpander.ai offers a serverless solution where you can use AI agents without managing LLM infrastructure, you might want to use your own LLM deployment for:
@@ -39,9 +40,8 @@ This guide shows how to integrate your LLM with xpander's tools and local functi
 
 # Choose Your LLM Provider
 
-## OpenAI Integration
-
-```python
+<CodeGroup>
+```python OpenAI
 from xpander_sdk import XpanderClient
 from openai import OpenAI
 import json
@@ -52,25 +52,50 @@ agent = xpander_client.agents.get(agent_id=xpanderAgentID)
 openai_client = OpenAI(api_key=openAIKey)
 
 # Initialize conversation
-memory = []
-memory.append({
-    "role": "system",
-    "content": "You are a helpful assistant with function calling and tool access. Add ##FINAL ANSWER## to end."
-})
+memory = [
+    {
+        "role": "system",
+        "content": "You are a helpful assistant with function calling and tool access. You are running in a while loop - add ##FINAL ANSWER## to stop."
+    },
+    {
+        "role": "user",
+        "content": "Get news about qwen2.5-coder"
+    }
+]
+number_of_calls = 1
 
 while True:
+    memory.append({"role": "assistant", "content": f'Step number: {number_of_calls}'})
+    
     llm_response = openai_client.chat.completions.create(
         model="gpt-4",
         messages=memory,
         tools=agent.get_tools()    
     )
-    # ... rest of the loop implementation
+    memory.append(llm_response.choices[0].message)
+
+    if llm_response.choices[0].message.tool_calls:
+        tools_to_run = XpanderClient.extract_tool_calls(llm_response=llm_response.model_dump())
+        tool_responses = agent.run_tools(tools_to_run)
+        
+        for tool_response in tool_responses:
+            memory.append({
+                "role": "tool", 
+                "content": json.dumps(tool_response.result), 
+                "tool_call_id": tool_response.tool_call_id
+            })
+
+    if llm_response.choices[0].message.content:
+        if "##FINAL ANSWER##" in llm_response.choices[0].message.content:
+            break
+            
+    number_of_calls += 1
+
+final_response = llm_response.choices[0].message.content
 ```
 
-## Local Ollama Integration
-
-```python
-from xpander_sdk import XpanderClient, LLMProvider, ToolCallType
+```python Ollama
+from xpander_sdk import XpanderClient, LLMProvider
 import ollama
 import json
 
@@ -80,114 +105,16 @@ agent = xpander_client.agents.get(agent_id=xpanderAgentID)
 ollama_client = ollama.Client()
 
 # Initialize conversation
-memory = []
-memory.append({
-    "role": "system",
-    "content": "You are a helpful assistant with function calling and tool access. Add ##FINAL ANSWER## to end."
-})
-
-while True:
-    llm_response = ollama_client.chat(
-        model="qwen2.5-coder:14b",
-        messages=memory,
-        tools=agent.get_tools()    
-    )
-    # ... rest of the loop implementation
-```
-
-# Adding Local Functions
-
-When using your own LLM, you can add local functions for file operations or other system interactions:
-
-```python
-# Define local tools
-localTools = [
+memory = [
     {
-        "type": "function",
-        "function": {
-            "name": "write-file",
-            "description": "Writes content to a file in current directory",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "bodyParams": {
-                        "type": "object",
-                        "properties": {
-                            "fileName": {"type": "string"},
-                            "fileContent": {"type": "string"},
-                            "fileType": {"type": "string"}
-                        },
-                        "required": ["fileName", "fileContent", "fileType"]
-                    }
-                },
-                "required": ["bodyParams"]
-            }
-        }
+        "role": "system",
+        "content": "You are a helpful assistant with function calling and tool access. You are running in a while loop - add ##FINAL ANSWER## to stop."
+    },
+    {
+        "role": "user",
+        "content": "Get news about qwen2.5-coder from HackerNews"
     }
 ]
-
-# Add to your agent
-agent.add_local_tools(localTools)
-```
-
-# Comparison with Serverless Option
-
-| Feature | Bring Your Own LLM | xpander Serverless |
-|---------|-------------------|-------------------|
-| Infrastructure | Self-managed | Fully managed |
-| Local Functions | Supported | Not available |
-| Model Control | Full control | Pre-configured |
-| Setup Required | More complex | Minimal |
-| Cost Structure | Pay LLM provider | Pay per use |
-| Latency | Can be lower | Network dependent |
-
-# When to Choose Each Option
-
-## Use Bring Your Own LLM When:
-- You need local function execution
-- You want to use specific model versions
-- You require lower latency
-- You have existing LLM infrastructure
-- You need full control over the stack
-
-## Use xpander Serverless When:
-- You want minimal setup and maintenance
-- You don't need local functions
-- You prefer managed infrastructure
-- You want automatic scaling
-- You need quick deployment
-
-# Complete Implementation Example
-
-Here's a full example using Ollama with local functions:
-
-```python
-from xpander_sdk import XpanderClient, LLMProvider, ToolCallType
-import ollama
-import json
-
-# Initialize clients
-xpander_client = XpanderClient(api_key=xpanderAPIKey)
-agent = xpander_client.agents.get(agent_id=xpanderAgentID)
-ollama_client = ollama.Client()
-
-# Add local tools
-agent.add_local_tools(localTools)
-
-# Initialize conversation
-memory = []
-memory.append({
-    "role": "system",
-    "content": "You are a helpful assistant with function calling and tool access. "
-    "Pay attention to use write-file and read-file carefully with bodyParams, fileName, "
-    "fileContent and fileType. Filetype can be only txt, csv, json or xml. "
-    "Add ##FINAL ANSWER## to end."
-})
-
-memory.append({
-    "role": "user",
-    "content": "Create four hello world files, one CSV, one JSON and one XML and one text."
-})
 
 number_of_calls = 1
 
@@ -197,47 +124,32 @@ while True:
         messages=memory,
         tools=agent.get_tools()    
     )
-    
     memory.append({"role": "assistant", "content": f'Step number: {number_of_calls}'})
     memory.append(llm_response['message'])
-    
+
     if llm_response['message'].get('tool_calls'):
         tools_to_run = XpanderClient.extract_tool_calls(
-            llm_response=llm_response,
+            llm_response=llm_response, 
             llm_provider=LLMProvider.OLLAMA
         )
+        tool_responses = agent.run_tools(tool_calls=tools_to_run)
         
-        for tool_to_run in tools_to_run:
-            if tool_to_run.type == ToolCallType.LOCAL:
-                function_name = tool_to_run.name
-                body_params = tool_to_run.payload.get('bodyParams', {})
-                
-                if "write-file" in function_name:
-                    result = write_file(
-                        file_path=body_params.get('fileName'),
-                        content=body_params.get('fileContent'),
-                        fileType=body_params.get('fileType')
-                    )
-                memory.append({
-                    "role": "tool",
-                    "content": json.dumps(result),
-                    "tool_call_id": function_name
-                })
-            else:
-                tool_response = agent.run_tool(tool_calls=tools_to_run)
-                memory.append({
-                    "role": "tool",
-                    "content": tool_response.result,
-                    "tool_call_id": tool_response.tool_call_id
-                })
-    
-    if "##FINAL ANSWER##" in llm_response['message'].get('content', ''):
-        break
-        
+        for tool_response in tool_responses:
+            memory.append({
+                "role": "tool",
+                "content": tool_response.result,
+                "tool_call_id": tool_response.tool_call_id
+            })
+
+    if llm_response['message'].get('content'):
+        if "##FINAL ANSWER##" in llm_response['message']['content']:
+            break
+
     number_of_calls += 1
 
-print(llm_response['message']['content'])
+final_response = llm_response['message']['content']
 ```
+</CodeGroup>
 
 # Best Practices
 
