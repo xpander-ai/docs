@@ -59,7 +59,7 @@
       "pages": [
         "userguides/get-started/getting-started",
         "userguides/get-started/bring-your-own-llm",
-        "userguides/get-started/advanced-ai-agent-techniques"
+        "userguides/get-started/local-functions"
       ]
     },
     {
