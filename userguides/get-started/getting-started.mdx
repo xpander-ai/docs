@@ -1,5 +1,5 @@
 ---
-title: 'Getting Started with xpander'
+title: 'Build AI agents'
 description: 'Design AI agents visually and choose between serverless or custom LLM deployment'
 ---
 
@@ -10,7 +10,7 @@ After designing your agent, you have two deployment options:
 1. **Serverless Platform** - Deploy directly from the console using our managed LLMs
 2. **SDK with Your Own LLM** - Use the same agent with your preferred LLM deployment
 
-## Start with the Visual Builder
+## Start with the Visual Agent Builder
 
 Regardless of your deployment choice, begin by designing your agent in the visual builder:
 
@@ -23,22 +23,22 @@ The Agent Builder provides:
 - Visual workflow design
 - Automatic [Agent Graph System](/userguides/core-concepts/agent-graph-system) generation
 - Real-time testing
-- Multiple [Source Nodes](/userguides/core-concepts/source-nodes) (Slack, WebUI, Webhooks)
+- Multiple [Source Nodes](/userguides/core-concepts/source-nodes) (Teams, Slack, WebUI, Webhooks)
 
 ## Choose Your Deployment
 
 ### Option 1: Serverless Platform
-After designing your agent, deploy directly from the console to use our managed infrastructure:
+After designing your agent, you can start interacting with it using the serverless platform:
 
-- Zero additional setup
-- Pre-configured LLMs
-- Automatic scaling
-- Pay-per-use pricing
-
-To deploy:
-1. Click "Deploy" in the Agent Builder
-2. Choose your [Source Node](/userguides/core-concepts/source-nodes) (Slack, WebUI, or Webhook)
+1. Choose your [Source Node](/userguides/core-concepts/source-nodes) (Slack, WebUI, or Webhook)
+2. Click "Save" in the Agent Builder
 3. Your agent is ready to use!
+
+
+<Tip>
+    You can add a "task" type source node to your agent to schedule its execution. This will automatically inject the specified "prompt" into the agent and initiate its run.
+</Tip>
+
 
 ### Option 2: SDK with Your Own LLM
 Use the same agent design with your preferred LLM deployment:
@@ -72,15 +72,20 @@ Use the same agent design with your preferred LLM deployment:
 
 Based on your choice:
 
-1. **For Serverless Platform:**
-   - Visit [app.xpander.ai](https://app.xpander.ai)
-   - Read the [Agent Builder guide](/userguides/ai-agent-builder/using-agent-builder)
-   - Learn about the [Agent Graph System](/userguides/core-concepts/agent-graph-system)
-   - Explore available [Source Nodes](/userguides/core-concepts/source-nodes)
+1. **Begin Your Journey:**
+   - Dive into the [visual builder](/userguides/ai-agent-builder/using-agent-builder) to start crafting your AI agent.
+   - Discover the power of [agentic interfaces](/userguides/core-concepts/ai-connectors) and the [Agent Graph System](/userguides/core-concepts/agent-graph-system).
 
-2. **For SDK Development:**
-   - Follow [Bring Your Own LLM Guide](/userguides/get-started/bring-your-own-llm)
-   - Explore [Advanced Techniques](/userguides/get-started/advanced-ai-agent-techniques)
-   - Learn about [SDK Source Nodes](/userguides/core-concepts/source-nodes#sdk-source-nodes)
+2. **Select Your Deployment Strategy:**
+   - **Opt for Serverless Platform:**
+     - Access [app.xpander.ai](https://app.xpander.ai) to get started.
+     - Consult the [Agent Builder guide](/userguides/ai-agent-builder/using-agent-builder) for detailed instructions.
+     - Investigate the range of [Source Nodes](/userguides/core-concepts/source-nodes) available.
+   - **Opt for SDK Development:**
+     - Refer to the [Bring Your Own LLM Guide](/userguides/get-started/bring-your-own-llm) for setup.
+     - Understand [SDK Source Nodes](/userguides/core-concepts/source-nodes#sdk-source-nodes) for integration.
 
-Need help? Visit our [Discord community](https://discord.gg/xpander) or [documentation](https://docs.xpander.ai). 
+3. **Unlock Advanced Capabilities:**
+   - Dive into [advanced techniques](/userguides/get-started/advanced-ai-agent-techniques) to enhance your agent's functionality.
+
+Need assistance? Join our [Discord community](https://discord.gg/xpander) or consult our [documentation](https://docs.xpander.ai). 
