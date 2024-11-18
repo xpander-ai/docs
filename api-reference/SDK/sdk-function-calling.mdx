@@ -75,7 +75,7 @@ The tools are returned in the format required by your LLM provider. Here's an ex
 
 </CodeGroup>
 
-## Using Tools
+## Run Tools
 
 To use tools with your LLM, follow these steps:
 
@@ -84,8 +84,105 @@ To use tools with your LLM, follow these steps:
 3. Extract and execute any tool calls
 4. Process the results
 
-### Example Implementation
+```python Passing tools to LLM
+llm_response = openai_client.chat.completions.create(
+    model="gpt-4",
+    messages=conversation_history,
+    tools=tools
+) 
+```
 
+<Tip>
+    You can use the `extract_tool_calls` method to extract tool calls from the LLM response or the `run_tools` method to execute them manually
+</Tip>
+### Function Calling Methods
+
+There are two main approaches to executing tools. The SDK supports both parallel and sequential execution of tools
+
+1. **Automated LLM Parsing** (Recommended):
+```python
+# Parse LLM response automatically into tool calls
+tools_to_run = XpanderClient.extract_tool_calls(llm_response=llm_response.model_dump())
+
+# Execute multiple tool calls at once
+results = agent.run_tools(tools_to_run)  
+```
+
+2. **Manual Invocation**:
+```python
+from xpander_sdk import ToolCall, ToolCallType
+
+# Create a ToolCall object
+toolcall = ToolCall(
+    name="tavily-insights-fetchInsightsFromTavilyAI",
+    type=ToolCallType.XPANDER,
+    payload={
+        "bodyParams": {
+            "query": "qwen2.5-coder news on HackerNews",
+            "max_results": "5",
+            "include_raw_content": "true",
+            "include_images": "false",
+            "exclude_domains": ["example.com"], 
+        },
+        "queryParams": {},
+        "pathParams": {}
+    }
+)
+
+# Execute single tool call
+result = agent.run_tool(toolcall)
+```
+
+### Tool Classes
+
+The SDK provides two main classes for working with tools:
+
+#### ToolCall
+A class representing a single tool invocation with the following attributes:
+- `name`: (str) The identifier of the tool to be called
+- `type`: (ToolCallType) The type of the tool call, usually ToolCallType.XPANDER
+- `payload`: (dict) Contains three parameter dictionaries:
+  - `bodyParams`: Parameters sent in the request body
+  - `queryParams`: URL query parameters
+  - `pathParams`: URL path parameters
+
+#### ToolCallType
+An enum class that defines the types of tool calls:
+- `XPANDER`: Standard xpander.ai platform tools
+- `FUNCTION`: Traditional function calls (For example local functions)
+
+<Note>
+The key differences are:
+
+- `XpanderClient.extract_tool_calls()`: Static utility method that converts LLM-specific function call formats (OpenAI, Anthropic, etc.) into xpander's standardized ToolCall format
+- `agent.run_tools()`: Executes one or more tool calls, accepting either:
+  - Parsed ToolCall objects from extract_tool_calls()
+  - Manual dictionary format for direct invocation
+</Note>
+
+
+## Tool Response
+
+When a tool is executed (using `agent.run_tools()` or `agent.run_tool()`), it returns a response with the following properties:
+
+- `function_name`: Name of the function that was called
+- `status_code`: HTTP status code from the API call
+- `result`: The actual response data from the tool
+- `payload`: The parameters that were sent to the tool
+- `tool_call_id`: Unique identifier for the tool call
+
+Example:
+
+```python
+tool_response = agent.run_tool(toolcall)
+print(tool_response.function_name) ## will print the name of the tool that was called
+print(tool_response.status_code) ## will print the status code of the tool call (Http status code)
+print(tool_response.result) ## will print the result of the tool call (JSON)
+print(tool_response.payload) ## will print the payload sent to the tool (JSON)
+print(tool_response.tool_call_id) ## will print the unique identifier for the tool call (Critical for LLMs)
+```
+
+# Full example
 <CodeGroup>
 
 ```python Python
@@ -129,21 +226,12 @@ if llm_response.choices[0].message.tool_calls:
 
 </CodeGroup>
 
-### Tool Response Structure
-
-When a tool is executed, it returns a response with the following properties:
-
-- `function_name`: Name of the function that was called
-- `status_code`: HTTP status code from the API call
-- `result`: The actual response data from the tool
-- `payload`: The parameters that were sent to the tool
-- `tool_call_id`: Unique identifier for the tool call
 
 ## Best Practices
 
 1. **Error Handling**: Always check the status code in tool responses to ensure the call was successful.
 
-2. **Conversation Management**: Keep track of tool responses in your conversation history to give the LLM context about previous actions.
+2. **Conversation Management**: Keep track of tool responses in your conversation history to give the LLM context about previous actions and preseve the same tool call id for the same tool call.
 
 3. **Tool Selection**: Let the LLM choose which tools to use based on the user's request rather than pre-selecting tools.
 

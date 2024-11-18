@@ -49,6 +49,8 @@ Go to https://app.xpander.ai/ and get the Agent Key from the Agent Settings page
 </Frame> */}
 
 
+<CodeGroup>
+
 ```python Python
 from xpander_sdk import XpanderClient
 from dotenv import load_dotenv
@@ -59,6 +61,36 @@ xpanderAPIKey = os.environ.get("XPANDER_API_KEY","")
 xpanderAgentID = os.environ.get("XPANDER_AGENT_ID", "")
 ```
 
+```javascript JavaScript
+const { XpanderClient } = require('xpander-sdk');
+require('dotenv').config();
+
+const xpanderAPIKey = process.env.XPANDER_API_KEY || '';
+const xpanderAgentID = process.env.XPANDER_AGENT_ID || '';
+```
+
+```typescript Node.js
+// ES Modules
+import { XpanderClient } from 'xpander-sdk';
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+const xpanderAPIKey = process.env.XPANDER_API_KEY || '';
+const xpanderAgentID = process.env.XPANDER_AGENT_ID || '';
+```
+
+```csharp C#
+using Xpander.Sdk;
+using DotEnv.Net;
+
+// Load .env file
+new DotEnvLoader().Load();
+
+var xpanderAPIKey = Environment.GetEnvironmentVariable("XPANDER_API_KEY") ?? "";
+var xpanderAgentID = Environment.GetEnvironmentVariable("XPANDER_AGENT_ID") ?? "";
+```
+</CodeGroup>
+
 # Initializing the SDK
 
 <CodeGroup>
@@ -66,164 +98,47 @@ xpanderAgentID = os.environ.get("XPANDER_AGENT_ID", "")
 ```python Python
 xpander_client = XpanderClient(api_key=xpanderAPIKey)
 agent1 = xpander_client.agents.get(agent_id=xpanderAgentID)
+agent2 = xpander_client.agents.get(agent_id=<other_agent_id>)
+agent3 = xpander_client.agents.get(agent_id=<other_agent_id>)
+```
+
+```javascript JavaScript
+const { XpanderClient } = require('xpander-sdk');
+
+const xpanderClient = new XpanderClient({ apiKey: process.env.XPANDER_API_KEY });
+const agent1 = await xpanderClient.agents.get(process.env.XPANDER_AGENT_ID);
+const agent2 = await xpanderClient.agents.get(<other_agent_id>);
+const agent3 = await xpanderClient.agents.get(<other_agent_id>);
+```
+
+```typescript Node.js
+// ES Modules
+import { XpanderClient } from 'xpander-sdk';
+
+// Initialize client
+const xpanderClient = new XpanderClient({ 
+  apiKey: process.env.XPANDER_API_KEY 
+});
+
+// Create agent instances
+const agent1 = await xpanderClient.agents.get(process.env.XPANDER_AGENT_ID);
+const agent2 = await xpanderClient.agents.get(<other_agent_id>);
+const agent3 = await xpanderClient.agents.get(<other_agent_id>);
+```
+
+```csharp C#
+using Xpander.Sdk;
+
+var xpanderClient = new XpanderClient(Environment.GetEnvironmentVariable("XPANDER_API_KEY"));
+var agent1 = await xpanderClient.Agents.GetAsync(Environment.GetEnvironmentVariable("XPANDER_AGENT_ID"));
+var agent2 = await xpanderClient.Agents.GetAsync(<other_agent_id>);
+var agent3 = await xpanderClient.Agents.GetAsync(<other_agent_id>);
 ```
 
 </CodeGroup>
-
-# Get tools from the agent and load them into the LLM
-
-```python Python
-tools = agent1.get_tools()
-```
-
-Will return a list of tools that can be used in the LLM. Example of a tool:
-
-```json Example of function scheme from the agent 
-[
-  {
-    "type": "function",
-    "function": {
-      "name": "PgCrunchbaseLinkedInPerplexityDataEnrichment",
-      "description": "This operation enriches company data by integrating information from LinkedIn, Crunchbase, and Perplexity. Use it for comprehensive company analysis, retrieving employee details, or gathering the latest news and trends related to a specific company like Nvidia. It's particularly useful for market researchers, analysts, and business developers looking to enhance their understanding of a company's profile. IMPORTANT! Ensure to use body_params, query_params, path_params. These are crucial for correct function calling!",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "queryParams": {
-            "type": "object",
-            "properties": {},
-            "required": []
-          },
-          "pathParams": {
-            "type": "object",
-            "properties": {},
-            "required": []
-          },
-          "bodyParams": {
-            "type": "object",
-            "properties": {
-              "inputTask": {
-                "type": "string",
-                "description": "input user sub task based on the input query"
-              }
-            },
-            "required": []
-          }
-        },
-        "required": ["queryParams", "pathParams", "bodyParams"]
-      }
-    }
-  }
-]
-```
 
 <Info>
   The library runs as a NodeJS app under the hood and is compiled safely using
   [Projen](https://projen.io/). In order to run our SDK smoothly, you must have
   [NodeJS](https://nodejs.org/en/download/package-manager) installed.
 </Info>
-
-# Hello World Example
-
-Let's walk through a complete example of using the xpander SDK with OpenAI's GPT-4 model to create an intelligent agent that can perform tasks.
-
-<CodeGroup>
-```python OpenAI Integration
-from xpander_sdk import XpanderClient, LLMProvider
-from openai import OpenAI
-import json
-
-# Load environment variables
-from dotenv import load_dotenv
-import os
-load_dotenv()
-
-# Configure API keys
-xpanderAPIKey = os.environ.get("XPANDER_API_KEY","")    # Your xpander API Key
-xpanderAgentID = os.environ.get("XPANDER_AGENT_ID", "") # Your Agent ID
-openAIKey = os.environ.get("OPENAI_API_KEY", "")        # Your OpenAI API Key
-
-# Initialize clients
-openai_client = OpenAI(api_key=openAIKey)
-xpander_client = XpanderClient(api_key=xpanderAPIKey)
-agent1 = xpander_client.agents.get(agent_id=xpanderAgentID)
-
-# Set up conversation memory
-memory = []
-memory.append({
-    "role": "system", 
-    "content": "You are a helpful assistant with function calling and tool access. You are running in a while loop - add ##FINAL ANSWER## when complete."
-})
-memory.append({
-    "role": "user", 
-    "content": "Get news about qwen2.5-coder"
-})
-
-# Main interaction loop
-number_of_calls = 1
-while True:
-    # Track conversation steps
-    memory.append({"role": "assistant", "content": f'Step number: {number_of_calls}'})
-    
-    # Get LLM response
-    llm_response = openai_client.chat.completions.create(
-        model="gpt-4",
-        messages=memory,
-        tools=agent1.get_tools()    
-    )
-    memory.append(llm_response.choices[0].message)
-
-    # Handle tool calls if present
-    if(llm_response.choices[0].message.tool_calls):
-        tools_to_run = XpanderClient.extract_tool_calls(llm_response=llm_response.model_dump())
-        tool_responses = agent1.run_tools(tools_to_run)
-        
-        for tool_response in tool_responses:
-            memory.append({
-                "role": "tool", 
-                "content": json.dumps(tool_response.result), 
-                "tool_call_id": tool_response.tool_call_id
-            })
-    
-    # Check for completion
-    if(llm_response.choices[0].message.content):
-        if "##FINAL ANSWER##" in llm_response.choices[0].message.content:
-            break
-            
-    number_of_calls += 1
-
-print(llm_response.choices[0].message.content)
-```
-</CodeGroup>
-
-## Understanding the Code
-
-The example above demonstrates several key concepts:
-
-1. **Environment Setup**: We use environment variables to securely manage API keys for both xpander and OpenAI.
-
-2. **Client Initialization**: We create instances of both the OpenAI client and xpander client, then retrieve our agent.
-
-3. **Conversation Memory**: We maintain a list of messages that tracks the entire conversation history, including:
-   - System instructions
-   - User input
-   - Assistant responses
-   - Tool outputs
-
-4. **Interactive Loop**: The code runs in a loop that:
-   - Sends the current conversation to the LLM
-   - Processes any tool calls requested by the LLM
-   - Adds responses back to the conversation memory
-   - Continues until the LLM indicates completion with "##FINAL ANSWER##"
-
-5. **Tool Handling**: When the LLM requests to use a tool:
-   - We extract the tool calls using `XpanderClient.extract_tool_calls()`
-   - Execute them using `agent1.run_tools()`
-   - Add the results back to the conversation
-
-Each tool response includes:
-
-- Function name used
-- HTTP status code
-- Response from the target system
-- Generated payload
-- Original tool call ID
