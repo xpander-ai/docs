@@ -1,0 +1,86 @@
+---
+title: 'Getting Started with xpander'
+description: 'Design AI agents visually and choose between serverless or custom LLM deployment'
+---
+
+All AI agents in xpander are built using our powerful [Agent Graph System](/userguides/core-concepts/agent-graph-system), which automatically generates and manages multi-step workflows. The journey starts in our visual [Agent Builder](/userguides/ai-agent-builder/using-agent-builder) at [app.xpander.ai](https://app.xpander.ai), where you can design and test your agent's behavior.
+
+After designing your agent, you have two deployment options:
+
+1. **Serverless Platform** - Deploy directly from the console using our managed LLMs
+2. **SDK with Your Own LLM** - Use the same agent with your preferred LLM deployment
+
+## Start with the Visual Builder
+
+Regardless of your deployment choice, begin by designing your agent in the visual builder:
+
+1. Sign up at [app.xpander.ai](https://app.xpander.ai)
+2. Create a new agent using the [Agent Builder](/userguides/ai-agent-builder/using-agent-builder)
+3. Design your agent's workflow and test its behavior
+4. Choose your deployment option
+
+The Agent Builder provides:
+- Visual workflow design
+- Automatic [Agent Graph System](/userguides/core-concepts/agent-graph-system) generation
+- Real-time testing
+- Multiple [Source Nodes](/userguides/core-concepts/source-nodes) (Slack, WebUI, Webhooks)
+
+## Choose Your Deployment
+
+### Option 1: Serverless Platform
+After designing your agent, deploy directly from the console to use our managed infrastructure:
+
+- Zero additional setup
+- Pre-configured LLMs
+- Automatic scaling
+- Pay-per-use pricing
+
+To deploy:
+1. Click "Deploy" in the Agent Builder
+2. Choose your [Source Node](/userguides/core-concepts/source-nodes) (Slack, WebUI, or Webhook)
+3. Your agent is ready to use!
+
+### Option 2: SDK with Your Own LLM
+Use the same agent design with your preferred LLM deployment:
+
+<Steps>
+  <Step title="Prerequisites">
+    1. Install Python 3.8 or higher
+    2. Install node.js 18 or higher
+    3. xpander account and API key
+    4. LLM provider API key (OpenAI/Ollama)
+  </Step>
+
+  <Step title="Installation">
+    ```bash
+    python3 -m venv .venv
+    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+    pip install xpander-sdk openai ollama python-dotenv
+    ```
+  </Step>
+
+  <Step title="Environment Setup">
+    ```env
+    XPANDER_API_KEY="your_xpander_key"
+    XPANDER_AGENT_ID="your_agent_id"
+    OPENAI_API_KEY="your_openai_key"  # If using OpenAI
+    ```
+  </Step>
+</Steps>
+
+# Next Steps
+
+Based on your choice:
+
+1. **For Serverless Platform:**
+   - Visit [app.xpander.ai](https://app.xpander.ai)
+   - Read the [Agent Builder guide](/userguides/ai-agent-builder/using-agent-builder)
+   - Learn about the [Agent Graph System](/userguides/core-concepts/agent-graph-system)
+   - Explore available [Source Nodes](/userguides/core-concepts/source-nodes)
+
+2. **For SDK Development:**
+   - Follow [Bring Your Own LLM Guide](/userguides/get-started/bring-your-own-llm)
+   - Explore [Advanced Techniques](/userguides/get-started/advanced-ai-agent-techniques)
+   - Learn about [SDK Source Nodes](/userguides/core-concepts/source-nodes#sdk-source-nodes)
+
+Need help? Visit our [Discord community](https://discord.gg/xpander) or [documentation](https://docs.xpander.ai). 
