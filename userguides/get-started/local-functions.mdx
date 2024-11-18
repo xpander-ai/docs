@@ -1,0 +1,184 @@
+---
+title: 'Use local functions with your AI agents'
+description: 'How to use local functions with your AI agents'
+---
+
+This guide covers advanced techniques for running AI agents with your own LLMs using the xpander SDK. Make sure you've completed the [Bring Your Own LLM](/userguides/get-started/bring-your-own-llm) guide first.
+
+# Local Function Implementation
+
+## File Operations
+Building upon the basic local tools setup, here's how to implement secure file operations:
+
+```python
+import json
+import xml.etree.ElementTree as ET
+import os
+import csv
+from io import StringIO
+
+def is_within_current_directory(file_path):
+    """Validates that the given file path is within the current directory."""
+    base_path = os.path.abspath(".")
+    absolute_path = os.path.abspath(file_path)
+    return absolute_path.startswith(base_path)
+
+def write_file(file_path, content, fileType):
+    """Writes content to file with format-specific handling"""
+    if not is_within_current_directory(file_path):
+        return {"error": "Access to files outside the current directory is not allowed."}
+
+    try:
+        if fileType == "json":
+            try:
+                parsed_content = json.loads(content) if isinstance(content, str) else content
+                with open(file_path, "w") as file:
+                    json.dump(parsed_content, file, indent=2)
+            except json.JSONDecodeError:
+                return {"error": "Invalid JSON content provided."}
+                
+        elif fileType == "csv":
+            try:
+                if isinstance(content, str):
+                    content = list(csv.reader(StringIO(content)))
+                if not isinstance(content, list):
+                    return {"error": "Invalid CSV content provided."}
+                with open(file_path, "w", newline="") as file:
+                    writer = csv.writer(file)
+                    writer.writerows(content)
+            except Exception as e:
+                return {"error": f"Failed to process CSV content: {str(e)}"}
+                
+        elif fileType == "xml":
+            try:
+                root = ET.Element("root")
+                ET.SubElement(root, "content").text = str(content)
+                tree = ET.ElementTree(root)
+                tree.write(file_path, encoding="unicode", xml_declaration=True)
+            except Exception as e:
+                return {"error": f"Failed to write XML file: {str(e)}"}
+                
+        elif fileType in ["txt", "text"]:
+            with open(file_path, "w") as file:
+                file.write(str(content))
+        else:
+            return {"error": f"Unsupported file format: {fileType}"}
+        
+        return {"success": f"File written successfully to {file_path} in {fileType} format."}
+    except Exception as e:
+        return {"error": f"Failed to write file: {str(e)}"}
+```
+
+# Example Usage: AI Agent with Local File Access
+
+Here's a complete example of using the AI agent to create and manage different types of files:
+
+```python
+# Initialize memory with system prompt
+memory = []
+memory.append({
+    "role": "system", 
+    "content": 
+    '''
+    You are a helpful assistant with function calling and tool access.
+    
+    Please follow these guidelines when using write-file:
+    - Use bodyParams correctly
+    - Include fileName, fileContent and fileType
+    - Supported fileTypes are: txt, csv, json, xml
+    
+    For CSV data, use string format like:
+    "Name,Age\nAlice,25\nBob,30"
+    
+    Add ##FINAL ANSWER## when you have completed the task.
+    '''
+})
+
+# Add user request
+memory.append({
+    "role": "user", 
+    "content": "Create four hello world files, one CSV, one JSON, one XML and one text. "
+               "Generate sample data for each."
+})
+
+# Initialize loop variables
+number_of_calls = 1
+from xpander_sdk import LLMProvider, ToolCallType
+
+# Main interaction loop
+while True:
+    # Get LLM response
+    llm_response = ollama_client.chat(
+        model="qwen2.5-coder:14b",
+        messages=memory,
+        tools=personal_ai_agent.get_tools()    
+    )
+    
+    # Track step number
+    memory.append({
+        "role": "assistant", 
+        "content": f'Step number: {number_of_calls}'
+    })
+    
+    # Add LLM response to memory
+    memory.append(llm_response['message'])
+    
+    # Handle tool calls if present
+    if llm_response['message'].get('tool_calls'):
+        tools_to_run = XpanderClient.extract_tool_calls(
+            llm_response=llm_response,
+            llm_provider=LLMProvider.OLLAMA
+        )
+        
+        for tool_to_run in tools_to_run:
+            if tool_to_run.type == ToolCallType.LOCAL:
+                # Extract tool parameters
+                function_name = tool_to_run.name
+                body_params = tool_to_run.payload.get('bodyParams', {})
+                fileName = body_params.get('fileName', 'default_file.txt')
+                fileContent = body_params.get('fileContent', '')
+                fileType = body_params.get('fileType', 'txt')
+                
+                # Execute write-file operation
+                if "write-file" in function_name:
+                    result = write_file(
+                        file_path=fileName, 
+                        content=fileContent, 
+                        fileType=fileType
+                    )
+                    memory.append({
+                        "role": "tool", 
+                        "content": json.dumps(result), 
+                        "tool_call_id": function_name
+                    })
+            else:
+                # Handle cloud tools
+                tool_response = personal_ai_agent.run_tool(tool_calls=tools_to_run)
+                memory.append({
+                    "role": "tool", 
+                    "content": tool_response.result, 
+                    "tool_call_id": tool_response.tool_call_id
+                })
+    
+    # Check for completion
+    if (llm_response['message'].get('content') and 
+        "##FINAL ANSWER##" in llm_response['message']['content']):
+        break
+        
+    number_of_calls += 1
+```
+
+# Example output files created:
+ - hello.txt: "Hello World in plain text!"
+ - data.csv: "Name,Age\nAlice,25\nBob,30"
+ - config.json: `{"message": "Hello World", "type": "greeting"}`
+ - doc.xml: <root><content>Hello World in XML format</content></root>
+
+This example demonstrates:
+1. Setting up the conversation memory
+2. Handling tool calls for file operations
+3. Processing different file formats
+4. Managing the conversation loop
+5. Proper error handling and response tracking
+
+Need help? Visit our [Discord community](https://discord.gg/xpander) or [documentation](https://docs.xpander.ai). 
