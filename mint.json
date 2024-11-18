@@ -84,12 +84,6 @@
       ]
     },
     {
-      "group": "Tutorials",
-      "pages": [
-        "tutorials/build-no-code-custom-gpt-agent"
-      ]
-    },
-    {
       "group": "SDK Reference",
       "pages": [
         "api-reference/SDK/getting-started",
@@ -107,10 +101,7 @@
     },
     {
       "group": "Agent Hub",
-      "pages": [
-        "agent-hub/agent-hub",
-        "agent-hub/Multi-step-employee-agent"
-      ]
+      "pages": ["agent-hub/agent-hub","agent-hub/Multi-step-employee-agent"]
     }
   ],
   "footerSocials": {
