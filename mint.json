@@ -84,7 +84,7 @@
         "userguides/core-concepts/agent-builder",
         "userguides/core-concepts/agentic-interfaces",
         "userguides/core-concepts/agent-graph-system",
-        "userguides/core-concepts/prompt-groups",
+        "userguides/core-concepts/topics",
         "userguides/core-concepts/source-nodes",
         "userguides/core-concepts/serverless-ai-agents",
         "userguides/core-concepts/custom-ai-agents"

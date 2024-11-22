@@ -1,0 +1,29 @@
+---
+title: "Topics"
+---
+
+Topics are a powerful mechanism that ensures AI Agents execute actions in a structured and context-aware manner. When building AI Agents that handle complex workflows, prompt engineering becomes a critical part of defining how an agent interacts with APIs, retrieves data, and makes decisions. Topics enable developers to cluster related prompts and API interactions together, allowing the agent to make intelligent choices and maintain consistency throughout the task flow.
+
+Topics are essential when transitioning between tasks or entering new branches of the Agent Graph System, where different types of logic or decisions are required. They act as predefined sets of instructions or behaviors that guide the AI Agent through specific parts of the workflow, ensuring it stays on track and maintains a coherent understanding of the task at hand.
+
+## Key Features of Topics:
+
+* Contextual Control: Topics enforce contextual behaviors within a graph. As the AI Agent navigates through various nodes in the Agent Graph System, Topics ensure that the agent follows the correct context for each task. For instance, if an agent switches from interacting with a CRM system to handling a financial transaction, the Topic would adjust the agent’s language and API interactions accordingly.
+
+* Behavioral Consistency: AI Agents need to maintain a consistent tone, action set, and decision-making process when dealing with different systems or users. Topics provide this consistency by grouping prompts that are relevant to a specific segment of the workflow. This ensures the AI Agent doesn’t deviate from its intended purpose and continues to act in line with the overall task flow, even when transitioning between different contexts.
+
+* Dynamic Prompt Management: Instead of hardcoding individual prompts, Topics allow for dynamic prompt management. The AI Agent can automatically select the appropriate Topic based on the current node in the graph, adapting to the task’s evolving needs. For example, if the agent is handling customer support, a Topic tailored to conversational responses might be enforced. If the agent moves into a data retrieval task, a different Topic designed for precise API interactions would take over.
+
+* Customizable Prompts: Developers have the flexibility to create custom Topics based on the unique needs of their workflows. These groups can be designed to handle various scenarios such as initiating user interactions, executing API calls, processing data, or responding to errors. Customizable Topics allow enterprises to tailor agent behaviors to specific business requirements, ensuring that agents operate effectively in complex, multi-system environments.
+
+* Improved Prompt Engineering: Topics simplify prompt engineering by clustering related instructions together. This makes it easier for developers to maintain and update prompts, ensuring that agents consistently behave as expected across different tasks and systems. Topics also reduce the need for manual prompt handling at each node, streamlining the agent-building process and enhancing overall efficiency.
+
+## Use Cases for Topics :
+
+* Complex API Interactions: When an AI Agent interacts with different APIs, Topics can enforce the correct API-specific behavior. For example, an agent managing a multi-step financial transaction could use a Topic tailored for secure, compliant interactions with banking APIs, ensuring the correct parameters, error handling, and security measures are in place.
+
+* Real-Time Task Switching: In scenarios where AI Agents handle multiple, simultaneous tasks—such as coordinating between different teams or systems—Topics ensure the agent can switch contexts fluidly without losing track of the necessary steps for each task. The agent can switch from scheduling meetings in a calendar system to processing HR requests in a payroll system while maintaining the appropriate context and tone.
+
+* Agent-Based Error Handling: Topics can manage agent behavior when encountering errors or unexpected conditions. For example, if an API call fails or returns an error, the agent can switch to a Topic that defines how to handle the failure, including retry logic, alternative action paths, or escalation procedures.
+
+In summary, Topics in xpander.ai are a critical component for building intelligent AI Agents that can dynamically adapt to different tasks and contexts. They provide structure, consistency, and flexibility to ensure that AI Agents can handle complex, multi-step workflows with precision and reliability, all while minimizing the complexity of prompt management.
