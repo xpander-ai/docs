@@ -1,11 +1,12 @@
 ---
-title: 'Graph paths and Prompt groups'
+title: "Agent Graph System Topics"
+description: "Topics are areas or domains that your AI Agent can work within"
 ---
 
-In the Agent Graph system, you can create multiple Graph Paths. Each Graph Path has a Prompt Group. Here's a quick explanation of what each of these terms mean:
+In the Agent Graph System (AGS), you can create multiple Topics. Each Topic is represented as a visual group with Operations. Here's a quick explanation of what each of these terms mean:
 
-* Graph paths are a sub-graph of the Graph System that each xpander.ai AI Agent is built around. A Graph Path allows you to create a closed area of incoming prompts to the AI Agents, where the AI Agent will only be able to execute the Operations and Functions within the Graph Path
-* Each Graph Path has a Prompt group associated with it. A Prompt group is a list of prompts that you want to build the Graph path around. When the AI Agent is running, every incoming prompt will be matched to one or more prompt groups, and when the AI Agent is performing tool calls when running inside a specific Graph path, it will only be able to execute the Operations and Functions in the same Graph path.
+* Topics are like a sub-graph of the AGS that each xpander.ai AI Agent is built around. A Topic allows you to create a closed area of operations in your AI Agent, in order to increase the reliability and accuracy of how the AI Agent traverses the different Operations in the AGS.
 
+* Each Topic has a list of Prompts associated with it. You can view and edit prompts by clicking the Prompts button in the header of the topic. When the AI Agent is running, every incoming prompt will be matched to one or more prompt groups, and when the AI Agent is performing tool calls when running inside a specific Topic, it will only be able to execute the Operations within that Topic.
 
-<Tip>Example: You can create a Prompt Group that will contain prompts referring to stock prices. Then, in the sub-graph, make sure that only Operations/Functions relevant to checking stock prices are added. This means that any incoming prompt to the AI Agent that is semnatically similar to the prompts in the *Stock prices* will limit the AI Agent to the Operations/Functions in the same sub-graph</Tip>
+<Tip>Example: You can create a Topic that will contain Operations referring to stock prices. Then, in the sub-graph, make sure that only Operations/Functions relevant to checking stock prices are added. This means that any incoming prompt to the AI Agent that is semnatically similar to the prompts in the *Stock prices* will limit the AI Agent to the Operations/Functions in the same sub-graph</Tip>
