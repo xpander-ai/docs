@@ -1,18 +1,17 @@
 ---
 title: "Sources and triggers"
+description: "Running and deploying your AI Agent"
 ---
 
-Source nodes allow you to connect to your AI Agent from external sources (Slack, Teams, Web chat experiences) or to trigger it (via Task automation, API webhooks).
+Sources make your AI Agent versatile - you can configure sources for chatting to your AI Agent, using it via SDK, chatting with it on Slack and Teams, calling it via Webhook, and more.
 
-Generally, you can add Source nodes to the graph, and determine which Graph paths they are connected to. When connecting a Source node to a graph path, all prompts flowing from the Source node (i.e. from your AI application using the xpander SDK), the AI Application is allowed to traverse the connected graph path.
+Generally, you add Sources to the AGS, and determine which Topics they are connected to. When connecting a Source to a Topic, all prompts flowing from the Source (i.e. from your AI application using the xpander SDK), the AI Application is allowed to traverse Operations in the Topic.
 
 ## Source node types:
 
-### Workbench
-
-This is the default Source node that represents the Chat interface. By default, it is connected to the default Prompt group in the Graph system. Meaning that any prompt you send in the Agent Builder Chat interface is allowed to traverse the default Graph path.
-
 ### SDK
+
+The most powerful Source, used by developers and AI Engineers. When developing your xpander AI Agent on your own, use the xpander SDK to to leverage the benefits of AGS and Agentic Interfaces within your AI Agent's code.
 
 ### Chat
 
@@ -21,3 +20,5 @@ This is the default Source node that represents the Chat interface. By default, 
 ### Webhook
 
 ### SaaS Application triggers
+
+Coming soon!
