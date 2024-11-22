@@ -1,5 +1,5 @@
 ---
-title: "Agent Graph System Topics"
+title: "Topics"
 description: "Topics are areas or domains that your AI Agent can work within"
 ---
 
@@ -9,4 +9,4 @@ In the Agent Graph System (AGS), you can create multiple Topics. Each Topic is r
 
 * Each Topic has a list of Prompts associated with it. You can view and edit prompts by clicking the Prompts button in the header of the topic. When the AI Agent is running, every incoming prompt will be matched to one or more prompt groups, and when the AI Agent is performing tool calls when running inside a specific Topic, it will only be able to execute the Operations within that Topic.
 
-<Tip>Example: You can create a Topic that will contain Operations referring to stock prices. Then, in the sub-graph, make sure that only Operations/Functions relevant to checking stock prices are added. This means that any incoming prompt to the AI Agent that is semnatically similar to the prompts in the *Stock prices* will limit the AI Agent to the Operations/Functions in the same sub-graph</Tip>
+<Tip>Example: You can create a Topic that will contain Operations referring to stock prices, and have a list of prompts related to Stock prices associated with that Topic. Any time an incoming prompt will be semantically similar to the prompts associated with the Topic, the AGS will limit the AI Agent to traverse the relevant topic, until it completes the task.</Tip>
