@@ -82,7 +82,7 @@
       "pages": [
         "userguides/core-concepts/concepts",
         "userguides/core-concepts/agent-builder",
-        "userguides/core-concepts/ai-connectors",
+        "userguides/core-concepts/agentic-interfaces",
         "userguides/core-concepts/agent-graph-system",
         "userguides/core-concepts/prompt-groups",
         "userguides/core-concepts/source-nodes",
