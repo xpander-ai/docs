@@ -1,34 +1,45 @@
 ---
-title: 'Using the AI Agent Builder'
+title: "Using the AI Agent Builder"
+description: "A powerful builder with a focus on Agentic actions and graph enforcement "
 ---
 
-The Agent Builder in xpander.ai is a powerful, visual tool that empowers developers to design, configure, and deploy intelligent AI Agents capable of autonomously performing complex tasks. Read more in <a href="/userguides/core-concepts/agent-builder">Core Concepts section</a>
+The xpander.ai Agent Builder is a visual tool that empowers developers to design, configure, and deploy intelligent AI Agents capable of autonomously performing complex tasks. Read more in <a href="/userguides/core-concepts/agent-builder">Core Concepts section</a>
 
 ## Agent Builder basics
-The most basic concept you should familiarize yourself with when using the AI Agent builder is the way that the automatic Action Graph system works. The Agent Builder screen is split into two parts:
 
-* The **Chat interface** on the left. Use the interface to chat with your Agent so it automatically builds the Action Graph System. Essentially, after selecting Connectors and functions that are _enabled_ in your Agent, prompts in the Chat interface are sent to the Agent Builder, and it in turn builds the Graph System.
-* The **Graph System interface** on the right. The Graph System is generated automatically as you chat to your Agent in the Chat interface. Prompts in the Chat interface are sent to the Agent Builder (visually, it is using the Workbench Source Node, see more below) which automatically builds the Action Graph system.
+The basic concept of using the AI Agent builder is that the Action Graph System (AGS) is automatically generated as you feed the Builder with prompts. You can then edit the AGS as you see fit.
+
+The Agent Builder screen is split into two parts:
+
+* The **Chat interface** on the left. Use the interface to chat with your Agent so it automatically builds the AGS. Essentially, after enabling Agentic Interfaces, prompts in the Chat interface are sent to the Agent Builder which builds the AGS.
+
+* The **Graph System interface** on the right. The Graph System is generated automatically as you chat to your Agent in the Chat interface. Prompts in the Chat interface are sent to the Agent Builder which automatically builds the Action Graph system.
 
 ## Agent Builder views
+
 The Agent Builder screen has two modes:
-* The **Builder** view is where you build your AI Agent by prompting the Chat interface and automatically constructing the Agent Graph system.
+
+* The **Builder** view is where you build your AI Agent by prompting the Chat interface and automatically constructing the Agent Graph system. You can use the Build tab to build the Agent, or the Test tab to chat to your AI Agent without modifying the AGS or changing any configuration.
+
 * The **Activity** view is where you can see logs, metrics, traces and analytics about the use of your agent.
 
-## Enabling Operations and Functions for your AI Agent
-When building your agent, you configure which Operations (stemming from Connectors) and Functions it is able to execute. You can edit the selection at any time. The selected Operations and Functions are essentially the list of Tools that the Agent will use when running. They also behave as a closed world of tools that the Agent Builder will select from when prompted through the Chat interface.
+## Enabling Operations for your AI Agent
+
+When building your agent, you configure which Operations it is able to execute. You can edit the selection at any time. The selected Operations are essentially the list of Tools that the Agent will use when running. They also behave as a closed set of tools that the Agent Builder will select from when prompted through the Chat interface.
 
 ## Basic steps to start building your AI Agent
+
 Follow these steps to select Operations and Functions, and start building the Agent Graph:
 
-1. In the AI Agents screen, click "Create"
-2. In the Agent Builder screen, click the ``+`` button
-3. Click the `Connectors & Functions` button
+1. In the AI Agents list screen, click "New AI Agent"
+
+2. In the Agent Builder screen, click the `+` button
+
+3. Click the `Interfaces` button
+
 4. Select which Operations and Functions you would like your AI Agent to have access to
-<Note>You may first need to *Enable* Connectors from the Connectors screen</Note>
-5. Use the Chat interface in the Agent builder to send prompts and start automatically building the Agent Graph system for your AI Agent.
+   <Note>You may first need to *Enable* Connectors from the Connectors screen</Note>
 
-In the next pages of the user guide, you'll learn about Graph paths and Prompt groups, as well as connect to your agent externally and trigger it.
+5. Use the Chat interface in the Agent builder to send prompts and start automatically building the Agent Graph System for your AI Agent.
 
-
-
+In the next pages of the user guide, you'll learn about Topics, as well as connect to your agent externally and trigger it.
