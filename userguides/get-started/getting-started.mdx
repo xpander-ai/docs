@@ -8,6 +8,7 @@ All AI agents in xpander are built using our powerful [Agent Graph System](/user
 After designing your agent, you have two deployment options:
 
 1. **Serverless Platform** - Deploy directly from the console using our managed LLMs
+
 2. **SDK with Your Own LLM** - Use the same agent with your preferred LLM deployment
 
 ## Start with the Visual Agent Builder
@@ -15,39 +16,53 @@ After designing your agent, you have two deployment options:
 Regardless of your deployment choice, begin by designing your agent in the visual builder:
 
 1. Sign up at [app.xpander.ai](https://app.xpander.ai)
+
 2. Create a new agent using the [Agent Builder](/userguides/ai-agent-builder/using-agent-builder)
+
 3. Design your agent's workflow and test its behavior
+
 4. Choose your deployment option
 
 The Agent Builder provides:
-- Visual workflow design
-- Automatic [Agent Graph System](/userguides/core-concepts/agent-graph-system) generation
-- Real-time testing
-- Multiple [Source Nodes](/userguides/core-concepts/source-nodes) (Teams, Slack, WebUI, Webhooks)
+
+* Visual workflow design
+
+* Automatic [Agent Graph System](/userguides/core-concepts/agent-graph-system) generation
+
+* Real-time testing
+
+* Multiple [Source Nodes](/userguides/core-concepts/source-nodes) (Teams, Slack, WebUI, Webhooks)
+
+<iframe width="1000" height="550" src="https://www.loom.com/embed/27037692bb844391a435e7a2206b806d?sid=f9f78c07-a05e-4007-afb4-4c620ed131f1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen />
 
 ## Choose Your Deployment
 
 ### Option 1: Serverless Platform
+
 After designing your agent, you can start interacting with it using the serverless platform:
 
 1. Choose your [Source Node](/userguides/core-concepts/source-nodes) (Slack, WebUI, or Webhook)
+
 2. Click "Save" in the Agent Builder
+
 3. Your agent is ready to use!
 
-
 <Tip>
-    You can add a "task" type source node to your agent to schedule its execution. This will automatically inject the specified "prompt" into the agent and initiate its run.
+  You can add a "task" type source node to your agent to schedule its execution. This will automatically inject the specified "prompt" into the agent and initiate its run.
 </Tip>
 
-
 ### Option 2: SDK with Your Own LLM
+
 Use the same agent design with your preferred LLM deployment:
 
 <Steps>
   <Step title="Prerequisites">
     1. Install Python 3.8 or higher
+
     2. Install node.js 18 or higher
+
     3. xpander account and API key
+
     4. LLM provider API key
   </Step>
 
@@ -67,7 +82,7 @@ Use the same agent design with your preferred LLM deployment:
     ```
   </Step>
 
-    <Step title="Run">
+  <Step title="Run">
     ```python
     llm_response = openai_client.chat.completions.create(
         model="gpt-4",
@@ -83,16 +98,25 @@ Use the same agent design with your preferred LLM deployment:
 # Next Steps
 
 1. **Start Building AI Agents:**
-   - Dive into the [visual builder](/userguides/ai-agent-builder/using-agent-builder) to start crafting your AI agent.
-   - Discover the power of [agentic interfaces](/userguides/core-concepts/ai-connectors) and the [Agent Graph System](/userguides/core-concepts/agent-graph-system).
+
+   * Dive into the [visual builder](/userguides/ai-agent-builder/using-agent-builder) to start crafting your AI agent.
+
+   * Discover the power of [agentic interfaces](/userguides/core-concepts/ai-connectors) and the [Agent Graph System](/userguides/core-concepts/agent-graph-system).
 
 2. **Select Your Agent Runtime and LLM:**
-   - **Option 1: Serverless Platform:**
-     - Access [app.xpander.ai](https://app.xpander.ai) to get started.
-     - Consult the [Agent Builder guide](/userguides/ai-agent-builder/using-agent-builder) for detailed instructions.
-     - Investigate the range of [Source Nodes](/userguides/core-concepts/source-nodes) available.
-   - **Option 2: Bring your own LLM:**
-     - Refer to the [Bring Your Own LLM Guide](/userguides/get-started/bring-your-own-llm) for setup.
-     - Understand [SDK Source Nodes](/userguides/core-concepts/source-nodes#sdk-source-nodes) for integration.
 
-Need assistance? Join our [Discord community](https://discord.gg/xpander) or consult our [documentation](https://docs.xpander.ai). 
+   * **Option 1: Serverless Platform:**
+
+     * Access [app.xpander.ai](https://app.xpander.ai) to get started.
+
+     * Consult the [Agent Builder guide](/userguides/ai-agent-builder/using-agent-builder) for detailed instructions.
+
+     * Investigate the range of [Source Nodes](/userguides/core-concepts/source-nodes) available.
+
+   * **Option 2: Bring your own LLM:**
+
+     * Refer to the [Bring Your Own LLM Guide](/userguides/get-started/bring-your-own-llm) for setup.
+
+     * Understand [SDK Source Nodes](/userguides/core-concepts/source-nodes#sdk-source-nodes) for integration.
+
+Need assistance? Join our [Discord community](https://discord.gg/xpander) or consult our [documentation](https://docs.xpander.ai).
