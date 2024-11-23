@@ -66,6 +66,7 @@
       "group": "AI Agent Builder",
       "pages": [
         "userguides/ai-agent-builder/using-agent-builder",
+        "userguides/ai-agent-builder/agent-graph-system",
         "userguides/ai-agent-builder/topics",
         "userguides/ai-agent-builder/source-nodes"
       ]
