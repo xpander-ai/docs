@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Xpander AI",
+  "name": "xpander.ai",
   "theme": "venus",
   "logo": {
     "dark": "/logo/logo-dark-mode.png",
@@ -37,9 +37,21 @@
   },
   "anchors": [
     {
+      "name": "xpander.ai Website",
+      "icon": "globe-pointer",
+      "url": "https://xpander.ai",
+      "iconType": "regular"
+    },
+    {
       "name": "xpander.ai Console",
       "icon": "code",
       "url": "https://app.xpander.ai",
+      "iconType": "regular"
+    },
+    {
+      "name": "Community Slack",
+      "icon": "slack",
+      "url": "https://join.slack.com/t/xpandercommunity/shared_invite/zt-2mt2xkxkz-omM7f~_h2jcuzFudrYtZQQ",
       "iconType": "regular"
     },
     {
