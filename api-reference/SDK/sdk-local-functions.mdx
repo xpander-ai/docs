@@ -237,36 +237,6 @@ while True:
 print(llm_response['message']['content'])
 ```
 </CodeGroup>
-## Key Differences Between OpenAI and Ollama Implementations
-
-1. **Response Structure**:
-   - OpenAI: Uses `llm_response.choices[0].message`
-   - Ollama: Uses `llm_response['message']`
-
-2. **Tool Call Extraction**:
-   - OpenAI: Requires `.model_dump()`
-   - Ollama: Requires `llm_provider=LLMProvider.OLLAMA`
-
-3. **Model Specification**:
-   - OpenAI: Uses `"gpt-4"`
-   - Ollama: Uses `"qwen2.5-coder:14b"`
-
-## Best Practices for Local Function Implementation
-
-1. **Memory Management**:
-   - Keep track of conversation steps
-   - Include system prompts for context
-   - Maintain tool responses in memory
-
-2. **Error Handling**:
-   - Use default values for parameters
-   - Validate file operations
-   - Check tool call responses
-
-3. **Loop Control**:
-   - Use clear exit conditions
-   - Track number of calls
-   - Include safety limits if needed
 
 ## File Operation Functions
 
