@@ -13,27 +13,90 @@ While xpander.ai offers a serverless solution where you can use AI agents withou
 
 <Steps>
   <Step title="Choose Your LLM Provider">
-    To integrate your LLM with xpander's tools and local functions, you'll need to select **one** LLM provider and model combination. Import the necessary enums from the SDK:
+    To integrate your LLM with xpander's tools and local functions, you'll need to select **one** LLM provider and model combination. Import the necessary packages and initialize your client:
 
     <CodeGroup>
     ```python OpenAI
-    from xpander_sdk import OpenAISupportedModels, LLMProvider
+    from xpander_sdk import XpanderClient
+    from openai import OpenAI
+    from dotenv import load_dotenv
+    import os
+    load_dotenv()
+
+    # Initialize credentials
+    xpanderAPIKey = os.environ.get("XPANDER_API_KEY","")
+    xpanderAgentID = os.environ.get("XPANDER_AGENT_ID", "")
+    openaiAPIKey = os.environ.get("OPENAI_API_KEY", "")
+
+    # Initialize OpenAI client
+    openai_client = OpenAI(api_key=openaiAPIKey)
+
+    # Initialize xpander client and get agent
+    xpander_client = XpanderClient(api_key=xpanderAPIKey)
+    agent1 = xpander_client.agents.get(agent_id=xpanderAgentID)
     ```
 
     ```python Amazon Bedrock
-    from xpander_sdk import AmazonBedrockSupportedModels, LLMProvider
+    from xpander_sdk import XpanderClient
+    import boto3
+    from dotenv import load_dotenv
+    import os
+    load_dotenv()
+
+    # Initialize credentials
+    xpanderAPIKey = os.environ.get("XPANDER_API_KEY","")
+    xpanderAgentID = os.environ.get("XPANDER_AGENT_ID", "")
+
+    session = boto3.Session(profile_name='your-profile')  # or use default credentials
+    bedrock_client = session.client('bedrock-runtime', region_name='us-west-2')
+
+    # Initialize xpander client and get agent
+    xpander_client = XpanderClient(api_key=xpanderAPIKey)
+    agent1 = xpander_client.agents.get(agent_id=xpanderAgentID)
     ```
 
     ```python Nvidia NIM
-    from xpander_sdk import NvidiaNIMSupportedModels, LLMProvider
+    from xpander_sdk import XpanderClient
+    from openai import OpenAI
+    from dotenv import load_dotenv
+    import os
+    load_dotenv()
+
+    # Initialize credentials
+    xpanderAPIKey = os.environ.get("XPANDER_API_KEY","")
+    xpanderAgentID = os.environ.get("XPANDER_AGENT_ID", "")
+    nvidiaAPIKey = os.environ.get("NVIDIA_API_KEY", "")
+
+    # Initialize NVIDIA NIM client
+    nvidia_client = OpenAI(
+        base_url="https://integrate.api.nvidia.com/v1",
+        api_key=nvidiaAPIKey
+    )
+
+    # Initialize xpander client and get agent
+    xpander_client = XpanderClient(api_key=xpanderAPIKey)
+    agent1 = xpander_client.agents.get(agent_id=xpanderAgentID)
     ```
 
     ```python Ollama
-    from xpander_sdk import OllamaSupportedModels, LLMProvider
+    from xpander_sdk import XpanderClient
+    import ollama
+    from dotenv import load_dotenv
+    import os
+    load_dotenv()
+
+    # Initialize credentials
+    xpanderAPIKey = os.environ.get("XPANDER_API_KEY","")
+    xpanderAgentID = os.environ.get("XPANDER_AGENT_ID", "")
+
+    # Initialize Ollama client
+    ollama_client = ollama.Client()
+
+    # Initialize xpander client and get agent
+    xpander_client = XpanderClient(api_key=xpanderAPIKey)
+    agent1 = xpander_client.agents.get(agent_id=xpanderAgentID)
     ```
-
-
-</CodeGroup>
+    </CodeGroup>
   </Step>
 
   <Step title="Get Tools to the LLM">
@@ -49,12 +112,22 @@ While xpander.ai offers a serverless solution where you can use AI agents withou
     ```
 
     ```python Amazon Bedrock
-    llm_response = bedrock_client.invoke_model(
-        modelId="anthropic.claude-3-haiku-20240307-v1:0",
-        input={
-            "messages": memory,
-            "functions": agent1.get_tools(llm_provider=LLMProvider.AMAZON_BEDROCK)
-        }
+    # Get tools configuration for Bedrock
+    tool_config = {
+        "tools": agent1.get_tools(llm_provider=LLMProvider.AMAZON_BEDROCK)
+    }
+
+    # Prepare message format
+    messages = [{
+        "role": "user",
+        "content": [{"text": prompt}]
+    }]
+    
+    # Make API call to Bedrock
+    llm_response = bedrock_client.converse(
+        modelId="anthropic.claude-3-5-sonnet-20241022-v2:0",
+        messages=messages,
+        toolConfig=tool_config
     )
     ```
 
@@ -83,21 +156,53 @@ While xpander.ai offers a serverless solution where you can use AI agents withou
     ```python OpenAI
     tools_to_run = XpanderClient.extract_tool_calls(llm_response=llm_response.model_dump(), llm_provider=LLMProvider.OPENAI)
     tool_responses = agent1.run_tools(tools_to_run)
+    for response in tool_responses:
+        print({
+            "function_name": response.function_name,
+            "status_code": response.status_code,
+            "result": response.result,
+            "payload": response.payload,
+            "tool_call_id": response.tool_call_id
+        })
     ```
 
     ```python Amazon Bedrock
-    tools_to_run = XpanderClient.extract_tool_calls(llm_response=llm_response.model_dump(), llm_provider=LLMProvider.AMAZON_BEDROCK)
+    tools_to_run = XpanderClient.extract_tool_calls(llm_response=llm_response, llm_provider=LLMProvider.AMAZON_BEDROCK)
     tool_responses = agent1.run_tools(tools_to_run)
+    for response in tool_responses:
+        print({
+            "function_name": response.function_name,
+            "status_code": response.status_code,
+            "result": response.result,
+            "payload": response.payload,
+            "tool_call_id": response.tool_call_id
+        })
     ```
 
     ```python Ollama
     tools_to_run = XpanderClient.extract_tool_calls(llm_response=llm_response, llm_provider=LLMProvider.OLLAMA)
     tool_responses = agent1.run_tools(tools_to_run)
+    for response in tool_responses:
+        print({
+            "function_name": response.function_name,
+            "status_code": response.status_code,
+            "result": response.result,
+            "payload": response.payload,
+            "tool_call_id": response.tool_call_id
+        })
     ```
 
     ```python Nvidia NIM
     tools_to_run = XpanderClient.extract_tool_calls(llm_response=llm_response.model_dump(), llm_provider=LLMProvider.NVIDIA_NIM)
     tool_responses = agent1.run_tools(tools_to_run)
+    for response in tool_responses:
+        print({
+            "function_name": response.function_name,
+            "status_code": response.status_code,
+            "result": response.result,
+            "payload": response.payload,
+            "tool_call_id": response.tool_call_id
+        })
     ```
     </CodeGroup>
   </Step>
