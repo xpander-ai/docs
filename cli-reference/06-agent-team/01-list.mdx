@@ -1,0 +1,123 @@
+---
+title: 'List Teams'
+description: 'List all AI Agent Teams in your organization'
+---
+
+# List Teams Command
+
+The `agent team list` command displays all AI Agent Teams in your organization and their member agents.
+
+## Usage
+
+```bash
+xpander agent team list [--format <format>]
+```
+
+## Options
+
+| Option | Description |
+| --- | --- |
+| `--format <format>` | Optional. Output format: `table` (default), `json`, or `wide` |
+
+## Examples
+
+### Default List View
+
+```bash
+xpander agent team list
+```
+
+Response:
+```bash
+TEAM NAME         AGENTS    STATUS     LAST ACTIVE
+Support Team      3         Active     2024-02-19 13:45
+Analytics Team    2         Active     2024-02-19 12:30
+DevOps Team       4         Active     2024-02-19 14:15
+```
+
+### Wide Format
+
+```bash
+xpander agent team list --format wide
+```
+
+Response:
+```bash
+TEAM: Support Team
+├── Agents (3):
+│   ├── agent_123: Support Agent (Active)
+│   ├── agent_124: Ticket Router (Active)
+│   └── agent_125: Knowledge Base (Active)
+├── Created: 2024-01-15 10:30:00 UTC
+├── Last Active: 2024-02-19 13:45:23 UTC
+└── Status: Active
+
+TEAM: Analytics Team
+├── Agents (2):
+│   ├── agent_234: Data Analyzer (Active)
+│   └── agent_235: Report Generator (Active)
+├── Created: 2024-01-20 15:45:00 UTC
+├── Last Active: 2024-02-19 12:30:15 UTC
+└── Status: Active
+```
+
+### JSON Format
+
+```bash
+xpander agent team list --format json
+```
+
+Response:
+```json
+{
+  "teams": [
+    {
+      "name": "Support Team",
+      "status": "active",
+      "created_at": "2024-01-15T10:30:00Z",
+      "last_active": "2024-02-19T13:45:23Z",
+      "agents": [
+        {
+          "id": "agent_123",
+          "name": "Support Agent",
+          "status": "active",
+          "role": "primary"
+        },
+        {
+          "id": "agent_124",
+          "name": "Ticket Router",
+          "status": "active",
+          "role": "routing"
+        },
+        {
+          "id": "agent_125",
+          "name": "Knowledge Base",
+          "status": "active",
+          "role": "knowledge"
+        }
+      ],
+      "metrics": {
+        "conversations_today": 145,
+        "avg_response_time": "1.2s",
+        "success_rate": "98.5%"
+      }
+    },
+    // ... more teams
+  ]
+}
+```
+
+## Notes
+
+- Teams are collections of agents working together
+- The wide format includes:
+  - Detailed agent information
+  - Team creation date
+  - Activity metrics
+  - Performance statistics
+- Use `xpander agent team details <team_name>` for more information
+- Teams can be managed using:
+  - `agent team create`
+  - `agent team add`
+  - `agent team remove`
+  - `agent team delete` 

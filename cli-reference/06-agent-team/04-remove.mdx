@@ -1,0 +1,104 @@
+---
+title: 'Remove Agent from Team'
+description: 'Remove an AI Agent from a team'
+---
+
+# Remove Agent from Team Command
+
+The `agent team remove` command removes an AI Agent from a team, revoking team-specific permissions and cleaning up associated resources.
+
+## Usage
+
+```bash
+xpander agent team remove <team_name> <agent_id> [--force] [--keep-state]
+```
+
+## Options
+
+| Option | Description |
+| --- | --- |
+| `--force` | Optional. Skip confirmation prompt |
+| `--keep-state` | Optional. Preserve agent's team-specific state and configuration |
+
+## Examples
+
+### Basic Agent Removal
+
+```bash
+xpander agent team remove "Support Team" agent_123
+```
+
+Response:
+```bash
+Removing Agent from Team
+=======================
+Team: Support Team
+Agent: Support Agent (agent_123)
+Role: primary
+
+This will:
+- Revoke team permissions
+- Remove communication channels
+- Clear shared resources
+- Delete team-specific configuration
+
+Do you want to proceed? [y/N] y
+
+Step 1/3: Revoking Access
+✓ Team permissions revoked
+✓ Communication channels closed
+✓ Shared resources released
+
+Step 2/3: Cleaning Up
+✓ Team configuration removed
+✓ Collaboration links deleted
+✓ Cache cleared
+
+Step 3/3: Verification
+✓ Agent removed from team
+✓ Team state synchronized
+✓ Other team members notified
+
+Agent successfully removed from team!
+```
+
+### Force Remove with State Preservation
+
+```bash
+xpander agent team remove "Analytics Team" agent_234 --force --keep-state
+```
+
+Response:
+```bash
+Removing Agent from Team
+=======================
+✓ Team permissions revoked
+✓ Communication channels closed
+✓ Team-specific state preserved
+✓ Agent removed from team
+```
+
+## Notes
+
+- The remove command:
+  - Revokes team-specific permissions
+  - Removes communication channels
+  - Cleans up shared resources
+  - Updates team configuration
+- Use `--keep-state` if you plan to:
+  - Re-add the agent later
+  - Preserve learned behaviors
+  - Maintain configuration
+- The `--force` flag:
+  - Skips confirmation prompts
+  - Useful for scripted operations
+  - Use with caution
+- Removal affects:
+  - Team composition
+  - Collaboration patterns
+  - Resource allocation
+  - Communication flows
+- The agent remains registered and can be:
+  - Added to other teams
+  - Re-added to the same team
+  - Used independently 

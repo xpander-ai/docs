@@ -1,0 +1,99 @@
+---
+title: 'Agent Instrumentation'
+description: 'Get instrumentation code for integrating xpander.ai capabilities into an existing AI Agent'
+---
+
+# Agent Instrumentation Command
+
+The `agent instrumentation` command retrieves the code snippet needed to integrate xpander.ai capabilities into an existing AI Agent (e.g., LlamaIndex, LangChain, or CrewAI).
+
+## Usage
+
+```bash
+xpander agent instrumentation <agent_id> [--framework <framework>] [--language <language>]
+```
+
+## Options
+
+| Option | Description |
+| --- | --- |
+| `--framework <framework>` | Optional. Target framework: `llamaindex`, `langchain`, `crewai`, or `custom` (default: auto-detect) |
+| `--language <language>` | Optional. Programming language: `python`, `typescript`, or `javascript` (default: python) |
+
+## Examples
+
+### Default Python Integration
+
+```bash
+xpander agent instrumentation agent_123
+```
+
+Response:
+```python
+from xpander import XpanderAgent
+from xpander.tools import NotionTool, SlackTool
+from xpander.interfaces import WebInterface
+
+# Initialize xpander agent wrapper
+xpander_agent = XpanderAgent(
+    agent_id="agent_123",
+    api_key="your_api_key"  # Or use XPANDER_API_KEY env variable
+)
+
+# Your existing agent code
+from langchain import OpenAI
+agent = OpenAI()
+
+# Wrap your agent with xpander capabilities
+instrumented_agent = xpander_agent.instrument(agent)
+
+# Now your agent has access to:
+# - State management
+# - Tool integration
+# - Interface support
+# - Performance monitoring
+```
+
+### TypeScript Integration
+
+```bash
+xpander agent instrumentation agent_123 --language typescript
+```
+
+Response:
+```typescript
+import { XpanderAgent } from '@xpander/sdk';
+import { NotionTool, SlackTool } from '@xpander/tools';
+import { WebInterface } from '@xpander/interfaces';
+
+// Initialize xpander agent wrapper
+const xpanderAgent = new XpanderAgent({
+  agentId: 'agent_123',
+  apiKey: 'your_api_key'  // Or use XPANDER_API_KEY env variable
+});
+
+// Your existing agent code
+const agent = new OpenAI();
+
+// Wrap your agent with xpander capabilities
+const instrumentedAgent = await xpanderAgent.instrument(agent);
+
+// Now your agent has access to:
+// - State management
+// - Tool integration
+// - Interface support
+// - Performance monitoring
+```
+
+## Notes
+
+- The instrumentation code:
+  - Preserves your existing agent's functionality
+  - Adds xpander.ai capabilities like state management
+  - Enables tool and interface integration
+  - Provides monitoring and observability
+- API keys can be provided via:
+  - Code initialization
+  - Environment variables
+  - Configuration files
+- Framework auto-detection uses your project's dependencies 

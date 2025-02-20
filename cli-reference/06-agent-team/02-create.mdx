@@ -1,0 +1,148 @@
+---
+title: 'Create Team'
+description: 'Create a new AI Agent Team'
+---
+
+# Create Team Command
+
+The `agent team create` command creates a new team for organizing and managing multiple AI Agents that work together.
+
+## Usage
+
+```bash
+xpander agent team create <team_name> [--description <text>] [--config <json>]
+```
+
+## Options
+
+| Option | Description |
+| --- | --- |
+| `--description <text>` | Optional. Description of the team's purpose |
+| `--config <json>` | Optional. Team configuration in JSON format |
+
+## Examples
+
+### Basic Team Creation
+
+```bash
+xpander agent team create "Support Team" \
+  --description "Customer support agents handling tickets and inquiries"
+```
+
+Response:
+```bash
+Creating AI Agent Team
+=====================
+Name: Support Team
+Description: Customer support agents handling tickets and inquiries
+
+✓ Team created successfully
+✓ Default configuration applied
+✓ Ready to add agents
+
+Team Details:
+- ID: team_123
+- Created: 2024-02-19 15:30:00 UTC
+- Status: Active
+```
+
+### Advanced Team Creation with Configuration
+
+```bash
+xpander agent team create "Analytics Team" \
+  --description "Data analysis and reporting agents" \
+  --config '{
+    "collaboration": {
+      "mode": "hierarchical",
+      "roles": {
+        "primary": ["data_analyzer"],
+        "secondary": ["report_generator"],
+        "support": ["data_collector"]
+      }
+    },
+    "communication": {
+      "sync_interval": "5m",
+      "shared_memory": true,
+      "broadcast_events": ["analysis_complete", "report_ready"]
+    },
+    "permissions": {
+      "data_access": ["analytics_db", "reporting_tools"],
+      "api_access": ["internal", "external"],
+      "resource_limits": {
+        "max_concurrent_tasks": 10,
+        "max_memory_per_agent": "2GB"
+      }
+    }
+  }'
+```
+
+## Configuration Options
+
+The team configuration supports various settings to control how agents work together:
+
+### Collaboration Settings
+```json
+{
+  "collaboration": {
+    "mode": "hierarchical|peer|hybrid",
+    "roles": {
+      "primary": ["string"],
+      "secondary": ["string"],
+      "support": ["string"]
+    },
+    "workflow": {
+      "type": "sequential|parallel|dynamic",
+      "stages": ["string"]
+    }
+  }
+}
+```
+
+### Communication Settings
+```json
+{
+  "communication": {
+    "sync_interval": "string",
+    "shared_memory": boolean,
+    "broadcast_events": ["string"],
+    "message_routing": {
+      "pattern": "pubsub|p2p|broadcast",
+      "filters": ["string"]
+    }
+  }
+}
+```
+
+### Permission Settings
+```json
+{
+  "permissions": {
+    "data_access": ["string"],
+    "api_access": ["string"],
+    "resource_limits": {
+      "max_concurrent_tasks": number,
+      "max_memory_per_agent": "string",
+      "rate_limits": {
+        "requests_per_minute": number,
+        "burst": number
+      }
+    }
+  }
+}
+```
+
+## Notes
+
+- Team names must be unique within your organization
+- Default configuration is applied if not specified
+- Teams can be modified after creation using:
+  - `agent team update`
+  - `agent team add`
+  - `agent team remove`
+- Configuration determines:
+  - How agents collaborate
+  - Communication patterns
+  - Resource allocation
+  - Access permissions
+- Use `agent team list` to view all teams
+- Use `agent team details` to view team configuration 

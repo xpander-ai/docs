@@ -1,0 +1,98 @@
+---
+title: "Slack Bots"
+description: "Build and deploy AI agents as Slack bots"
+---
+
+# Slack Bots
+
+Integrate your AI agents with Slack to create powerful workplace automation and assistance tools.
+
+## Setup
+
+### Prerequisites
+
+- Slack workspace admin access
+- Slack App credentials
+- xpander.ai account
+
+### Configuration
+
+```typescript
+// Initialize Slack bot
+const slackBot = new SlackInterface({
+  token: process.env.SLACK_BOT_TOKEN,
+  signingSecret: process.env.SLACK_SIGNING_SECRET,
+  appToken: process.env.SLACK_APP_TOKEN
+});
+
+// Connect agent to Slack
+agent.addInterface(slackBot);
+
+// Configure event handlers
+slackBot.on('message', async (event) => {
+  const response = await agent.process(event.text);
+  await slackBot.reply(event.channel, response);
+});
+```
+
+## Features
+
+- Direct messaging
+- Channel interactions
+- File sharing
+- Rich messages
+- Interactive components
+- Slash commands
+
+## Interactive Components
+
+```typescript
+// Add interactive components
+slackBot.addComponent({
+  type: 'button',
+  text: 'Approve',
+  action_id: 'approve_request',
+  handler: async (interaction) => {
+    // Handle button click
+  }
+});
+
+// Add modal
+slackBot.addModal({
+  title: 'Create Task',
+  blocks: [
+    {
+      type: 'input',
+      label: 'Task Name',
+      action_id: 'task_name'
+    }
+  ]
+});
+```
+
+## Event Handling
+
+Handle various Slack events:
+
+- Messages
+- Reactions
+- File uploads
+- User mentions
+- Channel events
+- App mentions
+
+## Best Practices
+
+- Use thread replies
+- Implement rate limiting
+- Handle errors gracefully
+- Provide help commands
+- Monitor bot health
+
+## Advanced Features
+
+- Workflow automation
+- Custom slash commands
+- App Home customization
+- Message scheduling
+- Analytics tracking

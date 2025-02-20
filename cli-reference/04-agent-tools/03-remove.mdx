@@ -1,0 +1,93 @@
+---
+title: 'Remove Tool'
+description: 'Remove a tool from an AI Agent'
+---
+
+# Remove Tool Command
+
+The `agent tools remove` command removes a configured tool from an AI Agent, revoking its access and cleaning up associated resources.
+
+## Usage
+
+```bash
+xpander agent tools remove <agent_id> <tool_name> [--force] [--keep-auth]
+```
+
+## Options
+
+| Option | Description |
+| --- | --- |
+| `--force` | Optional. Skip confirmation prompt |
+| `--keep-auth` | Optional. Preserve authentication credentials for future use |
+
+## Examples
+
+### Basic Tool Removal
+
+```bash
+xpander agent tools remove agent_123 notion
+```
+
+Response:
+```bash
+Removing Notion Tool
+===================
+Agent: Support Agent (agent_123)
+Tool: notion
+
+This will:
+- Revoke tool access
+- Remove configuration
+- Delete authentication credentials
+- Clean up associated resources
+
+Do you want to proceed? [y/N] y
+
+Step 1/3: Revoking Access
+✓ API access revoked
+✓ OAuth tokens revoked
+✓ Permissions removed
+
+Step 2/3: Cleaning Up
+✓ Configuration removed
+✓ Credentials deleted
+✓ Cache cleared
+
+Step 3/3: Verification
+✓ Tool access verified as removed
+✓ Agent configuration updated
+
+Tool successfully removed!
+```
+
+### Force Remove with Preserved Auth
+
+```bash
+xpander agent tools remove agent_123 github --force --keep-auth
+```
+
+Response:
+```bash
+Removing GitHub Tool
+===================
+✓ Access revoked
+✓ Configuration removed
+✓ Authentication preserved for future use
+✓ Tool removed successfully
+```
+
+## Notes
+
+- The remove command:
+  - Revokes all tool access permissions
+  - Removes tool-specific configuration
+  - Cleans up associated resources
+  - Updates agent configuration
+- Use `--keep-auth` if you plan to:
+  - Re-add the tool later
+  - Use the same authentication with another agent
+- The `--force` flag:
+  - Skips confirmation prompts
+  - Useful for scripted operations
+  - Use with caution
+- Removal is permanent unless `--keep-auth` is used 

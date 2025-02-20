@@ -1,0 +1,52 @@
+---
+title: 'Get Tools'
+openapi: 'POST /{agentId}/tools'
+authMethod: 'key'
+---
+
+<Responses>
+  <Response code="200" description="Successful Response">
+    <ResponseExample>
+    ```yaml
+    - id: Get all events
+  name: "List all managed events: Retrieve comprehensive event information."
+  function_description: >
+    Lists all events managed by your Calendar. This operation doesn't require any input fields, making it an ideal starting point for retrieving event information. 
+    Use this to find event_api_id when it's not directly available. Common use cases include generating an overview of upcoming events, auditing event details, or 
+    preparing reports on event management activities.
+  parameters:
+    type: object
+    properties:
+      query_params:
+        type: object
+        properties:
+          before:
+            type: string
+            description: "Get events at or before this timestamp."
+          after:
+            type: string
+            description: "Get events at or after this timestamp."
+          pagination_limit:
+            type: integer
+            description: "How many events to return."
+          pagination_cursor:
+            type: string
+            description: "Value of next_cursor from a previous request."
+        required: []
+      path_params:
+        type: object
+        properties: {}
+        required: []
+      body_params:
+        type: object
+        properties: {}
+        required: []
+    required: 
+      - query_params
+      - path_params
+      - body_params
+    ```
+    </ResponseExample>
+  </Response>
+
+</Responses>

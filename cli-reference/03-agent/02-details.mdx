@@ -1,0 +1,97 @@
+---
+title: 'Agent Details'
+description: 'View detailed information about a specific AI Agent'
+---
+
+# Agent Details Command
+
+The `agent details` command provides comprehensive information about a specific AI Agent.
+
+## Usage
+
+```bash
+xpander agent details <agent_id> [--format <format>]
+```
+
+## Options
+
+| Option | Description |
+| --- | --- |
+| `--format <format>` | Optional. Output format: `default` (human-readable) or `json` |
+
+## Examples
+
+### View Agent Details
+
+```bash
+xpander agent details agent_123
+```
+
+Response:
+```bash
+Agent Details
+============
+ID:           agent_123
+Name:         Support Agent
+Status:       Active
+Created:      2024-01-15 10:30:00 UTC
+Last Active:  2024-02-19 13:45:23 UTC
+
+Configuration
+------------
+Memory Type:  persistent
+Knowledge:    vector-db
+LLM:         gpt-4
+
+Tools (3)
+---------
+1. notion
+   - Status: connected
+   - Workspace: Support Team
+   - Last used: 2024-02-19 13:40:12 UTC
+
+2. slack
+   - Status: connected
+   - Channels: #support, #general
+   - Last used: 2024-02-19 13:45:23 UTC
+
+3. calendar
+   - Status: connected
+   - Calendar: support@company.com
+   - Last used: 2024-02-19 12:30:00 UTC
+
+Interfaces (2)
+-------------
+1. slack
+   - Status: active
+   - Users: 145
+   - Messages today: 67
+
+2. web
+   - Status: active
+   - Active sessions: 3
+   - Response time: 1.2s
+
+Performance Metrics (Last 24h)
+---------------------------
+Requests:      523
+Avg Response:  1.5s
+Success Rate:  99.2%
+Memory Usage:  245MB
+```
+
+### JSON Format
+
+```bash
+xpander agent details agent_123 --format json
+```
+
+## Notes
+
+- Use this command to:
+  - Debug agent configuration issues
+  - Monitor agent performance
+  - Verify tool and interface connections
+  - Track usage metrics
+- All timestamps are in UTC
+- Performance metrics are from the last 24 hours 

@@ -1,0 +1,126 @@
+---
+title: "Run Tools"
+description: "Learn how to execute and manage tools in AI agents"
+---
+
+# Running Tools
+
+Execute and manage tools effectively within your AI agents.
+
+## Basic Execution
+
+```typescript
+// Execute a simple tool
+const result = await agent.executeTool('calculator', {
+  operation: 'add',
+  numbers: [1, 2, 3]
+});
+
+// Execute with context
+const contextResult = await agent.executeTool('dataProcessor', {
+  data: inputData,
+  context: {
+    user: currentUser,
+    settings: userPreferences
+  }
+});
+```
+
+## Batch Execution
+
+```typescript
+// Execute multiple tools
+const results = await agent.executeTools([
+  {
+    name: 'dataFetcher',
+    params: { url: 'https://api.example.com/data' }
+  },
+  {
+    name: 'dataProcessor',
+    params: { format: 'json' }
+  }
+]);
+```
+
+## Async Tool Execution
+
+```typescript
+// Run tools asynchronously
+const asyncTool = agent.executeToolAsync('longProcess', {
+  data: largeDataset
+});
+
+asyncTool.on('progress', (progress) => {
+  console.log(`Progress: ${progress}%`);
+});
+
+asyncTool.on('complete', (result) => {
+  console.log('Process completed:', result);
+});
+```
+
+## Error Handling
+
+```typescript
+try {
+  const result = await agent.executeTool('riskyOperation', {
+    data: inputData
+  });
+} catch (error) {
+  if (error.type === 'VALIDATION_ERROR') {
+    // Handle validation errors
+  } else if (error.type === 'EXECUTION_ERROR') {
+    // Handle execution errors
+  }
+}
+```
+
+## Tool Pipelines
+
+```typescript
+// Create a tool pipeline
+const pipeline = new ToolPipeline([
+  {
+    tool: 'dataFetcher',
+    output: 'rawData'
+  },
+  {
+    tool: 'dataProcessor',
+    input: 'rawData',
+    output: 'processedData'
+  },
+  {
+    tool: 'dataSaver',
+    input: 'processedData'
+  }
+]);
+
+// Execute pipeline
+const result = await pipeline.execute();
+```
+
+## Monitoring and Logging
+
+```typescript
+// Enable tool monitoring
+agent.enableToolMonitoring({
+  metrics: ['duration', 'memory', 'errors'],
+  logging: {
+    level: 'info',
+    destination: 'file'
+  }
+});
+
+// Get execution stats
+const stats = await agent.getToolStats('calculator');
+```
+
+## Best Practices
+
+- Validate inputs
+- Handle timeouts
+- Implement retries
+- Monitor performance
+- Log operations
+- Handle errors gracefully
+- Clean up resources

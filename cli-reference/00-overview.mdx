@@ -1,0 +1,111 @@
+---
+title: 'CLI Overview'
+description: 'Command line interface for managing xpander.ai agents and resources'
+---
+
+# xpander CLI
+
+The xpander CLI provides a powerful command-line interface for managing your AI agents, tools, and resources. This reference guide covers all available commands and their usage.
+
+## Installation
+
+```bash
+npm install -g @xpander/cli
+```
+
+## Command Structure
+
+The CLI is organized into the following main command groups:
+
+<CardGroup cols={2}>
+  <Card title="auth" icon="key">
+    Authentication commands for logging in and out
+  </Card>
+  <Card title="engine" icon="gear">
+    Engine configuration and deployment
+  </Card>
+  <Card title="agent" icon="robot">
+    Agent management and configuration
+  </Card>
+  <Card title="tools" icon="screwdriver-wrench">
+    Tool management for agents
+  </Card>
+  <Card title="interfaces" icon="plug">
+    Interface management for agents
+  </Card>
+  <Card title="team" icon="users">
+    Team management for collaborative agents
+  </Card>
+  <Card title="org" icon="building">
+    Organization management
+  </Card>
+  <Card title="config" icon="sliders">
+    Configuration settings
+  </Card>
+</CardGroup>
+
+## Global Options
+
+All commands support the following global options:
+
+| Option | Description |
+| --- | --- |
+| `--help` | Show help information |
+| `--version` | Show CLI version |
+| `--json` | Output in JSON format |
+| `--quiet` | Suppress output |
+| `--debug` | Show debug information |
+
+## Command Structure
+
+```bash
+xpander
+├── auth
+│   ├── login [--api-key <key>]           # Login via browser or manual API key input
+│   └── logout                            # End the current session
+│
+├── engine
+│   ├── set [--type <engine>] [--region <region>] [--url <custom_url>]
+│   │       # Configure the engine (cloud, local, or custom)
+│   ├── status                            # Display current engine settings
+│   └── deploy [--compose-file <file>]    # Deploy an engine locally
+│
+├── agent
+│   ├── list                              # List all registered AI Agents
+│   ├── details <agent_id>                # Show detailed information
+│   ├── instrumentation <agent_id>        # Retrieve instrumentation code
+│   ├── configure <agent_id>              # Configure advanced settings
+│   ├── tools
+│   │   ├── list <agent_id>              # List available tools
+│   │   ├── add <agent_id> <tool_name>   # Add a tool
+│   │   └── remove <agent_id> <tool_name> # Remove a tool
+│   ├── interfaces
+│   │   ├── list <agent_id>              # List interfaces
+│   │   ├── add <agent_id> <interface>   # Add an interface
+│   │   └── remove <agent_id> <interface> # Remove an interface
+│   └── team
+│       ├── list                          # List all AI Agent Teams
+│       ├── create <team_name>            # Create a new team
+│       ├── add <team_name> <agent_id>    # Add an agent to a team
+│       ├── remove <team_name> <agent_id> # Remove an agent from a team
+│       └── delete <team_name>            # Delete an AI Agent Team
+│
+├── org
+│   ├── list                              # List organizations
+│   ├── switch <org_id>                   # Switch organization
+│   └── details <org_id>                  # Show organization details
+│
+└── config
+    ├── view <agent_id>                   # View configuration
+    └── set <agent_id> <key> <value>      # Set configuration
+
+## Getting Started
+
+To get started with the xpander CLI:
+
+1. Install the CLI using npm
+2. Log in using `xpander auth login`
+3. Configure your engine using `xpander engine set`
+4. Start managing your agents!
+
+For detailed information about each command, explore the sections in the navigation menu. 

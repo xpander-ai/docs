@@ -1,0 +1,260 @@
+---
+title: 'SDK Manual Tool Invocation'
+description: 'API reference for manually invoking tools with the xpander AI SDK'
+---
+
+## Overview
+
+Manual tool invocation allows direct execution of tools without going through an LLM. This is useful for testing, automation, or when you need precise control over tool execution.
+
+## Agent Methods
+
+### `run_tool(tool_call: ToolCall) -> ToolCallResult`
+Executes a single tool call synchronously.
+
+```python
+from xpander_sdk import XpanderClient, ToolCall, ToolCallType
+
+# Initialize client and get agent
+client = XpanderClient(api_key=XPANDER_API_KEY)
+agent = client.agents.get(agent_id=XPANDER_AGENT_ID)
+
+# Create and execute a tool call
+tool_call = ToolCall(
+    name="linkedin_search",
+    type=ToolCallType.XPANDER,
+    payload={
+        "bodyParams": {
+            "query": "software engineers",
+            "location": "San Francisco"
+        }
+    }
+)
+
+result = agent.run_tool(tool_call=tool_call)
+```
+
+#### Parameters
+- `tool_call`: A ToolCall instance containing:
+  - `name`: Tool identifier
+  - `type`: ToolCallType (usually XPANDER)
+  - `payload`: Tool parameters
+  - `tool_call_id`: Optional unique identifier
+
+#### Returns
+A ToolCallResult containing:
+- `function_name`: Executed tool name
+- `tool_call_id`: Execution identifier
+- `is_success`: Success status
+- `result`: Tool output data
+- `error`: Error message if failed
+- `metadata`: Additional execution data
+
+#### Error Handling
+```python
+try:
+    result = agent.run_tool(tool_call)
+    if result.is_success:
+        print(f"Success: {result.result}")
+    else:
+        print(f"Tool error: {result.error}")
+except ToolExecutionError as e:
+    print(f"Execution failed: {e}")
+except ValidationError as e:
+    print(f"Invalid parameters: {e.validation_errors}")
+```
+
+### `run_tools_async(tool_calls: List[ToolCall]) -> List[ToolCallResult]`
+Executes multiple tool calls asynchronously.
+
+```python
+# Create multiple tool calls
+tool_calls = [
+    ToolCall(
+        name="linkedin_search",
+        type=ToolCallType.XPANDER,
+        payload={
+            "bodyParams": {
+                "query": "software engineers",
+                "location": "San Francisco"
+            }
+        }
+    ),
+    ToolCall(
+        name="company_info",
+        type=ToolCallType.XPANDER,
+        payload={
+            "bodyParams": {
+                "company_name": "Google"
+            }
+        }
+    )
+]
+
+# Execute all tools asynchronously
+results = await agent.run_tools_async(tool_calls=tool_calls)
+```
+
+#### Parameters
+- `tool_calls`: List of ToolCall instances to execute
+- `max_concurrent`: Maximum number of concurrent executions (optional)
+
+#### Returns
+List of ToolCallResult objects in the same order as input tool calls
+
+## Common Tool Payloads
+
+### REST-style Parameters
+Tools accept REST-style parameters in the payload:
+
+```python
+payload = {
+    "bodyParams": dict,    # Request body parameters
+    "queryParams": dict,   # URL query parameters
+    "pathParams": dict     # URL path parameters
+}
+```
+
+### LinkedIn Tools Example
+```python
+# Search for profiles
+linkedin_search = ToolCall(
+    name="linkedin_search",
+    type=ToolCallType.XPANDER,
+    payload={
+        "bodyParams": {
+            "query": "software engineers",
+            "location": "San Francisco",
+            "current_company": "Google"
+        },
+        "queryParams": {
+            "limit": 10,
+            "offset": 0
+        }
+    }
+)
+
+# Get profile details
+profile_info = ToolCall(
+    name="linkedin_get_profile",
+    type=ToolCallType.XPANDER,
+    payload={
+        "pathParams": {
+            "profile_id": "john-doe-123"
+        },
+        "queryParams": {
+            "include_contact": True
+        }
+    }
+)
+```
+
+### Web Search Tools Example
+```python
+# Search articles
+article_search = ToolCall(
+    name="search_articles",
+    type=ToolCallType.XPANDER,
+    payload={
+        "bodyParams": {
+            "keyword": "artificial intelligence",
+            "categories": ["technology", "business"]
+        },
+        "queryParams": {
+            "max_results": 5,
+            "include_content": True
+        }
+    }
+)
+
+# Get article details
+article_info = ToolCall(
+    name="get_article",
+    type=ToolCallType.XPANDER,
+    payload={
+        "pathParams": {
+            "article_id": "abc123"
+        },
+        "queryParams": {
+            "include_comments": True
+        }
+    }
+)
+```
+
+## Best Practices
+
+1. **Error Handling**
+   ```python
+   try:
+       result = agent.run_tool(tool_call)
+       if not result.is_success:
+           # Handle tool-specific error
+           print(f"Tool error: {result.error}")
+           if result.metadata.get("error_code") == "RATE_LIMIT":
+               # Handle rate limiting
+               retry_after = result.metadata.get("retry_after", 60)
+               time.sleep(retry_after)
+   except Exception as e:
+       # Handle unexpected errors
+       print(f"Unexpected error: {e}")
+   ```
+
+2. **Rate Limiting**
+   ```python
+   # Configure client with rate limiting settings
+   client = XpanderClient(
+       api_key=XPANDER_API_KEY,
+       max_retries=5,
+       base_delay=2,
+       max_delay=15
+   )
+   ```
+
+3. **Batch Processing**
+   ```python
+   # Process large sets of tools in batches
+   async def process_batch(tool_calls: List[ToolCall], batch_size: int = 10):
+       for i in range(0, len(tool_calls), batch_size):
+           batch = tool_calls[i:i + batch_size]
+           results = await agent.run_tools_async(
+               tool_calls=batch,
+               max_concurrent=batch_size
+           )
+           process_results(results)
+   ```
+
+4. **Validation**
+   ```python
+   # Validate tool parameters before execution
+   def validate_linkedin_search(query: str, location: str) -> ToolCall:
+       if not query or not location:
+           raise ValueError("Query and location are required")
+       return ToolCall(
+           name="linkedin_search",
+           type=ToolCallType.XPANDER,
+           payload={
+               "bodyParams": {
+                   "query": query,
+                   "location": location
+               }
+           }
+       )
+   ```
+
+5. **Result Processing**
+   ```python
+   def process_results(results: List[ToolCallResult]):
+       successes = []
+       failures = []
+       for result in results:
+           if result.is_success:
+               successes.append(result.result)
+           else:
+               failures.append({
+                   "tool": result.function_name,
+                   "error": result.error,
+                   "metadata": result.metadata
+               })
+       return successes, failures
+   ```

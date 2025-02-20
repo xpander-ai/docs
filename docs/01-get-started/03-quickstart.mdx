@@ -1,0 +1,163 @@
+---
+title: "Quickstart"
+description: "Make your first API call in minutes"
+---
+
+Get started with xpander.ai by making your first API call. This guide will walk you through the basics in just a few minutes.
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download">
+    ```bash
+    # Install via npm
+    npm install @xpander/sdk
+
+    # Or using yarn
+    yarn add @xpander/sdk
+    ```
+  </Card>
+
+  <Card title="Authentication" icon="key">
+    ```typescript
+    import { XpanderClient } from '@xpander/sdk';
+
+    const client = new XpanderClient({
+      apiKey: 'your-api-key'
+    });
+    ```
+  </Card>
+</CardGroup>
+
+## Create Your First Agent
+
+```typescript
+// Create a simple agent
+const agent = await client.createAgent({
+  name: 'MyFirstAgent',
+  description: 'A simple assistant agent',
+  model: 'gpt-4'
+});
+
+// Add basic capabilities
+await agent.addCapability('conversation');
+await agent.addCapability('tools');
+```
+
+## Make Your First Call
+
+```typescript
+// Send a message to your agent
+const response = await agent.chat({
+  message: 'Hello! Can you help me with a task?'
+});
+
+console.log(response.content);
+```
+
+<CardGroup cols={2}>
+  <Card title="Add a Tool" icon="wrench">
+    ```typescript
+    await agent.addTool({
+      name: 'calculator',
+      description: 'Performs basic math operations',
+      function: async (input) => {
+        const { operation, numbers } = input;
+        switch (operation) {
+          case 'add':
+            return numbers.reduce((a, b) => a + b, 0);
+          case 'multiply':
+            return numbers.reduce((a, b) => a * b, 1);
+        }
+      }
+    });
+    ```
+  </Card>
+
+  <Card title="Test the Tool" icon="vial">
+    ```typescript
+    const result = await agent.chat({
+      message: 'What is 5 + 3?'
+    });
+
+    console.log(result.content); // "The sum of 5 and 3 is 8"
+    ```
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card 
+    title="Explore Capabilities" 
+    icon="book"
+    href="/docs/introduction"
+  >
+    Learn about all the features and capabilities available in xpander.ai
+  </Card>
+
+  <Card 
+    title="Add Advanced Tools" 
+    icon="tools"
+    href="/docs/tools/add-tools"
+  >
+    Discover how to add and configure advanced tools for your agents
+  </Card>
+
+  <Card 
+    title="Implement Auth" 
+    icon="lock"
+    href="/docs/user-authentication/add-provider"
+  >
+    Set up authentication and secure your agents
+  </Card>
+
+  <Card 
+    title="Add Interfaces" 
+    icon="window"
+    href="/docs/human-interfaces/webui"
+  >
+    Add web, voice, and chat interfaces to your agents
+  </Card>
+</CardGroup>
+
+## Complete Example
+
+```typescript
+import { XpanderClient } from '@xpander/sdk';
+
+async function main() {
+  // Initialize client
+  const client = new XpanderClient({
+    apiKey: 'your-api-key'
+  });
+
+  // Create agent
+  const agent = await client.createAgent({
+    name: 'AssistantAgent',
+    description: 'A helpful assistant',
+    model: 'gpt-4'
+  });
+
+  // Add capabilities
+  await agent.addCapability('conversation');
+  await agent.addCapability('tools');
+
+  // Add a tool
+  await agent.addTool({
+    name: 'calculator',
+    description: 'Performs math operations',
+    function: async (input) => {
+      const { operation, numbers } = input;
+      return numbers.reduce((a, b) => a + b, 0);
+    }
+  });
+
+  // Start conversation
+  const response = await agent.chat({
+    message: 'Can you add 5, 10, and 15?'
+  });
+
+  console.log(response.content);
+}
+
+main().catch(console.error);
+``` 

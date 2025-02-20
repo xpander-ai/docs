@@ -1,0 +1,105 @@
+---
+title: 'Configure Agent'
+description: 'Configure advanced settings for an AI Agent'
+---
+
+# Configure Agent Command
+
+The `agent configure` command sets up advanced features and behaviors for an AI Agent, such as memory type, knowledge base integration, and LLM settings.
+
+## Usage
+
+```bash
+xpander agent configure <agent_id> [--memory <type>] [--knowledge <source>] [--llm-key <api_key>] [--options <json>]
+```
+
+## Options
+
+| Option | Description |
+| --- | --- |
+| `--memory <type>` | Memory type: `ephemeral`, `persistent`, or `distributed` |
+| `--knowledge <source>` | Knowledge base source: `vector-db`, `pinecone`, `custom` |
+| `--llm-key <api_key>` | API key for the LLM service (OpenAI, Anthropic, etc.) |
+| `--options <json>` | Additional configuration options in JSON format |
+
+## Examples
+
+### Basic Configuration
+
+```bash
+xpander agent configure agent_123 \
+  --memory persistent \
+  --knowledge vector-db \
+  --llm-key sk-...
+```
+
+### Advanced Configuration with Options
+
+```bash
+xpander agent configure agent_123 \
+  --memory distributed \
+  --options '{
+    "memory": {
+      "ttl": "24h",
+      "max_tokens": 8192,
+      "storage": "redis"
+    },
+    "knowledge": {
+      "update_frequency": "1h",
+      "embedding_model": "text-embedding-3-large",
+      "chunk_size": 512
+    },
+    "llm": {
+      "model": "gpt-4",
+      "temperature": 0.7,
+      "max_tokens": 2048
+    }
+  }'
+```
+
+## Response
+
+```bash
+Agent Configuration Updated
+=========================
+ID: agent_123
+Name: Support Agent
+
+Memory
+------
+Type: distributed
+Storage: redis
+TTL: 24h
+Max Tokens: 8192
+
+Knowledge Base
+-------------
+Type: vector-db
+Update Frequency: 1h
+Embedding Model: text-embedding-3-large
+Chunk Size: 512
+
+LLM Settings
+------------
+Model: gpt-4
+Temperature: 0.7
+Max Tokens: 2048
+
+✓ Configuration applied successfully
+✓ Memory system initialized
+✓ Knowledge base connected
+✓ LLM settings verified
+```
+
+## Notes
+
+- Memory Types:
+  - `ephemeral`: In-memory, session-based storage
+  - `persistent`: Durable storage with TTL
+  - `distributed`: Shared across agent instances
+- Knowledge Base Options:
+  - `vector-db`: Built-in vector database
+  - `pinecone`: Pinecone.io integration
+  - `custom`: Your own knowledge base implementation
+- Configuration changes take effect immediately
+- Use `xpander agent details` to verify settings 

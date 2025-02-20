@@ -1,0 +1,179 @@
+---
+title: 'Organization Details'
+description: 'View detailed information about an organization'
+---
+
+# Organization Details Command
+
+The `org details` command displays comprehensive information about a specific organization.
+
+## Usage
+
+```bash
+xpander org details <org_id> [--format <format>]
+```
+
+## Options
+
+| Option | Description |
+| --- | --- |
+| `--format <format>` | Optional. Output format: `default` (human-readable) or `json` |
+
+## Examples
+
+### View Organization Details
+
+```bash
+xpander org details org_123
+```
+
+Response:
+```bash
+Organization Details
+===================
+ID:           org_123
+Name:         Acme Corp
+Status:       Active
+Created:      2024-01-15 10:30:00 UTC
+Your Role:    Admin
+
+Subscription
+-----------
+Plan:         Enterprise
+Status:       Active
+Renewal:      2025-01-15
+Features:     All Enterprise Features
+
+Resources
+---------
+Members:      15
+Teams:        4
+Agents:       12 (8 active)
+Storage:      45.2 GB / 100 GB
+
+Usage Metrics (Last 30 days)
+-------------------------
+API Calls:    152,847
+Compute:      324.5 hours
+Data Transfer: 1.2 TB
+Active Users:  89
+
+Teams (4)
+---------
+1. Support Team
+   - Agents: 3
+   - Status: Active
+   - Last Active: 2024-02-19 13:45 UTC
+
+2. Analytics Team
+   - Agents: 2
+   - Status: Active
+   - Last Active: 2024-02-19 12:30 UTC
+
+3. DevOps Team
+   - Agents: 4
+   - Status: Active
+   - Last Active: 2024-02-19 14:15 UTC
+
+4. Research Team
+   - Agents: 3
+   - Status: Active
+   - Last Active: 2024-02-19 11:20 UTC
+
+Access Control
+-------------
+Admins:       3
+Members:      12
+Pending:      2
+Auth Method:  SSO (Okta)
+
+Settings
+--------
+Default Region: us-west-2
+Time Zone:     UTC-8
+Audit Logging: Enabled
+SSO Enforced:  Yes
+```
+
+### JSON Format
+
+```bash
+xpander org details org_123 --format json
+```
+
+Response:
+```json
+{
+  "organization": {
+    "id": "org_123",
+    "name": "Acme Corp",
+    "status": "active",
+    "created_at": "2024-01-15T10:30:00Z",
+    "subscription": {
+      "plan": "enterprise",
+      "status": "active",
+      "renewal_date": "2025-01-15T00:00:00Z",
+      "features": ["all"]
+    },
+    "resources": {
+      "members": 15,
+      "teams": 4,
+      "agents": {
+        "total": 12,
+        "active": 8
+      },
+      "storage": {
+        "used": 45.2,
+        "limit": 100,
+        "unit": "GB"
+      }
+    },
+    "metrics": {
+      "api_calls": 152847,
+      "compute_hours": 324.5,
+      "data_transfer": 1.2,
+      "active_users": 89
+    },
+    "teams": [
+      {
+        "name": "Support Team",
+        "agents": 3,
+        "status": "active",
+        "last_active": "2024-02-19T13:45:00Z"
+      }
+      // ... more teams
+    ],
+    "access_control": {
+      "admins": 3,
+      "members": 12,
+      "pending": 2,
+      "auth_method": "sso",
+      "sso_provider": "okta"
+    },
+    "settings": {
+      "default_region": "us-west-2",
+      "timezone": "UTC-8",
+      "audit_logging": true,
+      "sso_enforced": true
+    }
+  }
+}
+```
+
+## Notes
+
+- Use this command to:
+  - Monitor resource usage
+  - Track team activity
+  - Review access control
+  - Check subscription status
+- All timestamps are in UTC
+- Usage metrics are from the last 30 days
+- Resource limits depend on:
+  - Subscription plan
+  - Custom quotas
+  - Add-on features
+- Access control shows:
+  - Member roles
+  - Authentication methods
+  - Pending invitations 

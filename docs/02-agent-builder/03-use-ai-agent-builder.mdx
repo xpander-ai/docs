@@ -1,0 +1,102 @@
+---
+title: "Using the AI Agent Builder"
+description: "Learn how to use the AI Agent Builder to create and customize AI agents"
+---
+
+# Using the AI Agent Builder
+
+The AI Agent Builder provides a powerful interface for creating, configuring, and deploying AI agents with specific capabilities and behaviors.
+
+## Getting Started
+
+### Prerequisites
+
+- xpander.ai account
+- API access credentials
+- Basic understanding of AI concepts
+
+## Builder Interface
+
+The AI Agent Builder interface consists of:
+
+- Visual agent designer
+- Configuration panels
+- Testing environment
+- Deployment tools
+
+## Creating an Agent
+
+```typescript
+// Initialize the builder
+const builder = new AgentBuilder({
+  project: 'my-project',
+  model: 'gpt-4',
+  capabilities: ['text', 'code', 'data']
+});
+
+// Configure the agent
+const agent = builder.createAgent({
+  name: 'AssistantAgent',
+  description: 'A helpful AI assistant',
+  basePrompt: 'You are a helpful AI assistant...',
+  temperature: 0.7
+});
+
+// Add capabilities
+agent.addCapability('memory');
+agent.addCapability('tools');
+```
+
+## Customizing Behavior
+
+### Prompt Engineering
+
+```typescript
+agent.setSystemPrompt(`
+  You are an AI assistant specialized in:
+  - Task automation
+  - Data analysis
+  - Code generation
+  
+  Follow these guidelines:
+  1. Be concise and clear
+  2. Ask clarifying questions
+  3. Provide examples
+`);
+```
+
+### Response Configuration
+
+```typescript
+agent.configureResponses({
+  maxTokens: 1000,
+  format: 'markdown',
+  style: 'professional'
+});
+```
+
+## Testing and Validation
+
+- Interactive testing
+- Scenario simulation
+- Performance metrics
+- Behavior validation
+
+## Deployment
+
+Steps for deployment:
+
+1. Environment selection
+2. Resource allocation
+3. Security configuration
+4. Monitoring setup
+5. Backup configuration
+
+## Best Practices
+
+- Start with templates
+- Test thoroughly
+- Monitor performance
+- Implement safeguards
+- Document configurations
+- Version control changes

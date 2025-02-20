@@ -1,0 +1,134 @@
+---
+title: "State Management Examples"
+description: "Practical examples of state management in AI agents"
+---
+
+# State Management Examples
+
+Learn through practical examples how to implement state management in different scenarios.
+
+## Basic State Management
+
+```typescript
+// Simple counter state
+const agent = new Agent({
+  initialState: {
+    counter: 0,
+    lastUpdated: null
+  }
+});
+
+// Update state
+agent.updateState((state) => ({
+  counter: state.counter + 1,
+  lastUpdated: new Date()
+}));
+```
+
+## Conversation Memory
+
+```typescript
+// Implement conversation memory
+const chatAgent = new Agent({
+  memory: {
+    type: 'conversation',
+    maxTokens: 2000
+  }
+});
+
+// Add to memory
+await chatAgent.memory.add({
+  role: 'user',
+  content: 'Hello!'
+});
+
+// Retrieve context
+const context = await chatAgent.memory.getRecentContext();
+```
+
+## Multi-Agent State Sync
+
+```typescript
+// Create a shared state
+const sharedState = new SharedState({
+  type: 'distributed',
+  syncInterval: 1000
+});
+
+// Connect agents
+const agent1 = new Agent({ sharedState });
+const agent2 = new Agent({ sharedState });
+
+// Sync state changes
+sharedState.on('change', (changes) => {
+  console.log('State updated:', changes);
+});
+```
+
+## Persistent Storage
+
+```typescript
+// Configure persistent storage
+const agent = new Agent({
+  storage: {
+    type: 'redis',
+    options: {
+      url: process.env.REDIS_URL
+    }
+  }
+});
+
+// Save state
+await agent.saveState();
+
+// Load state
+await agent.loadState('session-123');
+```
+
+## Error Recovery
+
+```typescript
+// Implement state recovery
+try {
+  await agent.processTask();
+} catch (error) {
+  const backup = await agent.getStateBackup();
+  await agent.restoreState(backup);
+  console.log('Recovered from error');
+}
+```
+
+## State Transitions
+
+```typescript
+// Define state machine
+const workflowAgent = new Agent({
+  states: {
+    idle: {
+      on: {
+        START_TASK: 'processing'
+      }
+    },
+    processing: {
+      on: {
+        COMPLETE: 'completed',
+        ERROR: 'failed'
+      }
+    }
+  }
+});
+
+// Handle transitions
+workflowAgent.onTransition((state) => {
+  console.log(`Transitioned to: ${state}`);
+});
+```
+
+## Best Practices
+
+- Regular state backups
+- Validation before updates
+- Error handling
+- Performance optimization
+- State cleanup
+- Monitoring and logging

@@ -1,0 +1,232 @@
+---
+title: "Add Interfaces to Your Agent"
+description: "Learn how to add web, voice, and chat interfaces to your AI agent"
+---
+
+# Adding Interfaces to Your Agent
+
+Learn how to add different types of interfaces to interact with your AI agent.
+
+## Prerequisites
+
+Make sure you have:
+- Completed the previous tutorials
+- xpander.ai SDK installed
+- A working agent with tools
+
+## Available Interfaces
+
+<CardGroup cols={3}>
+  <Card title="Web UI" icon="browser">
+    Browser-based interface
+  </Card>
+  
+  <Card title="Voice" icon="microphone">
+    Voice interaction interface
+  </Card>
+  
+  <Card title="Chat" icon="message">
+    Chat platform integrations
+  </Card>
+</CardGroup>
+
+## Web Interface
+
+```typescript
+// Add web interface
+const webUI = await agent.addInterface('web', {
+  port: 3000,
+  theme: 'light',
+  features: ['chat', 'files']
+});
+
+// Configure UI components
+webUI.addComponent({
+  type: 'chat',
+  position: 'right',
+  width: '300px'
+});
+
+// Start the server
+await webUI.start();
+```
+
+## Voice Interface
+
+```typescript
+// Add voice interface
+const voice = await agent.addInterface('voice', {
+  language: 'en-US',
+  voice: 'neural-1'
+});
+
+// Handle voice input
+voice.on('speech', async (audio) => {
+  const text = await voice.transcribe(audio);
+  const response = await agent.process(text);
+  await voice.speak(response);
+});
+
+// Start listening
+await voice.start();
+```
+
+## Slack Integration
+
+```typescript
+// Add Slack interface
+const slack = await agent.addInterface('slack', {
+  token: process.env.SLACK_TOKEN,
+  channels: ['general']
+});
+
+// Handle messages
+slack.on('message', async (event) => {
+  const response = await agent.process(event.text);
+  await slack.reply(event.channel, response);
+});
+
+// Add interactive components
+slack.addComponent({
+  type: 'button',
+  text: 'Help',
+  action: async (interaction) => {
+    await slack.sendMessage(interaction.channel, 'How can I help?');
+  }
+});
+```
+
+## Complete Example
+
+```typescript
+import { XpanderClient } from '@xpander/sdk';
+
+async function main() {
+  const client = new XpanderClient({
+    apiKey: 'your-api-key'
+  });
+
+  // Create agent
+  const agent = await client.createAgent({
+    name: 'MultiInterfaceAgent',
+    description: 'An agent with multiple interfaces',
+    model: 'gpt-4'
+  });
+
+  // Add web interface
+  const webUI = await agent.addInterface('web', {
+    port: 3000,
+    theme: 'light'
+  });
+
+  // Add voice interface
+  const voice = await agent.addInterface('voice', {
+    language: 'en-US'
+  });
+
+  // Add Slack interface
+  const slack = await agent.addInterface('slack', {
+    token: process.env.SLACK_TOKEN
+  });
+
+  // Start all interfaces
+  await Promise.all([
+    webUI.start(),
+    voice.start(),
+    slack.connect()
+  ]);
+
+  console.log('All interfaces are running!');
+}
+
+main().catch(console.error);
+```
+
+## Interface Events
+
+```typescript
+// Listen for events across all interfaces
+agent.on('message', async (event) => {
+  console.log(`Message from ${event.interface}: ${event.text}`);
+});
+
+agent.on('error', (error) => {
+  console.error(`Interface error: ${error.message}`);
+});
+
+agent.on('connection', (event) => {
+  console.log(`New connection on ${event.interface}`);
+});
+```
+
+## Customization
+
+<CardGroup cols={2}>
+  <Card title="Styling" icon="palette">
+    ```typescript
+    webUI.setTheme({
+      colors: {
+        primary: '#753CFF',
+        background: '#ffffff'
+      },
+      fonts: {
+        body: 'Inter, sans-serif'
+      }
+    });
+    ```
+  </Card>
+  
+  <Card title="Components" icon="puzzle-piece">
+    ```typescript
+    webUI.addComponent({
+      type: 'custom',
+      template: `
+        <div class="toolbar">
+          <button>Clear</button>
+          <button>Export</button>
+        </div>
+      `
+    });
+    ```
+  </Card>
+</CardGroup>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Error Handling" icon="shield-check">
+    Implement proper error handling for each interface
+  </Card>
+  
+  <Card title="Responsive Design" icon="mobile">
+    Ensure web interfaces work on all devices
+  </Card>
+  
+  <Card title="Security" icon="lock">
+    Secure your interfaces and validate inputs
+  </Card>
+  
+  <Card title="Performance" icon="gauge">
+    Monitor and optimize interface performance
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card 
+    title="Multi-Agent Systems" 
+    icon="network-wired"
+    href="/tutorials/advanced/multi-agent"
+  >
+    Learn how to create multi-agent systems
+  </Card>
+  
+  <Card 
+    title="Custom Tools" 
+    icon="wand-magic-sparkles"
+    href="/tutorials/advanced/custom-tools"
+  >
+    Create advanced custom tools
+  </Card>
+</CardGroup> 

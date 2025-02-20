@@ -1,0 +1,202 @@
+---
+title: "Example Library"
+description: "Explore example implementations and use cases"
+---
+
+Explore our collection of example implementations to help you get started with xpander.ai.
+
+## Basic Examples
+
+<CardGroup cols={2}>
+  <Card title="Simple Chat Agent" icon="message">
+    ```typescript
+    import { XpanderClient } from '@xpander/sdk';
+
+    const agent = await client.createAgent({
+      name: 'ChatBot',
+      model: 'gpt-4',
+      basePrompt: 'You are a helpful assistant.'
+    });
+
+    const response = await agent.chat({
+      message: 'Hello, how can you help me?'
+    });
+    ```
+  </Card>
+
+  <Card title="Task Assistant" icon="list-check">
+    ```typescript
+    const taskAgent = await client.createAgent({
+      name: 'TaskManager',
+      capabilities: ['tasks', 'calendar'],
+      basePrompt: `You are a task management assistant.
+      Help users organize and track their tasks.`
+    });
+
+    await taskAgent.addTool({
+      name: 'createTask',
+      function: async ({ title, due }) => {
+        // Implementation
+      }
+    });
+    ```
+  </Card>
+</CardGroup>
+
+## Advanced Examples
+
+<CardGroup cols={2}>
+  <Card title="Multi-Agent System" icon="network-wired">
+    ```typescript
+    // Create supervisor agent
+    const supervisor = await client.createAgent({
+      name: 'Supervisor',
+      role: 'coordinator'
+    });
+
+    // Create worker agents
+    const workers = await Promise.all([
+      client.createAgent({ name: 'Worker1', role: 'processor' }),
+      client.createAgent({ name: 'Worker2', role: 'analyzer' })
+    ]);
+
+    // Set up communication
+    await supervisor.connectTo(workers);
+    ```
+  </Card>
+
+  <Card title="Voice Interface" icon="microphone">
+    ```typescript
+    const voiceAgent = await client.createAgent({
+      name: 'VoiceAssistant',
+      interfaces: ['voice']
+    });
+
+    await voiceAgent.configureVoice({
+      language: 'en-US',
+      voice: 'neural-1',
+      speed: 1.0
+    });
+
+    voiceAgent.on('speech', async (audio) => {
+      const text = await voiceAgent.transcribe(audio);
+      const response = await voiceAgent.process(text);
+      await voiceAgent.speak(response);
+    });
+    ```
+  </Card>
+</CardGroup>
+
+## Integration Examples
+
+<CardGroup cols={2}>
+  <Card title="Slack Bot" icon="slack">
+    ```typescript
+    const slackBot = await client.createAgent({
+      name: 'SlackAssistant',
+      interfaces: ['slack']
+    });
+
+    await slackBot.configureSlack({
+      token: process.env.SLACK_TOKEN,
+      channels: ['general']
+    });
+
+    slackBot.on('message', async (event) => {
+      const response = await slackBot.process(event.text);
+      await slackBot.reply(event.channel, response);
+    });
+    ```
+  </Card>
+
+  <Card title="Database Integration" icon="database">
+    ```typescript
+    const dbAgent = await client.createAgent({
+      name: 'DatabaseManager',
+      capabilities: ['database']
+    });
+
+    await dbAgent.addTool({
+      name: 'queryDatabase',
+      function: async (query) => {
+        // Implementation
+        return results;
+      }
+    });
+
+    const response = await dbAgent.chat({
+      message: 'Show me sales data for last month'
+    });
+    ```
+  </Card>
+</CardGroup>
+
+## Custom Tools
+
+<CardGroup cols={2}>
+  <Card title="Weather Tool" icon="cloud-sun">
+    ```typescript
+    await agent.addTool({
+      name: 'weather',
+      description: 'Get weather information',
+      function: async ({ location, unit = 'celsius' }) => {
+        const weather = await getWeatherData(location);
+        return formatWeather(weather, unit);
+      }
+    });
+    ```
+  </Card>
+
+  <Card title="File Processor" icon="file">
+    ```typescript
+    await agent.addTool({
+      name: 'fileProcessor',
+      description: 'Process different file types',
+      function: async ({ file, type }) => {
+        switch (type) {
+          case 'pdf':
+            return processPDF(file);
+          case 'image':
+            return processImage(file);
+          default:
+            throw new Error('Unsupported file type');
+        }
+      }
+    });
+    ```
+  </Card>
+</CardGroup>
+
+## Best Practices
+
+<CardGroup cols={3}>
+  <Card title="Error Handling" icon="shield-check">
+    Implement comprehensive error handling and recovery mechanisms
+  </Card>
+  
+  <Card title="Input Validation" icon="check-double">
+    Validate all inputs before processing to ensure data integrity
+  </Card>
+  
+  <Card title="Security" icon="lock">
+    Follow security best practices for credential management
+  </Card>
+
+  <Card title="Performance" icon="gauge-high">
+    Optimize code for better performance and resource usage
+  </Card>
+  
+  <Card title="Documentation" icon="book">
+    Maintain clear and up-to-date documentation
+  </Card>
+  
+  <Card title="Modularity" icon="cubes">
+    Design tools and components to be modular and reusable
+  </Card>
+</CardGroup>
+
+## Try It Out
+
+<Card title="GitHub Repository" icon="github">
+  Find the complete source code for these examples in our [GitHub repository](https://github.com/xpander-ai/examples).
+</Card> 

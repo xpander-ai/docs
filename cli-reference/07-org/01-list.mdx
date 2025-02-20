@@ -1,0 +1,111 @@
+---
+title: 'List Organizations'
+description: 'List all organizations available to the user'
+---
+
+# List Organizations Command
+
+The `org list` command displays all organizations that the current user has access to.
+
+## Usage
+
+```bash
+xpander org list [--format <format>]
+```
+
+## Options
+
+| Option | Description |
+| --- | --- |
+| `--format <format>` | Optional. Output format: `table` (default), `json`, or `wide` |
+
+## Examples
+
+### Default List View
+
+```bash
+xpander org list
+```
+
+Response:
+```bash
+ORG ID          NAME              ROLE       STATUS
+org_123         Acme Corp        Admin      Active
+org_456         Dev Team         Member     Active
+org_789         Test Org         Owner      Trial
+```
+
+### Wide Format
+
+```bash
+xpander org list --format wide
+```
+
+Response:
+```bash
+ORGANIZATION: Acme Corp (org_123)
+├── Role: Admin
+├── Status: Active
+├── Members: 15
+├── Teams: 4
+├── Agents: 12
+├── Created: 2024-01-15
+└── Subscription: Enterprise
+
+ORGANIZATION: Dev Team (org_456)
+├── Role: Member
+├── Status: Active
+├── Members: 8
+├── Teams: 2
+├── Agents: 5
+├── Created: 2024-02-01
+└── Subscription: Professional
+```
+
+### JSON Format
+
+```bash
+xpander org list --format json
+```
+
+Response:
+```json
+{
+  "organizations": [
+    {
+      "id": "org_123",
+      "name": "Acme Corp",
+      "role": "admin",
+      "status": "active",
+      "created_at": "2024-01-15T00:00:00Z",
+      "subscription": {
+        "plan": "enterprise",
+        "status": "active",
+        "features": ["all"]
+      },
+      "metrics": {
+        "members": 15,
+        "teams": 4,
+        "agents": 12,
+        "active_agents": 8
+      }
+    },
+    // ... more organizations
+  ]
+}
+```
+
+## Notes
+
+- The list shows:
+  - Organizations you have access to
+  - Your role in each organization
+  - Organization status
+  - Basic metrics
+- The wide format includes:
+  - Detailed member information
+  - Resource usage
+  - Subscription details
+  - Creation date
+- Use `org switch` to change active organization
+- Use `org details` for more information about a specific organization 

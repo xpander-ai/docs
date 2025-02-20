@@ -1,0 +1,151 @@
+---
+title: "Authentication Examples"
+description: "Practical examples of implementing authentication in AI agents"
+---
+
+# Authentication Examples
+
+Learn through practical examples how to implement different authentication scenarios.
+
+## OAuth 2.0 Implementation
+
+```typescript
+// Setup OAuth 2.0
+const oauthExample = new AgentAuth({
+  type: 'oauth2',
+  config: {
+    clientId: process.env.OAUTH_CLIENT_ID,
+    clientSecret: process.env.OAUTH_CLIENT_SECRET,
+    authorizationURL: 'https://auth-provider.com/authorize',
+    tokenURL: 'https://auth-provider.com/token',
+    callbackURL: 'https://your-app.com/callback',
+    scope: ['profile', 'email']
+  }
+});
+
+// Handle OAuth flow
+app.get('/auth', (req, res) => {
+  const authUrl = oauthExample.getAuthorizationURL();
+  res.redirect(authUrl);
+});
+
+app.get('/callback', async (req, res) => {
+  const { code } = req.query;
+  const tokens = await oauthExample.handleCallback(code);
+  // Store tokens and redirect
+});
+```
+
+## JWT Authentication
+
+```typescript
+// JWT implementation
+const jwtExample = new AgentAuth({
+  type: 'jwt',
+  config: {
+    secret: process.env.JWT_SECRET,
+    expiresIn: '1h'
+  }
+});
+
+// Create and verify tokens
+const token = await jwtExample.createToken({
+  userId: 'user123',
+  permissions: ['read', 'write']
+});
+
+const verified = await jwtExample.verifyToken(token);
+```
+
+## API Key Authentication
+
+```typescript
+// API Key setup
+const apiKeyExample = new AgentAuth({
+  type: 'apiKey',
+  config: {
+    header: 'X-API-Key',
+    keys: new Map([
+      ['key123', { role: 'user' }],
+      ['key456', { role: 'admin' }]
+    ])
+  }
+});
+
+// Validate API key
+app.use(async (req, res, next) => {
+  const apiKey = req.headers['x-api-key'];
+  const valid = await apiKeyExample.validateKey(apiKey);
+  if (!valid) {
+    res.status(401).json({ error: 'Invalid API key' });
+    return;
+  }
+  next();
+});
+```
+
+## Multi-Factor Authentication
+
+```typescript
+// MFA implementation
+const mfaExample = new AgentAuth({
+  type: 'mfa',
+  config: {
+    primary: 'password',
+    secondary: 'totp'
+  }
+});
+
+// Handle MFA flow
+async function handleLogin(credentials) {
+  // First factor
+  const user = await mfaExample.validatePassword(credentials);
+  
+  // Second factor
+  const totpValid = await mfaExample.validateTOTP(
+    user.id,
+    credentials.totp
+  );
+  
+  if (totpValid) {
+    return mfaExample.createSession(user);
+  }
+}
+```
+
+## Session Management
+
+```typescript
+// Session handling
+const sessionExample = new AgentAuth({
+  type: 'session',
+  config: {
+    store: 'redis',
+    duration: '24h'
+  }
+});
+
+// Session operations
+const session = await sessionExample.createSession(user);
+const valid = await sessionExample.validateSession(session.id);
+await sessionExample.revokeSession(session.id);
+```
+
+## Error Handling Examples
+
+```typescript
+try {
+  await auth.validateCredentials(credentials);
+} catch (error) {
+  switch (error.code) {
+    case 'INVALID_CREDENTIALS':
+      // Handle invalid credentials
+      break;
+    case 'ACCOUNT_LOCKED':
+      // Handle locked account
+      break;
+    case 'MFA_REQUIRED':
+      // Handle MFA requirement
+      break;
+  }
+}

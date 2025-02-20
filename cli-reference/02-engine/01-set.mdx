@@ -1,0 +1,60 @@
+---
+title: 'Set Engine'
+description: 'Configure the xpander.ai engine settings'
+---
+
+# Set Engine Command
+
+The `engine set` command configures which xpander.ai engine your CLI will interact with. This can be the cloud service, a local deployment, or a custom endpoint.
+
+## Usage
+
+```bash
+xpander engine set [--type <engine>] [--region <region>] [--url <custom_url>]
+```
+
+## Options
+
+| Option | Description |
+| --- | --- |
+| `--type <engine>` | The type of engine to use: `cloud`, `local`, or `custom` |
+| `--region <region>` | For cloud engines, specify the region (e.g., `us-west-2`) |
+| `--url <custom_url>` | For custom engines, specify the endpoint URL |
+
+## Examples
+
+### Cloud Engine
+
+```bash
+xpander engine set --type cloud --region us-west-2
+```
+
+### Local Engine
+
+```bash
+xpander engine set --type local
+```
+
+### Custom Engine
+
+```bash
+xpander engine set --type custom --url https://my-engine.example.com
+```
+
+## Response
+
+On successful configuration:
+
+```bash
+✓ Engine configuration updated
+Type: cloud
+Region: us-west-2
+Status: connected
+```
+
+## Notes
+
+- The cloud engine is the default and recommended option
+- Local engines require Docker to be installed and running
+- Custom engines must implement the xpander.ai engine API
+- You can verify your configuration using `xpander engine status` 

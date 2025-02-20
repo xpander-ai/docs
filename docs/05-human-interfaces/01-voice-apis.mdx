@@ -1,0 +1,91 @@
+---
+title: "Voice APIs"
+description: "Integrate voice interfaces with your AI agents"
+---
+
+# Voice APIs
+
+Enable voice interactions with your AI agents using xpander.ai's voice integration capabilities.
+
+## Features
+
+- Speech-to-text conversion
+- Text-to-speech synthesis
+- Voice command recognition
+- Natural language understanding
+- Real-time voice streaming
+- Multi-language support
+
+## Implementation
+
+```typescript
+// Initialize voice interface
+const voice = new VoiceInterface({
+  language: 'en-US',
+  voiceType: 'neural',
+  features: ['stt', 'tts']
+});
+
+// Attach to agent
+agent.addInterface(voice);
+
+// Handle voice input
+voice.on('speech', async (audio) => {
+  const text = await voice.transcribe(audio);
+  const response = await agent.process(text);
+  await voice.speak(response);
+});
+
+// Configure voice settings
+voice.configure({
+  speed: 1.0,
+  pitch: 1.0,
+  volume: 0.8
+});
+```
+
+## Voice Recognition
+
+Configure speech recognition:
+
+- Acoustic models
+- Language models
+- Custom vocabularies
+- Wake word detection
+- Noise cancellation
+
+## Speech Synthesis
+
+Customize speech output:
+
+- Voice selection
+- Prosody control
+- SSML support
+- Audio effects
+- Emotion synthesis
+
+## Integration Options
+
+Support for various platforms:
+
+- Web browsers
+- Mobile devices
+- Smart speakers
+- IoT devices
+- Custom hardware
+
+## Best Practices
+
+- Handle background noise
+- Implement fallbacks
+- Provide visual feedback
+- Support accessibility
+- Optimize latency
+
+## Advanced Features
+
+- Voice authentication
+- Emotion detection
+- Speaker identification
+- Multi-speaker support
+- Voice activity detection

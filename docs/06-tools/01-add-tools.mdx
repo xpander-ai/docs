@@ -1,0 +1,73 @@
+---
+title: "Add Tools to Agents"
+description: "Learn how to add and configure tools for your AI agents"
+---
+
+# Adding Tools to Agents
+
+Tools are essential components that enable AI agents to perform specific actions and interact with external systems.
+
+## Tool Types
+
+xpander.ai supports several types of tools:
+
+- System Tools
+- Custom Functions
+- API Integrations
+- File Operations
+- Database Connectors
+- External Services
+
+## Adding Tools
+
+There are multiple ways to add tools to your agents:
+
+1. Using the Agent Builder interface
+2. Programmatically via SDK
+3. Through configuration files
+
+## Tool Configuration
+
+```typescript
+// Example of adding a tool to an agent
+const agent = new Agent();
+
+// Add a custom tool
+agent.addTool({
+  name: 'calculator',
+  description: 'Performs basic mathematical operations',
+  function: async (input: { operation: string, numbers: number[] }) => {
+    // Tool implementation
+    return result;
+  }
+});
+
+// Add an API tool
+agent.addTool({
+  name: 'weatherAPI',
+  type: 'REST',
+  endpoint: 'https://api.weather.com',
+  auth: {
+    type: 'bearer',
+    token: process.env.WEATHER_API_KEY
+  }
+});
+```
+
+## Best Practices
+
+- Document tool capabilities
+- Handle error cases
+- Implement rate limiting
+- Monitor tool usage
+- Maintain security best practices
+
+## Tool Management
+
+Learn how to:
+
+- Update existing tools
+- Remove tools
+- Monitor tool performance
+- Debug tool issues
+- Scale tool usage

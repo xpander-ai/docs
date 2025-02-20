@@ -1,0 +1,204 @@
+---
+title: 'Export Configuration'
+description: 'Export configuration settings for an AI Agent to a file'
+---
+
+# Export Configuration Command
+
+The `config export` command exports configuration settings for a specific AI Agent to a file.
+
+## Usage
+
+```bash
+xpander config export <agent_id> [--format <format>] [--output <path>] [--section <section>]
+```
+
+## Options
+
+| Option | Description |
+| --- | --- |
+| `--format <format>` | Optional. Output format: `json` (default), `yaml`, or `env` |
+| `--output <path>` | Optional. Output file path. Defaults to `./agent_<id>_config.<format>` |
+| `--section <section>` | Optional. Export specific section: `general`, `memory`, `tools`, `interfaces` |
+
+## Examples
+
+### Export All Configuration
+
+```bash
+xpander config export agent_123
+```
+
+Response:
+```bash
+Configuration Export
+===================
+Format: json
+Output: ./agent_123_config.json
+Status: success
+
+Exported configuration includes:
+- General settings
+- Memory configuration
+- Knowledge base settings
+- LLM parameters
+- Tool configurations
+- Interface settings
+- Security options
+
+Configuration file created successfully.
+```
+
+### Export Specific Section
+
+```bash
+xpander config export agent_123 --section memory --format yaml
+```
+
+Response:
+```bash
+Configuration Export
+===================
+Section: memory
+Format: yaml
+Output: ./agent_123_memory.yaml
+Status: success
+
+Exported configuration includes:
+- Memory settings
+- Backup configuration
+- Sync settings
+- Performance parameters
+
+Configuration file created successfully.
+```
+
+### Export to Custom Path
+
+```bash
+xpander config export agent_123 --output /path/to/configs/support_agent.json
+```
+
+Response:
+```bash
+Configuration Export
+===================
+Format: json
+Output: /path/to/configs/support_agent.json
+Status: success
+
+Exported configuration includes:
+- All configuration sections
+- Current values
+- Default values (commented)
+- Section dependencies
+
+Configuration file created successfully.
+```
+
+## Example Output Formats
+
+### JSON Format (Default)
+
+```json
+{
+  "agent": {
+    "id": "agent_123",
+    "name": "Support Agent",
+    "version": "1.0.0",
+    "general": {
+      "language": "en-US",
+      "timezone": "UTC",
+      "max_response_time": 5
+    },
+    "memory": {
+      "type": "persistent",
+      "storage": "redis",
+      "ttl": "24h",
+      "max_tokens": 8192,
+      "context_window": 4096
+    },
+    "tools": [
+      {
+        "name": "notion",
+        "status": "enabled",
+        "config": {
+          "workspace": "Support Team",
+          "permissions": ["read", "write"]
+        }
+      }
+    ]
+  }
+}
+```
+
+### YAML Format
+
+```yaml
+agent:
+  id: agent_123
+  name: Support Agent
+  version: 1.0.0
+  general:
+    language: en-US
+    timezone: UTC
+    max_response_time: 5
+  memory:
+    type: persistent
+    storage: redis
+    ttl: 24h
+    max_tokens: 8192
+    context_window: 4096
+  tools:
+    - name: notion
+      status: enabled
+      config:
+        workspace: Support Team
+        permissions:
+          - read
+          - write
+```
+
+### ENV Format
+
+```env
+AGENT_ID=agent_123
+AGENT_NAME=Support Agent
+AGENT_VERSION=1.0.0
+AGENT_LANGUAGE=en-US
+AGENT_TIMEZONE=UTC
+AGENT_MAX_RESPONSE_TIME=5
+AGENT_MEMORY_TYPE=persistent
+AGENT_MEMORY_STORAGE=redis
+AGENT_MEMORY_TTL=24h
+AGENT_MEMORY_MAX_TOKENS=8192
+AGENT_MEMORY_CONTEXT_WINDOW=4096
+AGENT_TOOL_NOTION_ENABLED=true
+AGENT_TOOL_NOTION_WORKSPACE=Support Team
+AGENT_TOOL_NOTION_PERMISSIONS=read,write
+```
+
+## Notes
+
+- Export formats support:
+  - JSON: Best for programmatic use
+  - YAML: Human-readable format
+  - ENV: Environment variable format
+- Exported files include:
+  - Current configuration
+  - Optional default values
+  - Section dependencies
+  - Configuration metadata
+- Use exports for:
+  - Configuration backups
+  - Version control
+  - Environment replication
+  - Template creation
+- Sensitive data is:
+  - Masked in exports
+  - Requires manual entry
+  - Can be environment variables
+- Use `config import` to:
+  - Restore configurations
+  - Apply templates
+  - Clone agent settings 

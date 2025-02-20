@@ -1,0 +1,368 @@
+---
+title: 'SDK Function Calling'
+description: 'API reference for the xpander AI SDK function calling capabilities'
+---
+
+## XpanderClient
+
+The main client class for interacting with the xpander platform. This class provides access to all SDK functionality including agent management, tool execution, and utility methods.
+
+```python
+from xpander_sdk import XpanderClient, LLMProvider
+
+# Initialize with default settings
+client = XpanderClient(api_key=XPANDER_API_KEY)
+
+# Initialize with custom settings
+client = XpanderClient(
+    api_key=XPANDER_API_KEY,
+    base_url="https://api.xpander.ai",  # Optional: custom API endpoint
+    max_retries=5,                      # Optional: retry attempts
+    timeout=30,                         # Optional: request timeout in seconds
+    debug=False                         # Optional: enable debug logging
+)
+```
+
+### Properties
+
+#### `agents`
+The agent management interface. Provides methods for creating, retrieving, and managing agents.
+
+```python
+# Get an agent by ID
+agent = client.agents.get(agent_id=XPANDER_AGENT_ID)
+
+# Create a new agent
+agent = client.agents.create(
+    name="My Agent",
+    description="A custom agent for task automation"
+)
+
+# List all agents
+agents = client.agents.list()
+
+# Delete an agent
+client.agents.delete(agent_id=XPANDER_AGENT_ID)
+```
+
+### Methods
+
+#### `extract_tool_calls(llm_response: dict, llm_provider: LLMProvider = LLMProvider.OPENAI) -> List[ToolCall]`
+Extracts tool calls from LLM responses. Handles different LLM provider formats and converts them to standardized ToolCall objects.
+
+```python
+# OpenAI example
+response = openai_client.chat.completions.create(
+    model="gpt-4",
+    messages=messages,
+    tools=agent.get_tools(llm_provider=LLMProvider.OPENAI)
+)
+tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response.model_dump(),
+    llm_provider=LLMProvider.OPENAI
+)
+
+# Anthropic example
+response = anthropic.messages.create(
+    model="claude-3-opus-20240229",
+    messages=messages,
+    tools=agent.get_tools(llm_provider=LLMProvider.ANTHROPIC)
+)
+tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response,
+    llm_provider=LLMProvider.ANTHROPIC
+)
+```
+
+#### `retrieve_pending_local_tool_calls(tool_calls: List[ToolCall]) -> List[ToolCall]`
+Filters a list of tool calls to return only pending local tool calls that need to be executed.
+
+```python
+# Get pending local tool calls
+local_calls = XpanderClient.retrieve_pending_local_tool_calls(tool_calls)
+
+# Process local tool calls
+results = []
+for tc in local_calls:
+    result = ToolCallResult(
+        function_name=tc.name,
+        tool_call_id=tc.tool_call_id
+    )
+    try:
+        result.is_success = True
+        result.result = local_function_map[tc.name](**tc.payload)
+    except Exception as e:
+        result.is_success = False
+        result.error = str(e)
+    results.append(result)
+```
+
+## Agent
+
+Class representing an AI agent with function calling capabilities. Agents can access tools, execute them, and maintain conversation memory.
+
+### Properties
+
+#### `memory`
+The agent's memory interface for managing conversation state and tool call results.
+
+```python
+# Add a message
+agent.memory.add_message(
+    role="user",
+    content="Find software engineers in San Francisco"
+)
+
+# Add tool call results
+agent.memory.add_tool_call_results(tool_call_results=results)
+
+# Get conversation history
+history = agent.memory.get_messages()
+
+# Clear memory
+agent.memory.clear()
+```
+
+#### `graph`
+The agent's graph interface for managing execution flows.
+
+```python
+# Add a node
+node = agent.graph.add_node(
+    GraphItem(
+        agent=agent,
+        item_id="search",
+        name="Search profiles",
+        description="Search for professional profiles"
+    )
+)
+
+# Add an edge
+edge = GraphEdge(
+    source_id="search",
+    target_id="filter",
+    edge_type="sequential"
+)
+agent.graph.add_edge(edge)
+```
+
+### Methods
+
+#### `get_tools(llm_provider: LLMProvider = LLMProvider.OPENAI) -> List[dict]`
+Returns the tools available to the agent in LLM-compatible format.
+
+```python
+# Get tools for different providers
+openai_tools = agent.get_tools(llm_provider=LLMProvider.OPENAI)
+anthropic_tools = agent.get_tools(llm_provider=LLMProvider.ANTHROPIC)
+claude_tools = agent.get_tools(llm_provider=LLMProvider.CLAUDE)
+```
+
+#### `run_tools(tool_calls: List[ToolCall]) -> List[ToolCallResult]`
+Executes a list of tool calls and returns their results.
+
+```python
+try:
+    # Execute tool calls
+    results = agent.run_tools(tool_calls=tool_calls)
+    
+    # Process results
+    for result in results:
+        if result.is_success:
+            print(f"Tool {result.function_name} succeeded: {result.result}")
+        else:
+            print(f"Tool {result.function_name} failed: {result.error}")
+            
+    # Add results to memory
+    agent.memory.add_tool_call_results(tool_call_results=results)
+except ToolExecutionError as e:
+    print(f"Tool execution failed: {e}")
+```
+
+#### `run_tool(tool_call: ToolCall) -> ToolCallResult`
+Executes a single tool call. Useful for sequential processing or individual error handling.
+
+```python
+# Create a tool call
+tool_call = ToolCall(
+    name="linkedin_search",
+    type=ToolCallType.XPANDER,
+    payload={
+        "bodyParams": {
+            "query": "software engineers",
+            "location": "San Francisco"
+        }
+    }
+)
+
+# Execute with error handling
+try:
+    result = agent.run_tool(tool_call=tool_call)
+    if result.is_success:
+        print(f"Result: {result.result}")
+    else:
+        print(f"Error: {result.error}")
+except ToolExecutionError as e:
+    print(f"Execution error: {e}")
+```
+
+#### `add_local_tools(tools: List[dict]) -> None`
+Adds local function tools to the agent.
+
+```python
+# Define local tools
+local_tools = [{
+    "declaration": {
+        "type": "function",
+        "function": {
+            "name": "multiply",
+            "description": "Multiply two integers",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "a": {
+                        "type": "integer",
+                        "description": "First integer"
+                    },
+                    "b": {
+                        "type": "integer",
+                        "description": "Second integer"
+                    }
+                },
+                "required": ["a", "b"]
+            }
+        }
+    },
+    "fn": multiply
+}]
+
+# Add tools to agent
+agent.add_local_tools(local_tools)
+```
+
+## Data Classes
+
+### ToolCall
+Represents a function call request from an LLM.
+
+```python
+class ToolCall:
+    name: str                 # Name of the tool/function
+    type: ToolCallType       # Type of tool (XPANDER, LOCAL, etc.)
+    tool_call_id: str        # Unique ID for the tool call
+    payload: Dict[str, Any]  # Parameters for the function call
+```
+
+### ToolCallResult
+Represents the result of a tool call execution.
+
+```python
+class ToolCallResult:
+    function_name: str       # Name of the executed function
+    tool_call_id: str       # ID of the original tool call
+    is_success: bool        # Whether the execution succeeded
+    result: Any             # Result data if successful
+    error: Optional[str]    # Error message if failed
+    metadata: Dict[str, Any] # Additional metadata
+```
+
+### GraphItem
+Represents a node in the agent's execution graph.
+
+```python
+class GraphItem:
+    agent: Agent            # Reference to the parent agent
+    item_id: str           # Unique identifier for the node
+    name: str              # Display name
+    description: str       # Node description
+```
+
+### GraphEdge
+Represents a connection between graph nodes.
+
+```python
+class GraphEdge:
+    source_id: str         # ID of the source node
+    target_id: str         # ID of the target node
+    edge_type: str         # Type of connection
+```
+
+## Enums
+
+### LLMProvider
+Supported LLM providers for function calling.
+
+```python
+class LLMProvider(str, Enum):
+    OPENAI = "openai"
+    ANTHROPIC = "anthropic"
+    CLAUDE = "claude"
+```
+
+### ToolCallType
+Types of tool calls supported by the SDK.
+
+```python
+class ToolCallType(str, Enum):
+    XPANDER = "xpander"  # Built-in xpander tools
+    LOCAL = "local"      # Local function tools
+```
+
+## Error Handling
+
+The SDK uses standard Python exceptions for different error scenarios:
+
+```python
+try:
+    # Attempt tool execution
+    result = agent.run_tool(tool_call)
+except XpanderError as e:
+    # Base exception for all SDK errors
+    print(f"Xpander error: {e}")
+except ToolExecutionError as e:
+    # Tool-specific execution errors
+    print(f"Tool execution failed: {e}")
+    print(f"Tool: {e.tool_name}")
+    print(f"Error code: {e.error_code}")
+except AuthenticationError as e:
+    # Authentication and authorization errors
+    print(f"Authentication failed: {e}")
+except RateLimitError as e:
+    # Rate limiting errors
+    print(f"Rate limit exceeded. Retry after {e.retry_after} seconds")
+except ValidationError as e:
+    # Input validation errors
+    print(f"Invalid input: {e.validation_errors}")
+```
+
+## Rate Limiting
+
+The SDK includes built-in rate limiting handling with exponential backoff:
+
+```python
+# Default configuration
+client = XpanderClient(
+    api_key=XPANDER_API_KEY
+    # Default settings:
+    # max_retries=3
+    # base_delay=1
+    # max_delay=10
+)
+
+# Custom configuration
+client = XpanderClient(
+    api_key=XPANDER_API_KEY,
+    max_retries=5,          # Maximum retry attempts
+    base_delay=2,           # Initial retry delay in seconds
+    max_delay=15,           # Maximum retry delay in seconds
+    retry_codes=[429, 503]  # HTTP status codes to retry
+)
+
+# The SDK will automatically handle rate limits:
+# 1. First retry: 2 second delay
+# 2. Second retry: 4 second delay
+# 3. Third retry: 8 second delay
+# 4. Fourth retry: 15 second delay (capped at max_delay)
+# 5. Fifth retry: 15 second delay
+# After max_retries, raises RateLimitError
+```

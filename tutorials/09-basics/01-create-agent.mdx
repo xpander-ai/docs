@@ -1,0 +1,123 @@
+---
+title: "Create Your First Agent"
+description: "Learn how to create and configure a basic AI agent"
+---
+
+# Creating Your First Agent
+
+Learn how to create and configure a basic AI agent using xpander.ai.
+
+## Prerequisites
+
+<CodeGroup>
+  ```bash npm
+  npm install @xpander/sdk
+  ```
+  ```bash yarn
+  yarn add @xpander/sdk
+  ```
+</CodeGroup>
+
+## Initialize the Client
+
+```typescript
+import { XpanderClient } from '@xpander/sdk';
+
+const client = new XpanderClient({
+  apiKey: 'your-api-key'
+});
+```
+
+## Create a Basic Agent
+
+```typescript
+const agent = await client.createAgent({
+  name: 'MyFirstAgent',
+  description: 'A simple assistant agent',
+  model: 'gpt-4'
+});
+```
+
+## Configure Agent Capabilities
+
+```typescript
+// Add basic capabilities
+await agent.addCapability('conversation');
+await agent.addCapability('memory');
+
+// Configure memory settings
+await agent.configureMemory({
+  type: 'conversation',
+  maxTokens: 2000
+});
+```
+
+## Test Your Agent
+
+```typescript
+// Send a test message
+const response = await agent.chat({
+  message: 'Hello! Can you introduce yourself?'
+});
+
+console.log(response.content);
+```
+
+## Complete Example
+
+```typescript
+import { XpanderClient } from '@xpander/sdk';
+
+async function main() {
+  // Initialize client
+  const client = new XpanderClient({
+    apiKey: 'your-api-key'
+  });
+
+  // Create agent
+  const agent = await client.createAgent({
+    name: 'MyFirstAgent',
+    description: 'A simple assistant agent',
+    model: 'gpt-4'
+  });
+
+  // Add capabilities
+  await agent.addCapability('conversation');
+  await agent.addCapability('memory');
+
+  // Configure memory
+  await agent.configureMemory({
+    type: 'conversation',
+    maxTokens: 2000
+  });
+
+  // Test the agent
+  const response = await agent.chat({
+    message: 'Hello! Can you introduce yourself?'
+  });
+
+  console.log(response.content);
+}
+
+main().catch(console.error);
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card 
+    title="Add Tools" 
+    icon="wrench"
+    href="/tutorials/basics/add-tools"
+  >
+    Learn how to add tools to your agent
+  </Card>
+  
+  <Card 
+    title="Add Interfaces" 
+    icon="window"
+    href="/tutorials/basics/use-interfaces"
+  >
+    Add user interfaces to your agent
+  </Card>
+</CardGroup> 

@@ -1,0 +1,395 @@
+---
+title: 'SDK Local Functions'
+description: 'API reference for implementing and using local functions with the xpander AI SDK'
+---
+
+## Overview
+
+Local functions allow your AI agents to execute code directly on your local machine. This enables capabilities like file operations, system commands, or any custom Python functionality while maintaining security through controlled access.
+
+## Implementing Local Functions
+
+### Basic Implementation
+
+The simplest way to add a local function is to define the function and its declaration:
+
+```python
+from xpander_sdk import XpanderClient, ToolCall, ToolCallResult, ToolCallType
+from typing import Dict, Any, List, Optional
+
+# 1. Define the function
+def multiply(a: int, b: int) -> int:
+    """Multiply two integers."""
+    return a * b
+
+# 2. Create the tool declaration
+multiply_tool = {
+    "declaration": {
+        "type": "function",
+        "function": {
+            "name": "multiply",
+            "description": "Multiply two integers",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "a": {
+                        "type": "integer",
+                        "description": "First integer"
+                    },
+                    "b": {
+                        "type": "integer",
+                        "description": "Second integer"
+                    }
+                },
+                "required": ["a", "b"]
+            }
+        }
+    },
+    "fn": multiply
+}
+
+# 3. Add to agent
+client = XpanderClient(api_key=XPANDER_API_KEY)
+agent = client.agents.get(agent_id=XPANDER_AGENT_ID)
+agent.add_local_tools([multiply_tool])
+```
+
+### Advanced Implementation
+
+For more complex scenarios, you can create a class-based implementation:
+
+```python
+class FileManager:
+    def __init__(self, base_path: str):
+        self.base_path = base_path
+        
+    def read_file(self, filename: str) -> Dict[str, Any]:
+        """Read content from a file."""
+        try:
+            with open(f"{self.base_path}/{filename}", 'r') as f:
+                content = f.read()
+            return {
+                "success": True,
+                "content": content
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e)
+            }
+            
+    def write_file(self, filename: str, content: str) -> Dict[str, Any]:
+        """Write content to a file."""
+        try:
+            with open(f"{self.base_path}/{filename}", 'w') as f:
+                f.write(content)
+            return {
+                "success": True,
+                "message": f"File written successfully: {filename}"
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e)
+            }
+            
+    def get_tool_declarations(self) -> List[Dict[str, Any]]:
+        """Get tool declarations for all methods."""
+        return [
+            {
+                "declaration": {
+                    "type": "function",
+                    "function": {
+                        "name": "read_file",
+                        "description": "Read content from a file",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "filename": {
+                                    "type": "string",
+                                    "description": "Name of the file to read"
+                                }
+                            },
+                            "required": ["filename"]
+                        }
+                    }
+                },
+                "fn": self.read_file
+            },
+            {
+                "declaration": {
+                    "type": "function",
+                    "function": {
+                        "name": "write_file",
+                        "description": "Write content to a file",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "filename": {
+                                    "type": "string",
+                                    "description": "Name of the file to write"
+                                },
+                                "content": {
+                                    "type": "string",
+                                    "description": "Content to write to the file"
+                                }
+                            },
+                            "required": ["filename", "content"]
+                        }
+                    }
+                },
+                "fn": self.write_file
+            }
+        ]
+
+# Usage
+file_manager = FileManager("/path/to/files")
+agent.add_local_tools(file_manager.get_tool_declarations())
+```
+
+## Processing Local Tool Calls
+
+### Basic Processing
+
+```python
+# Get tools in LLM format
+tools = agent.get_tools()
+
+# Get LLM response
+response = openai_client.chat.completions.create(
+    model="gpt-4",
+    messages=messages,
+    tools=tools
+)
+
+# Extract tool calls
+tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response.model_dump(),
+    llm_provider=LLMProvider.OPENAI
+)
+
+# Get pending local tool calls
+local_calls = XpanderClient.retrieve_pending_local_tool_calls(tool_calls)
+
+# Process local calls
+results = []
+for tc in local_calls:
+    result = ToolCallResult(
+        function_name=tc.name,
+        tool_call_id=tc.tool_call_id
+    )
+    try:
+        result.is_success = True
+        result.result = multiply(**tc.payload)
+    except Exception as e:
+        result.is_success = False
+        result.error = str(e)
+    results.append(result)
+
+# Add results to memory
+agent.memory.add_tool_call_results(tool_call_results=results)
+```
+
+### Advanced Processing
+
+```python
+class LocalToolProcessor:
+    def __init__(self):
+        self.tools_by_name: Dict[str, callable] = {}
+        
+    def register_tool(self, name: str, fn: callable) -> None:
+        """Register a tool function."""
+        self.tools_by_name[name] = fn
+        
+    def process_tool_calls(self, tool_calls: List[ToolCall]) -> List[ToolCallResult]:
+        """Process a list of tool calls."""
+        local_calls = XpanderClient.retrieve_pending_local_tool_calls(tool_calls)
+        results = []
+        
+        for tc in local_calls:
+            result = ToolCallResult(
+                function_name=tc.name,
+                tool_call_id=tc.tool_call_id
+            )
+            try:
+                if tc.name in self.tools_by_name:
+                    result.is_success = True
+                    result.result = self.tools_by_name[tc.name](**tc.payload)
+                else:
+                    raise ValueError(f"Unknown tool: {tc.name}")
+            except Exception as e:
+                result.is_success = False
+                result.error = str(e)
+            results.append(result)
+            
+        return results
+
+# Usage
+processor = LocalToolProcessor()
+processor.register_tool("multiply", multiply)
+processor.register_tool("read_file", file_manager.read_file)
+processor.register_tool("write_file", file_manager.write_file)
+
+# Process tool calls
+results = processor.process_tool_calls(tool_calls)
+agent.memory.add_tool_call_results(tool_call_results=results)
+```
+
+## Best Practices
+
+### 1. Input Validation
+
+Always validate input parameters before execution:
+
+```python
+def read_file(filename: str) -> Dict[str, Any]:
+    """Read content from a file with validation."""
+    # Validate filename
+    if not filename or not isinstance(filename, str):
+        return {
+            "success": False,
+            "error": "Invalid filename"
+        }
+        
+    # Validate path
+    if not os.path.exists(filename):
+        return {
+            "success": False,
+            "error": "File not found"
+        }
+        
+    try:
+        with open(filename, 'r') as f:
+            content = f.read()
+        return {
+            "success": True,
+            "content": content
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
+```
+
+### 2. Error Handling
+
+Implement comprehensive error handling:
+
+```python
+def execute_command(command: str, working_dir: Optional[str] = None) -> Dict[str, Any]:
+    """Execute a system command with error handling."""
+    try:
+        # Validate command
+        if not command:
+            raise ValueError("Command cannot be empty")
+            
+        # Validate working directory
+        if working_dir and not os.path.exists(working_dir):
+            raise ValueError(f"Working directory not found: {working_dir}")
+            
+        # Execute command
+        result = subprocess.run(
+            command,
+            shell=True,
+            cwd=working_dir,
+            capture_output=True,
+            text=True,
+            timeout=30  # Add timeout
+        )
+        
+        return {
+            "success": result.returncode == 0,
+            "output": result.stdout,
+            "error": result.stderr if result.returncode != 0 else None,
+            "return_code": result.returncode
+        }
+    except subprocess.TimeoutExpired:
+        return {
+            "success": False,
+            "error": "Command execution timed out"
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
+```
+
+### 3. Response Format
+
+Maintain consistent response formats:
+
+```python
+def process_data(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Process data with standardized response format."""
+    try:
+        # Process data
+        result = some_processing(data)
+        
+        return {
+            "success": True,
+            "result": result,
+            "metadata": {
+                "timestamp": datetime.now().isoformat(),
+                "data_size": len(data)
+            }
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "metadata": {
+                "timestamp": datetime.now().isoformat(),
+                "error_type": type(e).__name__
+            }
+        }
+```
+
+### 4. Security Considerations
+
+Implement security measures:
+
+```python
+class SecureFileManager:
+    def __init__(self, base_path: str, allowed_extensions: List[str]):
+        self.base_path = os.path.abspath(base_path)
+        self.allowed_extensions = allowed_extensions
+        
+    def _is_safe_path(self, filename: str) -> bool:
+        """Check if the file path is safe."""
+        # Get absolute path
+        full_path = os.path.abspath(os.path.join(self.base_path, filename))
+        
+        # Check if path is within base directory
+        if not full_path.startswith(self.base_path):
+            return False
+            
+        # Check file extension
+        ext = os.path.splitext(filename)[1].lower()
+        if ext not in self.allowed_extensions:
+            return False
+            
+        return True
+        
+    def read_file(self, filename: str) -> Dict[str, Any]:
+        """Read file with security checks."""
+        if not self._is_safe_path(filename):
+            return {
+                "success": False,
+                "error": "Invalid file path or extension"
+            }
+            
+        try:
+            with open(os.path.join(self.base_path, filename), 'r') as f:
+                content = f.read()
+            return {
+                "success": True,
+                "content": content
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e)
+            }
+```

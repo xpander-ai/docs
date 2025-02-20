@@ -1,0 +1,112 @@
+---
+title: "Authenticate Users to AI Agents"
+description: "Learn how to authenticate users for secure access to AI agents"
+---
+
+# Authenticating Users to AI Agents
+
+Implement secure user authentication for accessing AI agents and their capabilities.
+
+## Authentication Flow
+
+1. User initiates authentication
+2. Credentials validation
+3. Token generation
+4. Session establishment
+5. Access management
+
+## Implementation
+
+### Basic Authentication
+
+```typescript
+// Configure user authentication
+const auth = new AgentAuth({
+  provider: 'oauth2',
+  sessionDuration: '24h',
+  maxAttempts: 3
+});
+
+// Handle authentication
+auth.on('login', async (credentials) => {
+  try {
+    const user = await auth.validateUser(credentials);
+    const token = await auth.generateToken(user);
+    return { user, token };
+  } catch (error) {
+    throw new AuthError('Invalid credentials');
+  }
+});
+```
+
+### Session Management
+
+```typescript
+// Create user session
+const session = await auth.createSession({
+  userId: user.id,
+  agentId: agent.id,
+  permissions: ['read', 'interact']
+});
+
+// Validate session
+const isValid = await auth.validateSession(session.id);
+
+// Refresh session
+const newSession = await auth.refreshSession(session.id);
+```
+
+## Access Control
+
+```typescript
+// Define access policies
+const policy = new AccessPolicy({
+  roles: {
+    user: ['read', 'interact'],
+    admin: ['read', 'interact', 'configure']
+  }
+});
+
+// Apply policy to agent
+agent.setAccessPolicy(policy);
+
+// Check permissions
+const canAccess = await policy.check(user, 'interact');
+```
+
+## Security Features
+
+### Rate Limiting
+
+```typescript
+auth.setRateLimit({
+  window: '15m',
+  max: 100
+});
+```
+
+### Audit Logging
+
+```typescript
+auth.enableAudit({
+  events: ['login', 'logout', 'access'],
+  storage: 'database'
+});
+```
+
+## Error Handling
+
+- Invalid credentials
+- Expired sessions
+- Rate limit exceeded
+- Permission denied
+- Network issues
+
+## Best Practices
+
+- Secure password storage
+- Token management
+- Session timeouts
+- Activity monitoring
+- Regular security audits
+- Compliance checks
