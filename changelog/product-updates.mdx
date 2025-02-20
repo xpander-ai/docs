@@ -3,91 +3,12 @@ title: 'Product Updates'
 description: 'New updates and improvements'
 ---
 
-<Info>
-  We've recently upgraded our platform with new agent capabilities and enhanced SDK features.
-  Read more in our [latest updates](/docs/01-get-started/04-examples).
-</Info>
+# Product Updates
 
-## March 2024
+## 2025-02-20
 
-### New API-First Interface Design docs.json
+xpander.ai is now in beta.
 
-We've introduced a new `docs.json` schema as a replacement for `mint.json`, to support better multi-level versioning, easier visual comprehension, and more consistent terminology. For more information on what's changed, visit our [introduction](/docs/01-get-started/02-introduction).
+## 2024-12-31
 
-Upgrade from `mint.json` to `docs.json` with the following steps:
-
-1. Make sure your CLI is the latest version
-```bash
-npm i xpander@latest -g
-```
-
-2. In your docs repository, run:
-```bash
-xpander upgrade
-```
-
-3. Delete your old mint.json file and push your changes
-
-### Configuration File Support
-
-Added support for loading interface configurations from files, making it easier to manage complex setups. Learn more in our [configuration guide](/docs/06-tools/01-add-tools).
-
-```bash
-xpander interfaces add agent_123 articles --file ./config.json
-```
-
-## February 2024
-
-### CI Checks
-
-Automatically lint your docs to find broken links, discover spelling and grammar issues, or enforce writing styles with your own Vale config. Learn more in our [tools guide](/docs/06-tools/02-create-tool).
-
-### .md support for LLMs
-
-All documentation pages are now automatically available as plain Markdown files—just append `.md` to the URL. This makes it easier for LLMs to ingest individual pages from your documentation.
-
-### More Themes
-
-New pre-built themes to modify the look & feel of your docs. Configure via your `docs.json` file.
-
-Now available:
-- Maple
-- Palm
-
-### Enhanced Monitoring
-
-New monitoring capabilities have been added to help track interface performance:
-
-- Real-time calls per day tracking
-- Latency monitoring for each endpoint
-- Detailed status reporting
-
-<Card title="Try it out" icon="arrow-right">
-  Get started with our new monitoring features in the [state management guide](/docs/03-ai-state-management/01-single-agent-state).
-</Card>
-
-### Bug Fixes
-
-- Fixed rate limiting calculation that was causing throttling issues
-- Resolved authentication token refresh problems
-- Improved error handling for timeout scenarios
-
-## January 2024
-
-### Initial Release
-
-Launched the first version of our documentation system with:
-
-- Basic configuration
-- JSON and table output formats
-- Simple filtering
-- Basic authentication support
-
-<Note>
-Need help getting started? Check out our [quickstart guide](/docs/01-get-started/03-quickstart) or join our [community Discord](https://discord.gg/CUcp4WWh5g).
-</Note>
-
-```bash
-# List available interfaces
-xpander interfaces list agent_123
-``` 
+Initial release of xpander.ai.

@@ -13,10 +13,8 @@
       {
         "group": "Get Started",
         "pages": [
-          "docs/01-get-started/01-index",
-          "docs/01-get-started/02-introduction", 
-          "docs/01-get-started/03-quickstart",
-          "docs/01-get-started/04-examples"
+          "docs/01-get-started/01-index", 
+          "docs/01-get-started/02-quickstart"
         ]
       },
       {
