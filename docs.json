@@ -8,150 +8,262 @@
     "dark": "#4A2C99"
   },
   "favicon": "/favicon.svg",
+  "logo": {
+    "light": "/logo/logo.png",
+    "dark": "/logo/logo-dark-mode.png"
+  },
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/xpander-ai/xpander-sdk"
+    }
+  },
   "navigation": {
-    "groups": [
+    "tabs": [
       {
-        "group": "Get Started",
-        "pages": [
-          "docs/01-get-started/01-index", 
-          "docs/01-get-started/02-quickstart"
-        ]
-      },
-      {
-        "group": "Agent Builder",
-        "pages": [
-          "docs/02-agent-builder/01-import-existing-agents",
-          "docs/02-agent-builder/02-add-tools-to-agents",
-          "docs/02-agent-builder/03-use-ai-agent-builder"
-        ]
-      },
-      {
-        "group": "AI State Management",
-        "pages": [
-          "docs/03-ai-state-management/01-single-agent-state",
-          "docs/03-ai-state-management/02-multi-agent-collaboration",
-          "docs/03-ai-state-management/03-user-sessions",
-          "docs/03-ai-state-management/04-examples"
-        ]
-      },
-      {
-        "group": "User Authentication",
-        "pages": [
-          "docs/04-user-authentication/01-add-provider",
-          "docs/04-user-authentication/02-authenticate-users",
-          "docs/04-user-authentication/03-example"
-        ]
-      },
-      {
-        "group": "Human Interfaces",
-        "pages": [
-          "docs/05-human-interfaces/01-voice-apis",
-          "docs/05-human-interfaces/02-slack-bots",
-          "docs/05-human-interfaces/03-webui"
-        ]
-      },
-      {
-        "group": "Tools",
-        "pages": [
-          "docs/06-tools/01-add-tools",
-          "docs/06-tools/02-create-tool",
-          "docs/06-tools/03-run-tools"
-        ]
-      },
-      {
-        "group": "SDK Reference",
-        "pages": [
-          "api-reference/07-sdk/01-getting-started",
-          "api-reference/07-sdk/02-sdk-function-calling",
-          "api-reference/07-sdk/03-sdk-local-functions",
-          "api-reference/07-sdk/04-agent-example",
-          "api-reference/07-sdk/05-sdk-manual-invocation"
-        ]
-      },
-      {
-        "group": "API Reference",
-        "pages": [
-          "api-reference/08-api/01-get-tools",
-          "api-reference/08-api/02-execute-operation"
-        ]
-      },
-      {
-        "group": "CLI Reference",
-        "pages": [
-          "cli-reference/00-overview",
+        "tab": "Documentation",
+        "icon": {
+          "name": "book",
+          "style": "regular"
+        },
+        "groups": [
           {
-            "group": "Authentication",
+            "group": "Get Started",
+            "icon": {
+              "name": "rocket",
+              "style": "regular"
+            },
             "pages": [
-              "cli-reference/01-auth/01-login",
-              "cli-reference/01-auth/02-logout"
+              "docs/01-get-started/01-index",
+              "docs/01-get-started/02-llm-models",
+              "docs/01-get-started/03-agent-frameworks"
             ]
           },
           {
-            "group": "Engine Management",
+            "group": "Agent Builder",
+            "icon": {
+              "name": "wand-magic-sparkles",
+              "style": "regular"
+            },
             "pages": [
-              "cli-reference/02-engine/01-set",
-              "cli-reference/02-engine/02-status",
-              "cli-reference/02-engine/03-deploy"
+              "docs/02-agent-builder/01-import-existing-agents",
+              "docs/02-agent-builder/02-add-tools-to-agents",
+              "docs/02-agent-builder/03-use-ai-agent-builder"
             ]
           },
           {
-            "group": "Agent Management",
+            "group": "AI State Management",
+            "icon": {
+              "name": "database",
+              "style": "regular"
+            },
             "pages": [
-              "cli-reference/03-agent/01-list",
-              "cli-reference/03-agent/02-details",
-              "cli-reference/03-agent/03-instrumentation",
-              "cli-reference/03-agent/04-configure"
+              "docs/03-ai-state-management/01-single-agent-state",
+              "docs/03-ai-state-management/02-multi-agent-collaboration",
+              "docs/03-ai-state-management/03-user-sessions",
+              "docs/03-ai-state-management/04-examples"
             ]
           },
           {
-            "group": "Agent Tools",
+            "group": "User Authentication",
+            "icon": {
+              "name": "shield-check",
+              "style": "regular"
+            },
             "pages": [
-              "cli-reference/04-agent-tools/01-list",
-              "cli-reference/04-agent-tools/02-add",
-              "cli-reference/04-agent-tools/03-remove"
+              "docs/04-user-authentication/01-add-provider",
+              "docs/04-user-authentication/02-authenticate-users",
+              "docs/04-user-authentication/03-example"
             ]
           },
           {
-            "group": "Agent Interfaces",
+            "group": "Human Interfaces",
+            "icon": {
+              "name": "comments",
+              "style": "regular"
+            },
             "pages": [
-              "cli-reference/05-agent-interfaces/01-list",
-              "cli-reference/05-agent-interfaces/02-add",
-              "cli-reference/05-agent-interfaces/03-remove"
+              "docs/05-human-interfaces/01-voice-apis",
+              "docs/05-human-interfaces/02-slack-bots",
+              "docs/05-human-interfaces/03-webui"
             ]
           },
           {
-            "group": "Team Management",
+            "group": "Tools",
+            "icon": {
+              "name": "toolbox",
+              "style": "regular"
+            },
             "pages": [
-              "cli-reference/06-agent-team/01-list",
-              "cli-reference/06-agent-team/02-create",
-              "cli-reference/06-agent-team/03-add",
-              "cli-reference/06-agent-team/04-remove",
-              "cli-reference/06-agent-team/05-delete"
-            ]
-          },
-          {
-            "group": "Organization Management",
-            "pages": [
-              "cli-reference/07-org/01-list",
-              "cli-reference/07-org/02-switch",
-              "cli-reference/07-org/03-details"
-            ]
-          },
-          {
-            "group": "Configuration",
-            "pages": [
-              "cli-reference/08-config/01-view",
-              "cli-reference/08-config/02-set"
+              "docs/06-tools/01-add-tools",
+              "docs/06-tools/02-create-tool",
+              "docs/06-tools/03-run-tools"
             ]
           }
         ]
       },
       {
-        "group": "Tutorials",
-        "pages": [
-          "tutorials/00-introduction",
+        "tab": "SDK & API",
+        "icon": {
+          "name": "code",
+          "style": "regular"
+        },
+        "groups": [
+          {
+            "group": "SDK Reference",
+            "icon": {
+              "name": "puzzle-piece",
+              "style": "regular"
+            },
+            "pages": [
+              "api-reference/07-sdk/01-getting-started",
+              "api-reference/07-sdk/02-sdk-function-calling",
+              "api-reference/07-sdk/03-sdk-local-functions",
+              "api-reference/07-sdk/04-agent-example",
+              "api-reference/07-sdk/05-sdk-manual-invocation"
+            ]
+          },
+          {
+            "group": "API Reference",
+            "icon": {
+              "name": "brackets-curly",
+              "style": "regular"
+            },
+            "pages": [
+              "api-reference/08-api/01-get-tools",
+              "api-reference/08-api/02-execute-operation"
+            ]
+          },
+          {
+            "group": "CLI Reference",
+            "icon": {
+              "name": "terminal",
+              "style": "regular"
+            },
+            "pages": [
+              "cli-reference/00-overview",
+              {
+                "group": "Authentication",
+                "icon": {
+                  "name": "key",
+                  "style": "regular"
+                },
+                "pages": [
+                  "cli-reference/01-auth/01-login",
+                  "cli-reference/01-auth/02-logout"
+                ]
+              },
+              {
+                "group": "Engine Management",
+                "icon": {
+                  "name": "gear",
+                  "style": "regular"
+                },
+                "pages": [
+                  "cli-reference/02-engine/01-set",
+                  "cli-reference/02-engine/02-status",
+                  "cli-reference/02-engine/03-deploy"
+                ]
+              },
+              {
+                "group": "Agent Management",
+                "icon": {
+                  "name": "robot",
+                  "style": "regular"
+                },
+                "pages": [
+                  "cli-reference/03-agent/01-list",
+                  "cli-reference/03-agent/02-details",
+                  "cli-reference/03-agent/03-instrumentation",
+                  "cli-reference/03-agent/04-configure"
+                ]
+              },
+              {
+                "group": "Agent Tools",
+                "icon": {
+                  "name": "screwdriver-wrench",
+                  "style": "regular"
+                },
+                "pages": [
+                  "cli-reference/04-agent-tools/01-list",
+                  "cli-reference/04-agent-tools/02-add",
+                  "cli-reference/04-agent-tools/03-remove"
+                ]
+              },
+              {
+                "group": "Agent Interfaces",
+                "icon": {
+                  "name": "window",
+                  "style": "regular"
+                },
+                "pages": [
+                  "cli-reference/05-agent-interfaces/01-list",
+                  "cli-reference/05-agent-interfaces/02-add",
+                  "cli-reference/05-agent-interfaces/03-remove"
+                ]
+              },
+              {
+                "group": "Team Management",
+                "icon": {
+                  "name": "users",
+                  "style": "regular"
+                },
+                "pages": [
+                  "cli-reference/06-agent-team/01-list",
+                  "cli-reference/06-agent-team/02-create",
+                  "cli-reference/06-agent-team/03-add",
+                  "cli-reference/06-agent-team/04-remove",
+                  "cli-reference/06-agent-team/05-delete"
+                ]
+              },
+              {
+                "group": "Organization Management",
+                "icon": {
+                  "name": "building",
+                  "style": "regular"
+                },
+                "pages": [
+                  "cli-reference/07-org/01-list",
+                  "cli-reference/07-org/02-switch",
+                  "cli-reference/07-org/03-details"
+                ]
+              },
+              {
+                "group": "Configuration",
+                "icon": {
+                  "name": "sliders",
+                  "style": "regular"
+                },
+                "pages": [
+                  "cli-reference/08-config/01-view",
+                  "cli-reference/08-config/02-set"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Tutorials",
+        "icon": {
+          "name": "graduation-cap",
+          "style": "regular"
+        },
+        "groups": [
+          {
+            "group": "Get Started",
+            "icon": {
+              "name": "rocket",
+              "style": "regular"
+            },
+            "pages": ["tutorials/00-introduction"]
+          },
           {
             "group": "Basics",
+            "icon": {
+              "name": "book-open-reader",
+              "style": "regular"
+            },
             "pages": [
               "tutorials/09-basics/01-create-agent",
               "tutorials/09-basics/02-add-tools",
@@ -160,6 +272,10 @@
           },
           {
             "group": "Advanced",
+            "icon": {
+              "name": "layer-group",
+              "style": "regular"
+            },
             "pages": [
               "tutorials/10-advanced/01-multi-agent",
               "tutorials/10-advanced/02-custom-tools",
@@ -199,7 +315,7 @@
         {
           "dropdown": "Tutorials",
           "icon": {
-            "name": "terminal",
+            "name": "graduation-cap",
             "style": "regular"
           },
           "href": "https://docs.xpander.ai/tutorials/00-introduction"
@@ -255,16 +371,6 @@
           }
         }
       ]
-    }
-  },
-  "logo": {
-    "light": "/logo/logo.png",
-    "dark": "/logo/logo-dark-mode.png"
-  },
-  "navbar": {
-    "primary": {
-      "type": "github",
-      "href": "https://github.com/xpander-ai/xpander-sdk"
     }
   },
   "footer": {
