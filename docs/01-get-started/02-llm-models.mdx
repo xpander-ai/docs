@@ -1,0 +1,226 @@
+---
+title: "Quickstart - LLM Models"
+description: "Learn about the LLM models supported by xpander.ai"
+icon: "brain"
+---
+
+# LLM Models without Agent Frameworks
+Choose this approach when you want direct control over LLM interactions and custom tool execution. Perfect for simple automations and specific use cases.
+
+## Single Query (Quick Start)
+Send one-off queries to your preferred LLM with built-in tool support.
+
+<CodeGroup>
+```python OpenAI
+response = openai_client.chat.completions.create(
+    model="gpt-4-turbo",
+    messages=agent.messages,
+    tools=agent.get_tools(llm_provider=LLMProvider.OPENAI),
+    tool_choice="auto",
+    temperature=0.0
+)
+
+# Process and execute tools
+agent.process_llm_response(
+    response.model_dump(), 
+    llm_provider=LLMProvider.OPENAI
+)
+```
+
+```python Gemini
+response = gemini_openai_client.chat.completions.create(
+    model="gemini-2.0-flash",
+    messages=agent.messages,
+    tools=agent.get_tools(llm_provider=LLMProvider.GEMINI_OPEN_AI),
+    tool_choice="auto",
+    temperature=0.0
+)
+
+# Process and execute tools
+agent.process_llm_response(
+    response.model_dump(), 
+    llm_provider=LLMProvider.GEMINI_OPEN_AI
+)
+```
+
+```python Claude
+response = anthropic_client.messages.create(
+    model="claude-3-opus",
+    messages=agent.messages,
+    tools=agent.get_tools(llm_provider=LLMProvider.ANTHROPIC),
+    tool_choice="auto",
+    temperature=0.0
+)
+
+# Process and execute tools
+agent.process_llm_response(
+    response.model_dump(), 
+    llm_provider=LLMProvider.ANTHROPIC
+)
+```
+</CodeGroup>
+
+## Event streaming (Slack, Teams, RestAPI, Realtime voice)
+Handle real-time events and messages from various platforms with continuous LLM interactions.
+
+<CodeGroup>
+```python OpenAI
+def handle_event(event):
+    response = openai_client.chat.completions.create(
+        model="gpt-4-turbo",
+        messages=agent.messages,
+        tools=agent.get_tools(llm_provider=LLMProvider.OPENAI),
+        tool_choice="auto",
+        temperature=0.0
+    )
+    
+    agent.process_llm_response(
+        response.model_dump(), 
+        llm_provider=LLMProvider.OPENAI
+    )
+
+xpander_agent.start_event_listener()
+```
+
+```python Gemini
+def handle_event(event):
+    response = gemini_openai_client.chat.completions.create(
+        model="gemini-2.0-flash",
+        messages=agent.messages,
+        tools=agent.get_tools(llm_provider=LLMProvider.GEMINI_OPEN_AI),
+        tool_choice="auto",
+        temperature=0.0
+    )
+    
+    agent.process_llm_response(
+        response.model_dump(), 
+        llm_provider=LLMProvider.GEMINI_OPEN_AI
+    )
+
+xpander_agent.start_event_listener()
+```
+
+```python Claude
+def handle_event(event):
+    response = anthropic_client.messages.create(
+        model="claude-3-opus",
+        messages=agent.messages,
+        tools=agent.get_tools(llm_provider=LLMProvider.ANTHROPIC),
+        tool_choice="auto",
+        temperature=0.0
+    )
+    
+    agent.process_llm_response(
+        response.model_dump(), 
+        llm_provider=LLMProvider.ANTHROPIC
+    )
+
+xpander_agent.start_event_listener()
+```
+</CodeGroup>
+
+## Multi-Step Tasks
+Break down complex tasks into manageable steps with automatic tool execution and state management.
+
+<CodeGroup>
+```python OpenAI
+task = """
+Find employees of xpander.ai and their roles.
+Then check their LinkedIn profiles for recent updates.
+"""
+agent.add_task(task)
+
+while not agent.is_finished():
+    response = openai_client.chat.completions.create(
+        model="gpt-4-turbo",
+        messages=agent.messages,
+        tools=agent.get_tools(llm_provider=LLMProvider.OPENAI),
+        tool_choice="auto",
+        temperature=0.0
+    )
+    
+    agent.process_llm_response(
+        response.model_dump(), 
+        llm_provider=LLMProvider.OPENAI
+    )
+```
+
+```python Gemini
+task = """
+Find employees of xpander.ai and their roles.
+Then check their LinkedIn profiles for recent updates.
+"""
+agent.add_task(task)
+
+while not agent.is_finished():
+    response = gemini_openai_client.chat.completions.create(
+        model="gemini-2.0-flash",
+        messages=agent.messages,
+        tools=agent.get_tools(llm_provider=LLMProvider.GEMINI_OPEN_AI),
+        tool_choice="auto",
+        temperature=0.0
+    )
+    
+    agent.process_llm_response(
+        response.model_dump(), 
+        llm_provider=LLMProvider.GEMINI_OPEN_AI
+    )
+```
+
+```python Claude
+task = """
+Find employees of xpander.ai and their roles.
+Then check their LinkedIn profiles for recent updates.
+"""
+agent.add_task(task)
+
+while not agent.is_finished():
+    response = anthropic_client.messages.create(
+        model="claude-3-opus",
+        messages=agent.messages,
+        tools=agent.get_tools(llm_provider=LLMProvider.ANTHROPIC),
+        tool_choice="auto",
+        temperature=0.0
+    )
+    
+    agent.process_llm_response(
+        response.model_dump(), 
+        llm_provider=LLMProvider.ANTHROPIC
+    )
+```
+</CodeGroup>
+
+## Next Steps
+<CardGroup cols={2}>
+  <Card 
+    title="Add Voice & Chat Interfaces" 
+    icon="microphone"
+    href="/docs/05-human-interfaces/01-voice-apis"
+  >
+    Add voice, chat and other human-machine interfaces to your agents
+  </Card>
+
+  <Card 
+    title="Manage Multi-User State" 
+    icon="users"
+    href="/docs/03-ai-state-management/02-multi-agent-collaboration"
+  >
+    Learn how to handle state across multiple users and sessions
+  </Card>
+
+  <Card 
+    title="Manage Agent Memory" 
+    icon="brain"
+    href="/docs/03-ai-state-management/01-single-agent-state"
+  > 
+    Configure and manage memory state between your AI agents
+  </Card>
+
+  <Card 
+    title="Add User Authentication" 
+    icon="lock"
+    href="/docs/04-user-authentication/01-add-provider"
+  >
+    Implement secure user authentication for your agents
+  </Card>
+</CardGroup> 

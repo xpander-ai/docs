@@ -1,0 +1,41 @@
+---
+title: 'Adding Tools to Your Agent'
+description: 'Learn how to enhance your agent with custom tools and capabilities'
+---
+
+# Adding Tools to Your Agent
+
+In this tutorial, you'll learn how to add tools to your xpander.ai agent to extend its capabilities.
+
+## Prerequisites
+- A basic agent created in xpander.ai
+- Basic understanding of the xpander.ai platform
+- xpander CLI installed
+
+## Steps to Add Tools
+
+### 1. Understanding Tools
+Tools are functions that your agent can use to interact with external services, APIs, or perform specific tasks.
+
+### 2. Adding Pre-built Tools
+```bash
+xpander tools add my-agent --tool http
+```
+
+### 3. Configuring Tool Parameters
+```json
+{
+  "tool": "http",
+  "parameters": {
+    "base_url": "https://api.example.com"
+  }
+}
+```
+
+### 4. Testing Your Tools
+Verify that your tools are working correctly by running a test interaction with your agent.
+
+## Next Steps
+- Learn how to create custom tools
+- Explore advanced tool configurations
+- Build complex workflows with multiple tools 

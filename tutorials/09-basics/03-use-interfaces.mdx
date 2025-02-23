@@ -1,0 +1,54 @@
+---
+title: 'Using Agent Interfaces'
+description: 'Learn how to connect your agent to different interfaces like Slack, Voice, and Web UI'
+---
+
+# Using Agent Interfaces
+
+This tutorial guides you through setting up different interfaces for your xpander.ai agent.
+
+## Available Interfaces
+
+### 1. Slack Integration
+Learn how to connect your agent to Slack:
+- Setting up Slack App
+- Configuring webhooks
+- Managing permissions
+
+### 2. Voice Interface
+Enable voice interactions:
+- Setting up voice recognition
+- Configuring text-to-speech
+- Managing voice settings
+
+### 3. Web UI Integration
+Create a custom web interface:
+- Setting up the Web UI component
+- Customizing the interface
+- Handling user interactions
+
+## Implementation Steps
+
+1. Choose your interface
+2. Configure authentication
+3. Set up endpoints
+4. Test the connection
+
+## Code Examples
+
+```javascript
+// Example Web UI integration
+const agent = new XpanderAgent({
+  interface: 'webui',
+  config: {
+    endpoint: '/api/chat',
+    authentication: true
+  }
+});
+```
+
+## Best Practices
+- Secure your endpoints
+- Handle rate limiting
+- Implement proper error handling
+- Monitor interface health 

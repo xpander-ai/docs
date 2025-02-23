@@ -1,0 +1,100 @@
+---
+title: 'Creating Your First Agent'
+description: 'Learn how to create and configure your first AI agent with xpander.ai'
+icon: "rocket"
+---
+
+# Creating Your First Agent
+
+This tutorial will guide you through the process of creating your first AI agent using xpander.ai.
+
+## Prerequisites
+
+- xpander.ai account
+- xpander CLI installed
+- Basic understanding of AI concepts
+
+## Installation
+
+### 1. Install the CLI
+```bash
+npm install -g @xpander/cli
+```
+
+### 2. Authenticate
+```bash
+xpander login
+```
+
+## Creating Your Agent
+
+### 1. Basic Agent Creation
+```bash
+xpander agent create my-first-agent
+```
+
+### 2. Configure Agent Settings
+```json
+{
+  "name": "my-first-agent",
+  "description": "A simple AI agent for demonstration",
+  "model": "gpt-4",
+  "temperature": 0.7,
+  "maxTokens": 2000
+}
+```
+
+### 3. Define Agent Capabilities
+```typescript
+interface AgentCapabilities {
+  canGenerateText: boolean;
+  canProcessImages: boolean;
+  canMakeDecisions: boolean;
+  allowedTools: string[];
+}
+```
+
+## Testing Your Agent
+
+### 1. Basic Interaction
+```bash
+xpander agent test my-first-agent
+```
+
+### 2. Verify Responses
+```typescript
+const response = await agent.process({
+  input: "Hello, what can you do?",
+  context: {
+    user: "tutorial-user"
+  }
+});
+```
+
+## Best Practices
+
+- Start with simple tasks
+- Test thoroughly
+- Monitor performance
+- Implement proper error handling
+- Set appropriate rate limits
+
+## Next Steps
+- Add tools to your agent
+- Configure interfaces
+- Implement custom logic
+- Explore advanced features
+
+## Troubleshooting
+
+### Common Issues
+- Authentication errors
+- Configuration problems
+- Rate limiting
+- Model availability
+
+### Solutions
+- Verify credentials
+- Check configuration
+- Monitor usage
+- Update dependencies 
