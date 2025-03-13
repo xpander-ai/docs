@@ -1,135 +1,34 @@
 ---
-title: "Welcome to xpander.ai"
-description: "Get started with xpander.ai and build your first AI agent"
+title: "Overview of xpander"
 icon: "house"
 ---
 
-xpander.ai is a backend for AI Agents - it allows you to build, enhance, and deploy AI agents that can interact with 1000s of users from multiple human interfaces (Voice, Chat, Web, etc) and that can use multiple tools (API, Web, File, etc) and that can have complex state and conversation history using AI state management.
+<img height="500" src="/images/Banner.png" /> 
+xpander is a backend for AI Agents which allows to build, enhance, and deploy AI agents that can interact with 1000s of users from multiple human interfaces (Voice, Chat, Web, etc) and that can use multiple tools (API, Web, File, etc) and that can have complex state and conversation history using AI state management. The platform natively supports multiple LLMs (OpenAI, Claude, Gemini, etc) and multiple frameworks (LlamaIndex, Smoleagents (HuggingFace), etc).
 
-The platform provides real-time event streaming capabilities for live updates and monitoring of agent activities, along with robust multi-user session management to handle concurrent interactions across different users and contexts.
+### Why xpander?
 
-The platform natively supports multiple LLMs (OpenAI, Claude, Gemini, etc) and multiple frameworks (LlamaIndex, Smoleagents (HuggingFace), etc).
+- **A stateful and scalable AI Agent runtime**
 
-## Get started
+- **Open integration across AI stacks**
 
-Scenario : You want to build a simple agent that uses a single LLM and a single framework , and use xpander.ai to manage the state and conversation history, add tools and interact with your agent via Slack/ Voice/ Chat/ Web
+- **Reliable, long-running AI automation without vendor lock-in**
 
-### Installation
+- **A simple, CLI-based onboarding experience to enhance AI Agents quickly**
 
-```bash
-pip install xpander-sdk
-xpander login
-xpander agent new
-xpander agent get
-```
+### With xpander, you can:~
 
-Example response:
-```bash
-> xpander login
-✓ Successfully logged in to xpander.ai
+- Manage AI session states seamlessly, ensuring long-running AI agents operate efficiently.
 
-> xpander agent new
-? Agent name: my-first-agent
-? Select LLM: OpenAI GPT-4
-? Select framework: OpenAI
-✓ Created new agent: my-first-agent
-✓ Agent URL: https://amethyst-basilisk.agents.xpander.ai/
-✓ Agent ID: ag_01h8x9j2p6q5r7k8m9n0
-✓ API Key: xpd_sk_01h8x9j2p6q5r7k8m9n0p1q2r3s4t5u6v7w8x9y0
+- Connect AI Agents to any API in your tech stack avoiding vendor lock-in.
 
-> xpander agent get
-NAME           LLM     FRAMEWORK    STATUS    SOURCE NODES
-my-first-agent GPT-4   OpenAI       Active    web
-```
+- Build within few minutes and share it widely.
 
-You can now interact with your agent via the web interface: https://amethyst-basilisk.agents.xpander.ai/
+- Enhance existing AI agents (LangChain, LlamaIndex, etc.) with xpander’s capabilities.
 
-And load the agent in your local environment using the API key:
+### How is xpander different
 
-<CodeGroup>
+- It doesn’t force users into a specific stack. It offers an AI State Machine, governed runtime, API connectivity, and an enterprise-grade execution layer.
+- Just as Databricks standardizes data processing, xpander.ai enables AI Agents to work across environments (cloud, VPC, on-prem) with multiple frameworks.
 
-```python OpenAI Single Query
-from xpander_sdk import XpanderClient
-from openai import OpenAI
-from dotenv import load_dotenv
-from os import environ
-
-# Load environment variables
-load_dotenv()
-
-OPENAI_API_KEY = environ["OPENAI_API_KEY"]
-XPANDER_API_KEY = environ["XPANDER_API_KEY"]
-XPANDER_AGENT_ID = environ["XPANDER_AGENT_ID"]
-
-xpander_agent = XpanderClient(api_key=XPANDER_API_KEY).agents.get(agent_id=XPANDER_AGENT_ID)
-
-xpander_agent.add_task("What is the weather in Tokyo?")
-
-response = openai_client.chat.completions.create(
-    model="gpt-4o",
-    messages=agent.messages, ## this is the conversation history and state of the agent
-    tools=agent.get_tools(llm_provider=LLMProvider.OPENAI), ## this is the list of tools available to the agent
-    tool_choice="auto", ## this is the tool choice for the agent
-)
-
-# Process and execute tools
-xpander_agent.process_llm_response(
-    response.model_dump(), 
-    llm_provider=LLMProvider.OPENAI
-)
-```
-
-```python OpenAI Event Streaming
-from xpander_sdk import XpanderClient
-from openai import OpenAI
-from dotenv import load_dotenv
-from os import environ
-
-# Load environment variables
-load_dotenv()
-
-OPENAI_API_KEY = environ["OPENAI_API_KEY"]
-XPANDER_API_KEY = environ["XPANDER_API_KEY"]
-XPANDER_AGENT_ID = environ["XPANDER_AGENT_ID"]
-
-xpander_agent = XpanderClient(api_key=XPANDER_API_KEY).agents.get(agent_id=XPANDER_AGENT_ID)
-
-def handle_event(event):
-    response = openai_client.chat.completions.create(
-        model="gpt-4o",
-        messages=agent.messages,
-        tools=agent.get_tools(llm_provider=LLMProvider.OPENAI),
-        tool_choice="auto",
-        temperature=0.0
-    )
-    
-    agent.process_llm_response(
-        response.model_dump(), 
-        llm_provider=LLMProvider.OPENAI
-    )
-
-xpander_agent.start_event_listener()
-```
-</CodeGroup>
-
-### Next Steps
-
-<CardGroup cols={2}>
-  <Card 
-    title="Get started with Agent Frameworks" 
-    icon="robot"
-    href="/docs/01-get-started/02-llm-models"
-  >
-    Integration with popular frameworks like LlamaIndex, CrewAI, and Smoleagents
-  </Card>
-
-  <Card 
-    title="Get Started with LLM Models" 
-    icon="wand-magic-sparkles"
-    href="/docs/01-get-started/03-agent-frameworks"
-  >
-    Direct integration with LLMs like GPT-4, Claude, and Gemini
-  </Card>
-
-
-</CardGroup>
+- Unlike closed ecosystems, xpander.ai allows customers to integrate freely, reducing dependencies on any single provider.

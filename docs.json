@@ -35,6 +35,7 @@
             },
             "pages": [
               "docs/01-get-started/01-index",
+              "docs/01-get-started/02-getting-started",
               "docs/01-get-started/02-llm-models",
               "docs/01-get-started/03-agent-frameworks"
             ]
