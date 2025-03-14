@@ -1,0 +1,180 @@
+---
+title: "Get started"
+description: "Get started with xpander.ai and build your first AI agent"
+icon: "house"
+---
+
+### 1. Getting Started with the SDK
+
+**Scenario** : You want to build a simple agent that uses a single LLM and a single framework , and use xpander.ai to manage the state and conversation history, add tools and interact with your agent via Slack/ Voice/ Chat/ Web
+
+### Installation
+
+```bash
+pip install xpander-sdk
+xpander login
+xpander agent new
+xpander agent get
+```
+
+Example response:
+```bash
+> xpander login
+✓ Successfully logged in to xpander.ai
+
+> xpander agent new
+? Agent name: my-first-agent
+? Select LLM: OpenAI GPT-4
+? Select framework: OpenAI
+✓ Created new agent: my-first-agent
+✓ Agent URL: https://amethyst-basilisk.agents.xpander.ai/
+✓ Agent ID: ag_01h8x9j2p6q5r7k8m9n0
+✓ API Key: xpd_sk_01h8x9j2p6q5r7k8m9n0p1q2r3s4t5u6v7w8x9y0
+
+> xpander agent get
+NAME           LLM     FRAMEWORK    STATUS    SOURCE NODES
+my-first-agent GPT-4   OpenAI       Active    web
+```
+
+You can now interact with your agent via the web interface: https://amethyst-basilisk.agents.xpander.ai/
+
+And load the agent in your local environment using the API key:
+
+<CodeGroup>
+
+```python OpenAI Single Query
+from xpander_sdk import XpanderClient
+from openai import OpenAI
+from dotenv import load_dotenv
+from os import environ
+
+# Load environment variables
+load_dotenv()
+
+OPENAI_API_KEY = environ["OPENAI_API_KEY"]
+XPANDER_API_KEY = environ["XPANDER_API_KEY"]
+XPANDER_AGENT_ID = environ["XPANDER_AGENT_ID"]
+
+xpander_agent = XpanderClient(api_key=XPANDER_API_KEY).agents.get(agent_id=XPANDER_AGENT_ID)
+
+xpander_agent.add_task("What is the weather in Tokyo?")
+
+response = openai_client.chat.completions.create(
+    model="gpt-4o",
+    messages=agent.messages, ## this is the conversation history and state of the agent
+    tools=agent.get_tools(llm_provider=LLMProvider.OPENAI), ## this is the list of tools available to the agent
+    tool_choice="auto", ## this is the tool choice for the agent
+)
+
+# Process and execute tools
+xpander_agent.process_llm_response(
+    response.model_dump(), 
+    llm_provider=LLMProvider.OPENAI
+)
+```
+
+```python OpenAI Event Streaming
+from xpander_sdk import XpanderClient
+from openai import OpenAI
+from dotenv import load_dotenv
+from os import environ
+
+# Load environment variables
+load_dotenv()
+
+OPENAI_API_KEY = environ["OPENAI_API_KEY"]
+XPANDER_API_KEY = environ["XPANDER_API_KEY"]
+XPANDER_AGENT_ID = environ["XPANDER_AGENT_ID"]
+
+xpander_agent = XpanderClient(api_key=XPANDER_API_KEY).agents.get(agent_id=XPANDER_AGENT_ID)
+
+def handle_event(event):
+    response = openai_client.chat.completions.create(
+        model="gpt-4o",
+        messages=agent.messages,
+        tools=agent.get_tools(llm_provider=LLMProvider.OPENAI),
+        tool_choice="auto",
+        temperature=0.0
+    )
+    
+    agent.process_llm_response(
+        response.model_dump(), 
+        llm_provider=LLMProvider.OPENAI
+    )
+
+xpander_agent.start_event_listener()
+```
+</CodeGroup>
+
+
+## 2. Getting Started with the xpander platform
+
+**Scenario** : Build an AI agent that retrieves top AI news from Hacker News. You can make any of your's choice.
+
+<video
+  autoPlay
+  muted
+  loop
+  playsInline
+  className="w-full aspect-video"
+  src="/images/2025-03-13-Xpander_Demo.mp4"
+></video>
+
+### Steps to Create an Agent:
+
+<Steps>
+  <Step title="Step-1">
+     Click "New Agent" on the dashboard
+  </Step>
+  <Step title="Step-2(A)">
+    Using AI Builder (Recommended): Enter a prompt to define your agent
+    <img height="100" width="200" src="/images/BuilderAI.png"/>
+  </Step>
+  <Step title="Step-2(B)">
+    Using Manual Process, Click on interfaces(LinkedIn, YC, Hacker News, Firecrawl, etc) and choose of your any choice, Click "Settings", generate details, write an overview, and save it.
+  </Step>
+  <Step title="Step-3">
+    Click "Deploy" to deploy your agent
+  </Step>
+  <Step title=" Step-4">
+    To view the working AI-Agent, Use Chat (via URL) for direct interaction, Use Tasks for scheduled operations, Use SDK/Webhooks for integrations.
+  </Step>
+</Steps>
+
+   
+### Troubleshooting / FAQ
+<AccordionGroup>
+
+  <Accordion title="How can I check logs for past interactions?">
+    Check out the tester and in chat, see the process info.
+  </Accordion>
+  <Accordion title="What to do if the agent chatbot is not working">
+    Check API keys, LLM selection, and agent configuration.
+  </Accordion>
+  
+</AccordionGroup>
+
+
+### Next Steps
+
+<CardGroup cols={2}>
+  <Card 
+    title="Get started with Agent Frameworks" 
+    icon="robot"
+    href="/docs/01-get-started/02-llm-models"
+  >
+    Integration with popular frameworks like LlamaIndex, CrewAI, and Smoleagents
+  </Card>
+
+  <Card 
+    title="Get Started with LLM Models" 
+    icon="wand-magic-sparkles"
+    href="/docs/01-get-started/03-agent-frameworks"
+  >
+    Direct integration with LLMs like GPT-4, Claude, and Gemini
+  </Card>
+
+
+</CardGroup>
+
+### Need help? Contact Support.
