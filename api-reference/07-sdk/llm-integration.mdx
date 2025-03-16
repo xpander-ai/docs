@@ -4,45 +4,24 @@ description: "Integrating different LLM providers with the Xpander SDK"
 icon: "microchip"
 ---
 
-# LLM Integration
-
 The Xpander SDK is designed to work with multiple Large Language Model (LLM) providers. This guide explains how to integrate various LLM providers with your Xpander agents.
 
+## Supported LLM Providers
+
+The SDK supports the following LLM providers through the `LLMProvider` enum:
+
+| Provider         | Enum Value                     | Format                            |
+|------------------|--------------------------------|-----------------------------------|
+| OpenAI           | `LLMProvider.OPEN_AI`          | Standard OpenAI format            |
+| FriendliAI       | `LLMProvider.FRIENDLI_AI`      | FriendliAI format (Claude, etc.)  |
+| Gemini           | `LLMProvider.GEMINI_OPEN_AI`   | Google Gemini with OpenAI format  |
+| Ollama           | `LLMProvider.OLLAMA`           | Ollama format for local models    |
+| LangChain        | `LLMProvider.LANG_CHAIN`       | LangChain format                  |
+| Real-time OpenAI | `LLMProvider.REAL_TIME_OPEN_AI` | Real-time OpenAI format          |
+| NVIDIA NIM       | `LLMProvider.NVIDIA_NIM`       | NVIDIA NIM format                 |
+| Amazon Bedrock   | `LLMProvider.AMAZON_BEDROCK`   | Amazon Bedrock format             |
+
 <Tabs>
-  <Tab title="Overview">
-    ## Supported LLM Providers
-
-    The SDK supports the following LLM providers through the `LLMProvider` enum:
-
-    | Provider         | Enum Value                     | Format                            |
-    |------------------|--------------------------------|-----------------------------------|
-    | OpenAI           | `LLMProvider.OPEN_AI`          | Standard OpenAI format            |
-    | Claude/Anthropic | `LLMProvider.FRIENDLI_AI`      | Claude via FriendliAI format      |
-    | Gemini           | `LLMProvider.GEMINI_OPEN_AI`   | Google Gemini with OpenAI format  |
-    | Ollama           | `LLMProvider.OLLAMA`           | Ollama format for local models    |
-    | LangChain        | `LLMProvider.LANG_CHAIN`       | LangChain format                  |
-    | Real-time OpenAI | `LLMProvider.REAL_TIME_OPEN_AI` | Real-time OpenAI format          |
-    | NVIDIA NIM       | `LLMProvider.NVIDIA_NIM`       | NVIDIA NIM format                 |
-    | Amazon Bedrock   | `LLMProvider.AMAZON_BEDROCK`   | Amazon Bedrock format             |
-
-    ## Related Resources
-
-    <CardGroup cols={2}>
-      <Card title="Agent" icon="robot" href="/api-reference/07-sdk/agent">
-        Learn about the core Agent class
-      </Card>
-      <Card title="Memory Management" icon="brain" href="/api-reference/07-sdk/agent/memory">
-        Managing agent memory
-      </Card>
-      <Card title="Agent Tools" icon="wrench" href="/api-reference/07-sdk/agent/tools">
-        Working with agent tools
-      </Card>
-      <Card title="Tool Models" icon="box" href="/api-reference/07-sdk/models/tool-models">
-        Understanding tool data models
-      </Card>
-    </CardGroup>
-  </Tab>
-
   <Tab title="Integration Basics">
     ## Integration Basics
 
@@ -88,84 +67,11 @@ The Xpander SDK is designed to work with multiple Large Language Model (LLM) pro
         ```
       </Step>
     </Steps>
-
-    ## Generic Integration Pattern
-
-    You can use this pattern to integrate any LLM provider:
-
-    <CodeBlock title="Generic LLM Integration">
-    ```python
-    from xpander_sdk import XpanderClient, LLMProvider
-    from your_llm_client import YourLLMClient
-
-    # 1. Initialize client and get agent
-    xpander_client = XpanderClient(api_key="your-api-key")
-    agent = xpander_client.agents.get(agent_id="agent-id")
-    llm_client = YourLLMClient()
-
-    # 2. Add task
-    agent.add_task(input="Your task input")
-
-    # 3. Initialize memory
-    agent.memory.init_messages(
-        input=agent.execution.input_message,
-        instructions=agent.instructions
-        # No need to specify llm_provider - it's optional
-    )
-
-    # 4. Run execution loop
-    while not agent.is_finished():
-        # Get tools in your LLM's format - specify your provider here
-        provider_format = LLMProvider.OPEN_AI  # Or closest match to your LLM's format
-        tools = agent.get_tools(llm_provider=provider_format)
-        
-        # Convert messages if needed for your LLM
-        formatted_messages = convert_messages_for_your_llm(agent.messages)
-        
-        # Call your LLM
-        response = llm_client.generate_response(
-            messages=formatted_messages,
-            tools=tools
-        )
-        
-        # Convert response to a standard format with choices[0].message structure
-        standard_response = convert_to_standard_format(response)
-        
-        # Add response to agent memory
-        agent.add_messages(messages=standard_response)
-        
-        # Extract tool calls with explicit provider
-        tool_calls = XpanderClient.extract_tool_calls(
-            llm_response=standard_response,
-            llm_provider=provider_format
-        )
-        
-        # Run tools
-        if tool_calls:
-            results = agent.run_tools(tool_calls=tool_calls)
-
-    # 5. Get final result
-    result = agent.retrieve_execution_result()
-    print(result.result)
-
-    # Helper functions for your specific LLM
-    def convert_messages_for_your_llm(messages):
-        # Convert messages to the format expected by your LLM
-        # ...
-        return formatted_messages
-
-    def convert_to_standard_format(response):
-        # Convert your LLM's response to a format with choices[0].message structure
-        # ...
-        return standard_response
-    ```
-    </CodeBlock>
   </Tab>
 
   <Tab title="OpenAI">
     ## OpenAI Integration
 
-    <CodeBlock title="OpenAI Integration">
     ```python
     from xpander_sdk import XpanderClient, LLMProvider
     from openai import OpenAI
@@ -224,13 +130,11 @@ The Xpander SDK is designed to work with multiple Large Language Model (LLM) pro
     result = agent.retrieve_execution_result()
     print(result.result)
     ```
-    </CodeBlock>
   </Tab>
 
-  <Tab title="Claude">
-    ## Claude (Anthropic) Integration
+  <Tab title="FriendliAI">
+    ## FriendliAI Integration
 
-    <CodeBlock title="Claude Integration">
     ```python
     from xpander_sdk import XpanderClient, LLMProvider
     import anthropic
@@ -240,11 +144,11 @@ The Xpander SDK is designed to work with multiple Large Language Model (LLM) pro
     # Load environment variables
     load_dotenv()
     XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
-    ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
+    FRIENDLI_API_KEY = os.environ["FRIENDLI_API_KEY"]
 
     # Initialize clients
     xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
-    claude_client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+    friendli_client = anthropic.Anthropic(api_key=FRIENDLI_API_KEY)
 
     # Get agent
     agent = xpander_client.agents.get(agent_id="agent-1234")
@@ -259,27 +163,13 @@ The Xpander SDK is designed to work with multiple Large Language Model (LLM) pro
 
     # Run until completion
     while not agent.is_finished():
-        # Get Claude-formatted tools
+        # Get FriendliAI-formatted tools
         tools = agent.get_tools(llm_provider=LLMProvider.FRIENDLI_AI)
         
-        # Convert messages to Claude format
-        claude_messages = []
-        for msg in agent.messages:
-            role = msg.get("role")
-            content = msg.get("content", "")
-            
-            if role == "system":
-                # Claude includes system message directly in the messages array
-                claude_messages.append({"role": "system", "content": content})
-            elif role == "user":
-                claude_messages.append({"role": "user", "content": content})
-            elif role == "assistant":
-                claude_messages.append({"role": "assistant", "content": content})
-        
-        # Call Claude
-        response = claude_client.messages.create(
+        # Call FriendliAI (using Claude model here)
+        response = friendli_client.messages.create(
             model="claude-3-opus-20240229",
-            messages=claude_messages,
+            messages=agent.messages,
             tools=tools,
             temperature=0.0
         )
@@ -302,19 +192,16 @@ The Xpander SDK is designed to work with multiple Large Language Model (LLM) pro
     result = agent.retrieve_execution_result()
     print(result.result)
     ```
-    </CodeBlock>
   </Tab>
 
   <Tab title="Gemini">
     ## Google Gemini Integration
 
-    <CodeBlock title="Gemini Integration">
     ```python
     from xpander_sdk import XpanderClient, LLMProvider
-    import google.generativeai as genai
+    from openai import OpenAI
     from dotenv import load_dotenv
     import os
-    import json
 
     # Load environment variables
     load_dotenv()
@@ -323,7 +210,12 @@ The Xpander SDK is designed to work with multiple Large Language Model (LLM) pro
 
     # Initialize clients
     xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
-    genai.configure(api_key=GEMINI_API_KEY)
+    
+    # Initialize Gemini using OpenAI compatibility API
+    gemini_client = OpenAI(
+        api_key=GEMINI_API_KEY,
+        base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+    )
 
     # Get agent
     agent = xpander_client.agents.get(agent_id="agent-1234")
@@ -336,63 +228,25 @@ The Xpander SDK is designed to work with multiple Large Language Model (LLM) pro
         # llm_provider parameter is optional
     )
 
-    # Helper function to convert messages for Gemini
-    def convert_to_gemini_messages(messages):
-        gemini_messages = []
-        
-        for msg in messages:
-            role = msg.get("role")
-            content = msg.get("content", "")
-            
-            if role == "system":
-                # Gemini doesn't have a system role, so we add it as a user message
-                gemini_messages.append({"role": "user", "parts": [{"text": f"System: {content}"}]})
-            elif role == "user":
-                gemini_messages.append({"role": "user", "parts": [{"text": content}]})
-            elif role == "assistant":
-                gemini_messages.append({"role": "model", "parts": [{"text": content}]})
-        
-        return gemini_messages
-
     # Run until completion
     while not agent.is_finished():
         # Get Gemini-formatted tools
         tools = agent.get_tools(llm_provider=LLMProvider.GEMINI_OPEN_AI)
         
-        # Convert messages to Gemini format
-        gemini_messages = convert_to_gemini_messages(agent.messages)
-        
-        # Initialize Gemini model
-        model = genai.GenerativeModel(
-            model_name="gemini-1.5-pro",
+        # Call Gemini via OpenAI compatibility API
+        response = gemini_client.chat.completions.create(
+            model="gemini-1.5-pro",
+            messages=agent.messages,
             tools=tools,
-            generation_config={"temperature": 0.0}
+            temperature=0.0
         )
-        
-        # Call Gemini
-        chat = model.start_chat(history=gemini_messages)
-        response = chat.send_message(
-            "Please help with the task and use tools if needed.",
-            tools=tools
-        )
-        
-        # Convert response to dict for standard processing
-        response_dict = {
-            "choices": [{
-                "message": {
-                    "role": "assistant",
-                    "content": response.text,
-                    "tool_calls": response.tool_calls if hasattr(response, "tool_calls") else []
-                }
-            }]
-        }
         
         # Add response to memory
-        agent.add_messages(messages=response_dict)
+        agent.add_messages(messages=response.model_dump())
         
         # Extract tool calls with explicit provider
         tool_calls = XpanderClient.extract_tool_calls(
-            llm_response=response_dict,
+            llm_response=response.model_dump(),
             llm_provider=LLMProvider.GEMINI_OPEN_AI
         )
         
@@ -405,13 +259,11 @@ The Xpander SDK is designed to work with multiple Large Language Model (LLM) pro
     result = agent.retrieve_execution_result()
     print(result.result)
     ```
-    </CodeBlock>
   </Tab>
 
   <Tab title="Ollama">
     ## Ollama Integration
 
-    <CodeBlock title="Ollama Integration">
     ```python
     from xpander_sdk import XpanderClient, LLMProvider
     import requests
@@ -499,7 +351,6 @@ The Xpander SDK is designed to work with multiple Large Language Model (LLM) pro
     result = agent.retrieve_execution_result()
     print(result.result)
     ```
-    </CodeBlock>
   </Tab>
 
   <Tab title="Best Practices">
@@ -525,16 +376,12 @@ The Xpander SDK is designed to work with multiple Large Language Model (LLM) pro
     Use the same provider for both retrieving tools and extracting tool calls:
 
     ```python
-    # Use consistent providers
-    provider = LLMProvider.OPEN_AI
-
-    # When getting tools
-    tools = agent.get_tools(llm_provider=provider)
-
-    # When extracting tool calls
+    # Use the same provider in both places
+    tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
+    # ...call LLM...
     tool_calls = XpanderClient.extract_tool_calls(
         llm_response=response.model_dump(),
-        llm_provider=provider
+        llm_provider=LLMProvider.OPEN_AI  # Same provider as used for tools
     )
     ```
 
@@ -709,4 +556,21 @@ The Xpander SDK is designed to work with multiple Large Language Model (LLM) pro
     )
     ```
   </Tab>
-</Tabs> 
+</Tabs>
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Agent" icon="robot" href="/api-reference/07-sdk/agent">
+    Learn about the core Agent class
+  </Card>
+  <Card title="Memory Management" icon="brain" href="/api-reference/07-sdk/agent/memory">
+    Managing agent memory
+  </Card>
+  <Card title="Agent Tools" icon="wrench" href="/api-reference/07-sdk/agent/tools">
+    Working with agent tools
+  </Card>
+  <Card title="Tool Models" icon="box" href="/api-reference/07-sdk/models/tool-models">
+    Understanding tool data models
+  </Card>
+</CardGroup> 
