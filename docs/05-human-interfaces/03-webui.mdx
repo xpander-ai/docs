@@ -3,3 +3,165 @@ title: "Web UI (User Interface)"
 description: "Build and customize web interfaces for your AI agents"
 icon: "globe"
 ---
+
+# Web UI Overview
+
+The xpander.ai Web UI, powered by ChainLit, allows you to deploy your AI agents with beautiful, customizable web interfaces. This feature makes it easy to create production-ready user interfaces without extensive frontend development.
+
+<Info>
+The Web UI is fully managed by xpander.ai, handling all the complexities of user authentication, thread management, and state persistence across sessions.
+</Info>
+
+## Key Features
+
+The Web UI provides a rich set of capabilities that make your AI agents accessible through professional interfaces:
+
+**Instant UI Generation**: Create a professional web interface for your agents in minutes without writing frontend code.
+
+**Thread Management**: Create and manage multiple conversation threads for organized discussions and parallel conversations.
+
+**Conversation Starters**: Define presets to guide users on how to interact with your agent and showcase its capabilities.
+
+**Built-in Authentication**: Secure your agent interfaces with xpander.ai's comprehensive authentication system.
+
+<Frame caption="Web UI Example">
+![](/static/images/screenshots/2025-03-16-00-57-44.png)
+</Frame>
+
+## Getting Started
+
+<Steps>
+  <Step title="Create your agent">
+    First, create and configure your agent through the xpander.ai platform. Your agent should have all the necessary tools and capabilities defined before setting up the Web UI.
+  </Step>
+  
+  <Step title="Configure Web UI">
+    In the agent configuration panel, navigate to the "Human Interfaces" tab and select "Web UI".
+    
+    Here you can configure:
+    - Title and description
+    - Conversation starters
+    - Appearance settings
+    - Authentication options
+
+    <Frame caption="Web UI Configuration">
+      ![](/static/images/screenshots/2025-03-16-01-21-24.png)
+    </Frame>
+  </Step>
+  
+  <Step title="Save and deploy">
+    Once you've configured your Web UI settings, save your changes and deploy your agent using the "Deploy" button in the main interface.
+    
+    This will generate a URL where your agent's web interface is accessible. You can share this URL with intended users or embed it in existing applications.
+    
+    <Info>
+    Access to these web interface links is restricted to users within your organization only.
+    </Info>
+  </Step>
+</Steps>
+
+## Authentication Options
+
+The xpander.ai Web UI supports multiple authentication methods to secure your agent interfaces:
+
+<Accordion title="Platform Authentication">
+Leverage xpander.ai's built-in user management system for seamless authentication. This option provides:
+
+- User registration and login flows
+- Password management and recovery
+- Session management across devices
+- User profile and preference storage
+
+This is the recommended approach for most deployments as it requires minimal configuration while providing robust security.
+</Accordion>
+
+<Accordion title="SSO Integration">
+Connect with enterprise identity providers to leverage your existing authentication infrastructure:
+
+- Support for SAML and OAuth 2.0 protocols
+- Integrations with popular providers like Okta, Auth0, and Azure AD
+- Role mapping from your identity provider to xpander.ai permissions
+- Automatic user provisioning based on SSO attributes
+
+SSO integration is ideal for enterprise deployments where centralized identity management is required.
+</Accordion>
+
+<Accordion title="Custom Auth Rules (Coming Soon)">
+Define granular access controls based on user attributes:
+
+- Create rule-based access policies
+- Control access based on user roles, groups, or custom attributes
+- Implement time-based restrictions (working hours, temporary access)
+- Geographical access limitations
+
+Custom auth rules provide the most flexibility for organizations with complex security requirements.
+</Accordion>
+
+Authentication settings can be configured in the "Security" section of the Web UI configuration panel.
+
+## Customization Options
+
+### UI Configuration
+
+The Web UI can be customized through the configuration panel to match your brand and preferences:
+
+<Accordion title="Basic Settings">
+Configure the fundamental aspects of your web interface:
+
+**Title**: The name displayed in the UI header, browser tab, and search results.
+
+**Description**: A brief explanation of your agent's purpose that helps users understand its capabilities.
+
+**Conversation Starters**: Suggested prompts that appear when users first access your agent, guiding them to productive interactions.
+</Accordion>
+
+## Embedding in Existing Applications
+
+You can embed your agent's Web UI in existing applications using a standard iframe:
+
+```html
+<iframe 
+  src="https://your-agent-url.xpander.ai" 
+  width="100%" 
+  height="600px"
+  frameborder="0">
+</iframe>
+```
+
+<Info>
+When embedding the Web UI, authentication settings still apply. Users will need to authenticate according to your configured settings before interacting with the embedded interface.
+</Info>
+
+## Custom UI Implementation
+
+For teams that need complete control over the user interface, xpander.ai provides access to the underlying thread and state management systems:
+
+<Accordion title="Thread Management API">
+Access conversation threads programmatically to build custom interfaces with these capabilities:
+
+**Thread Creation**: Initiate new conversation threads with specific contexts or parameters.
+
+**Message History**: Retrieve complete or filtered message history for display in custom UIs.
+
+**Context Tracking**: Access and modify conversation context to maintain coherent interactions.
+
+**Custom Rendering**: Implement specialized rendering logic for domain-specific message types.
+
+The Thread Management API enables you to maintain the benefits of xpander.ai's conversation handling while implementing completely custom interfaces.
+</Accordion>
+
+<Accordion title="State Management Integration">
+Leverage xpander.ai's robust state management system in your custom UIs:
+
+**State Access**: Query and modify agent state programmatically through secure APIs.
+
+**Cross-Client Synchronization**: Keep state consistent across multiple clients and devices.
+
+**Session Persistence**: Maintain state between user sessions for continuous experiences.
+
+**Multi-Step Interactions**: Build complex, stateful interactions with clear progression.
+
+This integration provides the foundation for creating sophisticated applications that maintain context across user interactions.
+</Accordion>
+
+These APIs enable development teams to create completely custom interfaces while leveraging xpander.ai's production-grade backend infrastructure.

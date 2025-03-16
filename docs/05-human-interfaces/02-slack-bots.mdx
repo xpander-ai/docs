@@ -3,3 +3,229 @@ title: "Slack Bots"
 description: "Learn how to create and deploy AI agents as Slack bots"
 icon: "slack"
 ---
+
+# Slack Integration Overview
+
+xpander.ai enables you to deploy your AI agents directly to Slack, creating a seamless experience for your team. This integration brings the power of your AI agents into your team's everyday communication platform, allowing them to access intelligent assistance without switching contexts.
+
+<Info>
+Slack integration is fully managed by xpander.ai, handling all the complexities of authentication, state management, and conversation threading.
+</Info>
+
+## Key Features
+
+The Slack integration provides a rich set of capabilities that make your AI agents feel like native Slack members:
+
+**Easy Setup and Configuration**: Connect your AI agent to Slack in minutes with our guided configuration process. No need to manage complex API workflows or write custom code.
+
+**Native Messaging Experience**: Your agent behaves like a regular Slack user, participating in direct messages and channel conversations. Users can interact with it using familiar Slack patterns.
+
+**Intelligent Thread Management**: The integration maintains context across conversation threads, enabling coherent multi-turn dialogues that feel natural and responsive.
+
+**Secure Workspace Integration**: Access relevant workspace content with appropriate permissions. The integration respects Slack's security model while ensuring functionality.
+
+**Enterprise-Grade Security**: Control access with xpander.ai authentication and Slack permissions, supporting enterprise security requirements for all deployments.
+
+To begin connecting your agent to Slack, navigate to your agent settings: Agents → Select your agent → Chat tab → Chatbots option → Connect button.
+
+<Frame caption="Slack Integration Setup">
+![](/static/images/screenshots/2025-03-16-01-04-38.png)
+</Frame>
+
+## Getting Started
+
+<Steps>
+  <Step title="Create your agent">
+    First, create and configure your agent through the xpander.ai platform. Your agent should be fully defined with the necessary tools and capabilities before connecting it to Slack.
+  </Step>
+  
+  <Step title="Configure Slack Integration">
+    In the agent configuration panel, navigate to the "Human Interfaces" tab and select "Chatbots". This section manages all messaging platform integrations for your agent.
+    
+    Click on the Slack option to begin the configuration process.
+  </Step>
+  
+  <Step title="Generate Configuration Token">
+    You'll need a configuration token to securely connect your agent to Slack:
+    
+    1. Go to your workspace's configuration page
+    2. Click "Generate Token" under "Your App Configuration Tokens"
+    3. Copy the Access Token that appears
+
+    <Note>
+    Configuration tokens are unique to your user and workspace, not to a specific app. This means you can manage multiple agents with a single token.
+    </Note>
+
+    For more information on configuration tokens, see the [Slack API documentation](https://api.slack.com/reference/manifests#config-tokens).
+  </Step>
+  
+  <Step title="Configure Slack Bot">
+    In the Slack configuration dialog:
+    
+    1. Paste your configuration token (typically starts with xoxb-)
+    2. Click "Create" to initiate the connection
+    
+    This action will request the necessary permissions to integrate your agent with Slack.
+
+    <Frame caption="Slack Configuration Dialog">
+      ![](/static/images/screenshots/2025-03-16-01-07-42.png)
+    </Frame>
+  </Step>
+  
+  <Step title="Approve Permissions">
+    Slack will present a permission request dialog. Review what the bot will be able to access:
+    
+    - Content and information about channels and conversations
+    - Content and information about your workspace
+    - Permission to perform actions in channels and conversations
+    
+    <Warning>
+    These permissions give your agent access to information in your Slack workspace. Only approve if you trust the agent and understand its capabilities.
+    </Warning>
+    
+    Click "Allow" to grant these permissions and complete the integration.
+    <Frame caption="Slack Permission Request">
+      ![](/static/images/screenshots/2025-03-16-01-06-57.png)
+    </Frame>
+  </Step>
+
+  <Step title="Confirm Connection">
+    After approval, the bot will send you a direct message in Slack to confirm the connection. This message indicates that your agent is now active and ready to interact with users.
+    
+    <Frame caption="Confirmation Message">
+      ![](/static/images/screenshots/2025-03-16-01-08-51.png)
+    </Frame>
+  </Step>
+</Steps>
+
+## Permission Management
+
+When connecting your AI agent to Slack, you'll need to understand the permissions model. Your agent operates within Slack's security framework, requiring specific permissions to function effectively.
+
+### Read Access
+
+Your agent receives permission to access channels, messages, and workspace information. This allows it to understand context and respond appropriately to queries based on available information.
+
+### Write Access
+
+The integration grants your agent the ability to send messages, both in direct conversations and in channels. This enables it to respond to queries and provide information proactively when appropriate.
+
+### Interaction Permissions
+
+Your agent can respond to mentions and direct messages, allowing users to engage with it naturally within their workflow. These permissions follow Slack's standard security model.
+
+<Info>
+You can review all permissions before approval and modify them later through Slack's app management interface if your needs change.
+</Info>
+
+## Conversation Capabilities
+
+Once connected to Slack, your agent becomes an active participant in your workspace's communication ecosystem. The integration supports natural, contextual conversations that respect Slack's interaction patterns.
+
+### Responsive Interactions
+
+Your agent responds to direct messages from users, creating private one-on-one conversations. It can also reply when mentioned in channels, allowing it to participate in team discussions when invited.
+
+### Contextual Understanding
+
+The integration maintains context across conversation threads, enabling your agent to follow complex discussions. This context awareness creates more natural interactions that feel like talking to a knowledgeable team member.
+
+### Tool Execution
+
+Your agent can execute actions based on its configured tools, providing valuable functionality directly within Slack. These capabilities are defined by your agent's configuration in the xpander.ai platform.
+
+## Configuration Options
+
+<Accordion title="Bot Personality">
+Control how your agent presents itself in Slack with these personality settings:
+
+**Name and Avatar**: Define your agent's identity with a distinctive name and profile picture that reflects its purpose.
+
+**Description**: Create a clear description of your agent's capabilities so users understand when and how to engage with it.
+
+**Welcome Message**: Craft the initial message users see when first interacting with your agent to set expectations and guide them toward productive interactions.
+</Accordion>
+
+<Accordion title="Response Settings">
+Fine-tune how your agent communicates in Slack conversations:
+
+**Response Time**: Configure whether your agent responds immediately or with a natural delay that mimics human typing patterns.
+
+**Conversation Style**: Set the tone of your agent's communications, from formal and professional to casual and friendly, depending on your workspace culture.
+
+**Message Formatting**: Enable rich text, code blocks, and attachments to make your agent's responses more informative and visually structured.
+</Accordion>
+
+<Accordion title="Access Control">
+Manage who can interact with your agent and in what contexts:
+
+**Channel Restrictions**: Limit your agent to specific channels where its expertise is most relevant, preventing noise in unrelated conversations.
+
+**User Permissions**: Control which team members can interact with your agent, allowing you to limit access based on roles or needs.
+
+**Command Access**: Restrict certain agent capabilities to specific user groups, creating a permissions hierarchy for different commands.
+</Accordion>
+
+## Example: LinkedIn AI Agent
+
+The screenshots demonstrate a LinkedIn AI Agent connected to Slack. This example illustrates how a specialized agent can be integrated seamlessly into your communication workflow:
+
+1. The agent requests specific permissions to access the xpander.ai Slack workspace
+2. It receives permissions to view conversation content and workspace information
+3. After approval, it can perform actions within the Slack environment
+4. Users interact with it through direct messages, starting with suggested conversation starters
+5. The agent responds conversationally, maintaining context throughout the interaction
+
+This implementation shows how domain-specific AI capabilities can be brought directly into your team's daily workflow while maintaining appropriate security boundaries and access controls.
+
+## Troubleshooting
+
+<Accordion title="Token Expiration Issues">
+Configuration tokens have a limited lifespan, typically expiring after 12 hours. If your agent suddenly stops responding or shows connection errors:
+
+1. Generate a new configuration token from your Slack workspace settings
+2. Update your agent's configuration with the fresh token
+3. Verify the connection by testing a simple interaction
+
+This refresh process ensures your agent maintains secure access to the Slack API.
+</Accordion>
+
+<Accordion title="Permission Problems">
+If your agent cannot access certain channels or content despite being connected:
+
+1. Review the permissions granted during setup to ensure they're appropriate
+2. Check that your agent has been explicitly invited to private channels where needed
+3. Consult Slack's app management settings to verify there are no workspace-level restrictions
+
+Remember that Slack's security model may prevent your agent from accessing historical content in channels it was recently added to.
+</Accordion>
+
+<Accordion title="Performance Considerations">
+If you notice slow responses from your agent in Slack:
+
+1. Examine your agent's runtime settings in xpander.ai to ensure sufficient resources
+2. Consider Slack API rate limits that might throttle frequent interactions
+3. Verify your agent's complexity and potentially simplify its decision-making process for faster responses
+
+Optimizing these factors can significantly improve your agent's responsiveness in busy Slack environments.
+</Accordion>
+
+## Advanced Configuration
+
+For teams requiring deeper customization, xpander.ai provides access to advanced Slack integration capabilities. These options allow you to create truly tailored experiences while leveraging the platform's robust agent framework.
+
+### Custom Slack Commands
+
+Create slash commands that trigger specific agent functions, allowing users to invoke capabilities with simple, memorable commands like `/analyze-data` or `/schedule-meeting`.
+
+### Interactive Components
+
+Implement buttons, menus, and other interactive elements in your agent's messages, creating rich interfaces that simplify complex interactions and improve user experience.
+
+### Event Subscriptions
+
+Configure your agent to respond to specific Slack events beyond direct mentions, such as channel joins, emoji reactions, or file uploads, creating context-aware automations.
+
+<Info>
+Advanced configurations require deeper familiarity with both xpander.ai and Slack's developer tools. Contact our support team for guidance on implementing these capabilities.
+</Info>

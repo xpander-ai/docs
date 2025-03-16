@@ -62,22 +62,7 @@
               "style": "regular"
             },
             "pages": [
-              "docs/03-ai-state-management/01-single-agent-state",
-              "docs/03-ai-state-management/02-multi-agent-collaboration",
-              "docs/03-ai-state-management/03-user-sessions",
-              "docs/03-ai-state-management/04-examples"
-            ]
-          },
-          {
-            "group": "User Authentication",
-            "icon": {
-              "name": "shield-check",
-              "style": "regular"
-            },
-            "pages": [
-              "docs/04-user-authentication/01-add-provider",
-              "docs/04-user-authentication/02-authenticate-users",
-              "docs/04-user-authentication/03-example"
+              "docs/03-ai-state-management/01-single-agent-state"
             ]
           },
           {
@@ -87,21 +72,8 @@
               "style": "regular"
             },
             "pages": [
-              "docs/05-human-interfaces/01-voice-apis",
               "docs/05-human-interfaces/02-slack-bots",
               "docs/05-human-interfaces/03-webui"
-            ]
-          },
-          {
-            "group": "Tools",
-            "icon": {
-              "name": "toolbox",
-              "style": "regular"
-            },
-            "pages": [
-              "docs/06-tools/01-add-tools",
-              "docs/06-tools/02-create-tool",
-              "docs/06-tools/03-run-tools"
             ]
           }
         ]
@@ -136,113 +108,6 @@
             "pages": [
               "api-reference/08-api/01-get-tools",
               "api-reference/08-api/02-execute-operation"
-            ]
-          },
-          {
-            "group": "CLI Reference",
-            "icon": {
-              "name": "terminal",
-              "style": "regular"
-            },
-            "pages": [
-              "cli-reference/00-overview",
-              {
-                "group": "Authentication",
-                "icon": {
-                  "name": "key",
-                  "style": "regular"
-                },
-                "pages": [
-                  "cli-reference/01-auth/01-login",
-                  "cli-reference/01-auth/02-logout"
-                ]
-              },
-              {
-                "group": "Engine Management",
-                "icon": {
-                  "name": "gear",
-                  "style": "regular"
-                },
-                "pages": [
-                  "cli-reference/02-engine/01-set",
-                  "cli-reference/02-engine/02-status",
-                  "cli-reference/02-engine/03-deploy"
-                ]
-              },
-              {
-                "group": "Agent Management",
-                "icon": {
-                  "name": "robot",
-                  "style": "regular"
-                },
-                "pages": [
-                  "cli-reference/03-agent/01-list",
-                  "cli-reference/03-agent/02-details",
-                  "cli-reference/03-agent/03-instrumentation",
-                  "cli-reference/03-agent/04-configure"
-                ]
-              },
-              {
-                "group": "Agent Tools",
-                "icon": {
-                  "name": "screwdriver-wrench",
-                  "style": "regular"
-                },
-                "pages": [
-                  "cli-reference/04-agent-tools/01-list",
-                  "cli-reference/04-agent-tools/02-add",
-                  "cli-reference/04-agent-tools/03-remove"
-                ]
-              },
-              {
-                "group": "Agent Interfaces",
-                "icon": {
-                  "name": "window",
-                  "style": "regular"
-                },
-                "pages": [
-                  "cli-reference/05-agent-interfaces/01-list",
-                  "cli-reference/05-agent-interfaces/02-add",
-                  "cli-reference/05-agent-interfaces/03-remove"
-                ]
-              },
-              {
-                "group": "Team Management",
-                "icon": {
-                  "name": "users",
-                  "style": "regular"
-                },
-                "pages": [
-                  "cli-reference/06-agent-team/01-list",
-                  "cli-reference/06-agent-team/02-create",
-                  "cli-reference/06-agent-team/03-add",
-                  "cli-reference/06-agent-team/04-remove",
-                  "cli-reference/06-agent-team/05-delete"
-                ]
-              },
-              {
-                "group": "Organization Management",
-                "icon": {
-                  "name": "building",
-                  "style": "regular"
-                },
-                "pages": [
-                  "cli-reference/07-org/01-list",
-                  "cli-reference/07-org/02-switch",
-                  "cli-reference/07-org/03-details"
-                ]
-              },
-              {
-                "group": "Configuration",
-                "icon": {
-                  "name": "sliders",
-                  "style": "regular"
-                },
-                "pages": [
-                  "cli-reference/08-config/01-view",
-                  "cli-reference/08-config/02-set"
-                ]
-              }
             ]
           }
         ]
