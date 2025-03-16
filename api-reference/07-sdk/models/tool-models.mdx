@@ -1,0 +1,410 @@
+---
+title: "Tool Models"
+description: "Data models for working with tools in the Xpander SDK"
+icon: "box"
+---
+
+# Tool Models
+
+The Xpander SDK uses several data models for working with tools and function calls. This documentation covers the key models used when working with tools.
+
+## ToolCallType
+
+An enumeration defining the different types of tool calls.
+
+<CodeBlock title="ToolCallType">
+```python
+from xpander_sdk import ToolCallType
+
+# Tool call types
+print(ToolCallType.XPANDER)  # Tools provided by the Xpander platform
+print(ToolCallType.LOCAL)    # Tools implemented locally in your code
+print(ToolCallType.UNKNOWN)  # Unrecognized tool type
+```
+</CodeBlock>
+
+| Enum Value             | Description                                           |
+|------------------------|-------------------------------------------------------|
+| `ToolCallType.XPANDER` | Tool calls executed on the Xpander platform           |
+| `ToolCallType.LOCAL`   | Tool calls executed locally in your application       |
+| `ToolCallType.UNKNOWN` | Unrecognized tool calls (typically a fallback value)  |
+
+## ToolCall
+
+Represents a function call from an LLM.
+
+<CodeBlock title="ToolCall">
+```python
+from xpander_sdk import ToolCall, ToolCallType
+
+# Create a tool call for a web search
+web_search = ToolCall(
+    name="web_search",
+    type=ToolCallType.XPANDER,
+    payload={
+        "bodyParams": {
+            "query": "latest AI research papers"
+        }
+    },
+    tool_call_id="call_123456789"
+)
+
+# Access tool call properties
+print(f"Tool name: {web_search.name}")
+print(f"Tool type: {web_search.type}")
+print(f"Tool payload: {web_search.payload}")
+print(f"Tool call ID: {web_search.tool_call_id}")
+```
+</CodeBlock>
+
+### Properties
+
+| Property      | Type           | Description                                        |
+|---------------|----------------|----------------------------------------------------|
+| `name`        | str            | The name of the tool being called                   |
+| `type`        | ToolCallType   | The type of the tool (XPANDER, LOCAL, etc.)        |
+| `payload`     | Dict           | The parameters passed to the tool                  |
+| `tool_call_id`| str            | A unique identifier for the tool call               |
+
+### Usage
+
+Tool calls are typically extracted from LLM responses using the `extract_tool_calls()` method:
+
+<CodeBlock title="Extracting tool calls">
+```python
+from xpander_sdk import XpanderClient, LLMProvider
+from openai import OpenAI
+
+# Initialize OpenAI client
+openai_client = OpenAI(api_key="your-openai-key")
+
+# Get LLM response with tool calls
+response = openai_client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "What's the weather in London?"}],
+    tools=[{
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Get the current weather in a location",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "The city and state or country"
+                    }
+                },
+                "required": ["location"]
+            }
+        }
+    }],
+    tool_choice="auto"
+)
+
+# Extract tool calls
+tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response.model_dump(),
+    llm_provider=LLMProvider.OPEN_AI
+)
+
+for tc in tool_calls:
+    print(f"Tool: {tc.name}")
+    print(f"Payload: {tc.payload}")
+    print(f"ID: {tc.tool_call_id}")
+```
+</CodeBlock>
+
+## ToolCallResult
+
+Represents the result of executing a tool call.
+
+<CodeBlock title="ToolCallResult">
+```python
+from xpander_sdk import ToolCallResult
+
+# Create a successful tool call result
+success_result = ToolCallResult(
+    function_name="web_search",
+    tool_call_id="call_123456789",
+    is_success=True,
+    result="The latest AI research papers include works on multimodal large language models, retrieval-augmented generation, and reinforcement learning from human feedback.",
+    error=None
+)
+
+# Create a failed tool call result
+failed_result = ToolCallResult(
+    function_name="get_weather",
+    tool_call_id="call_987654321",
+    is_success=False,
+    result=None,
+    error="API request failed: location not found"
+)
+
+# Access result properties
+print(f"Success: {success_result.is_success}")
+print(f"Result: {success_result.result[:50]}...")
+print(f"Error: {failed_result.error}")
+```
+</CodeBlock>
+
+### Properties
+
+| Property        | Type    | Description                                         |
+|-----------------|---------|-----------------------------------------------------|
+| `function_name` | str     | The name of the function that was called            |
+| `tool_call_id`  | str     | The unique identifier for the tool call             |
+| `is_success`    | bool    | Whether the execution was successful                |
+| `result`        | str     | The result of the execution (if successful)         |
+| `error`         | str     | Error message (if execution failed)                 |
+| `payload`       | Dict    | Optional payload that was sent with the tool call   |
+
+### Usage
+
+Tool call results are returned when you execute tools using `run_tool()` or `run_tools()`:
+
+<CodeBlock title="Using tool call results">
+```python
+# Run a single tool
+result = agent.run_tool(tool=tool_call)
+
+if result.is_success:
+    print(f"Tool execution succeeded: {result.result}")
+else:
+    print(f"Tool execution failed: {result.error}")
+
+# Run multiple tools
+results = agent.run_tools(tool_calls=tool_calls)
+
+for res in results:
+    print(f"Tool: {res.function_name}")
+    print(f"Success: {res.is_success}")
+    if res.is_success:
+        print(f"Result: {res.result[:50]}...")
+    else:
+        print(f"Error: {res.error}")
+    print("-" * 40)
+```
+</CodeBlock>
+
+## Tool Declaration
+
+When adding local tools to an agent, you need to provide tool declarations that define the schema for each tool.
+
+<CodeBlock title="Tool Declaration Structure">
+```python
+# Define a local tool function
+def calculate_bmi(weight_kg: float, height_m: float) -> str:
+    """Calculate Body Mass Index (BMI)."""
+    bmi = weight_kg / (height_m * height_m)
+    
+    if bmi < 18.5:
+        category = "underweight"
+    elif bmi < 25:
+        category = "normal weight"
+    elif bmi < 30:
+        category = "overweight"
+    else:
+        category = "obese"
+        
+    return f"BMI: {bmi:.1f} - Category: {category}"
+
+# Create the tool declaration
+bmi_tool = {
+    "declaration": {
+        "type": "function",
+        "function": {
+            "name": "calculate_bmi",
+            "description": "Calculate Body Mass Index (BMI)",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "weight_kg": {
+                        "type": "number",
+                        "description": "Weight in kilograms"
+                    },
+                    "height_m": {
+                        "type": "number",
+                        "description": "Height in meters"
+                    }
+                },
+                "required": ["weight_kg", "height_m"]
+            }
+        }
+    },
+    "fn": calculate_bmi
+}
+
+# Add the tool to an agent
+agent.add_local_tools(tools=[bmi_tool])
+```
+</CodeBlock>
+
+### Tool Declaration Structure
+
+A tool declaration is a dictionary with the following structure:
+
+| Field            | Type              | Description                                       |
+|------------------|-------------------|---------------------------------------------------|
+| `declaration`    | Dict              | The schema definition for the tool                |
+| `fn`             | Callable          | The Python function that implements the tool      |
+
+The `declaration` field contains:
+
+| Field            | Type              | Description                                       |
+|------------------|-------------------|---------------------------------------------------|
+| `type`           | str               | Always "function" for function-calling tools      |
+| `function`       | Dict              | The function definition                           |
+
+The `function` field contains:
+
+| Field            | Type              | Description                                       |
+|------------------|-------------------|---------------------------------------------------|
+| `name`           | str               | The name of the function                          |
+| `description`    | str               | A description of what the function does           |
+| `parameters`     | Dict              | JSON Schema for the function parameters           |
+
+## Working with Local Tools
+
+Local tools are executed differently from remote tools. Here's the typical flow for working with local tools:
+
+<CodeBlock title="Local Tool Flow">
+```python
+from xpander_sdk import XpanderClient, ToolCallType, ToolCallResult
+
+# Extract tool calls from LLM response
+all_tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response.model_dump(),
+    llm_provider=LLMProvider.OPEN_AI
+)
+
+# Filter to get only local tool calls
+local_tool_calls = XpanderClient.retrieve_pending_local_tool_calls(
+    tool_calls=all_tool_calls
+)
+
+# Dictionary to look up local functions
+local_tools_map = {tool["declaration"]["function"]["name"]: tool["fn"] 
+                  for tool in local_tools}
+
+# Execute local tool calls
+local_results = []
+for tc in local_tool_calls:
+    # Create result object
+    result = ToolCallResult(
+        function_name=tc.name,
+        tool_call_id=tc.tool_call_id,
+        payload=tc.payload
+    )
+    
+    try:
+        if tc.name in local_tools_map:
+            # Execute the local function
+            result.is_success = True
+            function_result = local_tools_map[tc.name](**tc.payload)
+            result.result = str(function_result)
+        else:
+            raise Exception(f"Local tool '{tc.name}' not found")
+    except Exception as e:
+        result.is_success = False
+        result.error = str(e)
+    
+    local_results.append(result)
+
+# Add local tool results to memory
+if local_results:
+    agent.memory.add_tool_call_results(tool_call_results=local_results)
+
+# Run remote tools
+remote_tool_calls = [tc for tc in all_tool_calls if tc.type != ToolCallType.LOCAL]
+if remote_tool_calls:
+    agent.run_tools(tool_calls=remote_tool_calls)
+```
+</CodeBlock>
+
+## Best Practices
+
+### Parameter Names
+
+Ensure that parameter names in your tool declarations match the parameter names in your Python functions:
+
+<CodeBlock title="Parameter Naming">
+```python
+# Python function
+def get_weather(location: str, unit: str = "celsius"):
+    # ...
+
+# Tool declaration - parameter names must match
+weather_tool = {
+    "declaration": {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "parameters": {
+                "type": "object", 
+                "properties": {
+                    "location": {  # Must match parameter name in function
+                        "type": "string"
+                    },
+                    "unit": {  # Must match parameter name in function
+                        "type": "string", 
+                        "enum": ["celsius", "fahrenheit"]
+                    }
+                },
+                "required": ["location"]
+            }
+        }
+    },
+    "fn": get_weather
+}
+```
+</CodeBlock>
+
+### Error Handling
+
+Implement proper error handling in your local tool functions:
+
+<CodeBlock title="Error Handling">
+```python
+def divide(a: float, b: float) -> float:
+    """Divide a by b."""
+    if b == 0:
+        raise ValueError("Division by zero is not allowed")
+    return a / b
+```
+</CodeBlock>
+
+### Type Conversion
+
+LLMs may not always send parameters in the exact format your function expects. Add type conversion as needed:
+
+<CodeBlock title="Type Conversion">
+```python
+def calculate_area(length: float, width: float) -> float:
+    """Calculate the area of a rectangle."""
+    try:
+        # Convert to float in case strings are passed
+        length = float(length)
+        width = float(width)
+        return length * width
+    except ValueError:
+        raise ValueError("Length and width must be numeric values")
+```
+</CodeBlock>
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Agent" icon="robot" href="/api-reference/07-sdk/agent">
+    Learn about the core Agent class
+  </Card>
+  <Card title="Agent Tools" icon="wrench" href="/api-reference/07-sdk/agent/tools">
+    Working with agent tools
+  </Card>
+  <Card title="Memory Management" icon="brain" href="/api-reference/07-sdk/agent/memory">
+    Managing agent memory
+  </Card>
+  <Card title="LLM Integration" icon="microchip" href="/api-reference/07-sdk/llm-integration">
+    Integrating with different LLM providers
+  </Card>
+</CardGroup> 

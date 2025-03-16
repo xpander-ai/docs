@@ -1,0 +1,504 @@
+---
+title: "Memory Management"
+description: "Managing conversation history and context for AI agents"
+icon: "brain"
+---
+
+# Memory Management
+
+The Xpander SDK provides a Memory system for agents to manage conversation history, including user inputs, system instructions, and tool call results. Memory is a critical component that allows agents to maintain context during task execution.
+
+## Accessing Memory
+
+Memory is accessed through the `memory` property of an Agent instance.
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    from xpander_sdk import XpanderClient
+    
+    # Initialize client
+    client = XpanderClient(api_key="your-api-key")
+    
+    # Get an agent
+    agent = client.agents.get(agent_id="agent-id")
+    
+    # Access memory
+    memory = agent.memory
+    ```
+  </Tab>
+  <Tab title="TypeScript">
+    ```typescript
+    import { XpanderClient } from '@xpander-ai/sdk';
+    
+    // Initialize client
+    const client = new XpanderClient({ apiKey: "your-api-key" });
+    
+    // Get an agent (async function)
+    async function accessMemory() {
+      const agent = await client.agents.get({ agentId: "agent-id" });
+      
+      // Access memory
+      const memory = agent.memory;
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Key Methods
+
+### init_messages() / initMessages()
+
+Initializes the agent's memory with system instructions and a user input message. This method must be called before attempting to access or modify the agent's messages.
+
+<Tabs>
+  <Tab title="Python">
+    <CodeBlock title="Initialize memory">
+    ```python
+    from xpander_sdk import LLMProvider
+    
+    # Initialize memory after adding a task
+    agent.memory.init_messages(
+        input=agent.execution.input_message,
+        instructions=agent.instructions,
+        llm_provider=LLMProvider.OPEN_AI
+    )
+    
+    # Check that messages are now available
+    print(f"Number of messages: {len(agent.messages)}")
+    ```
+    </CodeBlock>
+  </Tab>
+  <Tab title="TypeScript">
+    <CodeBlock title="Initialize memory">
+    ```typescript
+    import { LLMProvider } from '@xpander-ai/sdk';
+    
+    // Initialize memory after adding a task
+    await agent.memory.initMessages({
+        input: agent.execution.inputMessage,
+        instructions: agent.instructions,
+        llmProvider: LLMProvider.OPEN_AI
+    });
+    
+    // Check that messages are now available
+    console.log(`Number of messages: ${agent.messages.length}`);
+    ```
+    </CodeBlock>
+  </Tab>
+</Tabs>
+
+#### Parameters
+
+| Parameter      | Type         | Required | Description                                        |
+|----------------|--------------|----------|----------------------------------------------------|
+| `input`        | string       | Yes      | User input message to initialize with              |
+| `instructions` | string       | Yes      | System instructions for the agent                  |
+| `llm_provider` | LLMProvider  | No       | LLM provider format (default: LLMProvider.OPEN_AI) |
+
+<Note>
+The `init_messages()` method sets up the initial conversation state with system instructions and user input. It must be called before any other memory operations.
+</Note>
+
+### add_messages() / addMessages()
+
+Adds messages (typically LLM responses) to the agent's memory.
+
+<Tabs>
+  <Tab title="Python">
+    <CodeBlock title="Add messages to memory">
+    ```python
+    # Get response from OpenAI
+    response = openai_client.chat.completions.create(
+        model="gpt-4o",
+        messages=agent.messages,
+        tools=agent.get_tools(),
+        tool_choice="auto"
+    )
+    
+    # Add LLM response to memory
+    agent.memory.add_messages(messages=response.model_dump())
+    
+    # Check updated message count
+    print(f"Updated message count: {len(agent.messages)}")
+    ```
+    </CodeBlock>
+  </Tab>
+  <Tab title="TypeScript">
+    <CodeBlock title="Add messages to memory">
+    ```typescript
+    // Get response from OpenAI
+    const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: agent.messages,
+        tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
+        tool_choice: "auto"
+    });
+    
+    // Add LLM response to memory
+    await agent.memory.addMessages({ messages: response });
+    
+    // Check updated message count
+    console.log(`Updated message count: ${agent.messages.length}`);
+    ```
+    </CodeBlock>
+  </Tab>
+</Tabs>
+
+#### Parameters
+
+| Parameter  | Type | Required | Description                               |
+|------------|------|----------|-------------------------------------------|
+| `messages` | Dict | Yes      | Messages object to add (e.g., LLM response)|
+
+### add_tool_call_results() / addToolCallResults()
+
+Adds tool call results to the agent's memory. This updates the conversation state with the results of executed tools.
+
+<Tabs>
+  <Tab title="Python">
+    <CodeBlock title="Add tool call results">
+    ```python
+    from xpander_sdk import ToolCallResult
+    
+    # Create tool call results
+    tool_results = [
+        ToolCallResult(
+            function_name="get_weather",
+            tool_call_id="call-123",
+            is_success=True,
+            result="The weather in New York is sunny with a temperature of 72°F.",
+            payload={"location": "New York"}
+        )
+    ]
+    
+    # Add tool results to memory
+    agent.memory.add_tool_call_results(tool_call_results=tool_results)
+    
+    # Check updated message count
+    print(f"Message count after tool results: {len(agent.messages)}")
+    ```
+    </CodeBlock>
+  </Tab>
+  <Tab title="TypeScript">
+    <CodeBlock title="Add tool call results">
+    ```typescript
+    import { ToolCallResult } from '@xpander-ai/sdk';
+    
+    // Create tool call results
+    const toolResults = [
+        new ToolCallResult({
+            functionName: "get_weather",
+            toolCallId: "call-123",
+            isSuccess: true,
+            result: "The weather in New York is sunny with a temperature of 72°F.",
+            payload: { location: "New York" }
+        })
+    ];
+    
+    // Add tool results to memory
+    await agent.memory.addToolCallResults({ toolCallResults: toolResults });
+    
+    // Check updated message count
+    console.log(`Message count after tool results: ${agent.messages.length}`);
+    ```
+    </CodeBlock>
+  </Tab>
+</Tabs>
+
+#### Parameters
+
+| Parameter          | Type                    | Required | Description                 |
+|--------------------|--------------------------|---------|-----------------------------|
+| `tool_call_results`| List[ToolCallResult]    | Yes     | Results of tool executions  |
+
+## Working with Messages
+
+After initializing memory, the agent's `messages` property contains the conversation history in a format compatible with LLM providers.
+
+<Tabs>
+  <Tab title="Python">
+    <CodeBlock title="Accessing messages">
+    ```python
+    # Initialize memory first
+    agent.memory.init_messages(
+        input="Tell me about AI agents",
+        instructions=agent.instructions,
+        llm_provider=LLMProvider.OPEN_AI
+    )
+    
+    # Access messages
+    for message in agent.messages:
+        print(f"Role: {message['role']}")
+        print(f"Content: {message.get('content', '')[:50]}...")
+        print("---")
+    
+    # Use messages directly with OpenAI
+    response = openai_client.chat.completions.create(
+        model="gpt-4o",
+        messages=agent.messages,
+        temperature=0.7
+    )
+    ```
+    </CodeBlock>
+  </Tab>
+  <Tab title="TypeScript">
+    <CodeBlock title="Accessing messages">
+    ```typescript
+    // Initialize memory first
+    await agent.memory.initMessages({
+        input: "Tell me about AI agents",
+        instructions: agent.instructions,
+        llmProvider: LLMProvider.OPEN_AI
+    });
+    
+    // Access messages
+    for (const message of agent.messages) {
+        console.log(`Role: ${message.role}`);
+        console.log(`Content: ${message.content?.substring(0, 50)}...`);
+        console.log("---");
+    }
+    
+    // Use messages directly with OpenAI
+    const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: agent.messages,
+        temperature: 0.7
+    });
+    ```
+    </CodeBlock>
+  </Tab>
+</Tabs>
+
+## Message Format
+
+The format of messages depends on the LLM provider specified during initialization. For OpenAI (the default), messages follow this structure:
+
+<Expandable title="OpenAI Message Format">
+```json
+[
+  {
+    "role": "system",
+    "content": "You are a helpful assistant..."
+  },
+  {
+    "role": "user",
+    "content": "Tell me about AI agents"
+  },
+  {
+    "role": "assistant",
+    "content": "AI agents are software entities that can...",
+    "tool_calls": [...]  // Optional
+  },
+  {
+    "role": "tool", // Added when tools are executed
+    "tool_call_id": "call_1234",
+    "content": "The weather in New York is sunny with a temperature of 72°F."
+  }
+]
+```
+</Expandable>
+
+## Complete Example
+
+Here's a complete example of memory management during an agent execution cycle:
+
+<Tabs>
+  <Tab title="Python">
+    <CodeBlock title="Complete memory management example">
+    ```python
+    from xpander_sdk import XpanderClient, LLMProvider
+    from openai import OpenAI
+    import os
+    
+    # Initialize clients
+    xpander_client = XpanderClient(api_key=os.environ["XPANDER_API_KEY"])
+    openai_client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+    
+    # Get agent
+    agent = xpander_client.agents.get(agent_id=os.environ["AGENT_ID"])
+    
+    # Add a task
+    agent.add_task(input="What's the weather like in New York?")
+    
+    # Initialize memory with OpenAI format
+    agent.memory.init_messages(
+        input=agent.execution.input_message,
+        instructions=agent.instructions,
+        llm_provider=LLMProvider.OPEN_AI
+    )
+    
+    print(f"Initial message count: {len(agent.messages)}")
+    
+    # Run the agent loop
+    while not agent.is_finished():
+        # Get next action from LLM
+        response = openai_client.chat.completions.create(
+            model="gpt-4o",
+            messages=agent.messages,
+            tools=agent.get_tools(),
+            tool_choice="auto",
+            temperature=0.0
+        )
+        
+        # Add LLM response to memory
+        agent.memory.add_messages(messages=response.model_dump())
+        print(f"Message count after LLM response: {len(agent.messages)}")
+        
+        # Extract tool calls
+        tool_calls = XpanderClient.extract_tool_calls(
+            llm_response=response.model_dump(),
+            llm_provider=LLMProvider.OPEN_AI
+        )
+        
+        # Execute tools if any
+        if tool_calls:
+            results = agent.run_tools(tool_calls=tool_calls)
+            print(f"Executed {len(results)} tools")
+            print(f"Message count after tool execution: {len(agent.messages)}")
+    
+    # Final message count
+    print(f"Final message count: {len(agent.messages)}")
+    print("Final message types:")
+    
+    for i, message in enumerate(agent.messages):
+        print(f"{i}: Role: {message.get('role')}, Has content: {'content' in message}")
+    ```
+    </CodeBlock>
+  </Tab>
+  <Tab title="TypeScript">
+    <CodeBlock title="Complete memory management example">
+    ```typescript
+    import { XpanderClient, LLMProvider } from '@xpander-ai/sdk';
+    import OpenAI from 'openai';
+    import * as dotenv from 'dotenv';
+    
+    // Load environment variables
+    dotenv.config();
+    
+    async function runMemoryExample() {
+        // Initialize clients
+        const xpanderClient = new XpanderClient({ apiKey: process.env.XPANDER_API_KEY });
+        const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+        
+        // Get agent
+        const agent = await xpanderClient.agents.get({ agentId: process.env.AGENT_ID });
+        
+        // Add a task
+        await agent.addTask({ input: "What's the weather like in New York?" });
+        
+        // Initialize memory with OpenAI format
+        await agent.memory.initMessages({
+            input: agent.execution.inputMessage,
+            instructions: agent.instructions,
+            llmProvider: LLMProvider.OPEN_AI
+        });
+        
+        console.log(`Initial message count: ${agent.messages.length}`);
+        
+        // Run the agent loop
+        while (!(await agent.isFinished())) {
+            // Get next action from LLM
+            const response = await openai.chat.completions.create({
+                model: "gpt-4o",
+                messages: agent.messages,
+                tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
+                tool_choice: "auto",
+                temperature: 0
+            });
+            
+            // Add LLM response to memory
+            await agent.memory.addMessages({ messages: response });
+            console.log(`Message count after LLM response: ${agent.messages.length}`);
+            
+            // Extract tool calls
+            const toolCalls = XpanderClient.extractToolCalls({
+                llmResponse: response,
+                llmProvider: LLMProvider.OPEN_AI
+            });
+            
+            // Execute tools if any
+            if (toolCalls.length > 0) {
+                const results = await agent.runTools({ toolCalls });
+                console.log(`Executed ${results.length} tools`);
+                console.log(`Message count after tool execution: ${agent.messages.length}`);
+            }
+        }
+        
+        // Final message count
+        console.log(`Final message count: ${agent.messages.length}`);
+        console.log("Final message types:");
+        
+        agent.messages.forEach((message, i) => {
+            console.log(`${i}: Role: ${message.role}, Has content: ${message.content !== undefined}`);
+        });
+    }
+    
+    runMemoryExample().catch(console.error);
+    ```
+    </CodeBlock>
+  </Tab>
+</Tabs>
+
+## Memory Management Tips
+
+### Message Limits
+
+LLM providers have token limits for input context. When working with long conversations:
+
+1. **Monitor token usage** - Count the approximate number of tokens in your messages
+2. **Implement summarization** - Consider summarizing previous conversation history for very long conversations
+3. **Use thread_id parameter** - When adding tasks, use the same thread_id to continue conversations
+
+### Best Practices
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    # Good practice: always initialize memory after adding a task
+    agent.add_task(input="What are the best programming languages for AI?")
+    agent.memory.init_messages(
+        input=agent.execution.input_message,
+        instructions=agent.instructions,
+        llm_provider=LLMProvider.OPEN_AI
+    )
+    
+    # Good practice: ensure messages exist before accessing them
+    if hasattr(agent, 'messages') and len(agent.messages) > 0:
+        print(f"First message role: {agent.messages[0]['role']}")
+    ```
+  </Tab>
+  <Tab title="TypeScript">
+    ```typescript
+    // Good practice: always initialize memory after adding a task
+    await agent.addTask({ input: "What are the best programming languages for AI?" });
+    await agent.memory.initMessages({
+        input: agent.execution.inputMessage,
+        instructions: agent.instructions,
+        llmProvider: LLMProvider.OPEN_AI
+    });
+    
+    // Good practice: ensure messages exist before accessing them
+    if (agent.messages && agent.messages.length > 0) {
+        console.log(`First message role: ${agent.messages[0].role}`);
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Agent Class" icon="robot" href="/api-reference/07-sdk/agent">
+    Learn about the core Agent class
+  </Card>
+  <Card title="Agent Tools" icon="wrench" href="/api-reference/07-sdk/agent/tools">
+    Managing tool usage with agents
+  </Card>
+  <Card title="LLM Integration" icon="microchip" href="/api-reference/07-sdk/llm-integration">
+    Working with different LLM providers
+  </Card>
+  <Card title="Execution Management" icon="play" href="/api-reference/07-sdk/agent/execution">
+    Managing agent executions and tasks
+  </Card>
+</CardGroup> 

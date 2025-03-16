@@ -1,0 +1,643 @@
+---
+title: "Agent Tools"
+description: "Working with tools and function calling in the Xpander SDK"
+icon: "wrench"
+---
+
+# Agent Tools
+
+The Xpander SDK provides a powerful tool execution system that enables agents to interact with external APIs, services, and local functions. This guide covers how to work with tools, execute tool calls, and implement local tools.
+
+## Tool Execution Flow
+
+The typical flow for tool execution involves these steps:
+
+<Steps>
+  <Step title="Get available tools">
+    Get the agent's tools formatted for the LLM provider.
+    ```python
+    tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
+    ```
+  </Step>
+  <Step title="Send tools to the LLM">
+    Include the tools in the request to the LLM.
+    ```python
+    response = openai_client.chat.completions.create(
+        model="gpt-4o",
+        messages=agent.messages,
+        tools=tools,
+        tool_choice="auto"
+    )
+    ```
+  </Step>
+  <Step title="Extract tool calls">
+    Extract tool calls from the LLM response.
+    ```python
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump(),
+        llm_provider=LLMProvider.OPEN_AI
+    )
+    ```
+  </Step>
+  <Step title="Execute tool calls">
+    Run the tools and get results.
+    ```python
+    results = agent.run_tools(tool_calls=tool_calls)
+    ```
+  </Step>
+</Steps>
+
+## Getting Tools
+
+### get_tools()
+
+Returns the tools available to the agent in a format compatible with the specified LLM provider.
+
+<CodeBlock title="Getting tools for different LLM providers">
+```python
+from xpander_sdk import LLMProvider
+
+# Get tools formatted for OpenAI
+openai_tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
+
+# Get tools formatted for Gemini
+gemini_tools = agent.get_tools(llm_provider=LLMProvider.GEMINI_OPEN_AI)
+
+# Get tools formatted for Ollama
+ollama_tools = agent.get_tools(llm_provider=LLMProvider.OLLAMA)
+
+# Get tools formatted for FriendliAI (Anthropic/Claude)
+friendli_tools = agent.get_tools(llm_provider=LLMProvider.FRIENDLI_AI)
+```
+</CodeBlock>
+
+#### Parameters
+
+| Parameter      | Type           | Required | Description                                           |
+|----------------|----------------|----------|-------------------------------------------------------|
+| `llm_provider` | LLMProvider    | No       | The LLM provider type (default: LLMProvider.OPEN_AI)  |
+
+#### Returns
+
+Returns a list of tool definitions in the format required by the specified LLM provider.
+
+<Expandable title="Example Output for OpenAI">
+```json
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "web_search",
+      "description": "Search the web for information",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "The search query"
+          }
+        },
+        "required": ["query"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "weather_lookup",
+      "description": "Get the current weather for a location",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "The city and state or country"
+          }
+        },
+        "required": ["location"]
+      }
+    }
+  }
+]
+```
+</Expandable>
+
+## Executing Tools
+
+### run_tool()
+
+Executes a single tool call.
+
+<CodeBlock title="Running a single tool">
+```python
+from xpander_sdk import ToolCall, ToolCallType
+
+# Create a tool call for web search
+tool_call = ToolCall(
+    name="web_search",
+    type=ToolCallType.XPANDER,
+    payload={
+        "bodyParams": {
+            "query": "AI startups in San Francisco"
+        }
+    },
+    tool_call_id="call_1234abcd"
+)
+
+# Execute the tool
+result = agent.run_tool(tool=tool_call)
+
+# Print the result
+print(f"Tool: {result.function_name}")
+print(f"Success: {result.is_success}")
+print(f"Result: {result.result[:100]}...")  # Print first 100 chars
+```
+</CodeBlock>
+
+#### Parameters
+
+| Parameter          | Type            | Required | Description                              |
+|--------------------|-----------------|----------|------------------------------------------|
+| `tool`             | ToolCall        | Yes      | The tool call to execute                 |
+| `payload_extension`| Dict            | No       | Additional parameters to add to the call |
+| `is_multiple`      | boolean         | No       | Whether this is part of a multi-tool call|
+
+#### Returns
+
+Returns a `ToolCallResult` containing the execution results.
+
+<Expandable title="Example Result">
+```python
+ToolCallResult(
+    function_name="web_search",
+    tool_call_id="call_1234abcd",
+    is_success=True,
+    result="Several AI startups are based in San Francisco, including: OpenAI, Anthropic, Scale AI, Databricks, Hugging Face, and Xpander.ai. These companies are developing various AI technologies from large language models to data labeling services and agent frameworks.",
+    error=None
+)
+```
+</Expandable>
+
+### run_tools()
+
+Executes multiple tool calls at once.
+
+<CodeBlock title="Running multiple tools">
+```python
+# Extract tool calls from LLM response
+tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response.model_dump(),
+    llm_provider=LLMProvider.OPEN_AI
+)
+
+# Run all tool calls
+results = agent.run_tools(tool_calls=tool_calls)
+
+# Process results
+for result in results:
+    print(f"Tool: {result.function_name}")
+    print(f"Success: {result.is_success}")
+    if result.is_success:
+        print(f"Result: {result.result[:50]}...")
+    else:
+        print(f"Error: {result.error}")
+    print("-" * 40)
+```
+</CodeBlock>
+
+#### Parameters
+
+| Parameter          | Type            | Required | Description                                 |
+|--------------------|-----------------|----------|---------------------------------------------|
+| `tool_calls`       | List[ToolCall]  | Yes      | List of tool calls to execute               |
+| `payload_extension`| Dict            | No       | Additional parameters for all tool calls    |
+
+#### Returns
+
+Returns a list of `ToolCallResult` objects containing the execution results.
+
+## Working with Local Tools
+
+Local tools are functions that you define and run in your local environment. They provide a way to extend the agent's capabilities with custom functionality.
+
+### add_local_tools()
+
+Adds local functions as tools that the agent can use.
+
+<CodeBlock title="Adding local tools">
+```python
+from xpander_sdk import ToolCallType
+
+# Define local tool functions
+def calculate_mortgage(principal: float, rate: float, years: int) -> str:
+    """Calculate monthly mortgage payment."""
+    monthly_rate = rate / 100 / 12
+    payments = years * 12
+    payment = principal * (monthly_rate * (1 + monthly_rate) ** payments) / ((1 + monthly_rate) ** payments - 1)
+    return f"Monthly payment: ${payment:.2f} for {years} years at {rate}% interest on ${principal:.2f} principal"
+
+def format_date(date: str, format: str) -> str:
+    """Format a date string."""
+    from datetime import datetime
+    try:
+        dt = datetime.fromisoformat(date.replace('Z', '+00:00'))
+        if format == "MM/DD/YYYY":
+            return dt.strftime("%m/%d/%Y")
+        elif format == "DD/MM/YYYY":
+            return dt.strftime("%d/%m/%Y")
+        else:
+            return dt.strftime(format)
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+# Create tool declarations
+local_tools = [
+    {
+        "declaration": {
+            "type": "function",
+            "function": {
+                "name": "calculate_mortgage",
+                "description": "Calculate monthly mortgage payment",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "principal": {
+                            "type": "number",
+                            "description": "Loan principal amount"
+                        },
+                        "rate": {
+                            "type": "number",
+                            "description": "Annual interest rate (percentage)"
+                        },
+                        "years": {
+                            "type": "integer",
+                            "description": "Loan term in years"
+                        }
+                    },
+                    "required": ["principal", "rate", "years"]
+                }
+            }
+        },
+        "fn": calculate_mortgage
+    },
+    {
+        "declaration": {
+            "type": "function",
+            "function": {
+                "name": "format_date",
+                "description": "Format a date string",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "date": {
+                            "type": "string",
+                            "description": "ISO format date string"
+                        },
+                        "format": {
+                            "type": "string",
+                            "description": "Output format (MM/DD/YYYY, DD/MM/YYYY, or custom format)"
+                        }
+                    },
+                    "required": ["date", "format"]
+                }
+            }
+        },
+        "fn": format_date
+    }
+]
+
+# Add local tools to the agent
+agent.add_local_tools(tools=local_tools)
+```
+</CodeBlock>
+
+#### Parameters
+
+| Parameter | Type       | Required | Description                    |
+|-----------|------------|----------|--------------------------------|
+| `tools`   | List[Dict] | Yes      | List of tool declarations      |
+
+### Executing Local Tools
+
+To execute local tools, you need to extract the local tool calls and run them manually:
+
+<CodeBlock title="Executing local tools">
+```python
+# Extract all tool calls from LLM response
+all_tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response.model_dump(),
+    llm_provider=LLMProvider.OPEN_AI
+)
+
+# Execute remote tools (handled by Xpander)
+remote_results = agent.run_tools(tool_calls=all_tool_calls)
+
+# Extract local tool calls
+local_tool_calls = XpanderClient.retrieve_pending_local_tool_calls(
+    tool_calls=all_tool_calls
+)
+
+# Helper for looking up local functions
+local_tools_by_name = {tool['declaration']['function']['name']: tool['fn'] 
+                       for tool in local_tools}
+
+# Execute local tool calls
+local_results = []
+for tc in local_tool_calls:
+    # Create result object
+    result = ToolCallResult(
+        function_name=tc.name,
+        tool_call_id=tc.tool_call_id,
+        payload=tc.payload
+    )
+    
+    try:
+        if tc.name in local_tools_by_name:
+            # Execute the local function
+            result.is_success = True
+            result.result = local_tools_by_name[tc.name](**tc.payload)
+        else:
+            raise Exception(f"Local Tool {tc.name} not found!")
+    except Exception as e:
+        result.is_success = False
+        result.error = str(e)
+    
+    local_results.append(result)
+
+# Add local tool results to memory
+if local_results:
+    agent.memory.add_tool_call_results(tool_call_results=local_results)
+```
+</CodeBlock>
+
+## Example: Calculator Agent with Local Tools
+
+This example shows a complete implementation of an agent that uses local tools for calculations:
+
+<CodeBlock title="Calculator Agent with Local Tools">
+```python
+from xpander_sdk import XpanderClient, ToolCall, ToolCallType, ToolCallResult, LLMProvider
+from openai import OpenAI
+from dotenv import load_dotenv
+import os
+import math
+
+# Load environment variables
+load_dotenv()
+XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
+OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
+AGENT_ID = os.environ["AGENT_ID"]
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+openai_client = OpenAI(api_key=OPENAI_API_KEY)
+
+# Get the agent
+agent = xpander_client.agents.get(agent_id=AGENT_ID)
+print(f"Agent: {agent.name} ({agent.id})")
+
+# Define local calculator functions
+def add(a: float, b: float) -> float:
+    """Add two numbers."""
+    return a + b
+
+def subtract(a: float, b: float) -> float:
+    """Subtract b from a."""
+    return a - b
+
+def multiply(a: float, b: float) -> float:
+    """Multiply two numbers."""
+    return a * b
+
+def divide(a: float, b: float) -> float:
+    """Divide a by b."""
+    if b == 0:
+        raise ValueError("Cannot divide by zero")
+    return a / b
+
+def square_root(a: float) -> float:
+    """Calculate square root of a number."""
+    if a < 0:
+        raise ValueError("Cannot calculate square root of negative number")
+    return math.sqrt(a)
+
+# Create tool declarations
+calculator_tools = [
+    {
+        "declaration": {
+            "type": "function",
+            "function": {
+                "name": "add",
+                "description": "Add two numbers",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "a": {"type": "number"},
+                        "b": {"type": "number"}
+                    },
+                    "required": ["a", "b"]
+                }
+            }
+        },
+        "fn": add
+    },
+    {
+        "declaration": {
+            "type": "function",
+            "function": {
+                "name": "subtract",
+                "description": "Subtract b from a",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "a": {"type": "number"},
+                        "b": {"type": "number"}
+                    },
+                    "required": ["a", "b"]
+                }
+            }
+        },
+        "fn": subtract
+    },
+    {
+        "declaration": {
+            "type": "function",
+            "function": {
+                "name": "multiply",
+                "description": "Multiply two numbers",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "a": {"type": "number"},
+                        "b": {"type": "number"}
+                    },
+                    "required": ["a", "b"]
+                }
+            }
+        },
+        "fn": multiply
+    },
+    {
+        "declaration": {
+            "type": "function",
+            "function": {
+                "name": "divide",
+                "description": "Divide a by b",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "a": {"type": "number"},
+                        "b": {"type": "number"}
+                    },
+                    "required": ["a", "b"]
+                }
+            }
+        },
+        "fn": divide
+    },
+    {
+        "declaration": {
+            "type": "function",
+            "function": {
+                "name": "square_root",
+                "description": "Calculate square root of a number",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "a": {"type": "number"}
+                    },
+                    "required": ["a"]
+                }
+            }
+        },
+        "fn": square_root
+    }
+]
+
+# Helper structures
+local_tools_list = [tool["declaration"] for tool in calculator_tools]
+local_tools_by_name = {tool["declaration"]["function"]["name"]: tool["fn"] 
+                      for tool in calculator_tools}
+
+# Add local tools to agent
+agent.add_local_tools(tools=calculator_tools)
+
+# Add task
+agent.add_task(input="Calculate the area of a circle with radius 5, then calculate the square root of that area.")
+
+# Initialize memory
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions,
+    llm_provider=LLMProvider.OPEN_AI
+)
+
+# Run the agent until the task is complete
+while not agent.is_finished():
+    # Get next action from LLM
+    response = openai_client.chat.completions.create(
+        model="gpt-4o",
+        messages=agent.messages,
+        tools=agent.get_tools(),
+        tool_choice="auto",
+        temperature=0.0
+    )
+    
+    # Add LLM response to memory
+    agent.add_messages(messages=response.model_dump())
+    
+    # Extract tool calls
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump(),
+        llm_provider=LLMProvider.OPEN_AI
+    )
+    
+    # Extract local tool calls
+    local_tool_calls = XpanderClient.retrieve_pending_local_tool_calls(tool_calls=tool_calls)
+    
+    # Execute local tool calls
+    local_results = []
+    for tc in local_tool_calls:
+        # Create result object
+        result = ToolCallResult(
+            function_name=tc.name,
+            tool_call_id=tc.tool_call_id,
+            payload=tc.payload
+        )
+        
+        try:
+            if tc.name in local_tools_by_name:
+                # Execute the local function
+                result.is_success = True
+                result.result = str(local_tools_by_name[tc.name](**tc.payload))
+                print(f"Executed {tc.name}({tc.payload}) = {result.result}")
+            else:
+                raise Exception(f"Local Tool {tc.name} not found!")
+        except Exception as e:
+            result.is_success = False
+            result.error = str(e)
+            print(f"Error executing {tc.name}: {result.error}")
+        
+        local_results.append(result)
+    
+    # Add local tool results to memory
+    if local_results:
+        agent.memory.add_tool_call_results(tool_call_results=local_results)
+    
+    # Run non-local tools
+    remote_tool_calls = [tc for tc in tool_calls if tc.type != ToolCallType.LOCAL]
+    if remote_tool_calls:
+        remote_results = agent.run_tools(tool_calls=remote_tool_calls)
+        print(f"Executed {len(remote_results)} remote tools")
+
+# Get and print the final result
+result = agent.retrieve_execution_result()
+print("\nFINAL RESULT:")
+print("=" * 50)
+print(result.result)
+```
+</CodeBlock>
+
+<Expandable title="Example Output">
+```
+Agent: Math Assistant (agent-1234-abcd)
+Executed multiply({"a": 5, "b": 5}) = 25.0
+Executed multiply({"a": 25.0, "b": 3.14159}) = 78.53975
+Executed square_root({"a": 78.53975}) = 8.863868900554041
+
+FINAL RESULT:
+==================================================
+To calculate the area of a circle with radius 5, I'll use the formula:
+Area = π * r²
+
+Step 1: Calculate r² (radius squared)
+r² = 5² = 5 * 5 = 25
+
+Step 2: Multiply by π
+Area = π * 25
+Area = 3.14159 * 25
+Area = 78.53975 square units
+
+Step 3: Calculate the square root of the area
+√78.53975 = 8.86387
+
+Therefore, the square root of the area of a circle with radius 5 is approximately 8.86387.
+```
+</Expandable>
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Agent" icon="robot" href="/api-reference/07-sdk/agent">
+    Learn about the core Agent class
+  </Card>
+  <Card title="Tool Models" icon="box" href="/api-reference/07-sdk/models/tool-models">
+    Understand tool-related data models
+  </Card>
+  <Card title="Memory Management" icon="brain" href="/api-reference/07-sdk/agent/memory">
+    Learn about agent memory management
+  </Card>
+  <Card title="Graph System" icon="diagram-project" href="/api-reference/07-sdk/agent/graph">
+    Build graph-based tool workflows
+  </Card>
+</CardGroup> 

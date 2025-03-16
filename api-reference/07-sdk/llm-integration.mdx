@@ -1,0 +1,547 @@
+---
+title: "LLM Integration"
+description: "Integrating different LLM providers with the Xpander SDK"
+icon: "microchip"
+---
+
+# LLM Integration
+
+The Xpander SDK is designed to work with multiple Large Language Model (LLM) providers. This guide explains how to integrate various LLM providers with your Xpander agents.
+
+## Supported LLM Providers
+
+The SDK supports the following LLM providers through the `LLMProvider` enum:
+
+| Provider         | Enum Value                     | Format                            |
+|------------------|--------------------------------|-----------------------------------|
+| OpenAI           | `LLMProvider.OPEN_AI`          | Standard OpenAI format            |
+| Claude/Anthropic | `LLMProvider.FRIENDLI_AI`      | Claude via FriendliAI format      |
+| Gemini           | `LLMProvider.GEMINI_OPEN_AI`   | Google Gemini with OpenAI format  |
+| Ollama           | `LLMProvider.OLLAMA`           | Ollama format for local models    |
+
+## Integration Basics
+
+Integrating an LLM provider involves three key steps:
+
+1. **Initialize memory** with the appropriate LLM provider format
+2. **Get tools** formatted for the LLM provider
+3. **Extract tool calls** from the LLM response
+
+<Steps>
+  <Step title="Initialize memory with provider format">
+    ```python
+    from xpander_sdk import LLMProvider
+    
+    # Initialize memory with OpenAI format
+    agent.memory.init_messages(
+        input=agent.execution.input_message,
+        instructions=agent.instructions,
+        llm_provider=LLMProvider.OPEN_AI
+    )
+    ```
+  </Step>
+  <Step title="Get tools formatted for the provider">
+    ```python
+    # Get tools in the format required by the LLM provider
+    tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
+    ```
+  </Step>
+  <Step title="Extract tool calls from responses">
+    ```python
+    # Extract tool calls from the LLM response
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump(),
+        llm_provider=LLMProvider.OPEN_AI
+    )
+    ```
+  </Step>
+</Steps>
+
+## OpenAI Integration
+
+<CodeBlock title="OpenAI Integration">
+```python
+from xpander_sdk import XpanderClient, LLMProvider
+from openai import OpenAI
+from dotenv import load_dotenv
+import os
+
+# Load environment variables
+load_dotenv()
+XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
+OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+openai_client = OpenAI(api_key=OPENAI_API_KEY)
+
+# Get agent
+agent = xpander_client.agents.get(agent_id="agent-1234")
+
+# Add task and initialize memory
+agent.add_task(input="What are the latest developments in AI?")
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions,
+    llm_provider=LLMProvider.OPEN_AI
+)
+
+# Run until completion
+while not agent.is_finished():
+    # Get OpenAI-formatted tools
+    tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
+    
+    # Call OpenAI
+    response = openai_client.chat.completions.create(
+        model="gpt-4o",
+        messages=agent.messages,
+        tools=tools,
+        tool_choice="auto",
+        temperature=0.0
+    )
+    
+    # Add response to memory
+    agent.add_messages(messages=response.model_dump())
+    
+    # Extract tool calls in Xpander format
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump(),
+        llm_provider=LLMProvider.OPEN_AI
+    )
+    
+    # Execute tools if any
+    if tool_calls:
+        results = agent.run_tools(tool_calls=tool_calls)
+        print(f"Executed {len(results)} tools")
+
+# Get final result
+result = agent.retrieve_execution_result()
+print(result.result)
+```
+</CodeBlock>
+
+## Claude (Anthropic) Integration
+
+<CodeBlock title="Claude Integration">
+```python
+from xpander_sdk import XpanderClient, LLMProvider
+import anthropic
+from dotenv import load_dotenv
+import os
+
+# Load environment variables
+load_dotenv()
+XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
+ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+claude_client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+
+# Get agent
+agent = xpander_client.agents.get(agent_id="agent-1234")
+
+# Add task and initialize memory with Claude format
+agent.add_task(input="What are the latest developments in AI?")
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions,
+    llm_provider=LLMProvider.FRIENDLI_AI  # Use FriendliAI format for Claude
+)
+
+# Run until completion
+while not agent.is_finished():
+    # Get Claude-formatted tools
+    tools = agent.get_tools(llm_provider=LLMProvider.FRIENDLI_AI)
+    
+    # Convert messages to Claude format
+    claude_messages = []
+    for msg in agent.messages:
+        role = msg.get("role")
+        content = msg.get("content", "")
+        
+        if role == "system":
+            # Claude includes system message directly in the messages array
+            claude_messages.append({"role": "system", "content": content})
+        elif role == "user":
+            claude_messages.append({"role": "user", "content": content})
+        elif role == "assistant":
+            claude_messages.append({"role": "assistant", "content": content})
+    
+    # Call Claude
+    response = claude_client.messages.create(
+        model="claude-3-opus-20240229",
+        messages=claude_messages,
+        tools=tools,
+        temperature=0.0
+    )
+    
+    # Add response to memory
+    agent.add_messages(messages=response.model_dump())
+    
+    # Extract tool calls in Xpander format
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump(),
+        llm_provider=LLMProvider.FRIENDLI_AI
+    )
+    
+    # Execute tools if any
+    if tool_calls:
+        results = agent.run_tools(tool_calls=tool_calls)
+        print(f"Executed {len(results)} tools")
+
+# Get final result
+result = agent.retrieve_execution_result()
+print(result.result)
+```
+</CodeBlock>
+
+## Google Gemini Integration
+
+<CodeBlock title="Gemini Integration">
+```python
+from xpander_sdk import XpanderClient, LLMProvider
+import google.generativeai as genai
+from dotenv import load_dotenv
+import os
+import json
+
+# Load environment variables
+load_dotenv()
+XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
+GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+genai.configure(api_key=GEMINI_API_KEY)
+
+# Get agent
+agent = xpander_client.agents.get(agent_id="agent-1234")
+
+# Add task and initialize memory with Gemini format
+agent.add_task(input="What are the latest developments in AI?")
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions,
+    llm_provider=LLMProvider.GEMINI_OPEN_AI  # Use OpenAI-compatible format for Gemini
+)
+
+# Helper function to convert messages for Gemini
+def convert_to_gemini_messages(messages):
+    gemini_messages = []
+    
+    for msg in messages:
+        role = msg.get("role")
+        content = msg.get("content", "")
+        
+        if role == "system":
+            # Gemini doesn't have a system role, so we add it as a user message
+            gemini_messages.append({"role": "user", "parts": [{"text": f"System: {content}"}]})
+        elif role == "user":
+            gemini_messages.append({"role": "user", "parts": [{"text": content}]})
+        elif role == "assistant":
+            gemini_messages.append({"role": "model", "parts": [{"text": content}]})
+    
+    return gemini_messages
+
+# Run until completion
+while not agent.is_finished():
+    # Get Gemini-formatted tools (OpenAI-compatible format)
+    tools = agent.get_tools(llm_provider=LLMProvider.GEMINI_OPEN_AI)
+    
+    # Convert messages to Gemini format
+    gemini_messages = convert_to_gemini_messages(agent.messages)
+    
+    # Initialize Gemini model
+    model = genai.GenerativeModel(
+        model_name="gemini-1.5-pro",
+        tools=tools,
+        generation_config={"temperature": 0.0}
+    )
+    
+    # Call Gemini
+    chat = model.start_chat(history=gemini_messages)
+    response = chat.send_message(
+        "Please help with the task and use tools if needed.",
+        tools=tools
+    )
+    
+    # Convert response to dict for standard processing
+    response_dict = {
+        "choices": [{
+            "message": {
+                "role": "assistant",
+                "content": response.text,
+                "tool_calls": response.tool_calls if hasattr(response, "tool_calls") else []
+            }
+        }]
+    }
+    
+    # Add response to memory
+    agent.add_messages(messages=response_dict)
+    
+    # Extract tool calls in Xpander format
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response_dict,
+        llm_provider=LLMProvider.GEMINI_OPEN_AI
+    )
+    
+    # Execute tools if any
+    if tool_calls:
+        results = agent.run_tools(tool_calls=tool_calls)
+        print(f"Executed {len(results)} tools")
+
+# Get final result
+result = agent.retrieve_execution_result()
+print(result.result)
+```
+</CodeBlock>
+
+## Ollama Integration
+
+<CodeBlock title="Ollama Integration">
+```python
+from xpander_sdk import XpanderClient, LLMProvider
+import requests
+import json
+from dotenv import load_dotenv
+import os
+
+# Load environment variables
+load_dotenv()
+XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
+OLLAMA_BASE_URL = "http://localhost:11434"  # Default Ollama URL
+
+# Initialize client
+xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+
+# Get agent
+agent = xpander_client.agents.get(agent_id="agent-1234")
+
+# Add task and initialize memory with Ollama format
+agent.add_task(input="What are the latest developments in AI?")
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions,
+    llm_provider=LLMProvider.OLLAMA
+)
+
+# Helper function to call Ollama API
+def call_ollama(messages, tools=None, model="llama3:latest"):
+    url = f"{OLLAMA_BASE_URL}/api/chat"
+    
+    payload = {
+        "model": model,
+        "messages": messages,
+        "stream": False,
+        "options": {
+            "temperature": 0.0
+        }
+    }
+    
+    # Add tools if available
+    if tools:
+        payload["tools"] = tools
+    
+    response = requests.post(url, json=payload)
+    return response.json()
+
+# Run until completion
+while not agent.is_finished():
+    # Get Ollama-formatted tools
+    tools = agent.get_tools(llm_provider=LLMProvider.OLLAMA)
+    
+    # Call Ollama
+    ollama_response = call_ollama(
+        messages=agent.messages,
+        tools=tools,
+        model="llama3:latest"  # Use your preferred model
+    )
+    
+    # Format response to standard structure
+    response_dict = {
+        "choices": [{
+            "message": {
+                "role": "assistant",
+                "content": ollama_response.get("message", {}).get("content", ""),
+                "tool_calls": ollama_response.get("message", {}).get("tool_calls", [])
+            }
+        }]
+    }
+    
+    # Add response to memory
+    agent.add_messages(messages=response_dict)
+    
+    # Extract tool calls in Xpander format
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response_dict,
+        llm_provider=LLMProvider.OLLAMA
+    )
+    
+    # Execute tools if any
+    if tool_calls:
+        results = agent.run_tools(tool_calls=tool_calls)
+        print(f"Executed {len(results)} tools")
+
+# Get final result
+result = agent.retrieve_execution_result()
+print(result.result)
+```
+</CodeBlock>
+
+## Generic Integration Pattern
+
+You can use this pattern to integrate any LLM provider:
+
+<CodeBlock title="Generic LLM Integration">
+```python
+from xpander_sdk import XpanderClient, LLMProvider
+from your_llm_client import YourLLMClient
+
+# 1. Initialize client and get agent
+xpander_client = XpanderClient(api_key="your-api-key")
+agent = xpander_client.agents.get(agent_id="agent-id")
+llm_client = YourLLMClient()
+
+# 2. Add task
+agent.add_task(input="Your task input")
+
+# 3. Determine which LLM provider format is most compatible with your LLM
+provider_format = LLMProvider.OPEN_AI  # Or another provider that matches your LLM's format
+
+# 4. Initialize memory with that format
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions,
+    llm_provider=provider_format
+)
+
+# 5. Run execution loop
+while not agent.is_finished():
+    # Get tools in the appropriate format
+    tools = agent.get_tools(llm_provider=provider_format)
+    
+    # Convert messages if needed for your LLM
+    formatted_messages = convert_messages_for_your_llm(agent.messages)
+    
+    # Call your LLM
+    response = llm_client.generate_response(
+        messages=formatted_messages,
+        tools=tools
+    )
+    
+    # Convert response to a standard format with choices[0].message structure
+    standard_response = convert_to_standard_format(response)
+    
+    # Add response to agent memory
+    agent.add_messages(messages=standard_response)
+    
+    # Extract tool calls
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=standard_response,
+        llm_provider=provider_format
+    )
+    
+    # Run tools
+    if tool_calls:
+        results = agent.run_tools(tool_calls=tool_calls)
+
+# 6. Get final result
+result = agent.retrieve_execution_result()
+print(result.result)
+
+# Helper functions for your specific LLM
+def convert_messages_for_your_llm(messages):
+    # Convert messages to the format expected by your LLM
+    # ...
+    return formatted_messages
+
+def convert_to_standard_format(response):
+    # Convert your LLM's response to a format with choices[0].message structure
+    # ...
+    return standard_response
+```
+</CodeBlock>
+
+## Best Practices
+
+### Message Format Consistency
+
+Ensure that the message format is consistent between memory initialization and LLM calls:
+
+```python
+# Initialize memory with OpenAI format
+agent.memory.init_messages(
+    input="Your task",
+    instructions="Agent instructions",
+    llm_provider=LLMProvider.OPEN_AI
+)
+
+# Get tools in the same format
+tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
+
+# Extract tool calls using the same provider format
+tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response,
+    llm_provider=LLMProvider.OPEN_AI
+)
+```
+
+### Tool Format Verification
+
+Different LLM providers have different tool formats. Verify that the tools are correctly formatted by printing them before sending to the LLM:
+
+```python
+# Get tools
+tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
+
+# Print tool format for verification
+import json
+print(json.dumps(tools[0], indent=2))
+```
+
+### Rate Limiting
+
+Implement rate limiting to avoid hitting API limits:
+
+```python
+import time
+
+# Add a small delay between API calls
+time.sleep(1)
+```
+
+### Error Handling
+
+Implement proper error handling for LLM API calls:
+
+```python
+try:
+    response = openai_client.chat.completions.create(
+        model="gpt-4o",
+        messages=agent.messages,
+        tools=agent.get_tools(),
+        tool_choice="auto",
+        temperature=0.0
+    )
+except Exception as e:
+    print(f"LLM API error: {str(e)}")
+    # Implement retry logic or fallback
+```
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Agent" icon="robot" href="/api-reference/07-sdk/agent">
+    Learn about the core Agent class
+  </Card>
+  <Card title="Memory Management" icon="brain" href="/api-reference/07-sdk/agent/memory">
+    Managing agent memory
+  </Card>
+  <Card title="Agent Tools" icon="wrench" href="/api-reference/07-sdk/agent/tools">
+    Working with agent tools
+  </Card>
+  <Card title="Tool Models" icon="box" href="/api-reference/07-sdk/models/tool-models">
+    Understanding tool data models
+  </Card>
+</CardGroup> 
