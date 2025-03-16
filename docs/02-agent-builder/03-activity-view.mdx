@@ -1,0 +1,185 @@
+---
+title: "Agent Activity View"
+description: "Learn how to track, debug, and analyze your agent's operations using the Activity view"
+icon: "chart-line"
+---
+
+## What is the Activity View?
+
+The Activity view provides real-time visibility into your agent's operations, allowing you to track execution details, debug issues, and analyze performance. This powerful monitoring interface helps you understand exactly how your agent is processing tasks and interacting with external systems.
+
+<Frame>
+![Activity View Interface](/static/images/screenshots/2025-03-15-22-50-05.png)
+</Frame>
+
+## Key Components of the Activity View
+
+<Accordion title="Thread History">
+The left panel shows your agent's conversation threads, including:
+
+- **User information**: Who initiated the conversation
+- **Creation timestamp**: When the thread started
+- **Action count**: Number of actions the agent took
+- **Token usage**: How many tokens were consumed
+- **Session ID**: Unique identifier for the conversation
+
+This history helps you track all interactions with your agent over time.
+</Accordion>
+
+<Accordion title="Operation Graph">
+The central area displays a visual representation of the operations your agent has executed:
+
+- **Nodes**: Individual operations like "Search Profiles" or "Retrieve Company Posts"
+- **Connections**: Shows the sequence and relationship between operations
+- **Visual hierarchy**: Displays how operations build upon each other
+
+This graph helps you understand the exact path your agent took to complete a task.
+</Accordion>
+
+<Accordion title="Execution Logs">
+The right panel provides detailed execution logs, including:
+
+- **API calls**: Exact parameters sent to external services
+- **Response data**: Full JSON responses from operations
+- **LLM interactions**: Complete model inputs and outputs
+- **Error messages**: Details when operations fail
+
+These logs are invaluable for debugging and understanding exactly how your agent processes information.
+</Accordion>
+
+## Using the Activity View
+
+<Tabs>
+  <Tab title="Debugging Agent Issues">
+    When your agent isn't behaving as expected, the Activity view helps you pinpoint exactly where things went wrong:
+    
+    <Steps>
+      <Step title="Select the Problematic Thread">
+        In the left panel, find and click on the thread where the issue occurred
+      </Step>
+      
+      <Step title="Examine the Operation Graph">
+        Look at which operations were executed and in what order to identify unexpected paths
+      </Step>
+      
+      <Step title="Inspect Detailed Logs">
+        In the right panel, expand the log entries to see exact inputs, outputs, and any error messages
+      </Step>
+      
+      <Step title="Identify Root Causes">
+        Look for incorrect parameters, unexpected responses, or logic errors in the agent's decision-making
+      </Step>
+    </Steps>
+    
+    <Tip>
+    Pay special attention to LLM Response logs, which show how the AI interpreted instructions and decided what operations to use.
+    </Tip>
+  </Tab>
+  
+  <Tab title="Optimizing Performance">
+    The Activity view provides insights to help optimize your agent's efficiency:
+    
+    <Steps>
+      <Step title="Review Token Usage">
+        Check token counts to identify inefficient conversations or operations
+      </Step>
+      
+      <Step title="Analyze Operation Patterns">
+        Look for unnecessary repetition of operations or inefficient sequences
+      </Step>
+      
+      <Step title="Compare Similar Tasks">
+        Select different threads to compare how the agent approaches similar tasks
+      </Step>
+      
+      <Step title="Identify Optimization Opportunities">
+        Look for patterns where you could improve your agent's instructions or graph structure
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+## Understanding Log Types
+
+The Activity view displays several types of log entries, each providing different insights:
+
+<Accordion title="Operation Calls">
+When you see "Calling [Operation]" in the logs (like "Calling Search Profiles by Criteria"), you're seeing:
+
+- The exact operation being executed
+- Input parameters the agent provided
+- The response data returned
+
+These logs show you exactly what data is being sent to and received from external services.
+
+Example:
+```json
+{
+  "queryParams": {
+    "username": "david-twizer-b7950731G"
+  },
+  "pathParams": {},
+  "bodyParams": {}
+}
+```
+</Accordion>
+
+<Accordion title="LLM Responses">
+LLM Response logs show you the raw model output, including:
+
+- The model's reasoning process
+- Tool selection decisions
+- Parameter choices
+- Interpretation of data
+
+These logs are crucial for understanding why your agent made specific decisions.
+
+Example:
+```json
+{
+  "id": "chatcmpl-BBYQi4CfyVfTNi5UNv6ZwbKZXB1HW",
+  "choices": [
+    {
+      "delta": {
+        "tool_calls": [
+          {
+            "function": {
+              "arguments": "{\"bodyParams\":{},\"queryParams\":{\"firstName\":\"David\",\"lastName\":\"Twizer\",\"start\":\"0\"},\"pathParams\":{}}"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+</Accordion>
+
+<Accordion title="System Events">
+System events capture agent lifecycle events like:
+
+- Thread creation
+- Message additions
+- Task completion
+- Error events
+
+These help you track the overall flow of interaction with your agent.
+</Accordion>
+
+## Best Practices for Using the Activity View
+
+- **Review regularly**: Check the Activity view after making changes to your agent to ensure it's working as expected
+- **Store important threads**: Keep track of threads that demonstrate either successful patterns or problematic issues
+- **Compare before and after**: Use the Activity view to compare agent behavior before and after optimization
+- **Share specific examples**: When collaborating with team members, reference specific thread IDs to discuss exact behavior
+- **Document findings**: Record insights from the Activity view to inform future agent improvements
+
+## Next Steps
+
+Now that you understand how to monitor your agent's activity:
+
+- [Add more tools to your agents](/docs/02-agent-builder/02-add-tools-to-agents)
+- [Fine-tune operations with advanced settings](/docs/02-agent-builder/04-advanced-operation-settings)
+- [Configure global agent settings](/docs/02-agent-builder/05-agent-settings)
+- [Optimize agent performance with better instructions](/docs/agent-instructions)
+- [Create complex agent graphs for sophisticated workflows](/docs/02-agent-builder/01-agent-graph-system) 

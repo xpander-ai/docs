@@ -3,3 +3,330 @@ title: "Single Agent State Management"
 description: "Learn how to manage state for individual AI agents"
 icon: "database"
 ---
+
+# Managing State for Individual Agents
+
+Agent state management is critical for creating AI agents that maintain context, remember previous interactions, and respond intelligently to user requests. This guide explains how to manage state for individual agents in Xpander using the SDK.
+
+## Introduction to Agent State
+
+In Xpander, each agent's state is composed of:
+
+- **Memory**: The agent's stored knowledge and context from past interactions
+- **Messages**: The conversational history between users and the agent
+- **Execution Context**: Information about the current task being processed
+- **Tools**: The operations and interfaces available to the agent
+
+<Tip>
+Proper state management enables agents to handle complex, multi-turn conversations while maintaining context across multiple requests.
+</Tip>
+
+## Setting Up a Basic Agent Session
+
+To work with an agent's state, you first need to initialize a client and load the agent:
+
+```python
+from xpander_sdk import XpanderClient
+from openai import OpenAI
+from dotenv import load_dotenv
+from os import environ
+
+# Load environment variables
+load_dotenv()
+
+# Configure API keys
+XPANDER_API_KEY = environ["XPANDER_API_KEY"]
+OPENAI_API_KEY = environ["OPENAI_API_KEY"]
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+openai_client = OpenAI(api_key=OPENAI_API_KEY)
+
+# Load an existing agent by ID
+AGENT_ID = "your-agent-id"
+agent = xpander_client.agents.get(AGENT_ID)
+```
+
+## Working with Agent Memory and Messages
+
+### Initializing Agent Memory
+
+Before an agent can process a request, you need to initialize its memory:
+
+```python
+# Add a task for the agent to execute
+agent.add_task("Find information about Xpander.ai and its products")
+
+# Initialize memory with the task and agent instructions
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions
+)
+```
+
+This creates an initial state with:
+- The user's input query
+- The agent's operating instructions
+- A clean message history for the current interaction
+
+### Accessing and Manipulating Messages
+
+The `agent.messages` object contains the entire conversation history. You can:
+
+```python
+# Access the current message history
+current_messages = agent.messages
+
+# Print the conversation history
+for message in current_messages:
+    print(f"{message['role']}: {message['content']}")
+    
+# Add a custom message to the history
+agent.add_messages({
+    "role": "user",
+    "content": "Also, please focus on AI agent capabilities specifically."
+})
+
+# Clear all messages (use with caution)
+agent.memory.clear_messages()
+
+# Reinitialize with a different context if needed
+agent.memory.init_messages(
+    input="Tell me about agent development best practices",
+    instructions=agent.instructions,
+    context="The user is a developer building AI agents."
+)
+```
+
+<Warning>
+Directly manipulating message history can cause inconsistencies if not done carefully. In most cases, let the SDK handle message management through standard execution flows.
+</Warning>
+
+## Executing Agent Tasks and Managing State
+
+Once memory is initialized, you can execute the agent's task:
+
+```python
+# Execute the agent until the task is completed
+while not agent.is_finished():
+    # Generate the LLM's response using the agent's current state
+    response = openai_client.chat.completions.create(
+        model="gpt-4o",
+        messages=agent.messages,
+        tools=agent.get_tools(),
+        tool_choice=agent.tool_choice,
+        temperature=0.0
+    )
+    
+    # Update the agent's state with the LLM's response
+    agent.add_messages(response.model_dump())
+    
+    # Extract and execute any tool calls
+    tool_calls = XpanderClient.extract_tool_calls(llm_response=response.model_dump())
+    agent.run_tools(tool_calls=tool_calls)
+
+# Get the final result after execution
+execution_result = agent.retrieve_execution_result()
+print(f"Status: {execution_result.status}")
+print(f"Result: {execution_result.result}")
+```
+
+This execution loop:
+1. Uses the agent's current state to generate the next response
+2. Updates the state with new messages
+3. Processes any tool calls requested by the LLM
+4. Continues until the task is completed
+
+## Managing Sessions and Threads
+
+Xpander allows you to manage multiple conversation threads for the same agent:
+
+### Working with Sessions
+
+```python
+# Create a new session for a specific user or context
+session = agent.create_session(
+    user_id="user-123",
+    metadata={"source": "mobile-app", "location": "US"}
+)
+
+# Load an existing session
+saved_session = agent.get_session(session_id="session-456")
+
+# Use a specific session for this execution
+agent.add_task(
+    "What were we talking about last time?",
+    session_id=saved_session.id
+)
+
+# Initialize memory with session context
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions,
+    session=saved_session
+)
+```
+
+### Managing Conversation Threads
+
+```python
+# List all sessions for this agent
+all_sessions = agent.list_sessions()
+
+# Get conversation history for a specific session
+session_history = agent.get_session_history(session_id="session-456")
+
+# Print the conversation history
+for message in session_history:
+    print(f"{message['role']}: {message['content']}")
+
+# Delete a session when no longer needed
+agent.delete_session(session_id="session-789")
+```
+
+<Tip>
+Use sessions to maintain separate conversation contexts for different users or use cases with the same agent. This enables personalized experiences without creating new agents for each user.
+</Tip>
+
+## Persisting and Recovering State
+
+Xpander automatically persists agent state after each interaction, but you can explicitly manage state persistence:
+
+```python
+# Save current state explicitly
+agent.save_state()
+
+# Create a snapshot of current state
+state_snapshot = agent.export_state()
+
+# Restore from a previous state
+agent.import_state(state_snapshot)
+
+# Reset agent to initial state
+agent.reset_state()
+```
+
+## Advanced State Manipulation Techniques
+
+### Modifying Memory Context
+
+```python
+# Add knowledge to agent memory without creating a user message
+agent.memory.add_context("The user is interested in AI ethics and responsible development.")
+
+# Inject a system message with specific instructions
+agent.memory.inject_system_message(
+    "Focus your responses on technical aspects rather than business topics."
+)
+
+# Update message at a specific position
+agent.memory.update_message(
+    index=3,  # 0-indexed position in the messages array
+    new_message={
+        "role": "assistant",
+        "content": "Revised response with more technical details..."
+    }
+)
+```
+
+### Working with Tool Results
+
+```python
+# Access results from previous tool executions
+tool_history = agent.get_tool_execution_history()
+
+# Add a specific tool result to memory
+agent.memory.add_tool_result(
+    tool_name="LinkedInSearch",
+    result={"profiles": [{"name": "John Doe", "title": "AI Researcher"}]}
+)
+
+# Check if a specific tool has been executed
+has_searched = agent.has_executed_tool(tool_name="LinkedInSearch")
+```
+
+## Best Practices for State Management
+
+1. **Initialize properly**: Always initialize memory with appropriate instructions and context
+2. **Minimal manipulation**: Let the SDK handle message flow; only manipulate directly when necessary
+3. **Session management**: Use sessions to separate conversation contexts
+4. **Error handling**: Implement try/except blocks around state-changing operations
+5. **State monitoring**: Log key state changes for debugging
+6. **Memory efficiency**: Clear old or irrelevant messages to maintain performance
+
+```python
+# Example of a robust execution loop with error handling
+try:
+    while not agent.is_finished():
+        try:
+            # Generate response
+            response = openai_client.chat.completions.create(
+                model="gpt-4o",
+                messages=agent.messages,
+                tools=agent.get_tools(),
+                tool_choice=agent.tool_choice,
+                temperature=0.0
+            )
+            
+            # Update state
+            agent.add_messages(response.model_dump())
+            
+            # Extract and run tools
+            tool_calls = XpanderClient.extract_tool_calls(llm_response=response.model_dump())
+            agent.run_tools(tool_calls=tool_calls)
+            
+        except Exception as e:
+            # Log the error
+            print(f"Error during execution: {str(e)}")
+            
+            # Add error to agent memory
+            agent.memory.add_system_message(f"An error occurred: {str(e)}")
+            
+            # Optionally save state before retrying
+            agent.save_state()
+            
+            # Decide whether to continue or break
+            if is_fatal_error(e):
+                break
+                
+except Exception as e:
+    # Handle fatal errors
+    print(f"Fatal error: {str(e)}")
+    # Save any recoverable state
+    agent.save_state()
+finally:
+    # Always perform cleanup
+    print("Execution complete")
+```
+
+## Debugging State Issues
+
+If your agent isn't behaving as expected, check these common state-related issues:
+
+1. **Memory initialization**: Ensure memory is properly initialized
+2. **Message format**: Verify message objects follow the expected format
+3. **Tool execution**: Confirm tools are executing and updating state properly
+4. **Conversation context**: Check if the context is being maintained across turns
+5. **State persistence**: Verify state is being saved and loaded correctly between runs
+
+```python
+# Debugging helper function
+def debug_agent_state(agent):
+    print(f"Agent ID: {agent.id}")
+    print(f"Task: {agent.execution.input_message}")
+    print(f"Execution status: {agent.execution.status}")
+    print(f"Message count: {len(agent.messages)}")
+    print(f"Tools available: {[tool['function']['name'] for tool in agent.get_tools()]}")
+    print(f"Memory initialized: {agent.memory.is_initialized()}")
+    
+    # Print recent messages (last 3)
+    print("\nRecent messages:")
+    for message in agent.messages[-3:]:
+        print(f"  {message['role']}: {message.get('content', '[No content]')[:100]}...")
+```
+
+## Next Steps
+
+- [Multi-Agent Collaboration](/docs/03-ai-state-management/02-multi-agent-collaboration)
+- [Managing User Sessions](/docs/03-ai-state-management/03-user-sessions)
+- [State Management Examples](/docs/03-ai-state-management/04-examples)
