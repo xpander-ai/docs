@@ -12,7 +12,7 @@ Send one-off queries to your preferred LLM with built-in tool support.
 response = openai_client.chat.completions.create(
     model="gpt-4-turbo",
     messages=agent.messages,
-    tools=agent.get_tools(llm_provider=LLMProvider.OPENAI),
+    tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
     tool_choice="auto",
     temperature=0.0
 )
@@ -20,7 +20,7 @@ response = openai_client.chat.completions.create(
 # Process and execute tools
 agent.process_llm_response(
     response.model_dump(), 
-    llm_provider=LLMProvider.OPENAI
+    llm_provider=LLMProvider.OPEN_AI
 )
 ```
 
@@ -44,7 +44,7 @@ agent.process_llm_response(
 response = anthropic_client.messages.create(
     model="claude-3-opus",
     messages=agent.messages,
-    tools=agent.get_tools(llm_provider=LLMProvider.ANTHROPIC),
+    tools=agent.get_tools(llm_provider=LLMProvider.FRIENDLI_AI),
     tool_choice="auto",
     temperature=0.0
 )
@@ -52,7 +52,7 @@ response = anthropic_client.messages.create(
 # Process and execute tools
 agent.process_llm_response(
     response.model_dump(), 
-    llm_provider=LLMProvider.ANTHROPIC
+    llm_provider=LLMProvider.FRIENDLI_AI
 )
 ```
 </CodeGroup>
@@ -66,14 +66,14 @@ def handle_event(event):
     response = openai_client.chat.completions.create(
         model="gpt-4-turbo",
         messages=agent.messages,
-        tools=agent.get_tools(llm_provider=LLMProvider.OPENAI),
+        tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
         tool_choice="auto",
         temperature=0.0
     )
     
     agent.process_llm_response(
         response.model_dump(), 
-        llm_provider=LLMProvider.OPENAI
+        llm_provider=LLMProvider.OPEN_AI
     )
 
 xpander_agent.start_event_listener()
@@ -102,14 +102,14 @@ def handle_event(event):
     response = anthropic_client.messages.create(
         model="claude-3-opus",
         messages=agent.messages,
-        tools=agent.get_tools(llm_provider=LLMProvider.ANTHROPIC),
+        tools=agent.get_tools(llm_provider=LLMProvider.FRIENDLI_AI),
         tool_choice="auto",
         temperature=0.0
     )
     
     agent.process_llm_response(
         response.model_dump(), 
-        llm_provider=LLMProvider.ANTHROPIC
+        llm_provider=LLMProvider.FRIENDLI_AI
     )
 
 xpander_agent.start_event_listener()
@@ -131,14 +131,14 @@ while not agent.is_finished():
     response = openai_client.chat.completions.create(
         model="gpt-4-turbo",
         messages=agent.messages,
-        tools=agent.get_tools(llm_provider=LLMProvider.OPENAI),
+        tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
         tool_choice="auto",
         temperature=0.0
     )
     
     agent.process_llm_response(
         response.model_dump(), 
-        llm_provider=LLMProvider.OPENAI
+        llm_provider=LLMProvider.OPEN_AI
     )
 ```
 
@@ -175,14 +175,14 @@ while not agent.is_finished():
     response = anthropic_client.messages.create(
         model="claude-3-opus",
         messages=agent.messages,
-        tools=agent.get_tools(llm_provider=LLMProvider.ANTHROPIC),
+        tools=agent.get_tools(llm_provider=LLMProvider.FRIENDLI_AI),
         tool_choice="auto",
         temperature=0.0
     )
     
     agent.process_llm_response(
         response.model_dump(), 
-        llm_provider=LLMProvider.ANTHROPIC
+        llm_provider=LLMProvider.FRIENDLI_AI
     )
 ```
 </CodeGroup>

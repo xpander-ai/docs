@@ -79,35 +79,54 @@
         ]
       },
       {
-        "tab": "SDK & API",
+        "tab": "SDK Reference",
         "icon": {
           "name": "code",
           "style": "regular"
         },
         "groups": [
           {
-            "group": "SDK Reference",
+            "group": "Overview",
             "icon": {
-              "name": "puzzle-piece",
+              "name": "book-open",
               "style": "regular"
             },
             "pages": [
-              "api-reference/07-sdk/01-getting-started",
-              "api-reference/07-sdk/02-sdk-function-calling",
-              "api-reference/07-sdk/03-sdk-local-functions",
-              "api-reference/07-sdk/04-agent-example",
-              "api-reference/07-sdk/05-sdk-manual-invocation"
+              "api-reference/07-sdk/index"
             ]
           },
           {
-            "group": "API Reference",
+            "group": "Core Components",
             "icon": {
-              "name": "brackets-curly",
+              "name": "cubes",
               "style": "regular"
             },
             "pages": [
-              "api-reference/08-api/01-get-tools",
-              "api-reference/08-api/02-execute-operation"
+              "api-reference/07-sdk/client/index",
+              "api-reference/07-sdk/agent/index",
+              "api-reference/07-sdk/llm-integration"
+            ]
+          },
+          {
+            "group": "Agent Features",
+            "icon": {
+              "name": "robot",
+              "style": "regular"
+            },
+            "pages": [
+              "api-reference/07-sdk/agent/memory",
+              "api-reference/07-sdk/agent/tools",
+              "api-reference/07-sdk/agent/execution"
+            ]
+          },
+          {
+            "group": "Data Models",
+            "icon": {
+              "name": "box",
+              "style": "regular"
+            },
+            "pages": [
+              "api-reference/07-sdk/models/tool-models"
             ]
           }
         ]
@@ -124,20 +143,12 @@
           "href": "https://docs.xpander.ai/docs/01-get-started/01-index"
         },
         {
-          "dropdown": "API Reference",
+          "dropdown": "SDK Reference",
           "icon": {
             "name": "code-simple",
             "style": "regular"
           },
-          "href": "https://docs.xpander.ai/api-reference/07-sdk/01-getting-started"
-        },
-        {
-          "dropdown": "CLI Reference",
-          "icon": {
-            "name": "terminal",
-            "style": "regular"
-          },
-          "href": "https://docs.xpander.ai/cli-reference/00-overview"
+          "href": "https://docs.xpander.ai/api-reference/07-sdk/index"
         },
         {
           "dropdown": "Release notes",
@@ -166,8 +177,8 @@
           }
         },
         {
-          "anchor": "API & SDK Docs",
-          "href": "https://docs.xpander.ai/api-reference/07-sdk/01-getting-started",
+          "anchor": "SDK Reference",
+          "href": "https://docs.xpander.ai/api-reference/07-sdk/index",
           "icon": {
             "name": "code-simple",
             "style": "regular"
