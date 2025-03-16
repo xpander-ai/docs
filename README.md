@@ -1,6 +1,6 @@
-# Xpander SDK Documentation Validation
+# xpander.ai SDK Documentation Validation
 
-This repository contains scripts to validate the Xpander SDK documentation against the actual implementation. It helps ensure that the documentation is accurate and up-to-date with the current SDK version.
+This repository contains scripts to validate the xpander.ai SDK documentation against the actual implementation. It helps ensure that the documentation is accurate and up-to-date with the current SDK version.
 
 ## Setup
 
@@ -36,7 +36,7 @@ python validate_sdk_reference.py
 
 ### 2. `test_scripts/test_xpander_state.py`
 
-Tests the state management functionality of the Xpander SDK as described in the reference documentation:
+Tests the state management functionality of the xpander.ai SDK as described in the reference documentation:
 - Agent loading and properties
 - Graph structure and operations
 - Task creation and execution loop

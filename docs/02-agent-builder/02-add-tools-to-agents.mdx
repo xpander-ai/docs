@@ -280,6 +280,50 @@ Each interface offers operations with different capabilities and requirements.
 - **Document choices**: Track which operations you've added and why
 </Accordion>
 
+## Troubleshooting Tool Access
+
+When working with tools, you might encounter various issues that prevent your agent from accessing or properly using them. Here are common problems and their solutions:
+
+<Accordion title="Authentication Errors">
+- **Invalid Signature Error**: 
+  ```json
+  {"error": 401, "detail": {"detail": "error(401): {\"message\":\"invalid signature\"}"}
+  ```
+  **Solution**: Check your API key validity and ensure it hasn't expired. Regenerate your API key in the interface settings if needed.
+
+- **Missing Credentials**: 
+  ```
+  Unable to list projects due to an authentication error (invalid signature). Please check your credentials and try again.
+  ```
+  **Solution**: Verify that you've correctly configured the authentication for the interface. For interfaces requiring OAuth, ensure you've completed the authorization flow.
+
+- **Token Expired**:
+  **Solution**: Re-authenticate the interface by going to Interface Settings and clicking "Reconnect" for the specific interface.
+
+<Frame>
+![Replace API keys](/static/images/screenshots/2025-03-16-10-54-41.png)
+</Frame>
+
+</Accordion>
+
+<Accordion title="Debugging Tips">
+- Use the Activity View to inspect the full request and response for each tool call
+- Test operations directly from the interface page before attaching them to agents
+- For SDK usage, implement detailed logging to capture all interactions:
+  ```python
+  import logging
+  logging.basicConfig(level=logging.DEBUG)
+  ```
+- Check interface connection status regularly in the dashboard
+- For custom interfaces, validate your OpenAPI specification with a tool like Swagger Editor
+
+<Frame>
+![Activity View](/static/images/screenshots/2025-03-16-10-54-19.png)
+</Frame>
+
+
+</Accordion>
+
 ## Next Steps
 
 - [Building complex multi-step workflows](/docs/advanced-workflows)

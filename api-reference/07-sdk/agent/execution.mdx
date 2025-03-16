@@ -12,59 +12,105 @@ The Xpander SDK provides methods for managing agent executions through the `Agen
 
 Each execution starts with a task assigned to an agent.
 
-### add_task()
+### add_task() / addTask()
 
 Assigns a new task to the agent, creating a new execution.
 
-<CodeBlock title="Adding a task">
-```python
-from xpander_sdk import XpanderClient
+<Tabs>
+  <Tab title="Python">
+    <CodeBlock title="Adding a task">
+    ```python
+    from xpander_sdk import XpanderClient
 
-# Initialize client and get agent
-xpander_client = XpanderClient(api_key="your-api-key")
-agent = xpander_client.agents.get(agent_id="agent-1234")
+    # Initialize client and get agent
+    xpander_client = XpanderClient(api_key="your-api-key")
+    agent = xpander_client.agents.get(agent_id="agent-1234")
 
-# Add a task
-agent.add_task(
-    input="Research the impact of quantum computing on cryptography",
-    use_worker=True
-)
+    # Add a task
+    agent.add_task(
+        input="Research the impact of quantum computing on cryptography",
+        use_worker=True
+    )
 
-print(f"Added task with execution ID: {agent.execution.id}")
-```
-</CodeBlock>
+    print(f"Added task with execution ID: {agent.execution.id}")
+    ```
+    </CodeBlock>
+  </Tab>
+  <Tab title="TypeScript">
+    <CodeBlock title="Adding a task">
+    ```typescript
+    import { XpanderClient } from '@xpander-ai/sdk';
+
+    // Initialize client and get agent (async function)
+    async function addTask() {
+      const xpanderClient = new XpanderClient({ apiKey: "your-api-key" });
+      const agent = await xpanderClient.agents.get({ agentId: "agent-1234" });
+
+      // Add a task
+      await agent.addTask({
+          input: "Research the impact of quantum computing on cryptography",
+          useWorker: true
+      });
+
+      console.log(`Added task with execution ID: ${agent.execution.id}`);
+    }
+    ```
+    </CodeBlock>
+  </Tab>
+</Tabs>
 
 #### Parameters
 
 | Parameter     | Type         | Required | Description                                              |
 |---------------|--------------|----------|----------------------------------------------------------|
-| `input`       | str          | Yes      | The task description or user message                      |
+| `input`       | string       | Yes      | The task description or user message                     |
 | `files`       | List[Dict]   | No       | Files to attach to the task                              |
-| `use_worker`  | bool         | No       | Whether to use a worker for execution (default: True)    |
-| `thread_id`   | str          | No       | Thread ID for connecting related executions              |
+| `use_worker`  | boolean      | No       | Whether to use a worker for execution (default: True)    |
+| `thread_id`   | string       | No       | Thread ID for connecting related executions              |
 
 #### Returns
 
-The `add_task()` method doesn't return a value directly, but it initializes the agent's `execution` property with the new execution.
+The `add_task()` / `addTask()` method doesn't return a value directly, but it initializes the agent's `execution` property with the new execution.
 
 ## Checking Execution Status
 
-### is_finished()
+### is_finished() / isFinished()
 
 Checks if the current execution has finished.
 
-<CodeBlock title="Checking execution status">
-```python
-# Check if execution is finished
-if agent.is_finished():
-    print("The task has been completed")
-    result = agent.retrieve_execution_result()
-    print(f"Result: {result.result}")
-else:
-    print("The task is still in progress")
-    print(f"Current status: {agent.execution.status}")
-```
-</CodeBlock>
+<Tabs>
+  <Tab title="Python">
+    <CodeBlock title="Checking execution status">
+    ```python
+    # Check if execution is finished
+    if agent.is_finished():
+        print("The task has been completed")
+        result = agent.retrieve_execution_result()
+        print(f"Result: {result.result}")
+    else:
+        print("The task is still in progress")
+        print(f"Current status: {agent.execution.status}")
+    ```
+    </CodeBlock>
+  </Tab>
+  <Tab title="TypeScript">
+    <CodeBlock title="Checking execution status">
+    ```typescript
+    // Check if execution is finished (async function)
+    async function checkExecutionStatus() {
+        if (await agent.isFinished()) {
+            console.log("The task has been completed");
+            const result = await agent.retrieveExecutionResult();
+            console.log(`Result: ${result.result}`);
+        } else {
+            console.log("The task is still in progress");
+            console.log(`Current status: ${agent.execution.status}`);
+        }
+    }
+    ```
+    </CodeBlock>
+  </Tab>
+</Tabs>
 
 #### Parameters
 
@@ -74,21 +120,40 @@ This method doesn't require any parameters.
 
 Returns a boolean value: `True` if the execution has finished, `False` otherwise.
 
-### get_execution_status()
+### get_execution_status() / getExecutionStatus()
 
 Fetches the latest status of the current execution.
 
-<CodeBlock title="Getting execution status">
-```python
-# Get the current execution status
-status = agent.get_execution_status()
+<Tabs>
+  <Tab title="Python">
+    <CodeBlock title="Getting execution status">
+    ```python
+    # Get the current execution status
+    status = agent.get_execution_status()
 
-print(f"Execution ID: {status.id}")
-print(f"Status: {status.status}")
-print(f"Created at: {status.created_at}")
-print(f"Updated at: {status.updated_at}")
-```
-</CodeBlock>
+    print(f"Execution ID: {status.id}")
+    print(f"Status: {status.status}")
+    print(f"Created at: {status.created_at}")
+    print(f"Updated at: {status.updated_at}")
+    ```
+    </CodeBlock>
+  </Tab>
+  <Tab title="TypeScript">
+    <CodeBlock title="Getting execution status">
+    ```typescript
+    // Get the current execution status (async function)
+    async function getExecutionStatus() {
+        const status = await agent.getExecutionStatus();
+
+        console.log(`Execution ID: ${status.id}`);
+        console.log(`Status: ${status.status}`);
+        console.log(`Created at: ${status.createdAt}`);
+        console.log(`Updated at: ${status.updatedAt}`);
+    }
+    ```
+    </CodeBlock>
+  </Tab>
+</Tabs>
 
 #### Parameters
 
@@ -100,41 +165,49 @@ Returns an updated `Execution` object with the latest status information.
 
 ## Retrieving Results
 
-### retrieve_execution_result()
+### retrieve_execution_result() / retrieveExecutionResult()
 
-Retrieves the final result of a completed execution.
+Retrieves the result of a completed execution.
 
-<CodeBlock title="Retrieving execution results">
-```python
-# Wait for execution to complete (polling approach)
-import time
-
-# Set timeout (5 minutes)
-timeout = 5 * 60  
-start_time = time.time()
-
-while not agent.is_finished():
-    # Check for timeout
-    if time.time() - start_time > timeout:
-        print("Execution timed out")
-        break
-        
-    print("Execution in progress, waiting...")
-    time.sleep(5)  # Wait 5 seconds before checking again
-    
-# Retrieve the results if execution completed
-if agent.is_finished():
+<Tabs>
+  <Tab title="Python">
+    <CodeBlock title="Getting execution results">
+    ```python
+    # Get the result of a completed execution
     result = agent.retrieve_execution_result()
-    
-    print("\nEXECUTION COMPLETE")
+
     print(f"Status: {result.status}")
-    print(f"Created at: {result.created_at}")
-    print(f"Completed at: {result.updated_at}")
-    print("\nRESULT:")
-    print("=" * 50)
-    print(result.result)
-```
-</CodeBlock>
+
+    if result.status == "COMPLETED":
+        print(f"Result: {result.result}")
+    elif result.status == "FAILED":
+        print(f"Error: {result.error}")
+    else:
+        print(f"Execution is {result.status}")
+    ```
+    </CodeBlock>
+  </Tab>
+  <Tab title="TypeScript">
+    <CodeBlock title="Getting execution results">
+    ```typescript
+    // Get the result of a completed execution (async function)
+    async function getExecutionResult() {
+        const result = await agent.retrieveExecutionResult();
+
+        console.log(`Status: ${result.status}`);
+
+        if (result.status === "COMPLETED") {
+            console.log(`Result: ${result.result}`);
+        } else if (result.status === "FAILED") {
+            console.log(`Error: ${result.error}`);
+        } else {
+            console.log(`Execution is ${result.status}`);
+        }
+    }
+    ```
+    </CodeBlock>
+  </Tab>
+</Tabs>
 
 #### Parameters
 
@@ -142,310 +215,286 @@ This method doesn't require any parameters.
 
 #### Returns
 
-Returns an `Execution` object containing the execution results, including:
-- `status`: Current status of the execution
-- `result`: The final result text
-- `created_at`: Timestamp when the execution was created
-- `updated_at`: Timestamp when the execution was last updated
+Returns an `ExecutionResult` object containing:
+- `status`: The execution status ("COMPLETED", "FAILED", etc.)
+- `result`: The result content (if completed successfully)
+- `error`: Error details (if execution failed)
 
-## Working with Executions Asynchronously
+## Managing Multiple Executions
 
-For applications that need to handle multiple executions or avoid blocking while waiting for results, you can implement an asynchronous approach.
+### list_executions() / listExecutions()
 
-<CodeBlock title="Asynchronous execution handling">
-```python
-import threading
-import time
-from queue import Queue
+Lists executions for the current agent.
 
-def monitor_execution(agent, result_queue):
-    """Monitor an agent execution in a separate thread."""
-    try:
-        # Poll until execution completes
-        while not agent.is_finished():
-            time.sleep(2)
-            
-        # Retrieve the result once complete
-        result = agent.retrieve_execution_result()
-        result_queue.put({"status": "complete", "result": result})
-    except Exception as e:
-        result_queue.put({"status": "error", "error": str(e)})
+<Tabs>
+  <Tab title="Python">
+    <CodeBlock title="Listing executions">
+    ```python
+    # List executions for the agent
+    executions = agent.list_executions()
 
-# Initialize queue for communication between threads
-result_queue = Queue()
+    print(f"Found {len(executions)} executions:")
+    for execution in executions:
+        print(f"- {execution.id}: {execution.status} (created: {execution.created_at})")
+    ```
+    </CodeBlock>
+  </Tab>
+  <Tab title="TypeScript">
+    <CodeBlock title="Listing executions">
+    ```typescript
+    // List executions for the agent (async function)
+    async function listExecutions() {
+        const executions = await agent.listExecutions();
 
-# Start a task
-agent.add_task(input="What are the economic impacts of climate change?")
-
-# Start monitoring in a separate thread
-monitor_thread = threading.Thread(
-    target=monitor_execution,
-    args=(agent, result_queue)
-)
-monitor_thread.daemon = True
-monitor_thread.start()
-
-# Main thread can continue doing other work
-print("Task started, main thread continuing with other work...")
-
-# Check periodically if the result is ready
-while True:
-    if not result_queue.empty():
-        result_data = result_queue.get()
-        if result_data["status"] == "complete":
-            print("\nExecution complete!")
-            print(result_data["result"].result[:100] + "...")  # Print first 100 chars
-        else:
-            print(f"\nError: {result_data['error']}")
-        break
-        
-    print("Working on other tasks while waiting...")
-    time.sleep(5)
-```
-</CodeBlock>
-
-## Execution Timeout Handling
-
-When working with long-running tasks, it's important to implement proper timeout handling.
-
-<CodeBlock title="Handling execution timeouts">
-```python
-import time
-from xpander_sdk.exceptions import ApiError
-
-def execute_with_timeout(agent, task_input, timeout_seconds=300):
-    """Execute a task with a timeout."""
-    try:
-        # Add the task
-        agent.add_task(input=task_input)
-        
-        # Wait for completion or timeout
-        start_time = time.time()
-        while not agent.is_finished():
-            # Check if we've exceeded the timeout
-            if time.time() - start_time > timeout_seconds:
-                print(f"Execution timed out after {timeout_seconds} seconds")
-                return {
-                    "status": "timeout",
-                    "execution_id": agent.execution.id,
-                    "partial_result": None
-                }
-            
-            # Wait before checking again
-            time.sleep(2)
-            
-        # Get the result
-        result = agent.retrieve_execution_result()
-        return {
-            "status": "complete",
-            "execution_id": result.id,
-            "result": result.result
+        console.log(`Found ${executions.length} executions:`);
+        for (const execution of executions) {
+            console.log(`- ${execution.id}: ${execution.status} (created: ${execution.createdAt})`);
         }
-        
-    except ApiError as e:
-        print(f"API error: {e}")
-        return {
-            "status": "error",
-            "error": str(e),
-            "execution_id": agent.execution.id if hasattr(agent, 'execution') else None
-        }
+    }
+    ```
+    </CodeBlock>
+  </Tab>
+</Tabs>
 
-# Use the function with a 2-minute timeout
-result = execute_with_timeout(
-    agent=agent,
-    task_input="Analyze the pros and cons of different renewable energy sources",
-    timeout_seconds=120
-)
+#### Parameters
 
-# Process the result based on status
-if result["status"] == "complete":
-    print(f"Task completed successfully!")
-    print(result["result"])
-elif result["status"] == "timeout":
-    print(f"Task timed out. You can check execution ID {result['execution_id']} later.")
-else:
-    print(f"Task failed with error: {result['error']}")
-```
-</CodeBlock>
+This method doesn't require any parameters.
 
-## Execution Webhooks
+#### Returns
 
-Xpander provides webhook notifications for execution status changes, allowing your application to be notified when an execution completes rather than polling for status.
+Returns a list of `Execution` objects.
 
-<Note>
-Webhooks need to be configured in the Xpander platform. The SDK itself doesn't handle webhook registration or listening.
-</Note>
+### get_execution() / getExecution()
 
-<CodeBlock title="Working with webhook notifications">
-```python
-from flask import Flask, request, jsonify
-import hmac
-import hashlib
+Gets an execution by ID.
 
-app = Flask(__name__)
+<Tabs>
+  <Tab title="Python">
+    <CodeBlock title="Getting an execution by ID">
+    ```python
+    # Get a specific execution
+    execution_id = "execution-1234"
+    execution = agent.get_execution(execution_id=execution_id)
 
-# Webhook secret from Xpander dashboard
-WEBHOOK_SECRET = "your-webhook-secret"
+    print(f"Execution: {execution.id}")
+    print(f"Status: {execution.status}")
+    print(f"Input message: {execution.input_message}")
+    ```
+    </CodeBlock>
+  </Tab>
+  <Tab title="TypeScript">
+    <CodeBlock title="Getting an execution by ID">
+    ```typescript
+    // Get a specific execution (async function)
+    async function getExecution() {
+        const executionId = "execution-1234";
+        const execution = await agent.getExecution({ executionId });
 
-@app.route('/webhook/xpander', methods=['POST'])
-def xpander_webhook():
-    # Verify webhook signature
-    signature = request.headers.get('X-Xpander-Signature')
-    payload = request.get_data()
-    
-    expected_signature = hmac.new(
-        WEBHOOK_SECRET.encode(), 
-        payload, 
-        hashlib.sha256
-    ).hexdigest()
-    
-    if not hmac.compare_digest(signature, expected_signature):
-        return jsonify({"error": "Invalid signature"}), 401
-    
-    # Process the webhook data
-    data = request.json
-    
-    event_type = data.get('event')
-    if event_type == 'execution.completed':
-        execution_id = data.get('execution_id')
-        agent_id = data.get('agent_id')
-        
-        print(f"Execution {execution_id} for agent {agent_id} has completed!")
-        
-        # Here you would process the completion, such as:
-        # 1. Fetch the execution result using the SDK
-        # 2. Update your database
-        # 3. Notify users
-        # etc.
-        
-    return jsonify({"status": "received"}), 200
+        console.log(`Execution: ${execution.id}`);
+        console.log(`Status: ${execution.status}`);
+        console.log(`Input message: ${execution.inputMessage}`);
+    }
+    ```
+    </CodeBlock>
+  </Tab>
+</Tabs>
 
-if __name__ == '__main__':
-    app.run(port=5000)
-```
-</CodeBlock>
+#### Parameters
 
-## Complete Example
+| Parameter     | Type   | Required | Description          |
+|---------------|--------|----------|----------------------|
+| `execution_id` | string | Yes      | ID of the execution  |
 
-This example demonstrates a complete flow for managing executions, including task creation, status monitoring, and result retrieval:
+#### Returns
 
-<CodeBlock title="Complete execution management">
-```python
-from xpander_sdk import XpanderClient, LLMProvider
-from openai import OpenAI
-from dotenv import load_dotenv
-import os
-import time
+Returns an `Execution` object.
 
-# Load environment variables
-load_dotenv()
-XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
-OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
-AGENT_ID = os.environ["AGENT_ID"]
+## Complete Flow Example
 
-# Initialize clients
-xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
-openai_client = OpenAI(api_key=OPENAI_API_KEY)
+<Tabs>
+  <Tab title="Python">
+    <CodeBlock title="Complete execution flow">
+    ```python
+    from xpander_sdk import XpanderClient, LLMProvider
+    from openai import OpenAI
+    import os
+    import time
 
-# Get the agent
-agent = xpander_client.agents.get(agent_id=AGENT_ID)
-print(f"Agent: {agent.name} ({agent.id})")
+    # Initialize clients
+    xpander_client = XpanderClient(api_key=os.environ["XPANDER_API_KEY"])
+    openai_client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
-# Define the task input
-task_input = """
-Create a brief analysis of the following cryptocurrency coins:
-1. Bitcoin (BTC)
-2. Ethereum (ETH)
-3. Solana (SOL)
+    # Get the agent
+    agent = xpander_client.agents.get(agent_id=os.environ["AGENT_ID"])
+    print(f"Agent: {agent.name}")
 
-For each, include:
-- Current technology and capabilities
-- Key advantages and limitations
-- Future outlook
-"""
+    # Add a task
+    agent.add_task(input="What are the top 3 emerging technologies of 2023?")
+    print(f"Added task with execution ID: {agent.execution.id}")
 
-# Add the task to the agent
-agent.add_task(input=task_input)
-print(f"Added task with execution ID: {agent.execution.id}")
-
-# Initialize memory with the task input
-agent.memory.init_messages(
-    input=agent.execution.input_message,
-    instructions=agent.instructions,
-    llm_provider=LLMProvider.OPEN_AI
-)
-
-# Execution loop - run until the task completes
-max_iterations = 10
-iteration = 0
-
-while not agent.is_finished() and iteration < max_iterations:
-    iteration += 1
-    print(f"\nIteration {iteration}")
-    
-    # Get LLM response
-    response = openai_client.chat.completions.create(
-        model="gpt-4o",
-        messages=agent.messages,
-        tools=agent.get_tools(),
-        tool_choice="auto",
-        temperature=0.0
-    )
-    
-    # Add the response to memory
-    agent.add_messages(messages=response.model_dump())
-    
-    # Extract tool calls
-    tool_calls = XpanderClient.extract_tool_calls(
-        llm_response=response.model_dump(),
+    # Initialize memory
+    agent.memory.init_messages(
+        input=agent.execution.input_message,
+        instructions=agent.instructions,
         llm_provider=LLMProvider.OPEN_AI
     )
-    
-    # Run tools if any were called
-    if tool_calls:
-        print(f"Running {len(tool_calls)} tools...")
-        results = agent.run_tools(tool_calls=tool_calls)
-        
-        # Print result summary
-        for result in results:
-            print(f"- Tool '{result.function_name}': {'Success' if result.is_success else 'Failed'}")
-    else:
-        print("No tools called in this iteration")
-    
-    # Short delay to prevent rate limiting
-    time.sleep(1)
 
-# Get the final result
-if agent.is_finished():
-    print("\nTask completed!")
+    # Run the agent until the task is complete
+    max_iterations = 10
+    current_iteration = 0
+
+    while not agent.is_finished() and current_iteration < max_iterations:
+        current_iteration += 1
+        print(f"\nIteration {current_iteration}")
+        
+        # Get current status
+        status = agent.get_execution_status()
+        print(f"Status: {status.status}")
+        
+        # Get next action from LLM
+        response = openai_client.chat.completions.create(
+            model="gpt-4o",
+            messages=agent.messages,
+            tools=agent.get_tools(),
+            tool_choice="auto",
+            temperature=0.0
+        )
+        
+        # Add LLM response to memory
+        agent.add_messages(messages=response.model_dump())
+        
+        # Extract and run tool calls
+        tool_calls = XpanderClient.extract_tool_calls(
+            llm_response=response.model_dump(),
+            llm_provider=LLMProvider.OPEN_AI
+        )
+        
+        if tool_calls:
+            results = agent.run_tools(tool_calls=tool_calls)
+            print(f"Executed {len(results)} tools")
+        else:
+            print("No tools were called in this iteration")
+        
+        # Short delay to prevent rate limiting
+        time.sleep(1)
+
+    # Get final result
     result = agent.retrieve_execution_result()
     
-    print(f"\nExecution completed at: {result.updated_at}")
-    print(f"Status: {result.status}")
-    
-    print("\nFINAL RESULT:")
-    print("=" * 80)
-    print(result.result)
-    print("=" * 80)
-else:
-    print("\nTask did not complete within the maximum number of iterations")
-    print(f"Current status: {agent.execution.status}")
-```
-</CodeBlock>
+    if agent.is_finished():
+        print("\nFINAL RESULT:")
+        print("=" * 50)
+        print(result.result)
+    else:
+        print("\nMaximum iterations reached before completion")
+        print(f"Current status: {agent.get_execution_status().status}")
+    ```
+    </CodeBlock>
+  </Tab>
+  <Tab title="TypeScript">
+    <CodeBlock title="Complete execution flow">
+    ```typescript
+    import { XpanderClient, LLMProvider } from '@xpander-ai/sdk';
+    import OpenAI from 'openai';
+    import * as dotenv from 'dotenv';
+
+    // Load environment variables
+    dotenv.config();
+
+    async function runExecution() {
+        // Initialize clients
+        const xpanderClient = new XpanderClient({ apiKey: process.env.XPANDER_API_KEY });
+        const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+        // Get the agent
+        const agent = await xpanderClient.agents.get({ agentId: process.env.AGENT_ID });
+        console.log(`Agent: ${agent.name}`);
+
+        // Add a task
+        await agent.addTask({ input: "What are the top 3 emerging technologies of 2023?" });
+        console.log(`Added task with execution ID: ${agent.execution.id}`);
+
+        // Initialize memory
+        await agent.memory.initMessages({
+            input: agent.execution.inputMessage,
+            instructions: agent.instructions,
+            llmProvider: LLMProvider.OPEN_AI
+        });
+
+        // Run the agent until the task is complete
+        const maxIterations = 10;
+        let currentIteration = 0;
+
+        while (!(await agent.isFinished()) && currentIteration < maxIterations) {
+            currentIteration++;
+            console.log(`\nIteration ${currentIteration}`);
+            
+            // Get current status
+            const status = await agent.getExecutionStatus();
+            console.log(`Status: ${status.status}`);
+            
+            // Get next action from LLM
+            const response = await openai.chat.completions.create({
+                model: "gpt-4o",
+                messages: agent.messages,
+                tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
+                tool_choice: "auto",
+                temperature: 0
+            });
+            
+            // Add LLM response to memory
+            await agent.addMessages({ messages: response });
+            
+            // Extract and run tool calls
+            const toolCalls = XpanderClient.extractToolCalls({
+                llmResponse: response,
+                llmProvider: LLMProvider.OPEN_AI
+            });
+            
+            if (toolCalls.length > 0) {
+                const results = await agent.runTools({ toolCalls });
+                console.log(`Executed ${results.length} tools`);
+            } else {
+                console.log("No tools were called in this iteration");
+            }
+            
+            // Short delay to prevent rate limiting
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        // Get final result
+        const result = await agent.retrieveExecutionResult();
+        
+        if (await agent.isFinished()) {
+            console.log("\nFINAL RESULT:");
+            console.log("=".repeat(50));
+            console.log(result.result);
+        } else {
+            console.log("\nMaximum iterations reached before completion");
+            const status = await agent.getExecutionStatus();
+            console.log(`Current status: ${status.status}`);
+        }
+    }
+
+    runExecution().catch(console.error);
+    ```
+    </CodeBlock>
+  </Tab>
+</Tabs>
 
 ## Related Resources
 
 <CardGroup cols={2}>
-  <Card title="Agent" icon="robot" href="/api-reference/07-sdk/agent">
+  <Card title="Agent Class" icon="robot" href="/api-reference/07-sdk/agent">
     Learn about the core Agent class
   </Card>
   <Card title="Memory Management" icon="brain" href="/api-reference/07-sdk/agent/memory">
-    Managing agent memory
+    Working with agent memory
   </Card>
   <Card title="Agent Tools" icon="wrench" href="/api-reference/07-sdk/agent/tools">
-    Working with agent tools
+    Using agent tools and function calling
   </Card>
-  <Card title="Error Handling" icon="triangle-exclamation" href="/api-reference/07-sdk/client/errors">
-    Understanding SDK errors
+  <Card title="LLM Integration" icon="microchip" href="/api-reference/07-sdk/llm-integration">
+    Integrating with different LLM providers
   </Card>
 </CardGroup> 
