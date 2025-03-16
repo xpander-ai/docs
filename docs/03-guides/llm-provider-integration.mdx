@@ -1,0 +1,321 @@
+---
+title: "Integrating Different LLM Providers"
+description: "Detailed guide to integrating various LLM providers with the xpander.ai SDK"
+---
+
+# Integrating Different LLM Providers
+
+The xpander.ai SDK supports integration with multiple LLM providers through a consistent API. This guide covers how to properly integrate with each supported provider and navigate their specific requirements.
+
+## Supported LLM Providers
+
+The xpander.ai SDK supports the following LLM providers, accessible through the `LLMProvider` enum:
+
+```python
+from xpander_sdk import LLMProvider
+
+# Available LLM providers
+LLMProvider.OPEN_AI          # OpenAI (GPT models)
+LLMProvider.FRIENDLI_AI      # Claude/Anthropic (via FriendliAI)
+LLMProvider.GEMINI_OPEN_AI   # Google Gemini (OpenAI-compatible API)
+LLMProvider.NVIDIA_NIM       # NVIDIA NIM models
+LLMProvider.LANG_CHAIN       # LangChain integration
+LLMProvider.REAL_TIME_OPEN_AI # Real-time OpenAI integration
+LLMProvider.AMAZON_BEDROCK   # Amazon Bedrock models
+LLMProvider.OLLAMA           # Ollama local models
+```
+
+## Common Integration Pattern
+
+When working with any LLM provider, follow this recommended pattern:
+
+1. Initialize memory without specifying provider
+2. Get tools with explicit provider specification
+3. Add raw LLM responses directly to memory
+4. Extract tool calls with explicit provider specification (must match the provider used for tools)
+
+Here's the general pattern:
+
+```python
+# Initialize memory without provider specification
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions
+)
+
+# Get tools with explicit provider
+tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)  # Specify provider
+
+# Call LLM and add response to memory
+response = llm_client.chat.completions.create(...)
+agent.add_messages(messages=response.model_dump())
+
+# Extract tool calls with explicit provider
+tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response.model_dump(),
+    llm_provider=LLMProvider.OPEN_AI  # MUST match the provider used for tools
+)
+```
+
+## OpenAI Integration
+
+### Requirements
+
+To integrate with OpenAI, you'll need:
+- OpenAI Python library: `pip install openai`
+- OpenAI API key
+
+### Basic Integration
+
+```python
+from xpander_sdk import XpanderClient, LLMProvider
+from openai import OpenAI
+import os
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=os.environ["XPANDER_API_KEY"])
+openai_client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+
+# Load agent
+agent = xpander_client.agents.get(agent_id=os.environ["XPANDER_AGENT_ID"])
+
+# Add task and initialize memory
+agent.add_task("Your task prompt here")
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions
+)
+
+# Run the agent with OpenAI
+while not agent.is_finished():
+    response = openai_client.chat.completions.create(
+        model="gpt-4o",  # Or other OpenAI model
+        messages=agent.messages,
+        tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
+        tool_choice="auto",
+        temperature=0.0
+    )
+    
+    # Add raw response to memory
+    agent.add_messages(messages=response.model_dump())
+    
+    # Extract tool calls
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump(),
+        llm_provider=LLMProvider.OPEN_AI
+    )
+    
+    # Run tools
+    agent.run_tools(tool_calls=tool_calls)
+```
+
+### Message Format
+
+OpenAI's message format is the default format used by the xpander.ai SDK:
+
+```json
+{
+  "role": "assistant",
+  "content": "The content of the response",
+  "tool_calls": [
+    {
+      "id": "call_abc123",
+      "type": "function",
+      "function": {
+        "name": "tool_name",
+        "arguments": "{\"param1\": \"value1\", \"param2\": \"value2\"}"
+      }
+    }
+  ]
+}
+```
+
+## Gemini Integration (OpenAI-compatible API)
+
+Google's Gemini can be accessed through its OpenAI-compatible API. When using Gemini via this API, you should use `LLMProvider.GEMINI_OPEN_AI` to ensure proper format handling.
+
+### Requirements
+
+To integrate with Gemini via OpenAI-compatible API:
+- OpenAI Python library: `pip install openai`
+- Gemini API key (from Google AI Studio)
+
+### Basic Integration
+
+```python
+from xpander_sdk import XpanderClient, LLMProvider
+from openai import OpenAI
+import os
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=os.environ["XPANDER_API_KEY"])
+gemini_client = OpenAI(
+    api_key=os.environ["GEMINI_API_KEY"],
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+)
+
+# Load agent
+agent = xpander_client.agents.get(agent_id=os.environ["XPANDER_AGENT_ID"])
+
+# Add task and initialize memory
+agent.add_task("Your task prompt here")
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions
+)
+
+# Run the agent with Gemini
+while not agent.is_finished():
+    response = gemini_client.chat.completions.create(
+        model="gemini-1.5-pro",  # Or other Gemini model
+        messages=agent.messages,
+        tools=agent.get_tools(llm_provider=LLMProvider.GEMINI_OPEN_AI),
+        tool_choice="auto",
+        temperature=0.0
+    )
+    
+    # Add raw response to memory
+    agent.add_messages(messages=response.model_dump())
+    
+    # Extract tool calls
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump(),
+        llm_provider=LLMProvider.GEMINI_OPEN_AI
+    )
+    
+    # Run tools
+    agent.run_tools(tool_calls=tool_calls)
+```
+
+## Claude/Anthropic Integration (via FriendliAI)
+
+The xpander.ai SDK integrates with Claude/Anthropic models through FriendliAI. The SDK automatically handles all format conversions - you don't need to manually convert between formats.
+
+### Requirements
+
+To integrate with Claude:
+- Anthropic Python library: `pip install anthropic`
+- FriendliAI token (which accesses Claude models)
+
+### Basic Integration
+
+```python
+from xpander_sdk import XpanderClient, LLMProvider
+import anthropic
+import os
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=os.environ["XPANDER_API_KEY"])
+claude_client = anthropic.Anthropic(api_key=os.environ["FRIENDLI_TOKEN"])
+
+# Load agent
+agent = xpander_client.agents.get(agent_id=os.environ["XPANDER_AGENT_ID"])
+
+# Add task and initialize memory
+agent.add_task("Your task prompt here")
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions
+)
+
+# Run the agent with Claude
+while not agent.is_finished():
+    # Get Claude-formatted tools
+    tools = agent.get_tools(llm_provider=LLMProvider.FRIENDLI_AI)
+    
+    # Call Claude with the agent's messages directly
+    # The SDK handles conversion to Claude format internally
+    response = claude_client.messages.create(
+        model="claude-3-opus-20240229",  # Or other Claude model
+        messages=agent.messages,  # Use messages directly, no conversion needed
+        tools=tools,
+        max_tokens=1024,
+        temperature=0
+    )
+    
+    # Add the raw response to memory
+    # The SDK handles conversion from Claude format internally
+    agent.add_messages(messages=response)
+    
+    # Extract tool calls with explicit provider specification
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response,
+        llm_provider=LLMProvider.FRIENDLI_AI
+    )
+    
+    # Run tools
+    agent.run_tools(tool_calls=tool_calls)
+```
+
+> **Important:** The xpander.ai SDK handles message format conversions internally, but you must explicitly specify which provider format to use when getting tools and extracting tool calls. Always use the same provider for both operations.
+
+## Cross-Provider Compatibility
+
+The xpander.ai SDK maintains consistent message formats internally, allowing you to switch between providers during the same agent execution.
+
+### Message Structure Compatibility
+
+- Messages in `agent.messages` are always stored in a standard format
+- The SDK handles conversion between different provider formats
+- Memory initialized with one provider can be used with another provider
+- Tool calls can be extracted regardless of the initial provider
+
+### Switching Providers Example
+
+```python
+# Start with OpenAI
+tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
+response = openai_client.chat.completions.create(...)
+agent.add_messages(messages=response.model_dump())
+
+# Later switch to Gemini
+tools = agent.get_tools(llm_provider=LLMProvider.GEMINI_OPEN_AI)
+response = gemini_client.chat.completions.create(...)
+agent.add_messages(messages=response.model_dump())
+```
+
+## Troubleshooting
+
+### OpenAI Issues
+
+- **Error with `model_dump()`**: Make sure you're using the latest OpenAI Python client (v1+)
+- **Missing tool calls**: Ensure you're using a model that supports function calling (e.g., GPT-4, GPT-4o)
+- **Empty responses**: Check that you're properly initializing memory with the agent's instructions
+
+### Gemini Issues
+
+- **API connectivity**: Verify the base URL for the OpenAI-compatible API is correct
+- **Invalid arguments**: Gemini may have stricter JSON validation; ensure tool parameters are well-formed
+- **Empty response content**: This may happen with certain prompt types; try reformulating your task
+
+### Claude/FriendliAI Issues
+
+- **Authentication errors**: Verify your FriendliAI token is valid and has access to Claude models
+- **Message formatting**: Claude expects a specific message format; ensure proper conversion from the agent's messages
+- **Tool response format**: Format Claude tool responses to match the expected OpenAI-compatible format
+
+### General Troubleshooting
+
+1. Enable verbose logging to trace the exact payloads:
+   ```python
+   import logging
+   logging.basicConfig(level=logging.DEBUG)
+   ```
+
+2. Inspect raw messages to verify format:
+   ```python
+   print(json.dumps(agent.messages, indent=2))
+   ```
+
+3. Test with a simple tool first:
+   ```python
+   # Define a simple test tool
+   @agent.register_tool
+   def echo(message: str) -> str:
+       """Echo the message back"""
+       return f"Echo: {message}"
+   ```
+
+## Conclusion
+
+The xpander.ai SDK provides flexible integration with multiple LLM providers while maintaining a consistent API. By following the recommended pattern of explicitly specifying providers for tool retrieval and extraction, you can achieve reliable integration with any supported LLM provider. 

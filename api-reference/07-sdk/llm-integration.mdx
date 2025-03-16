@@ -1,10 +1,10 @@
 ---
 title: "LLM Integration"
-description: "Integrating different LLM providers with the Xpander SDK"
+description: "Integrating different LLM providers with the xpander.ai SDK"
 icon: "microchip"
 ---
 
-The Xpander SDK is designed to work with multiple Large Language Model (LLM) providers. This guide explains how to integrate various LLM providers with your Xpander agents.
+The xpander.ai SDK is designed to work with multiple Large Language Model (LLM) providers. This guide explains how to integrate various LLM providers with your xpander.ai agents.
 
 ## Supported LLM Providers
 
@@ -33,7 +33,7 @@ The SDK supports the following LLM providers through the `LLMProvider` enum:
 
     ### Provider Specification Requirements
 
-    > **Important**: The Xpander SDK requires explicit provider specification when getting tools and extracting tool calls. Always specify the `llm_provider` parameter with the appropriate provider enum value.
+    > **Important**: The xpander.ai SDK requires explicit provider specification when getting tools and extracting tool calls. Always specify the `llm_provider` parameter with the appropriate provider enum value.
 
     <Steps>
       <Step title="Initialize memory">
@@ -458,11 +458,11 @@ The SDK supports the following LLM providers through the `LLMProvider` enum:
   <Tab title="Message Format">
     ## Message Format Handling
 
-    The Xpander SDK automatically handles all message format conversions for all LLM providers:
+    The xpander.ai SDK automatically handles all message format conversions for all LLM providers:
 
     ### Internal Message Storage
 
-    Xpander SDK stores all messages in a standard format in `agent.messages`. This format is compatible with OpenAI and OpenAI-compatible APIs out of the box.
+    xpander.ai SDK stores all messages in a standard format in `agent.messages`. This format is compatible with OpenAI and OpenAI-compatible APIs out of the box.
 
     ```json
     [

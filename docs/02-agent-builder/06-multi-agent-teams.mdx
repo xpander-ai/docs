@@ -1,12 +1,12 @@
 ---
 title: "Multi-Agent Teams"
-description: "Learn how to create and manage multi-agent teams in Xpander"
+description: "Learn how to create and manage multi-agent teams in xpander.ai"
 icon: "users"
 ---
 
 ## Creating Multi-Agent Teams
 
-Xpander allows you to create teams of specialized agents that work together to accomplish complex tasks. 
+xpander.ai allows you to create teams of specialized agents that work together to accomplish complex tasks. 
 
 For example, you can create a team of agents that work together to gather news from multiple sources, analyze the news, and then summarize the results.
 <Frame>![](/static/images/screenshots/2025-03-15-23-46-19.png)</Frame>
@@ -69,7 +69,7 @@ Here's how to set up a multi-agent team:
 </Steps>
 
 <Accordion title="Understanding Team Layouts">
-Xpander supports two primary team layouts:
+xpander.ai supports two primary team layouts:
 
 - **Router Layout**: Agents operate independently, with a router agent directing tasks to the most suitable agent
 - **Sequence Layout**: Agents execute in a predefined order, with each agent's output feeding into the next agent
@@ -96,7 +96,7 @@ After changing to sequence layout, you must draw connection lines between agents
 
 ## Executing Multi-Agent Teams Programmatically
 
-You can execute multi-agent workflows programmatically using the Xpander SDK. The general pattern involves:
+You can execute multi-agent workflows programmatically using the xpander.ai SDK. The general pattern involves:
 
 1. **Setting up the environment** with necessary API keys
 2. **Loading the agents** that will participate in the workflow
@@ -106,9 +106,9 @@ You can execute multi-agent workflows programmatically using the Xpander SDK. Th
 
 The core execution pattern for multi-agent workflows follows these steps:
 
-1. Configure your environment with OpenAI and Xpander API keys
-2. Initialize both the Xpander and OpenAI clients
-3. Load your agent or agents from Xpander
+1. Configure your environment with OpenAI and xpander.ai API keys
+2. Initialize both the xpander.ai and OpenAI clients
+3. Load your agent or agents from xpander.ai
 4. Create and initialize a task with appropriate context
 5. Execute a loop that:
    - Generates LLM responses using the current agent's tools
@@ -120,7 +120,7 @@ The core execution pattern for multi-agent workflows follows these steps:
 There are two main approaches to executing multi-agent teams:
 
 <Accordion title="Simplified Approach">
-For most use cases, you can treat the entire agent team as a single entity. The Xpander SDK handles all the complexity of agent switching behind the scenes.
+For most use cases, you can treat the entire agent team as a single entity. The xpander.ai SDK handles all the complexity of agent switching behind the scenes.
 
 Key steps:
 - Load the team's manager agent
@@ -149,7 +149,7 @@ For most use cases, the simplified approach is recommended as it handles all the
 
 ## Testing and Monitoring Multi-Agent Teams
 
-Once your team is configured, you can test it through multiple interfaces provided by Xpander:
+Once your team is configured, you can test it through multiple interfaces provided by xpander.ai:
 
 <Tabs>
   <Tab title="Chat Interface">

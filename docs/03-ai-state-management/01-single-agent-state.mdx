@@ -6,11 +6,11 @@ icon: "database"
 
 # Managing State for Individual Agents
 
-Xpander's agent system uses a sophisticated state management approach that integrates agent configuration, workflow graphs, and execution state. This guide explains how to work with single agent state using the Xpander SDK.
+xpander.ai's agent system uses a sophisticated state management approach that integrates agent configuration, workflow graphs, and execution state. This guide explains how to work with single agent state using the xpander.ai SDK.
 
-## Understanding Xpander's Agent State Model
+## Understanding xpander.ai's Agent State Model
 
-Xpander's agent state is built around several key components:
+xpander.ai's agent state is built around several key components:
 
 - **Agent Configuration**: Core properties and settings for the agent
 - **Graph Workflow**: The connected operations that define agent capabilities
@@ -36,7 +36,7 @@ print(f'Agent: {agent.id}')
 
 ## Building the Agent's Workflow Graph
 
-A key part of Xpander's state management is the workflow graph. This defines how operations connect and how data flows between them:
+A key part of xpander.ai's state management is the workflow graph. This defines how operations connect and how data flows between them:
 
 ```python
 # First, retrieve available interfaces
@@ -84,7 +84,7 @@ This graph structure is a fundamental part of the agent's state - it defines how
 
 ## Managing Execution State
 
-When executing tasks with an agent, the Xpander SDK manages execution state through several key methods:
+When executing tasks with an agent, the xpander.ai SDK manages execution state through several key methods:
 
 ```python
 from openai import OpenAI
@@ -132,7 +132,7 @@ The execution state includes:
 
 ## Working with Agent Memory
 
-Xpander's memory system maintains context throughout the agent's operation:
+xpander.ai's memory system maintains context throughout the agent's operation:
 
 ```python
 # Access the current messages
@@ -224,7 +224,7 @@ agent.memory.init_messages(
 ```
 
 <Note>
-The session management functionality shown here is a standard pattern in agent systems. Verify specific session API details in the Xpander SDK documentation.
+The session management functionality shown here is a standard pattern in agent systems. Verify specific session API details in the xpander.ai SDK documentation.
 </Note>
 
 ## Best Practices for Agent State Management

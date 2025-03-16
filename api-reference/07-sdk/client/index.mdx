@@ -1,10 +1,10 @@
 ---
 title: "XpanderClient"
-description: "Main client for interacting with the Xpander platform"
+description: "Main client for interacting with the xpander.ai platform"
 icon: "plug"
 ---
 
-The `XpanderClient` is the main entry point for the Xpander SDK, providing access to agents, tools, and other resources on the Xpander platform.
+The `XpanderClient` is the main entry point for the xpander.ai SDK, providing access to agents, tools, and other resources on the xpander.ai platform.
 
 ## Initialization
 
@@ -48,7 +48,7 @@ The `XpanderClient` is the main entry point for the Xpander SDK, providing acces
 
 | Parameter | Type   | Required | Description            |
 |-----------|--------|----------|------------------------|
-| `api_key` | string | Yes      | Your Xpander API key   |
+| `api_key` | string | Yes      | Your xpander.ai API key   |
 
 ## Working with Agents
 
@@ -588,8 +588,7 @@ Returns a filtered list containing only local `ToolCall` objects.
     # Initialize memory
     agent.memory.init_messages(
         input=agent.execution.input_message,
-        instructions=agent.instructions,
-        llm_provider=LLMProvider.OPEN_AI
+        instructions=agent.instructions
     )
     
     # Run the agent loop
@@ -598,7 +597,7 @@ Returns a filtered list containing only local `ToolCall` objects.
         response = openai_client.chat.completions.create(
             model="gpt-4o",
             messages=agent.messages,
-            tools=agent.get_tools(),
+            tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
             tool_choice="auto",
             temperature=0.0
         )
@@ -677,8 +676,8 @@ Returns a filtered list containing only local `ToolCall` objects.
         // Initialize memory
         await agent.memory.initMessages({
             input: agent.execution.inputMessage,
-            instructions: agent.instructions,
-            llmProvider: LLMProvider.OPEN_AI
+            instructions: agent.instructions
+            // llmProvider parameter is optional
         });
         
         // Run the agent loop

@@ -229,7 +229,7 @@ tool_calls = XpanderClient.extract_tool_calls(
 )
 ```
 
-> **Note:** The Xpander SDK handles format conversion between the standardized memory format and provider-specific formats. However, you must always specify which provider format to use when retrieving tools and extracting tool calls.
+> **Note:** The xpander.ai SDK handles format conversion between the standardized memory format and provider-specific formats. However, you must always specify which provider format to use when retrieving tools and extracting tool calls.
 
 ## Complete Example: Gemini via OpenAI-compatible API
 
@@ -297,7 +297,7 @@ print("result", execution_result.result)
 
 ## Message Structure
 
-The Xpander SDK stores messages in a standard, OpenAI-compatible format within `agent.messages`, regardless of the LLM provider used:
+The xpander.ai SDK stores messages in a standard, OpenAI-compatible format within `agent.messages`, regardless of the LLM provider used:
 
 - Each message is a dictionary with `role` and `content` fields
 - Roles include `system`, `user`, `assistant`, and `tool`

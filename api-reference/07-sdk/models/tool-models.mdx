@@ -1,10 +1,10 @@
 ---
 title: "Tool Models"
-description: "Data models for working with tools in the Xpander SDK"
+description: "Data models for working with tools in the xpander.ai SDK"
 icon: "box"
 ---
 
-The Xpander SDK uses several data models for working with tools and function calls. This documentation covers the key models used when working with tools.
+The xpander.ai SDK uses several data models for working with tools and function calls. This documentation covers the key models used when working with tools.
 
 ## ToolCallType
 
@@ -17,7 +17,7 @@ An enumeration defining the different types of tool calls.
     from xpander_sdk import ToolCallType
 
     # Tool call types
-    print(ToolCallType.XPANDER)  # Tools provided by the Xpander platform
+    print(ToolCallType.XPANDER)  # Tools provided by the xpander.ai platform
     print(ToolCallType.LOCAL)    # Tools implemented locally in your code
     print(ToolCallType.UNKNOWN)  # Unrecognized tool type
     ```
@@ -29,7 +29,7 @@ An enumeration defining the different types of tool calls.
     import { ToolCallType } from '@xpander-ai/sdk';
 
     // Tool call types
-    console.log(ToolCallType.XPANDER);  // Tools provided by the Xpander platform
+    console.log(ToolCallType.XPANDER);  // Tools provided by the xpander.ai platform
     console.log(ToolCallType.LOCAL);    // Tools implemented locally in your code
     console.log(ToolCallType.UNKNOWN);  // Unrecognized tool type
     ```
@@ -39,7 +39,7 @@ An enumeration defining the different types of tool calls.
 
 | Enum Value             | Description                                           |
 |------------------------|-------------------------------------------------------|
-| `ToolCallType.XPANDER` | Tool calls executed on the Xpander platform           |
+| `ToolCallType.XPANDER` | Tool calls executed on the xpander.ai platform           |
 | `ToolCallType.LOCAL`   | Tool calls executed locally in your application       |
 | `ToolCallType.UNKNOWN` | Unrecognized tool calls (typically a fallback value)  |
 
@@ -146,7 +146,7 @@ Tool calls are typically extracted from LLM responses using the `extract_tool_ca
         }]
     )
 
-    # Extract tool calls in Xpander format
+    # Extract tool calls in xpander.ai format
     tool_calls = XpanderClient.extract_tool_calls(
         llm_response=response.model_dump(),
         llm_provider=LLMProvider.OPEN_AI
@@ -193,7 +193,7 @@ Tool calls are typically extracted from LLM responses using the `extract_tool_ca
             }]
         });
 
-        // Extract tool calls in Xpander format
+        // Extract tool calls in xpander.ai format
         const toolCalls = XpanderClient.extractToolCalls({
             llmResponse: response,
             llmProvider: LLMProvider.OPEN_AI
