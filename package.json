@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "open-swagger-ui": "^1.2.0"
+    "open-swagger-ui": "^1.2.0",
+    "xpander-cli": "^0.0.11"
   }
 }

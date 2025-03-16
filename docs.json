@@ -47,9 +47,12 @@
               "style": "regular"
             },
             "pages": [
-              "docs/02-agent-builder/01-import-existing-agents",
+              "docs/02-agent-builder/01-agent-graph-system",
               "docs/02-agent-builder/02-add-tools-to-agents",
-              "docs/02-agent-builder/03-use-ai-agent-builder"
+              "docs/02-agent-builder/03-activity-view",
+              "docs/02-agent-builder/04-advanced-operation-settings",
+              "docs/02-agent-builder/05-agent-settings",
+              "docs/02-agent-builder/06-multi-agent-teams"
             ]
           },
           {
@@ -243,48 +246,6 @@
             ]
           }
         ]
-      },
-      {
-        "tab": "Tutorials",
-        "icon": {
-          "name": "graduation-cap",
-          "style": "regular"
-        },
-        "groups": [
-          {
-            "group": "Get Started",
-            "icon": {
-              "name": "rocket",
-              "style": "regular"
-            },
-            "pages": ["tutorials/00-introduction"]
-          },
-          {
-            "group": "Basics",
-            "icon": {
-              "name": "book-open-reader",
-              "style": "regular"
-            },
-            "pages": [
-              "tutorials/09-basics/01-create-agent",
-              "tutorials/09-basics/02-add-tools",
-              "tutorials/09-basics/03-use-interfaces"
-            ]
-          },
-          {
-            "group": "Advanced",
-            "icon": {
-              "name": "layer-group",
-              "style": "regular"
-            },
-            "pages": [
-              "tutorials/10-advanced/01-multi-agent",
-              "tutorials/10-advanced/02-custom-tools",
-              "tutorials/10-advanced/03-state-management",
-              "tutorials/10-advanced/04-build-no-code-custom-gpt-agent"
-            ]
-          }
-        ]
       }
     ],
     "global": {
@@ -312,14 +273,6 @@
             "style": "regular"
           },
           "href": "https://docs.xpander.ai/cli-reference/00-overview"
-        },
-        {
-          "dropdown": "Tutorials",
-          "icon": {
-            "name": "graduation-cap",
-            "style": "regular"
-          },
-          "href": "https://docs.xpander.ai/tutorials/00-introduction"
         },
         {
           "dropdown": "Release notes",

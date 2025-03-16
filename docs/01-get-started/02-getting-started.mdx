@@ -1,114 +1,60 @@
 ---
-title: "Get started"
+title: "Quickstart - Agent Builder"
 description: "Get started with xpander.ai and build your first AI agent"
-icon: "house"
+icon: "rocket"
 ---
 
-### 1. Getting Started with the SDK
+## Set Up Your Environment
 
-**Scenario** : You want to build a simple agent that uses a single LLM and a single framework , and use xpander.ai to manage the state and conversation history, add tools and interact with your agent via Slack/ Voice/ Chat/ Web
+Before diving into xpander.ai, let's set up your development environment.
 
-### Installation
-
-```bash
-pip install xpander-sdk
-xpander login
-xpander agent new
-xpander agent get
-```
-
-Example response:
-```bash
-> xpander login
-✓ Successfully logged in to xpander.ai
-
-> xpander agent new
-? Agent name: my-first-agent
-? Select LLM: OpenAI GPT-4
-? Select framework: OpenAI
-✓ Created new agent: my-first-agent
-✓ Agent URL: https://amethyst-basilisk.agents.xpander.ai/
-✓ Agent ID: ag_01h8x9j2p6q5r7k8m9n0
-✓ API Key: xpd_sk_01h8x9j2p6q5r7k8m9n0p1q2r3s4t5u6v7w8x9y0
-
-> xpander agent get
-NAME           LLM     FRAMEWORK    STATUS    SOURCE NODES
-my-first-agent GPT-4   OpenAI       Active    web
-```
-
-You can now interact with your agent via the web interface: https://amethyst-basilisk.agents.xpander.ai/
-
-And load the agent in your local environment using the API key:
-
-<CodeGroup>
-
-```python OpenAI Single Query
-from xpander_sdk import XpanderClient
-from openai import OpenAI
-from dotenv import load_dotenv
-from os import environ
-
-# Load environment variables
-load_dotenv()
-
-OPENAI_API_KEY = environ["OPENAI_API_KEY"]
-XPANDER_API_KEY = environ["XPANDER_API_KEY"]
-XPANDER_AGENT_ID = environ["XPANDER_AGENT_ID"]
-
-xpander_agent = XpanderClient(api_key=XPANDER_API_KEY).agents.get(agent_id=XPANDER_AGENT_ID)
-
-xpander_agent.add_task("What is the weather in Tokyo?")
-
-response = openai_client.chat.completions.create(
-    model="gpt-4o",
-    messages=agent.messages, ## this is the conversation history and state of the agent
-    tools=agent.get_tools(llm_provider=LLMProvider.OPENAI), ## this is the list of tools available to the agent
-    tool_choice="auto", ## this is the tool choice for the agent
-)
-
-# Process and execute tools
-xpander_agent.process_llm_response(
-    response.model_dump(), 
-    llm_provider=LLMProvider.OPENAI
-)
-```
-
-```python OpenAI Event Streaming
-from xpander_sdk import XpanderClient
-from openai import OpenAI
-from dotenv import load_dotenv
-from os import environ
-
-# Load environment variables
-load_dotenv()
-
-OPENAI_API_KEY = environ["OPENAI_API_KEY"]
-XPANDER_API_KEY = environ["XPANDER_API_KEY"]
-XPANDER_AGENT_ID = environ["XPANDER_AGENT_ID"]
-
-xpander_agent = XpanderClient(api_key=XPANDER_API_KEY).agents.get(agent_id=XPANDER_AGENT_ID)
-
-def handle_event(event):
-    response = openai_client.chat.completions.create(
-        model="gpt-4o",
-        messages=agent.messages,
-        tools=agent.get_tools(llm_provider=LLMProvider.OPENAI),
-        tool_choice="auto",
-        temperature=0.0
-    )
+<Steps>
+  <Step title="Create a project and virtual environment">
+    Create a new project directory and set up a Python virtual environment:
     
-    agent.process_llm_response(
-        response.model_dump(), 
-        llm_provider=LLMProvider.OPENAI
-    )
+    ```bash
+    mkdir my_project
+    cd my_project
+    python -m venv .venv
+    ```
+  </Step>
+  
+  <Step title="Activate the virtual environment">
+    Do this every time you start a new terminal session:
+    
+    ```bash
+    # On macOS/Linux
+    source .venv/bin/activate
+    
+    # On Windows
+    .venv\Scripts\activate
+    ```
+  </Step>
+  
+  <Step title="Install the xpander SDK">
+    Install the xpander SDK using pip:
+    
+    ```bash
+    pip install xpander-sdk
+    ```
+  </Step>
+  
+  <Step title="Set up your API keys">
+    If you don't have API keys, create them in the respective platforms:
+    
+    ```bash
+    # Set environment variables
+    export XPANDER_API_KEY=xpd_sk_...
+    export OPENAI_API_KEY=sk_...  # If you'll be using OpenAI models
+    
+    # Alternative: create a .env file
+    echo "XPANDER_API_KEY=xpd_sk_..." >> .env
+    echo "OPENAI_API_KEY=sk_..." >> .env
+    ```
+  </Step>
+</Steps>
 
-xpander_agent.start_event_listener()
-```
-</CodeGroup>
-
-
-## 2. Getting Started with the xpander platform
-
+## Build new agent in the xpander platform
 **Scenario** : Build an AI agent that retrieves top AI news from Hacker News. You can make any of your's choice.
 
 <video
@@ -141,6 +87,19 @@ xpander_agent.start_event_listener()
   </Step>
 </Steps>
 
+## Model & Framework Flexibility
+
+xpander.ai is completely model-agnostic and framework-agnostic, giving you maximum flexibility in how you build and deploy your AI agents:
+
+- **No-Code Option**: The xpander platform UI demonstrated above lets you create fully functional agents without writing a single line of code. Simply define your agent through the AI Builder interface, and the platform handles the rest.
+
+- **Any LLM Model**: Use OpenAI, Anthropic Claude, Google Gemini, or other LLM providers based on your specific needs and preferences.
+
+- **Any Agent Framework**: Seamlessly integrate with popular agent frameworks like LlamaIndex, CrewAI, or HuggingFace's Smoleagents while leveraging xpander's enhanced capabilities.
+
+For more advanced code-based implementations after creating your agent in the platform:
+- See [Start with LLM Models](/docs/01-get-started/02-llm-models) for direct integration with various LLM providers
+- See [Start with Agent Frameworks](/docs/01-get-started/03-agent-frameworks) for using xpander with existing agent frameworks
    
 ### Troubleshooting / FAQ
 <AccordionGroup>
@@ -155,26 +114,37 @@ xpander_agent.start_event_listener()
 </AccordionGroup>
 
 
-### Next Steps
-
+## Next Steps
 <CardGroup cols={2}>
   <Card 
-    title="Get started with Agent Frameworks" 
-    icon="robot"
-    href="/docs/01-get-started/02-llm-models"
+    title="Add Voice & Chat Interfaces" 
+    icon="microphone"
+    href="/docs/05-human-interfaces/01-voice-apis"
   >
-    Integration with popular frameworks like LlamaIndex, CrewAI, and Smoleagents
+    Add voice, chat and other human-machine interfaces to your agents
   </Card>
 
   <Card 
-    title="Get Started with LLM Models" 
-    icon="wand-magic-sparkles"
-    href="/docs/01-get-started/03-agent-frameworks"
+    title="Manage Multi-User State" 
+    icon="users"
+    href="/docs/03-ai-state-management/02-multi-agent-collaboration"
   >
-    Direct integration with LLMs like GPT-4, Claude, and Gemini
+    Learn how to handle state across multiple users and sessions
   </Card>
 
+  <Card 
+    title="Manage Agent Memory" 
+    icon="brain"
+    href="/docs/03-ai-state-management/01-single-agent-state"
+  > 
+    Configure and manage memory state between your AI agents
+  </Card>
 
-</CardGroup>
-
-### Need help? Contact Support.
+  <Card 
+    title="Add User Authentication" 
+    icon="lock"
+    href="/docs/04-user-authentication/01-add-provider"
+  >
+    Implement secure user authentication for your agents
+  </Card>
+</CardGroup> 
