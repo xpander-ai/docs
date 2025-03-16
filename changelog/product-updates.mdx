@@ -5,10 +5,129 @@ description: 'New updates and improvements'
 
 # Product Updates
 
-## 2025-02-20
+## 2025-03-16
+- Extended LLM provider support with latest model versions (SDK v1.8.0)
+- Improved response latency for high-volume agent deployments
+- Fixed memory management issues in long-running sessions
 
-xpander.ai is now in beta.
+## 2025-03-09
+- Added support for agent-to-agent communication
+- Updated cross-provider message format compatibility
+- Enhanced error handling for network timeouts during tool execution (SDK v1.7.3)
+- Fixed UI rendering issues in the agent configuration panel
+
+## 2025-03-02
+- Released agent template gallery for faster development
+- Added environment variable configuration support
+- Improved memory efficiency for large context windows (SDK v1.7.2)
+- Enhanced validation for custom tool schemas
+
+## 2025-02-23
+- Added support for latest Claude models (SDK v1.7.0)
+- Released new Python SDK examples for common enterprise use cases
+- Fixed tool extraction issues with certain response formats
+- Improved tool execution performance with parallel processing
+
+## 2025-02-16
+- Enhanced tool execution coordination between agents (SDK v1.6.5)
+- Added unit testing framework for agent behavior validation 
+- Improved documentation for custom tool development
+- Released performance monitoring dashboard for agents
+
+## 2025-02-09
+- Enhanced cross-provider compatibility for tool formats (SDK v1.6.3)
+- Added support for additional Mixtral models
+- Implemented enhanced logging with structured output
+- Fixed serialization issues with nested tool responses
+
+## 2025-02-02
+- Released debugging tools for agent development (SDK v1.6.0)
+- Added support for file attachment via API
+- Improved documentation for LLM provider integration ([docs/03-guides/llm-provider-integration.mdx](/docs/03-guides/llm-provider-integration))
+- Fixed memory initialization issues with provider switching
+
+## 2025-01-26
+- Released agent metrics dashboard (SDK v1.5.4)
+- Added runtime tool registration capabilities
+- Enhanced error reporting with context preservation
+- Improved message format handling for all providers ([api-reference/07-sdk/llm-integration.mdx](/api-reference/07-sdk/llm-integration))
+
+## 2025-01-19
+- Added support for latest OpenAI models (SDK v1.5.2)
+- Released Python decorator-based tool registration
+- Improved authentication with automatic token refresh
+- Fixed tool execution timeout handling
+
+## 2025-01-12
+- Enhanced memory management with retention controls (SDK v1.5.0)
+- Added user-specific memory isolation
+- Improved multi-user state management
+- Released documentation for edge deployment scenarios
+
+## 2025-01-05
+- Added support for multimodal capabilities (SDK v1.4.2)
+- Enhanced security for sensitive data handling
+- Improved agent execution telemetry
+- Released document processing examples
 
 ## 2024-12-31
+- Initial release of xpander.ai (SDK v1.0.0)
+- Support for OpenAI, Claude, and Gemini LLM integration ([docs/01-get-started/02-llm-models.mdx](/docs/01-get-started/02-llm-models))
+- Basic memory management and tool execution framework ([api-reference/07-sdk/agent/memory.mdx](/api-reference/07-sdk/agent/memory))
+- Simple authentication and user management
 
-Initial release of xpander.ai.
+## 2024-12-23
+- Added support for Ollama for local model inference (SDK v0.9.5)
+- Released beta version of agent state management
+- Improved error handling for tool executions
+- Enhanced documentation with quick start guides ([docs/01-get-started/01-index.mdx](/docs/01-get-started/01-index))
+
+## 2024-12-16
+- Launched support for FriendliAI integration with Claude models (SDK v0.9.2)
+- Added dynamic tool discovery mechanism
+- Improved performance for high-volume agent deployments
+- Released extended examples for common integration patterns ([examples](/examples))
+
+## 2024-12-09
+- Enhanced cross-provider tool format compatibility (SDK v0.9.0)
+- Added support for streaming responses from all providers
+- Improved memory consistency across multi-turn conversations ([api-reference/07-sdk/agent/memory.mdx](/api-reference/07-sdk/agent/memory))
+- Released new Python client with simplified API ([api-reference/07-sdk/client](/api-reference/07-sdk/client))
+
+## 2024-12-02
+- Added support for LangChain integration (SDK v0.8.5)
+- Enhanced documentation with provider-specific integration guides ([docs/03-guides/llm-provider-integration.mdx](/docs/03-guides/llm-provider-integration))
+- Improved memory initialization with custom instructions
+- Released automatic tool format conversion utilities
+
+## 2024-11-25
+- Added support for NVIDIA NIM models (SDK v0.8.2)
+- Enhanced agent memory with persistent storage options
+- Improved error handling for rate limiting and quotas
+- Released new examples for multi-step task execution
+
+## 2024-11-18
+- Added support for multi-provider switching within same agent session (SDK v0.8.0, [test_memory_provider_switching.py](/test_memory_provider_switching.py))
+- Enhanced tool execution framework with parallel processing
+- Improved documentation with best practices for each provider
+- Released provider adapter pattern for simplified integration
+
+## 2024-11-11
+- Added support for Gemini via OpenAI-compatible API (SDK v0.7.5, [docs/01-get-started/02-llm-models.mdx](/docs/01-get-started/02-llm-models))
+- Enhanced message format handling across providers
+- Improved tool extraction reliability with explicit provider specification
+- Released extended documentation for memory management
+
+## 2024-11-04
+- Added automatic message format conversion between providers (SDK v0.7.0, [test_llm_integration.py](/test_llm_integration.py))
+- Enhanced error reporting with provider-specific details
+- Improved tool schema validation for better compatibility
+- Released new Python SDK with expanded provider support
+
+## 2024-11-01
+- Released alpha version with basic OpenAI integration (SDK v0.5.0)
+- Support for simple tool calling and execution ([api-reference/07-sdk/agent/tools.mdx](/api-reference/07-sdk/agent/tools))
+- Initial memory management capabilities ([api-reference/07-sdk/agent/memory.mdx](/api-reference/07-sdk/agent/memory))
+- Basic documentation and examples ([docs/01-get-started](/docs/01-get-started))
+
+> Note: Current SDK version is v1.47.10 as of this documentation update.

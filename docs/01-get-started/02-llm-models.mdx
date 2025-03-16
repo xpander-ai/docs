@@ -187,6 +187,123 @@ while not agent.is_finished():
 ```
 </CodeGroup>
 
+## Best Practices for LLM Provider Integration
+
+When integrating with different LLM providers, follow these best practices for consistent behavior:
+
+1. Initialize memory without specifying a provider:
+```python
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions
+    # No provider needed here
+)
+```
+
+2. Always specify the provider when retrieving tools:
+```python
+# Get tools with explicit provider specification
+tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)  # For OpenAI
+tools = agent.get_tools(llm_provider=LLMProvider.FRIENDLI_AI)  # For Claude/Anthropic
+tools = agent.get_tools(llm_provider=LLMProvider.GEMINI_OPEN_AI)  # For Gemini
+tools = agent.get_tools(llm_provider=LLMProvider.NVIDIA_NIM)  # For NVIDIA NIM
+```
+
+3. Add raw LLM responses directly to memory:
+```python
+# Add the raw response to memory - works for ALL providers
+# The SDK automatically handles format conversion
+agent.add_messages(messages=response)
+
+# For OpenAI client library specifically, use model_dump()
+agent.add_messages(messages=response.model_dump())
+```
+
+4. Always specify the provider when extracting tool calls:
+```python
+# Extract tool calls with the specific provider format
+# IMPORTANT: This must be the same provider used for retrieving tools
+tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response.model_dump(),
+    llm_provider=LLMProvider.OPEN_AI  # Must match the provider used for tool retrieval
+)
+```
+
+> **Note:** The Xpander SDK handles format conversion between the standardized memory format and provider-specific formats. However, you must always specify which provider format to use when retrieving tools and extracting tool calls.
+
+## Complete Example: Gemini via OpenAI-compatible API
+
+Here's a complete example using Gemini through its OpenAI-compatible API:
+
+```python
+from xpander_sdk import XpanderClient, LLMProvider
+from openai import OpenAI
+from dotenv import load_dotenv
+from os import environ
+
+load_dotenv()
+
+GEMINI_API_KEY = environ["GEMINI_API_KEY"]
+XPANDER_API_KEY = environ["XPANDER_API_KEY"]
+XPANDER_AGENT_ID = environ["XPANDER_AGENT_ID"]
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+gemini_openai_client = OpenAI(
+    api_key=GEMINI_API_KEY,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+)
+
+# Load agent
+agent = xpander_client.agents.get(agent_id=XPANDER_AGENT_ID)
+
+# Add task
+agent.add_task("Find employees of xpander.ai.")
+
+# Initialize memory without specifying provider
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions
+)
+
+# Run the agent and wait for result
+while not agent.is_finished():
+    # Call Gemini with tools explicitly formatted for it
+    response = gemini_openai_client.chat.completions.create(
+        model="gemini-2.0-flash",
+        messages=agent.messages,
+        tools=agent.get_tools(llm_provider=LLMProvider.GEMINI_OPEN_AI),
+        tool_choice=agent.tool_choice,
+        temperature=0.0
+    )
+    
+    # Add raw response directly to memory
+    agent.add_messages(response.model_dump())
+    
+    # Extract tool calls with explicit provider specification
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump(),
+        llm_provider=LLMProvider.GEMINI_OPEN_AI
+    )
+    
+    # Run tools
+    agent.run_tools(tool_calls=tool_calls)
+
+# Fetch & print result
+execution_result = agent.retrieve_execution_result()
+print("status", execution_result.status)
+print("result", execution_result.result)
+```
+
+## Message Structure
+
+The Xpander SDK stores messages in a standard, OpenAI-compatible format within `agent.messages`, regardless of the LLM provider used:
+
+- Each message is a dictionary with `role` and `content` fields
+- Roles include `system`, `user`, `assistant`, and `tool`
+- Tool calls are stored in the `tool_calls` field of assistant messages
+- The memory structure is consistent across all providers
+
 ## Next Steps
 <CardGroup cols={2}>
   <Card 
