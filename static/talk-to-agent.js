@@ -25,7 +25,7 @@
       if (window.ChatSimple) {
         window.ChatSimple.init({
           container: '#chatsimple-container',
-          enableLiveChat: true,
+          enableLiveChat: false,
           position: 'bottom-right',
           theme: {
             primaryColor: '#753CFF',

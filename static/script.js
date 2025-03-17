@@ -1,18 +1,5 @@
 // Analytics initialization
 (function() {
-  // Core tracking
-  !function(){
-    window.unify||(window.unify=Object.assign([],["identify","page","startAutoPage","stopAutoPage","startAutoIdentify","stopAutoIdentify"].reduce((function(t,e){
-      return t[e]=function(){return unify.push([e,[].slice.call(arguments)]),unify},t
-    }),{})));
-    var t=document.createElement("script");
-    t.async=!0;
-    t.setAttribute("src","https://tag.unifyintent.com/v1/Lr1NC1zjy8hUR1gtM4iQx6/script.js");
-    t.setAttribute("data-api-key","wk_Z3ycx61x_3v6F3MDDWyp6ZFNdV27byBg7xsf9styd");
-    t.setAttribute("id","unifytag");
-    (document.body||document.head).appendChild(t);
-  }();
-
   // Marketing suite
   !function(){
     const s = document.createElement('script');
