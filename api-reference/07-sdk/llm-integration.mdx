@@ -21,542 +21,526 @@ The SDK supports the following LLM providers through the `LLMProvider` enum:
 | NVIDIA NIM       | `LLMProvider.NVIDIA_NIM`       | NVIDIA NIM format                 |
 | Amazon Bedrock   | `LLMProvider.AMAZON_BEDROCK`   | Amazon Bedrock format             |
 
-<Tabs>
-  <Tab title="Integration Basics">
-    ## Integration Basics
+## Integration Basics
 
-    Integrating an LLM provider involves three key steps:
+Integrating an LLM provider involves three key steps:
 
-    1. **Initialize memory** - Initialize the agent's memory with execution input and instructions
-    2. **Get tools** formatted for your specific LLM provider - The SDK automatically converts tools to the format needed by each provider
-    3. **Extract tool calls** from the LLM response - You must specify which provider format to use
+1. **Initialize memory** - Initialize the agent's memory with execution input and instructions
+2. **Format tools** - Get tools formatted for the specific LLM provider
+3. **Extract tool calls** - Parse the LLM response to extract tool calls
 
-    ### Provider Specification Requirements
+### Provider Specification Requirements
 
-    > **Important**: The xpander.ai SDK requires explicit provider specification when getting tools and extracting tool calls. Always specify the `llm_provider` parameter with the appropriate provider enum value.
+> **Important**: The xpander.ai SDK requires explicit provider specification when getting tools and extracting tool calls. Always specify the `llm_provider` parameter with the appropriate provider enum value.
 
-    <Steps>
-      <Step title="Initialize memory">
-        ```python
-        from xpander_sdk import LLMProvider
-        
-        # Initialize memory - provider specification is optional
-        agent.memory.init_messages(
-            input=agent.execution.input_message,
-            instructions=agent.instructions
-        )
-        ```
-      </Step>
-      <Step title="Get tools formatted for your LLM provider">
-        ```python
-        # Get tools in the format required by your specific LLM provider
-        # Always specify the provider to get the correct format
-        openai_tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
-        claude_tools = agent.get_tools(llm_provider=LLMProvider.FRIENDLI_AI)
-        gemini_tools = agent.get_tools(llm_provider=LLMProvider.GEMINI_OPEN_AI)
-        ```
-      </Step>
-      <Step title="Extract tool calls with explicit provider">
-        ```python
-        # Always explicitly specify the provider when extracting tool calls
-        # This must match the provider used for getting tools
-        tool_calls = XpanderClient.extract_tool_calls(
-            llm_response=response.model_dump(),
-            llm_provider=LLMProvider.OPEN_AI
-        )
-        ```
-      </Step>
-    </Steps>
-  </Tab>
-
-  <Tab title="OpenAI">
-    ## OpenAI Integration
-
+<Steps>
+  <Step title="Initialize memory">
     ```python
-    from xpander_sdk import XpanderClient, LLMProvider
-    from openai import OpenAI
-    from dotenv import load_dotenv
-    import os
-
-    # Load environment variables
-    load_dotenv()
-    XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
-    OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
-
-    # Initialize clients
-    xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
-    openai_client = OpenAI(api_key=OPENAI_API_KEY)
-
-    # Get agent
-    agent = xpander_client.agents.get(agent_id="agent-1234")
-
-    # Add task and initialize memory
-    agent.add_task(input="What are the latest developments in AI?")
-    agent.memory.init_messages(
-        input=agent.execution.input_message,
-        instructions=agent.instructions
-        # llm_provider parameter is optional
-    )
-
-    # Run until completion
-    while not agent.is_finished():
-        # Get OpenAI-formatted tools
-        tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
-        
-        # Call OpenAI
-        response = openai_client.chat.completions.create(
-            model="gpt-4o",
-            messages=agent.messages,
-            tools=tools,
-            tool_choice="auto",
-            temperature=0.0
-        )
-        
-        # Add response to memory
-        agent.add_messages(messages=response.model_dump())
-        
-        # Extract tool calls with explicit provider
-        tool_calls = XpanderClient.extract_tool_calls(
-            llm_response=response.model_dump(),
-            llm_provider=LLMProvider.OPEN_AI
-        )
-        
-        # Execute tools if any
-        if tool_calls:
-            results = agent.run_tools(tool_calls=tool_calls)
-            print(f"Executed {len(results)} tools")
-
-    # Get final result
-    result = agent.retrieve_execution_result()
-    print(result.result)
-    ```
-  </Tab>
-
-  <Tab title="FriendliAI">
-    ## FriendliAI Integration
-
-    ```python
-    from xpander_sdk import XpanderClient, LLMProvider
-    import anthropic
-    from dotenv import load_dotenv
-    import os
-
-    # Load environment variables
-    load_dotenv()
-    XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
-    FRIENDLI_API_KEY = os.environ["FRIENDLI_API_KEY"]
-
-    # Initialize clients
-    xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
-    friendli_client = anthropic.Anthropic(api_key=FRIENDLI_API_KEY)
-
-    # Get agent
-    agent = xpander_client.agents.get(agent_id="agent-1234")
-
-    # Add task and initialize memory
-    agent.add_task(input="What are the latest developments in AI?")
-    agent.memory.init_messages(
-        input=agent.execution.input_message,
-        instructions=agent.instructions
-        # llm_provider parameter is optional
-    )
-
-    # Run until completion
-    while not agent.is_finished():
-        # Get FriendliAI-formatted tools
-        tools = agent.get_tools(llm_provider=LLMProvider.FRIENDLI_AI)
-        
-        # Call FriendliAI (using Claude model here)
-        response = friendli_client.messages.create(
-            model="claude-3-opus-20240229",
-            messages=agent.messages,
-            tools=tools,
-            temperature=0.0
-        )
-        
-        # Add response to memory
-        agent.add_messages(messages=response.model_dump())
-        
-        # Extract tool calls with explicit provider
-        tool_calls = XpanderClient.extract_tool_calls(
-            llm_response=response.model_dump(),
-            llm_provider=LLMProvider.FRIENDLI_AI
-        )
-        
-        # Execute tools if any
-        if tool_calls:
-            results = agent.run_tools(tool_calls=tool_calls)
-            print(f"Executed {len(results)} tools")
-
-    # Get final result
-    result = agent.retrieve_execution_result()
-    print(result.result)
-    ```
-  </Tab>
-
-  <Tab title="Gemini">
-    ## Google Gemini Integration
-
-    ```python
-    from xpander_sdk import XpanderClient, LLMProvider
-    from openai import OpenAI
-    from dotenv import load_dotenv
-    import os
-
-    # Load environment variables
-    load_dotenv()
-    XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
-    GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
-
-    # Initialize clients
-    xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+    from xpander_sdk import LLMProvider
     
-    # Initialize Gemini using OpenAI compatibility API
-    gemini_client = OpenAI(
-        api_key=GEMINI_API_KEY,
-        base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
-    )
-
-    # Get agent
-    agent = xpander_client.agents.get(agent_id="agent-1234")
-
-    # Add task and initialize memory
-    agent.add_task(input="What are the latest developments in AI?")
+    # Initialize memory - provider specification is optional
     agent.memory.init_messages(
         input=agent.execution.input_message,
         instructions=agent.instructions
-        # llm_provider parameter is optional
     )
-
-    # Run until completion
-    while not agent.is_finished():
-        # Get Gemini-formatted tools
-        tools = agent.get_tools(llm_provider=LLMProvider.GEMINI_OPEN_AI)
-        
-        # Call Gemini via OpenAI compatibility API
-        response = gemini_client.chat.completions.create(
-            model="gemini-1.5-pro",
-            messages=agent.messages,
-            tools=tools,
-            temperature=0.0
-        )
-        
-        # Add response to memory
-        agent.add_messages(messages=response.model_dump())
-        
-        # Extract tool calls with explicit provider
-        tool_calls = XpanderClient.extract_tool_calls(
-            llm_response=response.model_dump(),
-            llm_provider=LLMProvider.GEMINI_OPEN_AI
-        )
-        
-        # Execute tools if any
-        if tool_calls:
-            results = agent.run_tools(tool_calls=tool_calls)
-            print(f"Executed {len(results)} tools")
-
-    # Get final result
-    result = agent.retrieve_execution_result()
-    print(result.result)
     ```
-  </Tab>
-
-  <Tab title="Ollama">
-    ## Ollama Integration
-
+  </Step>
+  <Step title="Get tools formatted for your LLM provider">
     ```python
-    from xpander_sdk import XpanderClient, LLMProvider
-    import requests
-    import json
-    from dotenv import load_dotenv
-    import os
-
-    # Load environment variables
-    load_dotenv()
-    XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
-    OLLAMA_BASE_URL = "http://localhost:11434"  # Default Ollama URL
-
-    # Initialize client
-    xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
-
-    # Get agent
-    agent = xpander_client.agents.get(agent_id="agent-1234")
-
-    # Add task and initialize memory
-    agent.add_task(input="What are the latest developments in AI?")
-    agent.memory.init_messages(
-        input=agent.execution.input_message,
-        instructions=agent.instructions
-        # llm_provider parameter is optional
-    )
-
-    # Helper function to call Ollama API
-    def call_ollama(messages, tools=None, model="llama3:latest"):
-        url = f"{OLLAMA_BASE_URL}/api/chat"
-        
-        payload = {
-            "model": model,
-            "messages": messages,
-            "stream": False,
-            "options": {
-                "temperature": 0.0
-            }
-        }
-        
-        # Add tools if available
-        if tools:
-            payload["tools"] = tools
-        
-        response = requests.post(url, json=payload)
-        return response.json()
-
-    # Run until completion
-    while not agent.is_finished():
-        # Get Ollama-formatted tools - must specify the provider here
-        tools = agent.get_tools(llm_provider=LLMProvider.OLLAMA)
-        
-        # Call Ollama
-        ollama_response = call_ollama(
-            messages=agent.messages,
-            tools=tools,
-            model="llama3:latest"  # Use your preferred model
-        )
-        
-        # Format response to standard structure
-        response_dict = {
-            "choices": [{
-                "message": {
-                    "role": "assistant",
-                    "content": ollama_response.get("message", {}).get("content", ""),
-                    "tool_calls": ollama_response.get("message", {}).get("tool_calls", [])
-                }
-            }]
-        }
-        
-        # Add response to memory
-        agent.add_messages(messages=response_dict)
-        
-        # Extract tool calls with explicit provider
-        tool_calls = XpanderClient.extract_tool_calls(
-            llm_response=response_dict,
-            llm_provider=LLMProvider.OLLAMA
-        )
-        
-        # Execute tools if any
-        if tool_calls:
-            results = agent.run_tools(tool_calls=tool_calls)
-            print(f"Executed {len(results)} tools")
-
-    # Get final result
-    result = agent.retrieve_execution_result()
-    print(result.result)
+    # Get tools in the format required by your specific LLM provider
+    # Always specify the provider to get the correct format
+    openai_tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
+    claude_tools = agent.get_tools(llm_provider=LLMProvider.FRIENDLI_AI)
+    gemini_tools = agent.get_tools(llm_provider=LLMProvider.GEMINI_OPEN_AI)
     ```
-  </Tab>
-
-  <Tab title="Best Practices">
-    ## Best Practices
-
-    ### Provider Specification
-
-    Always specify the correct provider for all operations:
-
+  </Step>
+  <Step title="Extract tool calls with explicit provider">
     ```python
-    # For retrieving tools
-    tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
-
-    # For extracting tool calls
+    # Always explicitly specify the provider when extracting tool calls
+    # This must match the provider used for getting tools
     tool_calls = XpanderClient.extract_tool_calls(
         llm_response=response.model_dump(),
         llm_provider=LLMProvider.OPEN_AI
     )
     ```
+  </Step>
+</Steps>
 
-    ### Provider Consistency
+## OpenAI Integration
 
-    Use the same provider for both retrieving tools and extracting tool calls:
+```python
+from xpander_sdk import XpanderClient, LLMProvider
+from openai import OpenAI
+from dotenv import load_dotenv
+import os
 
-    ```python
-    # Use the same provider in both places
+# Load environment variables
+load_dotenv()
+XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
+OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+openai_client = OpenAI(api_key=OPENAI_API_KEY)
+
+# Get agent
+agent = xpander_client.agents.get(agent_id="agent-1234")
+
+# Add task and initialize memory
+agent.add_task(input="What are the latest developments in AI?")
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions
+    # llm_provider parameter is optional
+)
+
+# Run until completion
+while not agent.is_finished():
+    # Get OpenAI-formatted tools
     tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
-    # ...call LLM...
-    tool_calls = XpanderClient.extract_tool_calls(
-        llm_response=response.model_dump(),
-        llm_provider=LLMProvider.OPEN_AI  # Same provider as used for tools
-    )
-    ```
-
-    ### Memory Initialization
-
-    Memory initialization doesn't require provider specification:
-
-    ```python
-    # Provider specification is optional for memory initialization
-    agent.memory.init_messages(
-        input=agent.execution.input_message,
-        instructions=agent.instructions
-    )
-    ```
-
-    ### Rate Limiting
-
-    Implement rate limiting to avoid hitting API limits:
-
-    ```python
-    import time
-
-    # Add a small delay between API calls
-    time.sleep(1)
-    ```
-
-    ### Error Handling
-
-    Implement proper error handling for LLM API calls and tool call extraction:
-
-    ```python
-    try:
-        # Extract tool calls with explicit provider
-        tool_calls = XpanderClient.extract_tool_calls(
-            llm_response=response,
-            llm_provider=LLMProvider.OPEN_AI
-        )
-        
-        # Handle case where no tool calls were found
-        if not tool_calls and expected_tools:
-            print("No tool calls found in response")
-            # Handle the situation appropriately
-            
-    except Exception as e:
-        print(f"Error extracting tool calls: {str(e)}")
-        # Handle the error or use a default response
-    ```
-
-    ### Multi-Provider Support
-
-    When working with multiple providers, always track which provider is being used:
-
-    ```python
-    # Define providers
-    openai_provider = LLMProvider.OPEN_AI
-    claude_provider = LLMProvider.FRIENDLI_AI
-
-    # Function that includes provider tracking
-    def process_with_provider(agent, response, provider):
-        # Add messages to memory
-        agent.add_messages(messages=response)
-        
-        # Extract tool calls with explicit provider
-        tool_calls = XpanderClient.extract_tool_calls(
-            llm_response=response,
-            llm_provider=provider
-        )
-        
-        # Run tools
-        return agent.run_tools(tool_calls=tool_calls)
-    ```
-  </Tab>
-
-  <Tab title="Message Format">
-    ## Message Format Handling
-
-    The xpander.ai SDK automatically handles all message format conversions for all LLM providers:
-
-    ### Internal Message Storage
-
-    xpander.ai SDK stores all messages in a standard format in `agent.messages`. This format is compatible with OpenAI and OpenAI-compatible APIs out of the box.
-
-    ```json
-    [
-      {
-        "role": "system",
-        "content": "System instructions..."
-      },
-      {
-        "role": "user",
-        "content": "User query..."
-      },
-      {
-        "role": "assistant",
-        "content": "Assistant response...",
-        "tool_calls": [...]  // If any tools were called
-      }
-    ]
-    ```
-
-    ### Automatic Format Conversion
-
-    When using any LLM provider, the SDK handles conversions automatically:
-
-    1. For **all providers**, you can use `agent.messages` directly:
-
-    ```python
-    # For any provider (OpenAI, Claude, Gemini, etc.)
-    # No manual conversion needed - just specify the right LLMProvider when getting tools
-
-    # For OpenAI
+    
+    # Call OpenAI
     response = openai_client.chat.completions.create(
         model="gpt-4o",
-        messages=agent.messages,  # Use directly, no conversion needed
-        tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
-        temperature=0
+        messages=agent.messages,
+        tools=tools,
+        tool_choice="auto",
+        temperature=0.0
     )
-
-    # For Claude
-    response = claude_client.messages.create(
-        model="claude-3-opus-20240229",
-        messages=agent.messages,  # Use directly, no conversion needed
-        tools=agent.get_tools(llm_provider=LLMProvider.FRIENDLI_AI),
-        temperature=0
-    )
-    ```
-
-    2. For **adding responses back** to memory:
-
-    ```python
-    # For any provider, add response directly
-    # The SDK automatically handles format detection and normalization
-    agent.add_messages(messages=response)
-
-    # For OpenAI client library which provides model_dump()
+    
+    # Add response to memory
     agent.add_messages(messages=response.model_dump())
-    ```
+    
+    # Extract tool calls with explicit provider
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump(),
+        llm_provider=LLMProvider.OPEN_AI
+    )
+    
+    # Execute tools if any
+    if tool_calls:
+        results = agent.run_tools(tool_calls=tool_calls)
+        print(f"Executed {len(results)} tools")
 
-    3. When **extracting tool calls**, just specify the right provider:
+# Get final result
+result = agent.retrieve_execution_result()
+print(result.result)
+```
 
-    ```python
-    # Extract tool calls by specifying the provider
+## FriendliAI Integration
+
+```python
+from xpander_sdk import XpanderClient, LLMProvider
+import anthropic
+from dotenv import load_dotenv
+import os
+
+# Load environment variables
+load_dotenv()
+XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
+FRIENDLI_API_KEY = os.environ["FRIENDLI_API_KEY"]
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+friendli_client = anthropic.Anthropic(api_key=FRIENDLI_API_KEY)
+
+# Get agent
+agent = xpander_client.agents.get(agent_id="agent-1234")
+
+# Add task and initialize memory
+agent.add_task(input="What are the latest developments in AI?")
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions
+    # llm_provider parameter is optional
+)
+
+# Run until completion
+while not agent.is_finished():
+    # Get FriendliAI-formatted tools
+    tools = agent.get_tools(llm_provider=LLMProvider.FRIENDLI_AI)
+    
+    # Call FriendliAI (using Claude model here)
+    response = friendli_client.messages.create(
+        model="claude-3-opus-20240229",
+        messages=agent.messages,
+        tools=tools,
+        temperature=0.0
+    )
+    
+    # Add response to memory
+    agent.add_messages(messages=response.model_dump())
+    
+    # Extract tool calls with explicit provider
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump(),
+        llm_provider=LLMProvider.FRIENDLI_AI
+    )
+    
+    # Execute tools if any
+    if tool_calls:
+        results = agent.run_tools(tool_calls=tool_calls)
+        print(f"Executed {len(results)} tools")
+
+# Get final result
+result = agent.retrieve_execution_result()
+print(result.result)
+```
+
+## Google Gemini Integration
+
+```python
+from xpander_sdk import XpanderClient, LLMProvider
+from openai import OpenAI
+from dotenv import load_dotenv
+import os
+
+# Load environment variables
+load_dotenv()
+XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
+GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+
+# Initialize Gemini using OpenAI compatibility API
+gemini_client = OpenAI(
+    api_key=GEMINI_API_KEY,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+)
+
+# Get agent
+agent = xpander_client.agents.get(agent_id="agent-1234")
+
+# Add task and initialize memory
+agent.add_task(input="What are the latest developments in AI?")
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions
+    # llm_provider parameter is optional
+)
+
+# Run until completion
+while not agent.is_finished():
+    # Get Gemini-formatted tools
+    tools = agent.get_tools(llm_provider=LLMProvider.GEMINI_OPEN_AI)
+    
+    # Call Gemini via OpenAI compatibility API
+    response = gemini_client.chat.completions.create(
+        model="gemini-1.5-pro",
+        messages=agent.messages,
+        tools=tools,
+        temperature=0.0
+    )
+    
+    # Add response to memory
+    agent.add_messages(messages=response.model_dump())
+    
+    # Extract tool calls with explicit provider
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump(),
+        llm_provider=LLMProvider.GEMINI_OPEN_AI
+    )
+    
+    # Execute tools if any
+    if tool_calls:
+        results = agent.run_tools(tool_calls=tool_calls)
+        print(f"Executed {len(results)} tools")
+
+# Get final result
+result = agent.retrieve_execution_result()
+print(result.result)
+```
+
+## Ollama Integration
+
+```python
+from xpander_sdk import XpanderClient, LLMProvider
+import requests
+import json
+from dotenv import load_dotenv
+import os
+
+# Load environment variables
+load_dotenv()
+XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
+OLLAMA_BASE_URL = "http://localhost:11434"  # Default Ollama URL
+
+# Initialize client
+xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+
+# Get agent
+agent = xpander_client.agents.get(agent_id="agent-1234")
+
+# Add task and initialize memory
+agent.add_task(input="What are the latest developments in AI?")
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions
+    # llm_provider parameter is optional
+)
+
+# Helper function to call Ollama API
+def call_ollama(messages, tools=None, model="llama3:latest"):
+    url = f"{OLLAMA_BASE_URL}/api/chat"
+    
+    payload = {
+        "model": model,
+        "messages": messages,
+        "stream": False,
+        "options": {
+            "temperature": 0.0
+        }
+    }
+    
+    # Add tools if available
+    if tools:
+        payload["tools"] = tools
+    
+    response = requests.post(url, json=payload)
+    return response.json()
+
+# Run until completion
+while not agent.is_finished():
+    # Get Ollama-formatted tools - must specify the provider here
+    tools = agent.get_tools(llm_provider=LLMProvider.OLLAMA)
+    
+    # Call Ollama
+    ollama_response = call_ollama(
+        messages=agent.messages,
+        tools=tools,
+        model="llama3:latest"  # Use your preferred model
+    )
+    
+    # Format response to standard structure
+    response_dict = {
+        "choices": [{
+            "message": {
+                "role": "assistant",
+                "content": ollama_response.get("message", {}).get("content", ""),
+                "tool_calls": ollama_response.get("message", {}).get("tool_calls", [])
+            }
+        }]
+    }
+    
+    # Add response to memory
+    agent.add_messages(messages=response_dict)
+    
+    # Extract tool calls with explicit provider
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response_dict,
+        llm_provider=LLMProvider.OLLAMA
+    )
+    
+    # Execute tools if any
+    if tool_calls:
+        results = agent.run_tools(tool_calls=tool_calls)
+        print(f"Executed {len(results)} tools")
+
+# Get final result
+result = agent.retrieve_execution_result()
+print(result.result)
+```
+
+## Best Practices
+
+### Provider Specification
+
+Always specify the correct provider for all operations:
+
+```python
+# For retrieving tools
+tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
+
+# For extracting tool calls
+tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response.model_dump(),
+    llm_provider=LLMProvider.OPEN_AI
+)
+```
+
+### Provider Consistency
+
+Use the same provider for both retrieving tools and extracting tool calls:
+
+```python
+# Use the same provider in both places
+tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
+# ...call LLM...
+tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response.model_dump(),
+    llm_provider=LLMProvider.OPEN_AI  # Same provider as used for tools
+)
+```
+
+### Memory Initialization
+
+Memory initialization doesn't require provider specification:
+
+```python
+# Provider specification is optional for memory initialization
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions
+)
+```
+
+### Rate Limiting
+
+Implement rate limiting to avoid hitting API limits:
+
+```python
+import time
+
+# Add a small delay between API calls
+time.sleep(1)
+```
+
+### Error Handling
+
+Implement proper error handling for LLM API calls and tool call extraction:
+
+```python
+try:
+    # Extract tool calls with explicit provider
     tool_calls = XpanderClient.extract_tool_calls(
         llm_response=response,
-        llm_provider=LLMProvider.FRIENDLI_AI  # Specify the provider
+        llm_provider=LLMProvider.OPEN_AI
     )
-    ```
+    
+    # Handle case where no tool calls were found
+    if not tool_calls and expected_tools:
+        print("No tool calls found in response")
+        # Handle the situation appropriately
+        
+except Exception as e:
+    print(f"Error extracting tool calls: {str(e)}")
+    # Handle the error or use a default response
+```
 
-    > **Important:** You don't need to manually convert messages between formats. The SDK automatically handles all conversions internally. 
+### Multi-Provider Support
 
-    ### Provider Specification
+When working with multiple providers, always track which provider is being used:
 
-    Always specify the appropriate provider when extracting tool calls:
+```python
+# Define providers
+openai_provider = LLMProvider.OPEN_AI
+claude_provider = LLMProvider.FRIENDLI_AI
 
-    ```python
-    # Explicitly specify the provider for extracting tool calls
+# Function that includes provider tracking
+def process_with_provider(agent, response, provider):
+    # Add messages to memory
+    agent.add_messages(messages=response)
+    
+    # Extract tool calls with explicit provider
     tool_calls = XpanderClient.extract_tool_calls(
-        llm_response=response.model_dump(),
-        llm_provider=LLMProvider.OPEN_AI  # Must match the provider used for getting tools
+        llm_response=response,
+        llm_provider=provider
     )
-    ```
+    
+    # Run tools
+    return agent.run_tools(tool_calls=tool_calls)
+```
 
-    For consistent behavior, use the same provider for both getting tools and extracting tool calls:
+## Message Format Handling
 
-    ```python
-    # Use the same provider in both places
-    tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
-    # ...call LLM...
-    tool_calls = XpanderClient.extract_tool_calls(
-        llm_response=response.model_dump(),
-        llm_provider=LLMProvider.OPEN_AI  # Same provider as used for tools
-    )
-    ```
-  </Tab>
-</Tabs>
+The xpander.ai SDK automatically handles all message format conversions for all LLM providers:
+
+### Internal Message Storage
+
+xpander.ai SDK stores all messages in a standard format in `agent.messages`. This format is compatible with OpenAI and OpenAI-compatible APIs out of the box.
+
+```json
+[
+  {
+    "role": "system",
+    "content": "System instructions..."
+  },
+  {
+    "role": "user",
+    "content": "User query..."
+  },
+  {
+    "role": "assistant",
+    "content": "Assistant response...",
+    "tool_calls": [...]  // If any tools were called
+  }
+]
+```
+
+### Automatic Format Conversion
+
+When using any LLM provider, the SDK handles conversions automatically:
+
+1. For **all providers**, you can use `agent.messages` directly:
+
+```python
+# For any provider (OpenAI, Claude, Gemini, etc.)
+# No manual conversion needed - just specify the right LLMProvider when getting tools
+
+# For OpenAI
+response = openai_client.chat.completions.create(
+    model="gpt-4o",
+    messages=agent.messages,  # Use directly, no conversion needed
+    tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
+    temperature=0
+)
+
+# For Claude
+response = claude_client.messages.create(
+    model="claude-3-opus-20240229",
+    messages=agent.messages,  # Use directly, no conversion needed
+    tools=agent.get_tools(llm_provider=LLMProvider.FRIENDLI_AI),
+    temperature=0
+)
+```
+
+2. For **adding responses back** to memory:
+
+```python
+# For any provider, add response directly
+# The SDK automatically handles format detection and normalization
+agent.add_messages(messages=response)
+
+# For OpenAI client library which provides model_dump()
+agent.add_messages(messages=response.model_dump())
+```
+
+3. When **extracting tool calls**, just specify the right provider:
+
+```python
+# Extract tool calls by specifying the provider
+tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response,
+    llm_provider=LLMProvider.FRIENDLI_AI  # Specify the provider
+)
+```
+
+> **Important:** You don't need to manually convert messages between formats. The SDK automatically handles all conversions internally. 
+
+### Provider Specification
+
+Always specify the appropriate provider when extracting tool calls:
+
+```python
+# Explicitly specify the provider for extracting tool calls
+tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response.model_dump(),
+    llm_provider=LLMProvider.OPEN_AI  # Must match the provider used for getting tools
+)
+```
+
+For consistent behavior, use the same provider for both getting tools and extracting tool calls:
+
+```python
+# Use the same provider in both places
+tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
+# ...call LLM...
+tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response.model_dump(),
+    llm_provider=LLMProvider.OPEN_AI  # Same provider as used for tools
+)
+```
 
 ## Related Resources
 

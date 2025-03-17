@@ -8,41 +8,34 @@ The `XpanderClient` is the main entry point for the xpander.ai SDK, providing ac
 
 ## Initialization
 
-<Tabs>
-  <Tab title="Python">
-    <CodeBlock title="Client initialization">
-    ```python
-    from xpander_sdk import XpanderClient
-    
-    # Initialize with an API key
-    client = XpanderClient(api_key="your-xpander-api-key")
-    
-    # Or, using an environment variable
-    import os
-    from dotenv import load_dotenv
-    
-    load_dotenv()  # Load environment variables from .env file
-    client = XpanderClient(api_key=os.environ.get("XPANDER_API_KEY"))
-    ```
-    </CodeBlock>
-  </Tab>
-  <Tab title="TypeScript">
-    <CodeBlock title="Client initialization">
-    ```typescript
-    import { XpanderClient } from '@xpander-ai/sdk';
-    
-    // Initialize with an API key
-    const client = new XpanderClient({ apiKey: "your-xpander-api-key" });
-    
-    // Or, using an environment variable
-    import * as dotenv from 'dotenv';
-    
-    dotenv.config();  // Load environment variables from .env file
-    const client = new XpanderClient({ apiKey: process.env.XPANDER_API_KEY });
-    ```
-    </CodeBlock>
-  </Tab>
-</Tabs>
+<CodeGroup>
+```python Python
+from xpander_sdk import XpanderClient
+
+# Initialize with an API key
+client = XpanderClient(api_key="your-xpander-api-key")
+
+# Or, using an environment variable
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from .env file
+client = XpanderClient(api_key=os.environ.get("XPANDER_API_KEY"))
+```
+
+```typescript TypeScript
+import { XpanderClient } from '@xpander-ai/sdk';
+
+// Initialize with an API key
+const client = new XpanderClient({ apiKey: "your-xpander-api-key" });
+
+// Or, using an environment variable
+import * as dotenv from 'dotenv';
+dotenv.config();  // Load environment variables from .env file
+
+const client = new XpanderClient({ apiKey: process.env.XPANDER_API_KEY });
+```
+</CodeGroup>
 
 ### Parameters
 
@@ -56,35 +49,28 @@ The `XpanderClient` is the main entry point for the xpander.ai SDK, providing ac
 
 Lists all agents in your workspace.
 
-<Tabs>
-  <Tab title="Python">
-    <CodeBlock title="List agents">
-    ```python
-    # List all available agents
-    agents = client.agents.list()
+<CodeGroup>
+```python Python
+# List all available agents
+agents = client.agents.list()
+
+print(f"Found {len(agents)} agents:")
+for agent in agents:
+    print(f"- {agent.name} ({agent.id})")
+```
+
+```typescript TypeScript
+// List all available agents (async function)
+async function listAgents() {
+    const agents = await client.agents.list();
     
-    print(f"Found {len(agents)} agents:")
-    for agent in agents:
-        print(f"- {agent.name} ({agent.id})")
-    ```
-    </CodeBlock>
-  </Tab>
-  <Tab title="TypeScript">
-    <CodeBlock title="List agents">
-    ```typescript
-    // List all available agents (async function)
-    async function listAgents() {
-        const agents = await client.agents.list();
-        
-        console.log(`Found ${agents.length} agents:`);
-        for (const agent of agents) {
-            console.log(`- ${agent.name} (${agent.id})`);
-        }
+    console.log(`Found ${agents.length} agents:`);
+    for (const agent of agents) {
+        console.log(`- ${agent.name} (${agent.id})`);
     }
-    ```
-    </CodeBlock>
-  </Tab>
-</Tabs>
+}
+```
+</CodeGroup>
 
 #### Returns
 
@@ -94,32 +80,25 @@ Returns an array of `Agent` objects.
 
 Retrieves a specific agent by ID.
 
-<Tabs>
-  <Tab title="Python">
-    <CodeBlock title="Get an agent">
-    ```python
-    # Get an agent by ID
-    agent = client.agents.get(agent_id="agent-1234")
+<CodeGroup>
+```python Python
+# Get an agent by ID
+agent = client.agents.get(agent_id="agent-1234")
+
+print(f"Retrieved agent: {agent.name}")
+print(f"Instructions: {agent.instructions[:100]}...")  # Print first 100 chars
+```
+
+```typescript TypeScript
+// Get an agent by ID (async function)
+async function getAgent() {
+    const agent = await client.agents.get({ agentId: "agent-1234" });
     
-    print(f"Retrieved agent: {agent.name}")
-    print(f"Instructions: {agent.instructions[:100]}...")  # Print first 100 chars
-    ```
-    </CodeBlock>
-  </Tab>
-  <Tab title="TypeScript">
-    <CodeBlock title="Get an agent">
-    ```typescript
-    // Get an agent by ID (async function)
-    async function getAgent() {
-        const agent = await client.agents.get({ agentId: "agent-1234" });
-        
-        console.log(`Retrieved agent: ${agent.name}`);
-        console.log(`Instructions: ${agent.instructions.substring(0, 100)}...`);  // Print first 100 chars
-    }
-    ```
-    </CodeBlock>
-  </Tab>
-</Tabs>
+    console.log(`Retrieved agent: ${agent.name}`);
+    console.log(`Instructions: ${agent.instructions.substring(0, 100)}...`);  // Print first 100 chars
+}
+```
+</CodeGroup>
 
 #### Parameters
 
@@ -135,38 +114,31 @@ Returns an `Agent` object.
 
 Creates a new agent.
 
-<Tabs>
-  <Tab title="Python">
-    <CodeBlock title="Create an agent">
-    ```python
-    # Create a new agent
-    agent = client.agents.create(
-        name="Research Assistant",
-        description="AI assistant for research tasks",
-        instructions="You are a helpful research assistant. Your task is to help users find information, summarize content, and analyze data related to their research questions."
-    )
+<CodeGroup>
+```python Python
+# Create a new agent
+agent = client.agents.create(
+    name="Research Assistant",
+    description="AI assistant for research tasks",
+    instructions="You are a helpful research assistant. Your task is to help users find information, summarize content, and analyze data related to their research questions."
+)
+
+print(f"Created agent: {agent.name} ({agent.id})")
+```
+
+```typescript TypeScript
+// Create a new agent (async function)
+async function createAgent() {
+    const agent = await client.agents.create({
+        name: "Research Assistant",
+        description: "AI assistant for research tasks",
+        instructions: "You are a helpful research assistant. Your task is to help users find information, summarize content, and analyze data related to their research questions."
+    });
     
-    print(f"Created agent: {agent.name} ({agent.id})")
-    ```
-    </CodeBlock>
-  </Tab>
-  <Tab title="TypeScript">
-    <CodeBlock title="Create an agent">
-    ```typescript
-    // Create a new agent (async function)
-    async function createAgent() {
-        const agent = await client.agents.create({
-            name: "Research Assistant",
-            description: "AI assistant for research tasks",
-            instructions: "You are a helpful research assistant. Your task is to help users find information, summarize content, and analyze data related to their research questions."
-        });
-        
-        console.log(`Created agent: ${agent.name} (${agent.id})`);
-    }
-    ```
-    </CodeBlock>
-  </Tab>
-</Tabs>
+    console.log(`Created agent: ${agent.name} (${agent.id})`);
+}
+```
+</CodeGroup>
 
 #### Parameters
 
@@ -184,40 +156,33 @@ Returns the newly created `Agent` object.
 
 Updates an existing agent.
 
-<Tabs>
-  <Tab title="Python">
-    <CodeBlock title="Update an agent">
-    ```python
-    # Update an agent
-    updated_agent = client.agents.update(
-        agent_id="agent-1234",
-        name="Enhanced Research Assistant",
-        description="Improved AI assistant for advanced research tasks",
-        instructions="You are an expert research assistant with advanced capabilities..."
-    )
+<CodeGroup>
+```python Python
+# Update an agent
+updated_agent = client.agents.update(
+    agent_id="agent-1234",
+    name="Enhanced Research Assistant",
+    description="Improved AI assistant for advanced research tasks",
+    instructions="You are an expert research assistant with advanced capabilities..."
+)
+
+print(f"Updated agent: {updated_agent.name}")
+```
+
+```typescript TypeScript
+// Update an agent (async function)
+async function updateAgent() {
+    const updatedAgent = await client.agents.update({
+        agentId: "agent-1234",
+        name: "Enhanced Research Assistant",
+        description: "Improved AI assistant for advanced research tasks",
+        instructions: "You are an expert research assistant with advanced capabilities..."
+    });
     
-    print(f"Updated agent: {updated_agent.name}")
-    ```
-    </CodeBlock>
-  </Tab>
-  <Tab title="TypeScript">
-    <CodeBlock title="Update an agent">
-    ```typescript
-    // Update an agent (async function)
-    async function updateAgent() {
-        const updatedAgent = await client.agents.update({
-            agentId: "agent-1234",
-            name: "Enhanced Research Assistant",
-            description: "Improved AI assistant for advanced research tasks",
-            instructions: "You are an expert research assistant with advanced capabilities..."
-        });
-        
-        console.log(`Updated agent: ${updatedAgent.name}`);
-    }
-    ```
-    </CodeBlock>
-  </Tab>
-</Tabs>
+    console.log(`Updated agent: ${updatedAgent.name}`);
+}
+```
+</CodeGroup>
 
 #### Parameters
 
@@ -236,37 +201,30 @@ Returns the updated `Agent` object.
 
 Deletes an agent.
 
-<Tabs>
-  <Tab title="Python">
-    <CodeBlock title="Delete an agent">
-    ```python
-    # Delete an agent
-    result = client.agents.delete(agent_id="agent-1234")
+<CodeGroup>
+```python Python
+# Delete an agent
+result = client.agents.delete(agent_id="agent-1234")
+
+if result:
+    print("Agent deleted successfully")
+else:
+    print("Failed to delete agent")
+```
+
+```typescript TypeScript
+// Delete an agent (async function)
+async function deleteAgent() {
+    const result = await client.agents.delete({ agentId: "agent-1234" });
     
-    if result:
-        print("Agent deleted successfully")
-    else:
-        print("Failed to delete agent")
-    ```
-    </CodeBlock>
-  </Tab>
-  <Tab title="TypeScript">
-    <CodeBlock title="Delete an agent">
-    ```typescript
-    // Delete an agent (async function)
-    async function deleteAgent() {
-        const result = await client.agents.delete({ agentId: "agent-1234" });
-        
-        if (result) {
-            console.log("Agent deleted successfully");
-        } else {
-            console.log("Failed to delete agent");
-        }
+    if (result) {
+        console.log("Agent deleted successfully");
+    } else {
+        console.log("Failed to delete agent");
     }
-    ```
-    </CodeBlock>
-  </Tab>
-</Tabs>
+}
+```
+</CodeGroup>
 
 #### Parameters
 
@@ -286,37 +244,30 @@ Operations are pre-built tools that can be attached to agents.
 
 Lists all available operations.
 
-<Tabs>
-  <Tab title="Python">
-    <CodeBlock title="List operations">
-    ```python
-    # List all available operations
-    operations = client.operations.list()
+<CodeGroup>
+```python Python
+# List all available operations
+operations = client.operations.list()
+
+print(f"Found {len(operations)} operations:")
+for op in operations:
+    print(f"- {op.name} ({op.id})")
+    print(f"  Description: {op.description}")
+```
+
+```typescript TypeScript
+// List all available operations (async function)
+async function listOperations() {
+    const operations = await client.operations.list();
     
-    print(f"Found {len(operations)} operations:")
-    for op in operations:
-        print(f"- {op.name} ({op.id})")
-        print(f"  Description: {op.description}")
-    ```
-    </CodeBlock>
-  </Tab>
-  <Tab title="TypeScript">
-    <CodeBlock title="List operations">
-    ```typescript
-    // List all available operations (async function)
-    async function listOperations() {
-        const operations = await client.operations.list();
-        
-        console.log(`Found ${operations.length} operations:`);
-        for (const op of operations) {
-            console.log(`- ${op.name} (${op.id})`);
-            console.log(`  Description: ${op.description}`);
-        }
+    console.log(`Found ${operations.length} operations:`);
+    for (const op of operations) {
+        console.log(`- ${op.name} (${op.id})`);
+        console.log(`  Description: ${op.description}`);
     }
-    ```
-    </CodeBlock>
-  </Tab>
-</Tabs>
+}
+```
+</CodeGroup>
 
 #### Returns
 
@@ -326,32 +277,27 @@ Returns an array of `Operation` objects.
 
 Retrieves a specific operation by ID.
 
-<Tabs>
-  <Tab title="Python">
-    <CodeBlock title="Get an operation">
-    ```python
-    # Get an operation by ID
-    operation = client.operations.get(operation_id="op-1234")
+<CodeGroup>
+```python Python
+# Get an operation by ID
+operation = client.operations.get(operation_id="op-1234")
+
+print(f"Retrieved operation: {operation.name}")
+print(f"Description: {operation.description}")
+print(f"Function: {operation.function}")
+```
+
+```typescript TypeScript
+// Get an operation by ID (async function)
+async function getOperation() {
+    const operation = await client.operations.get({ operationId: "op-1234" });
     
-    print(f"Retrieved operation: {operation.name}")
-    print(f"Description: {operation.description}")
-    ```
-    </CodeBlock>
-  </Tab>
-  <Tab title="TypeScript">
-    <CodeBlock title="Get an operation">
-    ```typescript
-    // Get an operation by ID (async function)
-    async function getOperation() {
-        const operation = await client.operations.get({ operationId: "op-1234" });
-        
-        console.log(`Retrieved operation: ${operation.name}`);
-        console.log(`Description: ${operation.description}`);
-    }
-    ```
-    </CodeBlock>
-  </Tab>
-</Tabs>
+    console.log(`Retrieved operation: ${operation.name}`);
+    console.log(`Description: ${operation.description}`);
+    console.log(`Function: ${operation.function}`);
+}
+```
+</CodeGroup>
 
 #### Parameters
 
@@ -363,362 +309,343 @@ Retrieves a specific operation by ID.
 
 Returns an `Operation` object.
 
-## Function Call Utilities
+## Static Methods
 
-### extract_tool_calls()
+### extract_tool_calls() / extractToolCalls()
 
 Static method to extract tool calls from an LLM response.
 
-<Tabs>
-  <Tab title="Python">
-    <CodeBlock title="Extract tool calls">
-    ```python
-    from xpander_sdk import XpanderClient, LLMProvider
-    from openai import OpenAI
+<CodeGroup>
+```python Python
+from xpander_sdk import XpanderClient, LLMProvider
+from openai import OpenAI
+
+# Initialize OpenAI client
+openai_client = OpenAI(api_key="your-openai-api-key")
+
+# Get a response from OpenAI with tool calls
+response = openai_client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Search for information about AI safety"}],
+    tools=[{
+        "type": "function",
+        "function": {
+            "name": "web_search",
+            "description": "Search the web for information",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "The search query"
+                    }
+                },
+                "required": ["query"]
+            }
+        }
+    }],
+    tool_choice="auto"
+)
+
+# Extract tool calls
+tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response.model_dump(),
+    llm_provider=LLMProvider.OPEN_AI
+)
+
+print(f"Extracted {len(tool_calls)} tool calls")
+for tc in tool_calls:
+    print(f"Tool: {tc.name}")
+    print(f"Payload: {tc.payload}")
+    print(f"Type: {tc.type}")
+```
+
+```typescript TypeScript
+import { XpanderClient, LLMProvider } from '@xpander-ai/sdk';
+import OpenAI from 'openai';
+
+async function extractToolCalls() {
+    // Initialize OpenAI client
+    const openai = new OpenAI({ apiKey: "your-openai-api-key" });
     
-    # Initialize OpenAI client
-    openai_client = OpenAI(api_key="your-openai-api-key")
-    
-    # Get a response from OpenAI with tool calls
-    response = openai_client.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": "Search for information about AI safety"}],
-        tools=[{
-            "type": "function",
-            "function": {
-                "name": "web_search",
-                "description": "Search the web for information",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "query": {
-                            "type": "string",
-                            "description": "The search query"
+    // Get a response from OpenAI with tool calls
+    const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: "Search for information about AI safety" }],
+        tools: [{
+            type: "function",
+            function: {
+                name: "web_search",
+                description: "Search the web for information",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        query: {
+                            type: "string",
+                            description: "The search query"
                         }
                     },
-                    "required": ["query"]
+                    required: ["query"]
                 }
             }
         }],
-        tool_choice="auto"
+        tool_choice: "auto"
+    });
+    
+    // Extract tool calls
+    const toolCalls = XpanderClient.extractToolCalls({
+        llmResponse: response,
+        llmProvider: LLMProvider.OPEN_AI
+    });
+    
+    console.log(`Extracted ${toolCalls.length} tool calls`);
+    for (const tc of toolCalls) {
+        console.log(`Tool: ${tc.name}`);
+        console.log(`Payload: ${JSON.stringify(tc.payload)}`);
+        console.log(`Type: ${tc.type}`);
+    }
+}
+```
+</CodeGroup>
+
+#### Parameters
+
+| Parameter       | Type                | Required | Description                           |
+|-----------------|---------------------|----------|---------------------------------------|
+| `llm_response`  | object              | Yes      | The LLM response object               |
+| `llm_provider`  | LLMProvider         | Yes      | The provider used to generate response|
+
+#### Returns
+
+Returns an array of `ToolCall` objects extracted from the LLM response.
+
+### retrieve_pending_local_tool_calls() / retrievePendingLocalToolCalls()
+
+Static method to filter tool calls and retrieve only the local ones.
+
+<CodeGroup>
+```python Python
+from xpander_sdk import XpanderClient, LLMProvider
+
+# Assuming we already have some tool calls extracted
+# Extract local tool calls
+local_tool_calls = XpanderClient.retrieve_pending_local_tool_calls(
+    tool_calls=tool_calls
+)
+
+print(f"Found {len(local_tool_calls)} local tool calls")
+for tc in local_tool_calls:
+    print(f"Local tool: {tc.name}")
+    print(f"Payload: {tc.payload}")
+```
+
+```typescript TypeScript
+import { XpanderClient } from '@xpander-ai/sdk';
+
+function retrieveLocalToolCalls() {
+    // Assuming we already have some tool calls extracted
+    // Extract local tool calls
+    const localToolCalls = XpanderClient.retrievePendingLocalToolCalls({
+        toolCalls: toolCalls
+    });
+    
+    console.log(`Found ${localToolCalls.length} local tool calls`);
+    for (const tc of localToolCalls) {
+        console.log(`Local tool: ${tc.name}`);
+        console.log(`Payload: ${JSON.stringify(tc.payload)}`);
+    }
+}
+```
+</CodeGroup>
+
+#### Parameters
+
+| Parameter    | Type                  | Required | Description                     |
+|--------------|-----------------------|----------|---------------------------------|
+| `tool_calls` | List/Array[ToolCall]  | Yes      | List of tool calls to filter    |
+
+#### Returns
+
+Returns a filtered list/array containing only local `ToolCall` objects.
+
+## Complete Example
+
+<CodeGroup>
+```python Python
+from xpander_sdk import XpanderClient, LLMProvider
+from openai import OpenAI
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
+OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+openai_client = OpenAI(api_key=OPENAI_API_KEY)
+
+# List all agents
+agents = xpander_client.agents.list()
+print(f"Found {len(agents)} existing agents")
+
+# Create a new agent if none exist
+if not agents:
+    print("Creating a new agent...")
+    agent = xpander_client.agents.create(
+        name="Web Research Assistant",
+        description="An agent that helps with web research",
+        instructions="You are a helpful research assistant. Your task is to find accurate information from the web to answer user queries."
+    )
+else:
+    # Get the first agent
+    agent = xpander_client.agents.get(agent_id=agents[0].id)
+    print(f"Using existing agent: {agent.name}")
+
+# List all operations
+operations = xpander_client.operations.list()
+
+# Find web search operation
+web_search_op = next((op for op in operations if "web" in op.name.lower()), None)
+
+# Attach web search operation if found
+if web_search_op:
+    print(f"Attaching web search operation: {web_search_op.name}")
+    agent.attach_operations(operation_ids=[web_search_op.id])
+
+# Add a task to the agent
+agent.add_task(input="What are the latest developments in quantum computing?")
+
+# Initialize memory
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions
+)
+
+# Run the agent loop
+while not agent.is_finished():
+    # Get next action from LLM
+    response = openai_client.chat.completions.create(
+        model="gpt-4o",
+        messages=agent.messages,
+        tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
+        tool_choice="auto",
+        temperature=0.0
     )
     
-    # Extract tool calls from the response
+    # Add LLM response to memory
+    agent.add_messages(messages=response.model_dump())
+    
+    # Extract tool calls
     tool_calls = XpanderClient.extract_tool_calls(
         llm_response=response.model_dump(),
         llm_provider=LLMProvider.OPEN_AI
     )
     
-    # Print the extracted tool calls
-    for tc in tool_calls:
-        print(f"Tool: {tc.name}")
-        print(f"Payload: {tc.payload}")
-    ```
-    </CodeBlock>
-  </Tab>
-  <Tab title="TypeScript">
-    <CodeBlock title="Extract tool calls">
-    ```typescript
-    import { XpanderClient, LLMProvider } from '@xpander-ai/sdk';
-    import OpenAI from 'openai';
+    # Execute tools if any
+    if tool_calls:
+        results = agent.run_tools(tool_calls=tool_calls)
+        print(f"Executed {len(results)} tools")
+
+# Get the final result
+result = agent.retrieve_execution_result()
+print("\nRESEARCH FINDINGS:")
+print("=" * 50)
+print(result.result)
+```
+
+```typescript TypeScript
+import { XpanderClient, LLMProvider } from '@xpander-ai/sdk';
+import OpenAI from 'openai';
+import * as dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
+
+async function runExample() {
+    // Initialize clients
+    const xpanderClient = new XpanderClient({ apiKey: process.env.XPANDER_API_KEY });
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     
-    async function extractToolCalls() {
-        // Initialize OpenAI client
-        const openai = new OpenAI({ apiKey: "your-openai-api-key" });
-        
-        // Get a response from OpenAI with tool calls
+    // List all agents
+    const agents = await xpanderClient.agents.list();
+    console.log(`Found ${agents.length} existing agents`);
+    
+    // Create a new agent if none exist
+    let agent;
+    if (agents.length === 0) {
+        console.log("Creating a new agent...");
+        agent = await xpanderClient.agents.create({
+            name: "Web Research Assistant",
+            description: "An agent that helps with web research",
+            instructions: "You are a helpful research assistant. Your task is to find accurate information from the web to answer user queries."
+        });
+    } else {
+        // Get the first agent
+        agent = await xpanderClient.agents.get({ agentId: agents[0].id });
+        console.log(`Using existing agent: ${agent.name}`);
+    }
+    
+    // List all operations
+    const operations = await xpanderClient.operations.list();
+    
+    // Find web search operation
+    const webSearchOp = operations.find(op => op.name.toLowerCase().includes("web"));
+    
+    // Attach web search operation if found
+    if (webSearchOp) {
+        console.log(`Attaching web search operation: ${webSearchOp.name}`);
+        await agent.attachOperations({ operationIds: [webSearchOp.id] });
+    }
+    
+    // Add a task to the agent
+    await agent.addTask({ input: "What are the latest developments in quantum computing?" });
+    
+    // Initialize memory
+    await agent.memory.initMessages({
+        input: agent.execution.inputMessage,
+        instructions: agent.instructions
+        // llmProvider parameter is optional
+    });
+    
+    // Run the agent loop
+    while (!(await agent.isFinished())) {
+        // Get next action from LLM
         const response = await openai.chat.completions.create({
             model: "gpt-4o",
-            messages: [{ role: "user", content: "Search for information about AI safety" }],
-            tools: [{
-                type: "function",
-                function: {
-                    name: "web_search",
-                    description: "Search the web for information",
-                    parameters: {
-                        type: "object",
-                        properties: {
-                            query: {
-                                type: "string",
-                                description: "The search query"
-                            }
-                        },
-                        required: ["query"]
-                    }
-                }
-            }],
-            tool_choice: "auto"
+            messages: agent.messages,
+            tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
+            tool_choice: "auto",
+            temperature: 0
         });
         
-        // Extract tool calls from the response
+        // Add LLM response to memory
+        await agent.addMessages({ messages: response });
+        
+        // Extract tool calls
         const toolCalls = XpanderClient.extractToolCalls({
             llmResponse: response,
             llmProvider: LLMProvider.OPEN_AI
         });
         
-        // Print the extracted tool calls
-        for (const tc of toolCalls) {
-            console.log(`Tool: ${tc.name}`);
-            console.log(`Payload: ${JSON.stringify(tc.payload)}`);
+        // Execute tools if any
+        if (toolCalls.length > 0) {
+            const results = await agent.runTools({ toolCalls });
+            console.log(`Executed ${results.length} tools`);
         }
     }
-    ```
-    </CodeBlock>
-  </Tab>
-</Tabs>
+    
+    // Get the final result
+    const result = await agent.retrieveExecutionResult();
+    console.log("\nRESEARCH FINDINGS:");
+    console.log("=".repeat(50));
+    console.log(result.result);
+}
 
-#### Parameters
-
-| Parameter      | Type         | Required | Description                      |
-|----------------|--------------|----------|----------------------------------|
-| `llm_response` | Dict         | Yes      | The LLM response object          |
-| `llm_provider` | LLMProvider  | Yes      | The LLM provider type            |
-
-#### Returns
-
-Returns a list of `ToolCall` objects extracted from the LLM response.
-
-### retrieve_pending_local_tool_calls()
-
-Static method to filter tool calls for local execution.
-
-<Tabs>
-  <Tab title="Python">
-    <CodeBlock title="Retrieve local tool calls">
-    ```python
-    from xpander_sdk import XpanderClient, LLMProvider
-    
-    # Assuming we already have some tool calls extracted
-    # Extract local tool calls
-    local_tool_calls = XpanderClient.retrieve_pending_local_tool_calls(
-        tool_calls=tool_calls
-    )
-    
-    print(f"Found {len(local_tool_calls)} local tool calls")
-    for tc in local_tool_calls:
-        print(f"Local tool: {tc.name}")
-        print(f"Payload: {tc.payload}")
-    ```
-    </CodeBlock>
-  </Tab>
-  <Tab title="TypeScript">
-    <CodeBlock title="Retrieve local tool calls">
-    ```typescript
-    import { XpanderClient } from '@xpander-ai/sdk';
-    
-    function retrieveLocalToolCalls() {
-        // Assuming we already have some tool calls extracted
-        // Extract local tool calls
-        const localToolCalls = XpanderClient.retrievePendingLocalToolCalls({
-            toolCalls: toolCalls
-        });
-        
-        console.log(`Found ${localToolCalls.length} local tool calls`);
-        for (const tc of localToolCalls) {
-            console.log(`Local tool: ${tc.name}`);
-            console.log(`Payload: ${JSON.stringify(tc.payload)}`);
-        }
-    }
-    ```
-    </CodeBlock>
-  </Tab>
-</Tabs>
-
-#### Parameters
-
-| Parameter    | Type           | Required | Description                     |
-|--------------|----------------|----------|---------------------------------|
-| `tool_calls` | List[ToolCall] | Yes      | List of tool calls to filter    |
-
-#### Returns
-
-Returns a filtered list containing only local `ToolCall` objects.
-
-## Complete Example
-
-<Tabs>
-  <Tab title="Python">
-    <CodeBlock title="Complete client usage example">
-    ```python
-    from xpander_sdk import XpanderClient, LLMProvider
-    from openai import OpenAI
-    import os
-    from dotenv import load_dotenv
-    
-    # Load environment variables
-    load_dotenv()
-    XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
-    OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
-    
-    # Initialize clients
-    xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
-    openai_client = OpenAI(api_key=OPENAI_API_KEY)
-    
-    # List all agents
-    agents = xpander_client.agents.list()
-    print(f"Found {len(agents)} existing agents")
-    
-    # Create a new agent if none exist
-    if not agents:
-        print("Creating a new agent...")
-        agent = xpander_client.agents.create(
-            name="Web Research Assistant",
-            description="An agent that helps with web research",
-            instructions="You are a helpful research assistant. Your task is to find accurate information from the web to answer user queries."
-        )
-    else:
-        # Get the first agent
-        agent = xpander_client.agents.get(agent_id=agents[0].id)
-        print(f"Using existing agent: {agent.name}")
-    
-    # List all operations
-    operations = xpander_client.operations.list()
-    
-    # Find web search operation
-    web_search_op = next((op for op in operations if "web" in op.name.lower()), None)
-    
-    # Attach web search operation if found
-    if web_search_op:
-        print(f"Attaching web search operation: {web_search_op.name}")
-        agent.attach_operations(operation_ids=[web_search_op.id])
-    
-    # Add a task to the agent
-    agent.add_task(input="What are the latest developments in quantum computing?")
-    
-    # Initialize memory
-    agent.memory.init_messages(
-        input=agent.execution.input_message,
-        instructions=agent.instructions
-    )
-    
-    # Run the agent loop
-    while not agent.is_finished():
-        # Get next action from LLM
-        response = openai_client.chat.completions.create(
-            model="gpt-4o",
-            messages=agent.messages,
-            tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
-            tool_choice="auto",
-            temperature=0.0
-        )
-        
-        # Add LLM response to memory
-        agent.add_messages(messages=response.model_dump())
-        
-        # Extract tool calls
-        tool_calls = XpanderClient.extract_tool_calls(
-            llm_response=response.model_dump(),
-            llm_provider=LLMProvider.OPEN_AI
-        )
-        
-        # Execute tools if any
-        if tool_calls:
-            results = agent.run_tools(tool_calls=tool_calls)
-            print(f"Executed {len(results)} tools")
-    
-    # Get the final result
-    result = agent.retrieve_execution_result()
-    print("\nRESEARCH FINDINGS:")
-    print("=" * 50)
-    print(result.result)
-    ```
-    </CodeBlock>
-  </Tab>
-  <Tab title="TypeScript">
-    <CodeBlock title="Complete client usage example">
-    ```typescript
-    import { XpanderClient, LLMProvider } from '@xpander-ai/sdk';
-    import OpenAI from 'openai';
-    import * as dotenv from 'dotenv';
-    
-    // Load environment variables
-    dotenv.config();
-    
-    async function runExample() {
-        // Initialize clients
-        const xpanderClient = new XpanderClient({ apiKey: process.env.XPANDER_API_KEY });
-        const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-        
-        // List all agents
-        const agents = await xpanderClient.agents.list();
-        console.log(`Found ${agents.length} existing agents`);
-        
-        // Create a new agent if none exist
-        let agent;
-        if (agents.length === 0) {
-            console.log("Creating a new agent...");
-            agent = await xpanderClient.agents.create({
-                name: "Web Research Assistant",
-                description: "An agent that helps with web research",
-                instructions: "You are a helpful research assistant. Your task is to find accurate information from the web to answer user queries."
-            });
-        } else {
-            // Get the first agent
-            agent = await xpanderClient.agents.get({ agentId: agents[0].id });
-            console.log(`Using existing agent: ${agent.name}`);
-        }
-        
-        // List all operations
-        const operations = await xpanderClient.operations.list();
-        
-        // Find web search operation
-        const webSearchOp = operations.find(op => op.name.toLowerCase().includes("web"));
-        
-        // Attach web search operation if found
-        if (webSearchOp) {
-            console.log(`Attaching web search operation: ${webSearchOp.name}`);
-            await agent.attachOperations({ operationIds: [webSearchOp.id] });
-        }
-        
-        // Add a task to the agent
-        await agent.addTask({ input: "What are the latest developments in quantum computing?" });
-        
-        // Initialize memory
-        await agent.memory.initMessages({
-            input: agent.execution.inputMessage,
-            instructions: agent.instructions
-            // llmProvider parameter is optional
-        });
-        
-        // Run the agent loop
-        while (!(await agent.isFinished())) {
-            // Get next action from LLM
-            const response = await openai.chat.completions.create({
-                model: "gpt-4o",
-                messages: agent.messages,
-                tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
-                tool_choice: "auto",
-                temperature: 0
-            });
-            
-            // Add LLM response to memory
-            await agent.addMessages({ messages: response });
-            
-            // Extract tool calls
-            const toolCalls = XpanderClient.extractToolCalls({
-                llmResponse: response,
-                llmProvider: LLMProvider.OPEN_AI
-            });
-            
-            // Execute tools if any
-            if (toolCalls.length > 0) {
-                const results = await agent.runTools({ toolCalls });
-                console.log(`Executed ${results.length} tools`);
-            }
-        }
-        
-        // Get the final result
-        const result = await agent.retrieveExecutionResult();
-        console.log("\nRESEARCH FINDINGS:");
-        console.log("=".repeat(50));
-        console.log(result.result);
-    }
-    
-    runExample().catch(console.error);
-    ```
-    </CodeBlock>
-  </Tab>
-</Tabs>
+runExample().catch(console.error);
+```
+</CodeGroup>
 
 ## Related Resources
 
