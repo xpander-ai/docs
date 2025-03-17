@@ -143,6 +143,65 @@ Key steps:
 This approach gives you more control over the execution flow and allows for custom processing between agent steps.
 </Accordion>
 
+<Accordion title="Enforcing Agent Transitions Without Manager">
+For advanced use cases, you can enforce transitions between agents in a sequence even when the first agent believes it has completed its task - all without requiring a Manager Agent.
+
+This powerful capability is particularly useful when:
+- You need deterministic transitions at specific points in your workflow
+- A first agent might incorrectly consider its task complete before all required steps are done
+- You want to implement custom business logic for determining when to transition
+- You need to split complex tasks across specialized agents with precise control
+
+Here's how to implement forced transitions:
+
+```python
+from xpander_sdk import XpanderClient, LLMProvider
+import os
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=os.environ["XPANDER_API_KEY"])
+
+# Load your sequence agents
+first_agent = xpander_client.agents.get(agent_id="first-agent-id")
+next_agent = xpander_client.agents.get(agent_id="next-agent-id")
+
+# Initialize and run your first agent
+first_agent.add_task(input="Initial task description")
+first_agent.memory.init_messages(
+    input=first_agent.execution.input_message,
+    instructions=first_agent.instructions,
+    llm_provider=LLMProvider.OPEN_AI
+)
+
+# Process with first agent until you decide to transition
+# (You can use your own logic to determine when to transition)
+# ...execution loop for first agent...
+
+# IMPORTANT: Force transition regardless of first agent's completion status
+# Note that we don't check is_finished() - we explicitly move to the next agent
+result = first_agent.retrieve_execution_result()
+transition_context = result.result if result.status == "COMPLETED" else "Continue processing"
+
+# Initialize next agent with context from first agent
+next_agent.add_task(input=f"Continue processing: {transition_context}")
+next_agent.memory.init_messages(
+    input=next_agent.execution.input_message,
+    instructions=next_agent.instructions,
+    llm_provider=LLMProvider.OPEN_AI
+)
+
+# Optional: Transfer relevant memory context
+for msg in first_agent.messages[-5:]:  # Last 5 messages for context
+    if msg["role"] != "system":  # Skip system messages
+        next_agent.memory.add_message(msg)
+
+# Run next agent execution
+# ...execution loop for next agent...
+```
+
+This pattern gives you complete control over agent transitions without the overhead of a Manager Agent.
+</Accordion>
+
 <Tip>
 For most use cases, the simplified approach is recommended as it handles all the complexity of agent transitions automatically. Only use the direct control approach when you need to insert custom processing logic between agent steps.
 </Tip>

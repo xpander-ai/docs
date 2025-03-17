@@ -1,0 +1,57 @@
+---
+title: "Sequential Agent Teams"
+description: "Learn how to enforce agent transitions without a manager in xpander.ai"
+icon: "arrow-right"
+---
+
+## Enforcing Agent Transitions Without Manager
+For advanced use cases, you can enforce transitions between agents in a sequence even when the first agent believes it has completed its task - all without requiring a Manager Agent.
+
+## Key Use Cases
+This powerful capability is particularly useful when:
+- You need deterministic transitions at specific points in your workflow
+- A first agent might incorrectly consider its task complete before all required steps are done
+- You want to implement custom business logic for determining when to transition
+- You need to split complex tasks across specialized agents with precise control
+
+## Implementation Steps
+
+<Steps>
+  <Step title="Access Team Settings">
+    Go to teams and click on the manager agent settings button
+
+    <Frame>
+    ![Manager Agent Settings](/static/images/screenshots/2025-03-16-22-22-45.png)
+    </Frame>
+  </Step>
+
+  <Step title="Configure Delegation Type">
+    Change the "Agent Delegation" type to "Sequence"
+
+    <Frame>
+    ![Force Transition](/static/images/screenshots/2025-03-16-22-19-09.png)
+    </Frame>
+  </Step>
+
+  <Step title="Define Agent Flow">
+    Draw a connection line from the first agent to the second agent
+
+    <Frame>
+    ![Force Transition](/static/images/screenshots/2025-03-16-22-18-40.png)
+    </Frame>
+  </Step>
+</Steps>
+
+## Example Workflow
+
+Here's an example workflow that demonstrates how to enforce transitions between agents in a sequence:
+
+The diagram illustrates a powerful automatic workflow transition:
+
+1. **Initial Processing Agent** - This first agent processes the user's query and completes its designated task.
+
+2. **Slack Messaging Agent** - Even though the user didn't explicitly request to send anything to Slack, the AI State Machine automatically invokes this agent after the first agent completes its work.
+
+<Frame caption="Example Workflow">
+![Example Workflow](/static/images/screenshots/2025-03-16-22-26-06.png)
+</Frame>

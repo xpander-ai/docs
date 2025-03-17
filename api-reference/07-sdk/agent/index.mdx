@@ -299,6 +299,10 @@ Checks if the current task execution is finished.
 
 Returns a boolean: `True` if the execution is completed, `False` otherwise.
 
+<Note>
+For multi-agent workflows, you can enforce transitions to the next agent without checking `is_finished()`. This allows you to implement custom transition logic based on your specific requirements rather than relying on the agent's built-in completion status. See [Enforcing Agent Transitions Without Manager](/docs/02-agent-builder/07-seqence-agent-teams) for details on implementing this advanced pattern.
+</Note>
+
 ### retrieve_execution_result() / retrieveExecutionResult()
 
 Gets the result of a completed execution.

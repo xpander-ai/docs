@@ -52,7 +52,8 @@
               "docs/02-agent-builder/03-activity-view",
               "docs/02-agent-builder/04-advanced-operation-settings",
               "docs/02-agent-builder/05-agent-settings",
-              "docs/02-agent-builder/06-multi-agent-teams"
+              "docs/02-agent-builder/06-multi-agent-teams",
+              "docs/02-agent-builder/07-sequential-agent-teams"
             ]
           },
           {
