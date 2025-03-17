@@ -29,16 +29,41 @@ An agent graph consists of three simple components:
 3. **Hierarchical levels** - Group operations by their position in the workflow
 
 <Frame>
-![Agent Graph Visual Builder](/static/images/screenshots/2025-03-15-22-32-13.png)
+![Agent Graph Visual Builder](/static/images/screenshots/2025-03-16-22-36-58.png)
 </Frame>
 
-<Accordion title="Example LinkedIn Agent Workflow">
-In a LinkedIn researcher agent, you might set up a hierarchy where:
-- The agent must first search for profiles (`/search-people`) 
-- Only after finding profiles can it retrieve detailed data (`/get-profile-data-by-url`)
+## Example Agent Workflow that requires AGS
 
-This ensures the agent can't try to get profile data before finding valid profiles to analyze.
-</Accordion>
+Let's explore a practical example using a LinkedIn researcher agent to demonstrate why AGS is valuable:
+Users might ask:
+> "Find Person X on LinkedIn"
+And the agent should follow this specific sequence:
+1. First, use Tavily to search the internet for profile information
+2. Once profiles are found, use LinkedIn's `/search-people` endpoint to get basic profile data
+3. Finally, retrieve full profile details using either:
+   - `/get-profile-data-by-url`
+   - `Get Profile Data by Username and ID`
+
+Without AGS constraints, the agent attempted to skip the initial web search step by directly calling "LinkedInProfileServiceSearchProfilesByCriteria", finding the wrong person.
+With AGS we can design a graph that enforces the correct sequence of operations without limiting the agent's ability to make decisions.
+
+<Frame>
+![Without AGS](/static/images/screenshots/2025-03-16-22-49-52.png)
+</Frame>
+
+We can see that the agent indeed attempted to skip the initial web search step by directly calling "LinkedInProfileServiceSearchProfilesByCriteria". The xpander.ai platform detected this violation of the intended workflow and prevented the operation.
+
+<Frame>
+![LinkedIn Researcher Agent Workflow](/static/images/screenshots/2025-03-16-22-39-18.png)
+</Frame>
+
+The agent then correctly used the Tavily operation to perform the required web search first:
+
+<Frame>
+![Tavily Search](/static/images/screenshots/2025-03-16-22-40-59.png)
+</Frame> 
+
+This example shows how AGS enforces the correct sequence of operations, ensuring data is gathered methodically and reliably.
 
 <Accordion title="Key Benefits">
 - **Bounded autonomy**: Agents make decisions within your constraints
