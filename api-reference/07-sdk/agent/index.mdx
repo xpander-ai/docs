@@ -21,61 +21,55 @@ All agent instances are retrieved from the XpanderClient. You typically won't cr
 
 ## Retrieving an Agent
 
-<Tabs>
-  <Tab title="Python">
-    <CodeBlock title="Get an existing agent">
-    ```python
-    from xpander_sdk import XpanderClient
-    from dotenv import load_dotenv
-    import os
+<CodeGroup>
+```python Python
+from xpander_sdk import XpanderClient
+from dotenv import load_dotenv
+import os
 
-    # Load environment variables
-    load_dotenv()
-    XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
-    AGENT_ID = os.environ["AGENT_ID"]
+# Load environment variables
+load_dotenv()
+XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
+AGENT_ID = os.environ["AGENT_ID"]
 
-    # Initialize the client
-    client = XpanderClient(api_key=XPANDER_API_KEY)
+# Initialize the client
+client = XpanderClient(api_key=XPANDER_API_KEY)
 
-    # Get an agent by ID
-    agent = client.agents.get(agent_id=AGENT_ID)
+# Get an agent by ID
+agent = client.agents.get(agent_id=AGENT_ID)
 
-    # Access basic properties
-    print(f"Agent ID: {agent.id}")
-    print(f"Agent Name: {agent.name}")
-    print(f"Description: {agent.metadata.description}")
-    ```
-    </CodeBlock>
-  </Tab>
-  <Tab title="TypeScript">
-    <CodeBlock title="Get an existing agent">
-    ```typescript
-    import { XpanderClient } from '@xpander-ai/sdk';
-    import * as dotenv from 'dotenv';
-    
-    // Load environment variables
-    dotenv.config();
-    const XPANDER_API_KEY = process.env.XPANDER_API_KEY as string;
-    const AGENT_ID = process.env.AGENT_ID as string;
-    
-    // Initialize the client
-    const client = new XpanderClient({ apiKey: XPANDER_API_KEY });
-    
-    // Get an agent by ID (async function)
-    async function getAgent() {
-      const agent = await client.agents.get({ agentId: AGENT_ID });
-      
-      // Access basic properties
-      console.log(`Agent ID: ${agent.id}`);
-      console.log(`Agent Name: ${agent.name}`);
-      console.log(`Description: ${agent.metadata.description}`);
-    }
-    
-    getAgent();
-    ```
-    </CodeBlock>
-  </Tab>
-</Tabs>
+# Access basic properties
+print(f"Agent ID: {agent.id}")
+print(f"Agent Name: {agent.name}")
+print(f"Description: {agent.metadata.description}")
+```
+
+```typescript TypeScript
+import { XpanderClient } from '@xpander-ai/sdk';
+import * as dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
+const XPANDER_API_KEY = process.env.XPANDER_API_KEY;
+const AGENT_ID = process.env.AGENT_ID;
+
+// Get an agent (async function)
+async function getAgent() {
+  // Initialize the client
+  const client = new XpanderClient({ apiKey: XPANDER_API_KEY });
+  
+  // Get an agent by ID
+  const agent = await client.agents.get({ agentId: AGENT_ID });
+  
+  // Access basic properties
+  console.log(`Agent ID: ${agent.id}`);
+  console.log(`Agent Name: ${agent.name}`);
+  console.log(`Description: ${agent.metadata.description}`);
+  
+  return agent;
+}
+```
+</CodeGroup>
 
 ## Core Properties
 
@@ -101,73 +95,61 @@ Most agents follow this initialization sequence:
 
 <Steps>
   <Step title="Get an agent">
-    <Tabs>
-      <Tab title="Python">
-        ```python
-        agent = client.agents.get(agent_id=AGENT_ID)
-        ```
-      </Tab>
-      <Tab title="TypeScript">
-        ```typescript
-        const agent = await client.agents.get({ agentId: AGENT_ID });
-        ```
-      </Tab>
-    </Tabs>
+    <CodeGroup>
+      ```python Python
+      agent = client.agents.get(agent_id=AGENT_ID)
+      ```
+      
+      ```typescript TypeScript
+      const agent = await client.agents.get({ agentId: AGENT_ID });
+      ```
+    </CodeGroup>
   </Step>
   <Step title="Add a task">
-    <Tabs>
-      <Tab title="Python">
-        ```python
-        agent.add_task(input="Find information about AI startups")
-        ```
-      </Tab>
-      <Tab title="TypeScript">
-        ```typescript
-        await agent.addTask({ input: "Find information about AI startups" });
-        ```
-      </Tab>
-    </Tabs>
+    <CodeGroup>
+      ```python Python
+      agent.add_task(input="Find information about AI startups")
+      ```
+      
+      ```typescript TypeScript
+      await agent.addTask({ input: "Find information about AI startups" });
+      ```
+    </CodeGroup>
   </Step>
   <Step title="Initialize memory">
-    <Tabs>
-      <Tab title="Python">
-        ```python
-        agent.memory.init_messages(
-            input=agent.execution.input_message,
-            instructions=agent.instructions,
-            llm_provider=LLMProvider.OPEN_AI
-        )
-        ```
-      </Tab>
-      <Tab title="TypeScript">
-        ```typescript
-        await agent.memory.initMessages({
-            input: agent.execution.inputMessage,
-            instructions: agent.instructions,
-            llmProvider: LLMProvider.OPEN_AI
-        });
-        ```
-      </Tab>
-    </Tabs>
+    <CodeGroup>
+      ```python Python
+      agent.memory.init_messages(
+          input=agent.execution.input_message,
+          instructions=agent.instructions,
+          llm_provider=LLMProvider.OPEN_AI
+      )
+      ```
+      
+      ```typescript TypeScript
+      await agent.memory.initMessages({
+          input: agent.execution.inputMessage,
+          instructions: agent.instructions,
+          llmProvider: LLMProvider.OPEN_AI
+      });
+      ```
+    </CodeGroup>
   </Step>
   <Step title="Run the agent loop">
-    <Tabs>
-      <Tab title="Python">
-        ```python
-        while not agent.is_finished():
-            # Run LLM and process tools
-            # ...
-        ```
-      </Tab>
-      <Tab title="TypeScript">
-        ```typescript
-        while (!(await agent.isFinished())) {
-            // Run LLM and process tools
-            // ...
-        }
-        ```
-      </Tab>
-    </Tabs>
+    <CodeGroup>
+      ```python Python
+      while not agent.is_finished():
+          # Run LLM and process tools
+          # ...
+      ```
+      
+      ```typescript TypeScript
+      while (!(await agent.isFinished())) {
+          // Run LLM and process tools
+          // ...
+      }
+      ```
+    </CodeGroup>
   </Step>
 </Steps>
 
@@ -175,54 +157,47 @@ Most agents follow this initialization sequence:
 
 ### add_task() / addTask()
 
-Adds a task to the agent, initializing the execution context.
+Adds a new task for the agent to process.
 
-<Tabs>
-  <Tab title="Python">
-    <CodeBlock title="Adding a task">
-    ```python
-    # Basic task
-    execution = agent.add_task(input="Find information about AI startups")
+<CodeGroup>
+```python Python
+# Basic task
+execution = agent.add_task(input="Find information about AI startups")
 
-    # Task with files
-    execution = agent.add_task(
-        input="Analyze this document",
-        files=[{
-            "content": "Content of document...",
-            "name": "document.txt"
-        }],
-        use_worker=True
-    )
+# Task with files
+execution = agent.add_task(
+    input="Analyze this document",
+    files=[{
+        "content": "Content of document...",
+        "name": "document.txt"
+    }],
+    use_worker=True
+)
 
-    # Access execution properties
-    print(f"Execution status: {agent.execution.status}")
-    print(f"Input message: {agent.execution.input_message}")
-    ```
-    </CodeBlock>
-  </Tab>
-  <Tab title="TypeScript">
-    <CodeBlock title="Adding a task">
-    ```typescript
-    // Basic task
-    const execution = await agent.addTask({ input: "Find information about AI startups" });
+# Access execution properties
+print(f"Execution status: {agent.execution.status}")
+print(f"Input message: {agent.execution.input_message}")
+```
 
-    // Task with files
-    const executionWithFiles = await agent.addTask({
-        input: "Analyze this document",
-        files: [{
-            content: "Content of document...",
-            name: "document.txt"
-        }],
-        useWorker: true
-    });
+```typescript TypeScript
+// Basic task
+const execution = await agent.addTask({ input: "Find information about AI startups" });
 
-    // Access execution properties
-    console.log(`Execution status: ${agent.execution.status}`);
-    console.log(`Input message: ${agent.execution.inputMessage}`);
-    ```
-    </CodeBlock>
-  </Tab>
-</Tabs>
+// Task with files
+const executionWithFiles = await agent.addTask({
+    input: "Analyze this document",
+    files: [{
+        content: "Content of document...",
+        name: "document.txt"
+    }],
+    useWorker: true
+});
+
+// Access execution properties
+console.log(`Execution status: ${agent.execution.status}`);
+console.log(`Input message: ${agent.execution.inputMessage}`);
+```
+</CodeGroup>
 
 #### Parameters
 
@@ -238,62 +213,52 @@ Adds a task to the agent, initializing the execution context.
 Returns an `Execution` object representing the new task.
 
 <Expandable title="Example Response">
-<Tabs>
-  <Tab title="Python">
-    ```python
-    Execution(
-        id="exec_1234abcd",
-        status="RUNNING",
-        input_message="Find information about AI startups",
-        created_at="2023-11-15T14:23:12Z"
-    )
-    ```
-  </Tab>
-  <Tab title="TypeScript">
-    ```typescript
-    {
-        id: "exec_1234abcd",
-        status: "RUNNING",
-        inputMessage: "Find information about AI startups",
-        createdAt: "2023-11-15T14:23:12Z"
-    }
-    ```
-  </Tab>
-</Tabs>
+<CodeGroup>
+  ```python Python
+  Execution(
+      id="exec_1234abcd",
+      status="RUNNING",
+      input_message="Find information about AI startups",
+      created_at="2023-11-15T14:23:12Z"
+  )
+  ```
+  
+  ```typescript TypeScript
+  {
+      id: "exec_1234abcd",
+      status: "RUNNING",
+      inputMessage: "Find information about AI startups",
+      createdAt: "2023-11-15T14:23:12Z"
+  }
+  ```
+</CodeGroup>
 </Expandable>
 
 ### is_finished() / isFinished()
 
 Checks if the current task execution is finished.
 
-<Tabs>
-  <Tab title="Python">
-    <CodeBlock title="Checking execution status">
-    ```python
-    # Run until execution is complete
-    while not agent.is_finished():
-        # Run execution cycle
-        pass
+<CodeGroup>
+```python Python
+# Run until execution is complete
+while not agent.is_finished():
+    # Run execution cycle
+    pass
 
-    # After completion
-    print("Task completed!")
-    ```
-    </CodeBlock>
-  </Tab>
-  <Tab title="TypeScript">
-    <CodeBlock title="Checking execution status">
-    ```typescript
-    // Run until execution is complete
-    while (!(await agent.isFinished())) {
-        // Run execution cycle
-    }
+# After completion
+print("Task completed!")
+```
 
-    // After completion
-    console.log("Task completed!");
-    ```
-    </CodeBlock>
-  </Tab>
-</Tabs>
+```typescript TypeScript
+// Run until execution is complete
+while (!(await agent.isFinished())) {
+    // Run execution cycle
+}
+
+// After completion
+console.log("Task completed!");
+```
+</CodeGroup>
 
 #### Returns
 
@@ -305,69 +270,59 @@ For multi-agent workflows, you can enforce transitions to the next agent without
 
 ### retrieve_execution_result() / retrieveExecutionResult()
 
-Gets the result of a completed execution.
+Gets the result of the current execution.
 
-<Tabs>
-  <Tab title="Python">
-    <CodeBlock title="Getting execution results">
-    ```python
-    # Get the execution result
-    execution_result = agent.retrieve_execution_result()
+<CodeGroup>
+```python Python
+# Get the execution result
+execution_result = agent.retrieve_execution_result()
 
-    # Access result properties
-    print(f"Status: {execution_result.status}")
-    print(f"Result: {execution_result.result}")
+# Access result properties
+print(f"Status: {execution_result.status}")
+print(f"Result: {execution_result.result}")
 
-    # Check for errors
-    if execution_result.error:
-        print(f"Error: {execution_result.error}")
-    ```
-    </CodeBlock>
-  </Tab>
-  <Tab title="TypeScript">
-    <CodeBlock title="Getting execution results">
-    ```typescript
-    // Get the execution result
-    const executionResult = await agent.retrieveExecutionResult();
+# Check for errors
+if execution_result.error:
+    print(f"Error: {execution_result.error}")
+```
 
-    // Access result properties
-    console.log(`Status: ${executionResult.status}`);
-    console.log(`Result: ${executionResult.result}`);
+```typescript TypeScript
+// Get the execution result
+const executionResult = await agent.retrieveExecutionResult();
 
-    // Check for errors
-    if (executionResult.error) {
-        console.log(`Error: ${executionResult.error}`);
-    }
-    ```
-    </CodeBlock>
-  </Tab>
-</Tabs>
+// Access result properties
+console.log(`Status: ${executionResult.status}`);
+console.log(`Result: ${executionResult.result}`);
+
+// Check for errors
+if (executionResult.error) {
+    console.log(`Error: ${executionResult.error}`);
+}
+```
+</CodeGroup>
 
 #### Returns
 
 Returns an `ExecutionResult` object containing status and result content.
 
 <Expandable title="Example Response">
-<Tabs>
-  <Tab title="Python">
-    ```python
-    ExecutionResult(
-        status="COMPLETED",
-        result="I found several AI startups in San Francisco. The most notable ones are:\n\n1. OpenAI - Focusing on general AI and large language models\n2. Anthropic - Working on safe, interpretable AI systems\n3. Scale AI - Providing data labeling services for AI\n4. xpander.ai.ai - Developing agent automation frameworks",
-        error=None
-    )
-    ```
-  </Tab>
-  <Tab title="TypeScript">
-    ```typescript
-    {
-        status: "COMPLETED",
-        result: "I found several AI startups in San Francisco. The most notable ones are:\n\n1. OpenAI - Focusing on general AI and large language models\n2. Anthropic - Working on safe, interpretable AI systems\n3. Scale AI - Providing data labeling services for AI\n4. xpander.ai.ai - Developing agent automation frameworks",
-        error: null
-    }
-    ```
-  </Tab>
-</Tabs>
+<CodeGroup>
+  ```python Python
+  ExecutionResult(
+      status="COMPLETED",
+      result="I found several AI startups in San Francisco. The most notable ones are:\n\n1. OpenAI - Focusing on general AI and large language models\n2. Anthropic - Working on safe, interpretable AI systems\n3. Scale AI - Providing data labeling services for AI\n4. xpander.ai.ai - Developing agent automation frameworks",
+      error=None
+  )
+  ```
+  
+  ```typescript TypeScript
+  {
+      status: "COMPLETED",
+      result: "I found several AI startups in San Francisco. The most notable ones are:\n\n1. OpenAI - Focusing on general AI and large language models\n2. Anthropic - Working on safe, interpretable AI systems\n3. Scale AI - Providing data labeling services for AI\n4. xpander.ai.ai - Developing agent automation frameworks",
+      error: null
+  }
+  ```
+</CodeGroup>
 </Expandable>
 
 ## Memory Management Methods
@@ -376,43 +331,36 @@ Returns an `ExecutionResult` object containing status and result content.
 
 Initializes the agent's memory with the task input and instructions.
 
-<Tabs>
-  <Tab title="Python">
-    <CodeBlock title="Initializing memory">
-    ```python
-    # Initialize memory after adding a task
-    agent.memory.init_messages(
-        input=agent.execution.input_message,
-        instructions=agent.instructions,
-        llm_provider=LLMProvider.OPEN_AI
-    )
+<CodeGroup>
+```python Python
+# Initialize memory after adding a task
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions,
+    llm_provider=LLMProvider.OPEN_AI
+)
 
-    # Check that messages are available
-    print(f"Message count: {len(agent.messages)}")
-    for message in agent.messages:
-        print(f"Role: {message['role']}, Content: {message['content'][:50]}...")
-    ```
-    </CodeBlock>
-  </Tab>
-  <Tab title="TypeScript">
-    <CodeBlock title="Initializing memory">
-    ```typescript
-    // Initialize memory after adding a task
-    await agent.memory.initMessages({
-        input: agent.execution.inputMessage,
-        instructions: agent.instructions,
-        llmProvider: LLMProvider.OPEN_AI
-    });
+# Check that messages are available
+print(f"Message count: {len(agent.messages)}")
+for message in agent.messages:
+    print(f"Role: {message['role']}, Content: {message['content'][:50]}...")
+```
 
-    // Check that messages are available
-    console.log(`Message count: ${agent.messages.length}`);
-    for (const message of agent.messages) {
-        console.log(`Role: ${message.role}, Content: ${message.content?.substring(0, 50)}...`);
-    }
-    ```
-    </CodeBlock>
-  </Tab>
-</Tabs>
+```typescript TypeScript
+// Initialize memory after adding a task
+await agent.memory.initMessages({
+    input: agent.execution.inputMessage,
+    instructions: agent.instructions,
+    llmProvider: LLMProvider.OPEN_AI
+});
+
+// Check that messages are available
+console.log(`Message count: ${agent.messages.length}`);
+for (const message of agent.messages) {
+    console.log(`Role: ${message.role}, Content: ${message.content?.substring(0, 50)}...`);
+}
+```
+</CodeGroup>
 
 #### Parameters
 
@@ -426,46 +374,39 @@ Initializes the agent's memory with the task input and instructions.
 
 Adds messages to the agent's conversation memory.
 
-<Tabs>
-  <Tab title="Python">
-    <CodeBlock title="Adding messages to memory">
-    ```python
-    # Get response from LLM
-    response = openai_client.chat.completions.create(
-        model="gpt-4o",
-        messages=agent.messages,
-        tools=agent.get_tools(),
-        tool_choice="auto"
-    )
+<CodeGroup>
+```python Python
+# Get response from LLM
+response = openai_client.chat.completions.create(
+    model="gpt-4o",
+    messages=agent.messages,
+    tools=agent.get_tools(),
+    tool_choice="auto"
+)
 
-    # Add LLM response to memory
-    agent.add_messages(messages=response.model_dump())
+# Add LLM response to memory
+agent.add_messages(messages=response.model_dump())
 
-    # Check updated message count
-    print(f"Updated message count: {len(agent.messages)}")
-    ```
-    </CodeBlock>
-  </Tab>
-  <Tab title="TypeScript">
-    <CodeBlock title="Adding messages to memory">
-    ```typescript
-    // Get response from LLM
-    const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: agent.messages,
-        tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
-        tool_choice: "auto"
-    });
+# Check updated message count
+print(f"Updated message count: {len(agent.messages)}")
+```
 
-    // Add LLM response to memory
-    await agent.addMessages({ messages: response });
+```typescript TypeScript
+// Get response from LLM
+const response = await openai.chat.completions.create({
+    model: "gpt-4o",
+    messages: agent.messages,
+    tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
+    tool_choice: "auto"
+});
 
-    // Check updated message count
-    console.log(`Updated message count: ${agent.messages.length}`);
-    ```
-    </CodeBlock>
-  </Tab>
-</Tabs>
+// Add LLM response to memory
+await agent.addMessages({ messages: response });
+
+// Check updated message count
+console.log(`Updated message count: ${agent.messages.length}`);
+```
+</CodeGroup>
 
 #### Parameters
 
@@ -477,145 +418,138 @@ Adds messages to the agent's conversation memory.
 
 Here's a complete example of using an Agent to execute a task:
 
-<Tabs>
-  <Tab title="Python">
-    <CodeBlock title="Complete Agent example">
-    ```python
-    from xpander_sdk import XpanderClient, LLMProvider
-    from openai import OpenAI
-    from dotenv import load_dotenv
-    import os
+<CodeGroup>
+```python Python
+from xpander_sdk import XpanderClient, LLMProvider
+from openai import OpenAI
+from dotenv import load_dotenv
+import os
 
-    # Load environment variables
-    load_dotenv()
-    XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
-    OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
-    AGENT_ID = os.environ["AGENT_ID"]
+# Load environment variables
+load_dotenv()
+XPANDER_API_KEY = os.environ["XPANDER_API_KEY"]
+OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
+AGENT_ID = os.environ["AGENT_ID"]
 
-    # Initialize clients
-    xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
-    openai_client = OpenAI(api_key=OPENAI_API_KEY)
+# Initialize clients
+xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
-    # Get the agent
-    agent = xpander_client.agents.get(agent_id=AGENT_ID)
-    print(f"Agent: {agent.name} ({agent.id})")
+# Get the agent
+agent = xpander_client.agents.get(agent_id=AGENT_ID)
+print(f"Agent: {agent.name} ({agent.id})")
 
-    # Add a task
-    agent.add_task(input="Find the top 3 AI startups in San Francisco and their main products")
+# Add a task
+agent.add_task(input="Find the top 3 AI startups in San Francisco and their main products")
 
-    # Initialize memory
-    agent.memory.init_messages(
-        input=agent.execution.input_message,
-        instructions=agent.instructions,
+# Initialize memory
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions,
+    llm_provider=LLMProvider.OPEN_AI
+)
+
+# Run the agent until the task is complete
+while not agent.is_finished():
+    # Get next action from LLM
+    response = openai_client.chat.completions.create(
+        model="gpt-4o",
+        messages=agent.messages,
+        tools=agent.get_tools(),
+        tool_choice="auto",
+        temperature=0.0
+    )
+    
+    # Add LLM response to memory
+    agent.add_messages(messages=response.model_dump())
+    
+    # Extract tool calls
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump(),
         llm_provider=LLMProvider.OPEN_AI
     )
+    
+    # Run the tools
+    if tool_calls:
+        results = agent.run_tools(tool_calls=tool_calls)
+        print(f"Executed {len(results)} tools")
 
-    # Run the agent until the task is complete
-    while not agent.is_finished():
-        # Get next action from LLM
-        response = openai_client.chat.completions.create(
-            model="gpt-4o",
-            messages=agent.messages,
-            tools=agent.get_tools(),
-            tool_choice="auto",
-            temperature=0.0
-        )
-        
-        # Add LLM response to memory
-        agent.add_messages(messages=response.model_dump())
-        
-        # Extract tool calls
-        tool_calls = XpanderClient.extract_tool_calls(
-            llm_response=response.model_dump(),
-            llm_provider=LLMProvider.OPEN_AI
-        )
-        
-        # Run the tools
-        if tool_calls:
-            results = agent.run_tools(tool_calls=tool_calls)
-            print(f"Executed {len(results)} tools")
+# Get and print the final result
+result = agent.retrieve_execution_result()
+print("\nFINAL RESULT:")
+print("=" * 50)
+print(result.result)
+```
 
-    # Get and print the final result
-    result = agent.retrieve_execution_result()
-    print("\nFINAL RESULT:")
-    print("=" * 50)
-    print(result.result)
-    ```
-    </CodeBlock>
-  </Tab>
-  <Tab title="TypeScript">
-    <CodeBlock title="Complete Agent example">
-    ```typescript
-    import { XpanderClient, LLMProvider } from '@xpander-ai/sdk';
-    import OpenAI from 'openai';
-    import * as dotenv from 'dotenv';
+```typescript TypeScript
+import { XpanderClient, LLMProvider } from '@xpander-ai/sdk';
+import OpenAI from 'openai';
+import * as dotenv from 'dotenv';
 
-    // Load environment variables
-    dotenv.config();
-    const XPANDER_API_KEY = process.env.XPANDER_API_KEY as string;
-    const OPENAI_API_KEY = process.env.OPENAI_API_KEY as string;
-    const AGENT_ID = process.env.AGENT_ID as string;
+// Load environment variables
+dotenv.config();
+const XPANDER_API_KEY = process.env.XPANDER_API_KEY as string;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY as string;
+const AGENT_ID = process.env.AGENT_ID as string;
 
-    async function runAgent() {
-        // Initialize clients
-        const xpanderClient = new XpanderClient({ apiKey: XPANDER_API_KEY });
-        const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
+async function runAgent() {
+    // Initialize clients
+    const xpanderClient = new XpanderClient({ apiKey: XPANDER_API_KEY });
+    const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
-        // Get the agent
-        const agent = await xpanderClient.agents.get({ agentId: AGENT_ID });
-        console.log(`Agent: ${agent.name} (${agent.id})`);
+    // Get the agent
+    const agent = await xpanderClient.agents.get({ agentId: AGENT_ID });
+    console.log(`Agent: ${agent.name} (${agent.id})`);
 
-        // Add a task
-        await agent.addTask({ 
-            input: "Find the top 3 AI startups in San Francisco and their main products" 
+    // Add a task
+    await agent.addTask({ 
+        input: "Find the top 3 AI startups in San Francisco and their main products" 
+    });
+
+    // Initialize memory
+    await agent.memory.initMessages({
+        input: agent.execution.inputMessage,
+        instructions: agent.instructions,
+        llmProvider: LLMProvider.OPEN_AI
+    });
+
+    // Run the agent until the task is complete
+    while (!(await agent.isFinished())) {
+        // Get next action from LLM
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o",
+            messages: agent.messages,
+            tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
+            tool_choice: "auto",
+            temperature: 0
         });
-
-        // Initialize memory
-        await agent.memory.initMessages({
-            input: agent.execution.inputMessage,
-            instructions: agent.instructions,
+        
+        // Add LLM response to memory
+        await agent.addMessages({ messages: response });
+        
+        // Extract tool calls
+        const toolCalls = XpanderClient.extractToolCalls({
+            llmResponse: response,
             llmProvider: LLMProvider.OPEN_AI
         });
-
-        // Run the agent until the task is complete
-        while (!(await agent.isFinished())) {
-            // Get next action from LLM
-            const response = await openai.chat.completions.create({
-                model: "gpt-4o",
-                messages: agent.messages,
-                tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
-                tool_choice: "auto",
-                temperature: 0
-            });
-            
-            // Add LLM response to memory
-            await agent.addMessages({ messages: response });
-            
-            // Extract tool calls
-            const toolCalls = XpanderClient.extractToolCalls({
-                llmResponse: response,
-                llmProvider: LLMProvider.OPEN_AI
-            });
-            
-            // Run the tools
-            if (toolCalls.length > 0) {
-                const results = await agent.runTools({ toolCalls });
-                console.log(`Executed ${results.length} tools`);
-            }
+        
+        // Run the tools
+        if (toolCalls.length > 0) {
+            const results = await agent.runTools({ toolCalls });
+            console.log(`Executed ${results.length} tools`);
         }
-
-        // Get and print the final result
-        const result = await agent.retrieveExecutionResult();
-        console.log("\nFINAL RESULT:");
-        console.log("=".repeat(50));
-        console.log(result.result);
     }
 
-    runAgent().catch(console.error);
-    ```
-    </CodeBlock>
-  </Tab>
-</Tabs>
+    // Get and print the final result
+    const result = await agent.retrieveExecutionResult();
+    console.log("\nFINAL RESULT:");
+    console.log("=".repeat(50));
+    console.log(result.result);
+}
+
+runAgent().catch(console.error);
+```
+</CodeGroup>
 
 ## Related Guides
 

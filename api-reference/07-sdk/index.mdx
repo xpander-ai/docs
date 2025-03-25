@@ -21,85 +21,79 @@ The SDK is built using PROJEN and JSII, allowing for consistent functionality ac
 
 Install the xpander.ai SDK using your language's package manager:
 
-<Tabs>
-  <Tab title="Python">
-    ```bash
-    pip install xpander-sdk
-    ```
-  </Tab>
-  <Tab title="TypeScript">
-    ```bash
-    npm install @xpander-ai/sdk
-    # or
-    yarn add @xpander-ai/sdk
-    ```
-  </Tab>
-  <Tab title="C# / Java">
-    Contact [support@xpander.ai](mailto:support@xpander.ai) to get access to the binaries for these languages.
-  </Tab>
-</Tabs>
+<CodeGroup>
+```bash Python
+pip install xpander-sdk
+```
+
+```bash TypeScript
+npm install @xpander-ai/sdk
+# or
+yarn add @xpander-ai/sdk
+```
+
+```bash C# / Java
+# Contact support@xpander.ai to get access to the binaries for these languages.
+```
+</CodeGroup>
 
 ## Quick Start
 
 <Steps>
   <Step title="Import and initialize">
-    <Tabs>
-      <Tab title="Python">
-        ```python
-        from xpander_sdk import XpanderClient
-        from dotenv import load_dotenv
-        import os
-        
-        # Load API key from environment
-        load_dotenv()
-        XPANDER_API_KEY = os.environ.get("XPANDER_API_KEY")
-        
-        # Initialize client
-        client = XpanderClient(api_key=XPANDER_API_KEY)
-        ```
-      </Tab>
-      <Tab title="TypeScript">
-        ```typescript
-        import { XpanderClient } from '@xpander-ai/sdk';
-        import dotenv from 'dotenv';
-        
-        // Load API key from environment
-        dotenv.config();
-        const XPANDER_API_KEY = process.env.XPANDER_API_KEY;
-        
-        // Initialize client
-        const client = new XpanderClient({ apiKey: XPANDER_API_KEY });
-        ```
-      </Tab>
-    </Tabs>
+    <CodeGroup>
+    ```python Python
+    from xpander_sdk import XpanderClient
+    from dotenv import load_dotenv
+    import os
+    
+    # Load API key from environment
+    load_dotenv()
+    XPANDER_API_KEY = os.environ.get("XPANDER_API_KEY")
+    
+    # Initialize client
+    client = XpanderClient(api_key=XPANDER_API_KEY)
+    ```
+
+    ```typescript TypeScript
+    import { XpanderClient } from '@xpander-ai/sdk';
+    import dotenv from 'dotenv';
+    
+    // Load API key from environment
+    dotenv.config();
+    const XPANDER_API_KEY = process.env.XPANDER_API_KEY;
+    
+    // Initialize client
+    const client = new XpanderClient({ apiKey: XPANDER_API_KEY });
+    ```
+    </CodeGroup>
   </Step>
   <Step title="Get or create an agent">
-    <Tabs>
-      <Tab title="Python">
-        ```python
-        # List your agents
-        agents = client.agents.list()
-        
-        # Get an existing agent
-        if agents:
-            agent = client.agents.get(agent_id=agents[0].id)
-        else:
-            # Create a new agent
-            agent = client.agents.create(
-                name="Research Assistant",
-                description="An agent that performs research tasks",
-                instructions="You are a helpful research assistant. Provide accurate information and cite sources."
-            )
-        ```
-      </Tab>
-      <Tab title="TypeScript">
-        ```typescript
-        // List your agents
+    <CodeGroup>
+    ```python Python
+    # List your agents
+    agents = client.agents.list()
+    
+    # Get an existing agent
+    if agents:
+        agent = client.agents.get(agent_id=agents[0].id)
+    else:
+        # Create a new agent
+        agent = client.agents.create(
+            name="Research Assistant",
+            description="An agent that performs research tasks",
+            instructions="You are a helpful research assistant. Provide accurate information and cite sources."
+        )
+    ```
+
+    ```typescript TypeScript
+    // List your agents (async function)
+    async function getOrCreateAgent() {
         const agents = await client.agents.list();
         
         let agent;
-        // Get an existing agent
         if (agents.length > 0) {
+            // Get an existing agent
             agent = await client.agents.get({ agentId: agents[0].id });
         } else {
             // Create a new agent
@@ -109,119 +103,106 @@ Install the xpander.ai SDK using your language's package manager:
                 instructions: "You are a helpful research assistant. Provide accurate information and cite sources."
             });
         }
-        ```
-      </Tab>
-    </Tabs>
+        
+        return agent;
+    }
+    ```
+    </CodeGroup>
   </Step>
   <Step title="Run a task">
-    <Tabs>
-      <Tab title="Python">
-        ```python
-        from xpander_sdk import LLMProvider
-        from openai import OpenAI
+    <CodeGroup>
+    ```python Python
+    from xpander_sdk import LLMProvider
+    from openai import OpenAI
+    
+    # OpenAI client for LLM interactions
+    openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+    
+    # Add a task
+    agent.add_task(input="What are the environmental benefits of renewable energy?")
+    
+    # Initialize memory
+    agent.memory.init_messages(
+        input=agent.execution.input_message,
+        instructions=agent.instructions,
+        llm_provider=LLMProvider.OPEN_AI
+    )
+    
+    # Run until completion
+    while not agent.is_finished():
+        # Get next action from LLM
+        response = openai_client.chat.completions.create(
+            model="gpt-4o",
+            messages=agent.messages,
+            tools=agent.get_tools(),
+            tool_choice="auto",
+            temperature=0.0
+        )
         
-        # OpenAI client for LLM interactions
-        openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+        # Add LLM response to memory
+        agent.add_messages(messages=response.model_dump())
         
-        # Add a task
-        agent.add_task(input="What are the environmental benefits of renewable energy?")
-        
-        # Initialize memory
-        agent.memory.init_messages(
-            input=agent.execution.input_message,
-            instructions=agent.instructions,
+        # Extract and run tool calls
+        tool_calls = XpanderClient.extract_tool_calls(
+            llm_response=response.model_dump(),
             llm_provider=LLMProvider.OPEN_AI
         )
         
-        # Run until completion
-        while not agent.is_finished():
-            # Get next action from LLM
-            response = openai_client.chat.completions.create(
-                model="gpt-4o",
-                messages=agent.messages,
-                tools=agent.get_tools(),
-                tool_choice="auto",
-                temperature=0.0
-            )
-            
-            # Add LLM response to memory
-            agent.add_messages(messages=response.model_dump())
-            
-            # Extract and run tool calls
-            tool_calls = XpanderClient.extract_tool_calls(
-                llm_response=response.model_dump(),
-                llm_provider=LLMProvider.OPEN_AI
-            )
-            
-            if tool_calls:
-                results = agent.run_tools(tool_calls=tool_calls)
-                print(f"Executed {len(results)} tools")
-        
-        # Get results
-        result = agent.retrieve_execution_result()
-        print(result.result)
-        ```
-      </Tab>
-      <Tab title="TypeScript">
-        ```typescript
-        import { LLMProvider } from '@xpander-ai/sdk';
-        import OpenAI from 'openai';
-        
-        // OpenAI client for LLM interactions
-        const openai = new OpenAI({
-            apiKey: process.env.OPENAI_API_KEY,
-        });
-        
-        // Example function to run an agent
-        async function runAgent(agent) {
-            // Add a task
-            await agent.addTask({
-                input: "What are the environmental benefits of renewable energy?"
-            });
-            
-            // Initialize memory
-            await agent.memory.initMessages({
-                input: agent.execution.inputMessage,
-                instructions: agent.instructions,
-                llmProvider: LLMProvider.OPEN_AI
-            });
-            
-            // Run until completion
-            while (!(await agent.isFinished())) {
-                // Get next action from LLM
-                const response = await openai.chat.completions.create({
-                    model: "gpt-4o",
-                    messages: agent.messages,
-                    tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
-                    tool_choice: "auto",
-                    temperature: 0
-                });
-                
-                // Add LLM response to memory
-                await agent.addMessages({ messages: response });
-                
-                // Extract and run tool calls
-                const toolCalls = XpanderClient.extractToolCalls({
-                    llmResponse: response,
-                    llmProvider: LLMProvider.OPEN_AI
-                });
-                
-                if (toolCalls.length > 0) {
-                    const results = await agent.runTools({ toolCalls });
-                    console.log(`Executed ${results.length} tools`);
-                }
-            }
-            
-            // Get results
-            const result = await agent.retrieveExecutionResult();
-            console.log(result.result);
-        }
-        
-        // Run the agent
-        runAgent(agent);
-        ```
-      </Tab>
-    </Tabs>
+        if tool_calls:
+            results = agent.run_tools(tool_calls=tool_calls)
+            print(f"Executed {len(results)} tools")
+    
+    # Get results
+    result = agent.retrieve_execution_result()
+    print(result.result)
+    ```
+
+    ```typescript TypeScript
+    import { LLMProvider } from '@xpander-ai/sdk';
+    import OpenAI from 'openai';
+    
+    // OpenAI client for LLM interactions
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
+    
+    // Add a task
+    await agent.addTask({
+        input: "What are the environmental benefits of renewable energy?"
+    });
+
+    // Initialize memory with execution input and agent instructions
+    await agent.memory.initMessages({
+        input: agent.execution.inputMessage,
+        instructions: agent.instructions
+    });
+
+    // Get tools formatted for OpenAI
+    const tools = agent.getTools({ llmProvider: LLMProvider.OPEN_AI });
+
+    // Send to OpenAI
+    const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: agent.messages,
+        tools: tools,
+        tool_choice: "auto"
+    });
+
+    // Add response to memory
+    await agent.addMessages({ messages: response });
+
+    // Extract tool calls
+    const toolCalls = XpanderClient.extractToolCalls({
+        llmResponse: response,
+        llmProvider: LLMProvider.OPEN_AI
+    });
+
+    // Execute tools
+    if (toolCalls.length > 0) {
+        const results = await agent.runTools({ toolCalls });
+    }
+    ```
+    </CodeGroup>
   </Step>
 </Steps>
 
@@ -285,566 +266,344 @@ The xpander.ai SDK provides a powerful system for function calling, allowing age
 
 ### Basic Research Agent
 
-<Tabs>
-  <Tab title="Python">
-    ```python
-    from xpander_sdk import XpanderClient, LLMProvider
-    from openai import OpenAI
-    from dotenv import load_dotenv
-    import os
-    import time
-    
-    # Load environment variables
-    load_dotenv()
-    XPANDER_API_KEY = os.environ.get("XPANDER_API_KEY")
-    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-    
-    # Initialize clients
-    xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
-    openai_client = OpenAI(api_key=OPENAI_API_KEY)
-    
-    # Create an agent
-    agent = xpander_client.agents.create(
-        name="Research Assistant",
-        description="An agent that performs research tasks",
-        instructions="You are a helpful research assistant. Provide accurate information and cite sources."
+<CodeGroup>
+```python Python
+from xpander_sdk import XpanderClient, LLMProvider
+from openai import OpenAI
+from dotenv import load_dotenv
+import os
+import time
+
+# Load environment variables
+load_dotenv()
+XPANDER_API_KEY = os.environ.get("XPANDER_API_KEY")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+openai_client = OpenAI(api_key=OPENAI_API_KEY)
+
+# Create or get agent
+agent = xpander_client.agents.create(
+    name="Research Assistant",
+    description="AI assistant for research tasks",
+    instructions="You are a helpful research assistant. Your task is to help users find information from the web, summarize content, and answer questions accurately."
+)
+
+# Add a research task
+agent.add_task(input="What are the latest advancements in renewable energy?")
+
+# Initialize memory
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions
+)
+
+# Run until completion
+while not agent.is_finished():
+    # Get next action from LLM
+    response = openai_client.chat.completions.create(
+        model="gpt-4o",
+        messages=agent.messages,
+        tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
+        tool_choice="auto",
+        temperature=0.0
     )
     
-    # Find and attach web search operation
-    operations = xpander_client.operations.list()
-    web_search_op = next((op for op in operations if "web" in op.name.lower()), None)
-    if web_search_op:
-        agent.attach_operations(operation_ids=[web_search_op.id])
+    # Add LLM response to memory
+    agent.add_messages(messages=response.model_dump())
     
-    # Add a task
-    agent.add_task(input="What are the latest developments in fusion energy research?")
-    
-    # Initialize memory
-    agent.memory.init_messages(
-        input=agent.execution.input_message,
-        instructions=agent.instructions,
+    # Extract and run tool calls
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump(),
         llm_provider=LLMProvider.OPEN_AI
     )
     
-    # Run until completion
-    while not agent.is_finished():
-        # Get next action from LLM
-        response = openai_client.chat.completions.create(
-            model="gpt-4o",
-            messages=agent.messages,
-            tools=agent.get_tools(),
-            tool_choice="auto",
-            temperature=0.0
-        )
-        
-        # Add LLM response to memory
-        agent.add_messages(messages=response.model_dump())
-        
-        # Extract and run tool calls
-        tool_calls = XpanderClient.extract_tool_calls(
-            llm_response=response.model_dump(),
-            llm_provider=LLMProvider.OPEN_AI
-        )
-        
-        if tool_calls:
-            results = agent.run_tools(tool_calls=tool_calls)
-            print(f"Executed {len(results)} tools")
-        
-        # Sleep to prevent rate limiting
-        time.sleep(1)
+    if tool_calls:
+        results = agent.run_tools(tool_calls=tool_calls)
+        print(f"Executed {len(results)} tools")
     
-    # Get results
-    result = agent.retrieve_execution_result()
-    print("\nRESULT:")
-    print("=" * 80)
-    print(result.result)
-    ```
-  </Tab>
-  <Tab title="TypeScript">
-    ```typescript
-    import { XpanderClient, LLMProvider } from '@xpander-ai/sdk';
-    import OpenAI from 'openai';
-    import * as dotenv from 'dotenv';
+    # Short delay to prevent rate limiting
+    time.sleep(0.5)
+
+# Get results
+result = agent.retrieve_execution_result()
+print(result.result)
+```
+
+```typescript TypeScript
+import { XpanderClient, LLMProvider } from '@xpander-ai/sdk';
+import OpenAI from 'openai';
+import * as dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
+
+async function runResearchAgent() {
+    // Initialize clients
+    const xpanderClient = new XpanderClient({ apiKey: process.env.XPANDER_API_KEY });
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     
-    // Load environment variables
-    dotenv.config();
-    const XPANDER_API_KEY = process.env.XPANDER_API_KEY;
-    const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+    // Create or get agent
+    const agent = await xpanderClient.agents.create({
+        name: "Research Assistant",
+        description: "AI assistant for research tasks",
+        instructions: "You are a helpful research assistant. Your task is to help users find information from the web, summarize content, and answer questions accurately."
+    });
     
-    async function runResearchAgent() {
-        // Initialize clients
-        const xpanderClient = new XpanderClient({ apiKey: XPANDER_API_KEY });
-        const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
-        
-        // Create an agent
-        const agent = await xpanderClient.agents.create({
-            name: "Research Assistant",
-            description: "An agent that performs research tasks",
-            instructions: "You are a helpful research assistant. Provide accurate information and cite sources."
+    // Add a research task
+    await agent.addTask({ input: "What are the latest advancements in renewable energy?" });
+    
+    // Initialize memory
+    await agent.memory.initMessages({
+        input: agent.execution.inputMessage,
+        instructions: agent.instructions
+    });
+    
+    // Run until completion
+    while (!(await agent.isFinished())) {
+        // Get next action from LLM
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o",
+            messages: agent.messages,
+            tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
+            tool_choice: "auto",
+            temperature: 0
         });
         
-        // Find and attach web search operation
-        const operations = await xpanderClient.operations.list();
-        const webSearchOp = operations.find(op => op.name.toLowerCase().includes("web"));
+        // Add LLM response to memory
+        await agent.addMessages({ messages: response });
         
-        if (webSearchOp) {
-            await agent.attachOperations({ operationIds: [webSearchOp.id] });
-        }
-        
-        // Add a task
-        await agent.addTask({
-            input: "What are the latest developments in fusion energy research?"
-        });
-        
-        // Initialize memory
-        await agent.memory.initMessages({
-            input: agent.execution.inputMessage,
-            instructions: agent.instructions,
+        // Extract and run tool calls
+        const toolCalls = XpanderClient.extractToolCalls({
+            llmResponse: response,
             llmProvider: LLMProvider.OPEN_AI
         });
         
-        // Run until completion
-        while (!(await agent.isFinished())) {
-            // Get tools in OpenAI format
-            const tools = agent.getTools({ llmProvider: LLMProvider.OPEN_AI });
-            
-            // Get next action from LLM
-            const response = await openai.chat.completions.create({
-                model: "gpt-4o",
-                messages: agent.messages,
-                tools: tools,
-                tool_choice: "auto",
-                temperature: 0
-            });
-            
-            // Add LLM response to memory
-            await agent.addMessages({ messages: response });
-            
-            // Extract and run tool calls
-            const toolCalls = XpanderClient.extractToolCalls({
-                llmResponse: response,
-                llmProvider: LLMProvider.OPEN_AI
-            });
-            
-            if (toolCalls.length > 0) {
-                const results = await agent.runTools({ toolCalls });
-                console.log(`Executed ${results.length} tools`);
-            }
-            
-            // Sleep to prevent rate limiting
-            await new Promise(resolve => setTimeout(resolve, 1000));
+        if (toolCalls.length > 0) {
+            const results = await agent.runTools({ toolCalls });
+            console.log(`Executed ${results.length} tools`);
         }
         
-        // Get results
-        const result = await agent.retrieveExecutionResult();
-        console.log("\nRESULT:");
-        console.log("=".repeat(80));
-        console.log(result.result);
+        // Short delay to prevent rate limiting
+        await new Promise(resolve => setTimeout(resolve, 500));
     }
     
-    runResearchAgent().catch(console.error);
-    ```
-  </Tab>
-</Tabs>
+    // Get results
+    const result = await agent.retrieveExecutionResult();
+    console.log(result.result);
+}
+
+runResearchAgent().catch(console.error);
+```
+</CodeGroup>
 
 ### Agent with Local Tools
 
-<Tabs>
-  <Tab title="Python">
-    ```python
-    from xpander_sdk import XpanderClient, LLMProvider, ToolCallType, ToolCallResult
-    from openai import OpenAI
-    from dotenv import load_dotenv
-    import os
-    import time
-    import math
-    
-    # Load environment variables
-    load_dotenv()
-    XPANDER_API_KEY = os.environ.get("XPANDER_API_KEY")
-    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-    
-    # Initialize clients
-    xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
-    openai_client = OpenAI(api_key=OPENAI_API_KEY)
-    
-    # Get or create an agent
-    agents = xpander_client.agents.list()
-    if agents:
-        agent = xpander_client.agents.get(agent_id=agents[0].id)
-    else:
-        agent = xpander_client.agents.create(
-            name="Math Assistant",
-            description="An agent that helps with math calculations",
-            instructions="You are a helpful math assistant. Use the calculator tools when needed."
-        )
-    
-    # Define local calculator functions
-    def add(a: float, b: float) -> float:
-        """Add two numbers."""
-        return a + b
-    
-    def multiply(a: float, b: float) -> float:
-        """Multiply two numbers."""
-        return a * b
-    
-    def square_root(a: float) -> float:
-        """Calculate square root of a number."""
-        if a < 0:
-            raise ValueError("Cannot calculate square root of negative number")
-        return math.sqrt(a)
-    
-    # Create tool declarations
-    calculator_tools = [
-        {
-            "declaration": {
-                "type": "function",
-                "function": {
-                    "name": "add",
-                    "description": "Add two numbers",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "a": {"type": "number"},
-                            "b": {"type": "number"}
-                        },
-                        "required": ["a", "b"]
-                    }
-                }
-            },
-            "fn": add
-        },
-        {
-            "declaration": {
-                "type": "function",
-                "function": {
-                    "name": "multiply",
-                    "description": "Multiply two numbers",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "a": {"type": "number"},
-                            "b": {"type": "number"}
-                        },
-                        "required": ["a", "b"]
-                    }
-                }
-            },
-            "fn": multiply
-        },
-        {
-            "declaration": {
-                "type": "function",
-                "function": {
-                    "name": "square_root",
-                    "description": "Calculate square root of a number",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "a": {"type": "number"}
-                        },
-                        "required": ["a"]
-                    }
-                }
-            },
-            "fn": square_root
+<CodeGroup>
+```python Python
+from xpander_sdk import XpanderClient, LLMProvider, ToolCallType, ToolCallResult
+from openai import OpenAI
+from dotenv import load_dotenv
+import os
+import time
+import math
+
+# Load environment variables
+load_dotenv()
+XPANDER_API_KEY = os.environ.get("XPANDER_API_KEY")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+openai_client = OpenAI(api_key=OPENAI_API_KEY)
+
+# Create a calculator agent
+agent = xpander_client.agents.create(
+    name="Calculator Assistant",
+    description="An agent that can perform calculations",
+    instructions="You are a helpful assistant that can perform mathematical calculations."
+)
+
+# Define a local tool for calculations
+def calculate(expression):
+    """Safely evaluate a mathematical expression."""
+    try:
+        # Define allowed symbols and functions
+        allowed_names = {
+            "abs": abs, "round": round, "min": min, "max": max,
+            "sum": sum, "pow": pow, "math": math
         }
-    ]
+        
+        # Evaluate the expression in a safe way
+        result = eval(expression, {"__builtins__": {}}, allowed_names)
+        return ToolCallResult(
+            function_name="calculate",
+            tool_call_id="some_id",
+            is_success=True,
+            result=str(result)
+        )
+    except Exception as e:
+        return ToolCallResult(
+            function_name="calculate",
+            tool_call_id="some_id", 
+            is_success=False,
+            error=f"Error evaluating expression: {str(e)}"
+        )
+
+# Register the local tool handler
+agent.register_local_tool_handler(tool_name="calculate", handler=calculate)
+
+# Add a task
+agent.add_task(input="I need to calculate the area of a circle with radius 5 cm and also the volume of a sphere with the same radius.")
+
+# Initialize memory
+agent.memory.init_messages(
+    input=agent.execution.input_message,
+    instructions=agent.instructions
+)
+
+# Run agent loop
+while not agent.is_finished():
+    # Get next action from LLM
+    response = openai_client.chat.completions.create(
+        model="gpt-4o",
+        messages=agent.messages,
+        tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
+        tool_choice="auto",
+        temperature=0.0
+    )
     
-    # Helper structure for looking up local tools
-    local_tools_by_name = {tool["declaration"]["function"]["name"]: tool["fn"] 
-                          for tool in calculator_tools}
+    # Add LLM response to memory
+    agent.add_messages(messages=response.model_dump())
     
-    # Add local tools to agent
-    agent.add_local_tools(tools=calculator_tools)
-    
-    # Add a task
-    agent.add_task(input="Calculate the area of a circle with radius 7.5 cm, then find the square root of that area.")
-    
-    # Initialize memory
-    agent.memory.init_messages(
-        input=agent.execution.input_message,
-        instructions=agent.instructions,
+    # Extract tool calls
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump(),
         llm_provider=LLMProvider.OPEN_AI
     )
     
-    # Run until completion
-    while not agent.is_finished():
-        # Get next action from LLM
-        response = openai_client.chat.completions.create(
-            model="gpt-4o",
-            messages=agent.messages,
-            tools=agent.get_tools(),
-            tool_choice="auto",
-            temperature=0.0
-        )
-        
-        # Add LLM response to memory
-        agent.add_messages(messages=response.model_dump())
-        
-        # Extract all tool calls
-        tool_calls = XpanderClient.extract_tool_calls(
-            llm_response=response.model_dump(),
-            llm_provider=LLMProvider.OPEN_AI
-        )
-        
-        # Extract local tool calls
-        local_tool_calls = XpanderClient.retrieve_pending_local_tool_calls(
-            tool_calls=tool_calls
-        )
-        
-        # Execute local tool calls
-        local_results = []
-        for tc in local_tool_calls:
-            # Create result object
-            result = ToolCallResult(
-                function_name=tc.name,
-                tool_call_id=tc.tool_call_id,
-                payload=tc.payload
-            )
+    # Filter for local tool calls
+    local_tool_calls = XpanderClient.retrieve_pending_local_tool_calls(
+        tool_calls=tool_calls
+    )
+    
+    # Run local tools
+    if local_tool_calls:
+        results = agent.run_tools(tool_calls=local_tool_calls)
+        print(f"Executed {len(results)} calculations")
+
+# Get result
+result = agent.retrieve_execution_result()
+print(result.result)
+```
+
+```typescript TypeScript
+import { XpanderClient, LLMProvider, ToolCallType, ToolCallResult } from '@xpander-ai/sdk';
+import OpenAI from 'openai';
+import * as dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
+
+async function runCalculatorAgent() {
+    // Initialize clients
+    const xpanderClient = new XpanderClient({ apiKey: process.env.XPANDER_API_KEY });
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    
+    // Create a calculator agent
+    const agent = await xpanderClient.agents.create({
+        name: "Calculator Assistant",
+        description: "An agent that can perform calculations",
+        instructions: "You are a helpful assistant that can perform mathematical calculations."
+    });
+    
+    // Define a local tool for calculations
+    function calculate(expression: string): ToolCallResult {
+        try {
+            // Use Function constructor for sandboxed evaluation
+            // This is safer than eval() in JavaScript
+            const calculate = new Function(
+                'Math', 
+                'return ' + expression.replace(/[^0-9+\-*/^().%><= ,Math]/g, '')
+            );
             
-            try:
-                if tc.name in local_tools_by_name:
-                    # Execute the local function
-                    result.is_success = True
-                    result.result = str(local_tools_by_name[tc.name](**tc.payload))
-                    print(f"Executed {tc.name}({tc.payload}) = {result.result}")
-                else:
-                    raise Exception(f"Local Tool {tc.name} not found!")
-            except Exception as e:
-                result.is_success = False
-                result.error = str(e)
-                print(f"Error executing {tc.name}: {result.error}")
+            // Execute the calculation
+            const result = calculate(Math);
             
-            local_results.append(result)
-        
-        # Add local tool results to memory
-        if local_results:
-            agent.memory.add_tool_call_results(tool_call_results=local_results)
-        
-        # Run non-local tools
-        remote_tool_calls = [tc for tc in tool_calls if tc.type != ToolCallType.LOCAL]
-        if remote_tool_calls:
-            results = agent.run_tools(tool_calls=remote_tool_calls)
-            print(f"Executed {len(results)} remote tools")
-        
-        # Sleep to prevent rate limiting
-        time.sleep(1)
-    
-    # Get results
-    result = agent.retrieve_execution_result()
-    print("\nRESULT:")
-    print("=" * 80)
-    print(result.result)
-    ```
-  </Tab>
-  <Tab title="TypeScript">
-    ```typescript
-    import { XpanderClient, LLMProvider, ToolCallType, ToolCallResult } from '@xpander-ai/sdk';
-    import OpenAI from 'openai';
-    import * as dotenv from 'dotenv';
-    
-    // Load environment variables
-    dotenv.config();
-    const XPANDER_API_KEY = process.env.XPANDER_API_KEY;
-    const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-    
-    async function runMathAgent() {
-        // Initialize clients
-        const xpanderClient = new XpanderClient({ apiKey: XPANDER_API_KEY });
-        const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
-        
-        // Get or create an agent
-        const agents = await xpanderClient.agents.list();
-        let agent;
-        
-        if (agents.length > 0) {
-            agent = await xpanderClient.agents.get({ agentId: agents[0].id });
-        } else {
-            agent = await xpanderClient.agents.create({
-                name: "Math Assistant",
-                description: "An agent that helps with math calculations",
-                instructions: "You are a helpful math assistant. Use the calculator tools when needed."
+            return new ToolCallResult({
+                functionName: "calculate",
+                toolCallId: "some_id",
+                isSuccess: true,
+                result: String(result)
+            });
+        } catch (error) {
+            return new ToolCallResult({
+                functionName: "calculate",
+                toolCallId: "some_id",
+                isSuccess: false,
+                error: `Error evaluating expression: ${error.message}`
             });
         }
-        
-        // Define local calculator functions
-        function add(a: number, b: number): number {
-            // Add two numbers
-            return a + b;
-        }
-        
-        function multiply(a: number, b: number): number {
-            // Multiply two numbers
-            return a * b;
-        }
-        
-        function squareRoot(a: number): number {
-            // Calculate square root of a number
-            if (a < 0) {
-                throw new Error("Cannot calculate square root of negative number");
-            }
-            return Math.sqrt(a);
-        }
-        
-        // Create tool declarations
-        const calculatorTools = [
-            {
-                declaration: {
-                    type: "function",
-                    function: {
-                        name: "add",
-                        description: "Add two numbers",
-                        parameters: {
-                            type: "object",
-                            properties: {
-                                a: { type: "number" },
-                                b: { type: "number" }
-                            },
-                            required: ["a", "b"]
-                        }
-                    }
-                },
-                fn: add
-            },
-            {
-                declaration: {
-                    type: "function",
-                    function: {
-                        name: "multiply",
-                        description: "Multiply two numbers",
-                        parameters: {
-                            type: "object",
-                            properties: {
-                                a: { type: "number" },
-                                b: { type: "number" }
-                            },
-                            required: ["a", "b"]
-                        }
-                    }
-                },
-                fn: multiply
-            },
-            {
-                declaration: {
-                    type: "function",
-                    function: {
-                        name: "square_root",
-                        description: "Calculate square root of a number",
-                        parameters: {
-                            type: "object",
-                            properties: {
-                                a: { type: "number" }
-                            },
-                            required: ["a"]
-                        }
-                    }
-                },
-                fn: squareRoot
-            }
-        ];
-        
-        // Helper structure for looking up local tools
-        const localToolsByName = calculatorTools.reduce((acc, tool) => {
-            acc[tool.declaration.function.name] = tool.fn;
-            return acc;
-        }, {});
-        
-        // Add local tools to agent
-        await agent.addLocalTools({ tools: calculatorTools });
-        
-        // Add a task
-        await agent.addTask({
-            input: "Calculate the area of a circle with radius 7.5 cm, then find the square root of that area."
+    }
+    
+    // Register the local tool handler
+    agent.registerLocalToolHandler({
+        toolName: "calculate",
+        handler: calculate
+    });
+    
+    // Add a task
+    await agent.addTask({
+        input: "I need to calculate the area of a circle with radius 5 cm and also the volume of a sphere with the same radius."
+    });
+    
+    // Initialize memory
+    await agent.memory.initMessages({
+        input: agent.execution.inputMessage,
+        instructions: agent.instructions
+    });
+    
+    // Run agent loop
+    while (!(await agent.isFinished())) {
+        // Get next action from LLM
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o",
+            messages: agent.messages,
+            tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
+            tool_choice: "auto",
+            temperature: 0
         });
         
-        // Initialize memory
-        await agent.memory.initMessages({
-            input: agent.execution.inputMessage,
-            instructions: agent.instructions,
+        // Add LLM response to memory
+        await agent.addMessages({ messages: response });
+        
+        // Extract tool calls
+        const toolCalls = XpanderClient.extractToolCalls({
+            llmResponse: response,
             llmProvider: LLMProvider.OPEN_AI
         });
         
-        // Run until completion
-        while (!(await agent.isFinished())) {
-            // Get next action from LLM
-            const response = await openai.chat.completions.create({
-                model: "gpt-4o",
-                messages: agent.messages,
-                tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
-                tool_choice: "auto",
-                temperature: 0
-            });
-            
-            // Add LLM response to memory
-            await agent.addMessages({ messages: response });
-            
-            // Extract all tool calls
-            const toolCalls = XpanderClient.extractToolCalls({
-                llmResponse: response,
-                llmProvider: LLMProvider.OPEN_AI
-            });
-            
-            // Extract local tool calls
-            const localToolCalls = XpanderClient.retrievePendingLocalToolCalls({
-                toolCalls: toolCalls
-            });
-            
-            // Execute local tool calls
-            const localResults = [];
-            for (const tc of localToolCalls) {
-                // Create result object
-                const result = new ToolCallResult({
-                    functionName: tc.name,
-                    toolCallId: tc.toolCallId,
-                    payload: tc.payload
-                });
-                
-                try {
-                    if (tc.name in localToolsByName) {
-                        // Execute the local function
-                        result.isSuccess = true;
-                        result.result = String(localToolsByName[tc.name](...Object.values(tc.payload)));
-                        console.log(`Executed ${tc.name}(${JSON.stringify(tc.payload)}) = ${result.result}`);
-                    } else {
-                        throw new Error(`Local Tool ${tc.name} not found!`);
-                    }
-                } catch (e) {
-                    result.isSuccess = false;
-                    result.error = e.message;
-                    console.log(`Error executing ${tc.name}: ${result.error}`);
-                }
-                
-                localResults.push(result);
-            }
-            
-            // Add local tool results to memory
-            if (localResults.length > 0) {
-                await agent.memory.addToolCallResults({ toolCallResults: localResults });
-            }
-            
-            // Run non-local tools
-            const remoteToolCalls = toolCalls.filter(tc => tc.type !== ToolCallType.LOCAL);
-            if (remoteToolCalls.length > 0) {
-                const results = await agent.runTools({ toolCalls: remoteToolCalls });
-                console.log(`Executed ${results.length} remote tools`);
-            }
-            
-            // Sleep to prevent rate limiting
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
+        // Filter for local tool calls
+        const localToolCalls = XpanderClient.retrievePendingLocalToolCalls({
+            toolCalls: toolCalls
+        });
         
-        // Get results
-        const result = await agent.retrieveExecutionResult();
-        console.log("\nRESULT:");
-        console.log("=".repeat(80));
-        console.log(result.result);
+        // Run local tools
+        if (localToolCalls.length > 0) {
+            const results = await agent.runTools({ toolCalls: localToolCalls });
+            console.log(`Executed ${results.length} calculations`);
+        }
     }
     
-    runMathAgent().catch(console.error);
-    ```
-  </Tab>
-</Tabs>
+    // Get result
+    const result = await agent.retrieveExecutionResult();
+    console.log(result.result);
+}
+
+runCalculatorAgent().catch(console.error);
+```
+</CodeGroup>
 
 ## Best Practices
 

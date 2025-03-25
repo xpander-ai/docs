@@ -9,181 +9,296 @@ The platform handles the complex infrastructure needed for managing thousands of
 
 # Key Platform Features
 
-xpander.ai provides a complete infrastructure for building and deploying production-grade AI agents with minimal engineering overhead. The platform is built around these core capabilities:
+xpander.ai is designed with two core principles:
 
-* **Agentic Interfaces Library & Generator**: Automatically create AI interfaces that integrate AI agents with any system through HTTP traffic analysis or API documentation.
-
-* **Agent Graph System**: Control autonomous AI agents with precise boundaries and predictable behavior patterns.
-
-* **State Management**: Scale AI state machines horizontally to handle thousands of concurrent users across different frameworks and LLM providers.
-
-* **Human Interfaces**: Connect your agents to popular channels like Slack, Teams, REST APIs, and voice interfaces with minimal configuration.
-
-* **On-Premises Deployment**: Run the entire platform within your organization's VPC for complete data control and security compliance.
-
-## Why use xpander.ai
-
-The platform is designed with two key principles:
-
-1. **Focus on agent logic, not infrastructure**: We handle the complex state management, scaling, and deployment concerns so you can focus on what your agents do.
+1. **Focus on agent logic, not infrastructure**: We handle complex state management, scaling, and deployment concerns so you can focus on what your agents do.
 
 2. **Framework and provider independence**: Build once and deploy with any LLM provider or agent framework without rewriting your code.
 
-Here are the main advantages of using xpander.ai:
-
-* **Complete agent infrastructure**: Production-ready infrastructure for deploying agents at scale without building custom infrastructure.
-
-* **State persistence**: Maintain complex multi-step workflows with reliable state tracking across thousands of users.
-
-* **Framework flexibility**: Switch between different agent frameworks (SmolAgents, LangGraph) without rewriting your agent logic.
-
-* **Provider independence**: Avoid vendor lock-in by easily switching between LLM providers (OpenAI, Anthropic, Gemini).
-
-* **Enterprise security**: Deploy on-premises with full control over your data and infrastructure.
+<CardGroup cols={2}>
+  <Card title="Agentic Interfaces" icon="plug">
+    Automatically create AI interfaces that integrate agents with any system through HTTP traffic analysis or API documentation.
+  </Card>
+  
+  <Card title="Agent Graph System" icon="diagram-project">
+    Control autonomous AI agents with precise boundaries and predictable behavior patterns.
+  </Card>
+  
+  <Card title="State Management" icon="database">
+    Scale AI state machines horizontally to handle thousands of concurrent users across different frameworks and LLM providers.
+  </Card>
+  
+  <Card title="Human Interfaces" icon="comments">
+    Connect your agents to popular channels like Slack, Teams, REST APIs, and voice interfaces with minimal configuration.
+  </Card>
+  
+  <Card title="Framework Flexibility" icon="code-branch">
+    Switch between different agent frameworks (SmolAgents, LangGraph) without rewriting your agent logic.
+  </Card>
+  
+  <Card title="Provider Independence" icon="unlock">
+    Avoid vendor lock-in by easily switching between LLM providers (OpenAI, Anthropic, Gemini).
+  </Card>
+  
+  <Card title="On-Premises Deployment" icon="building">
+    Run the entire platform within your organization's VPC for complete data control and security compliance.
+  </Card>
+  
+  <Card title="Enterprise Security" icon="shield-halved">
+    Deploy on-premises with full control over your data and infrastructure for complete security compliance.
+  </Card>
+</CardGroup>
 
 # Getting Started
 
-## Hello World Example
+## Install the SDK
+Install the xpander SDK to connect programmatically:
 
-<Steps>
-  <Step title="Create an agent and define the graph of tasks and tools">
-    <Frame>
-      ![](/static/images/screenshots/2025-03-15-20-54-49.png)
-    </Frame>
-  </Step>
-  
-  <Step title="Test your agent with the hosted Chainlit UI">
-    <Frame>
-      ![](/static/images/screenshots/2025-03-15-20-53-31.png)
-    </Frame>
-  </Step>
+```bash
+pip install xpander-sdk
+```
 
-  <Step title="Install the SDK">
-    Install the xpander SDK to connect programmatically:
+<Tabs>
+  <Tab title="UI Approach">
+    ## Hello World Example with Web UI
 
-    ```bash
-    pip install xpander-sdk
-    ```
-  </Step>
+    <Steps>
+      <Step title="Create an agent and define the graph of tasks and tools">
+        <Frame>
+          ![](/static/images/screenshots/2025-03-15-20-54-49.png)
+        </Frame>
+      </Step>
+      
+      <Step title="Test your agent with the hosted Chainlit UI">
+        <Frame>
+          ![](/static/images/screenshots/2025-03-15-20-53-31.png)
+        </Frame>
+      </Step>
 
-  <Step title="Connect to your agent programmatically">
-    The following steps show how to execute your agent locally, with full control over the execution loop.
-    
-    First, initialize the clients:
-    
-    ```python
-    from xpander import XpanderClient
-    from openai import OpenAI
-
-    # Initialize clients
-    xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
-    openai_client = OpenAI(api_key=OPENAI_API_KEY)
-
-    # Get your agent
-    agent = xpander_client.agents.get(agent_id=XPANDER_AGENT_ID)
-    ```
-  </Step>
-  
-  <Step title="Create a task and initialize state">
-    Create an immutable task for the agent. Tasks are immutable by design, allowing you to track state changes throughout execution:
-    
-    ```python
-    # Create a task for the agent
-    task1 = agent.add_task("""
-    Summarize the last 24 hours top hackernews
-    """)
-
-    # Initialize agent memory with the task
-    agent.memory.init_messages(
-        input=agent.execution.input_message,
-        instructions=agent.instructions
-    )
-    ```
-    
-    <Accordion title="Understanding Task Creation and State Initialization">
-    When you create a task with `agent.add_task()`, xpander:
-    
-    1. Creates an immutable task record that persists throughout execution
-    2. Generates a unique execution ID to track this specific agent run
-    3. Sets up an initial input message that becomes available as `agent.execution.input_message`
-    
-    The `agent.memory.init_messages()` call then:
-    
-    1. Initializes the agent's working memory with the task input and instructions
-    2. Establishes the initial state for the agent's execution
-    3. Prepares the message history that will be sent to the LLM
-    
-    The immutability of tasks ensures you always have a reliable record of what was requested, while the memory system handles the evolving state of the agent as it works. This separation of concerns allows for reliable tracking, debugging, and auditing of agent behavior.
-    </Accordion>
-
-    <Accordion title="Agent Input Message Format">
-    ```json
-    {
-      "content": "Summarize the last 24 hours top hackernews",
-      "role": "user"
-    }
-    ```
-    
-    The input message follows a standard chat format with a role and content. This is automatically generated from your task description and becomes available as `agent.execution.input_message`.
-    </Accordion>
-
-    <Accordion title="Agent Instructions Format">
-    ```json
-    {
-      "general": "You are a Hacker News summarization agent. Retrieve top stories, fetch details, and generate concise summaries using Perplexity AI. Format and present the summarized news. End with xpfinish-agent-execution-finished.\n        IMPORTANT: when making a sub-task (with input_task), make sure to append all related \n        information relevant for the sub-task. For instance, if the sub-task is about sending \n        an email with tags, ensure the tags and any required data are included in the input_task.\n        \n        - Execute tools as needed to complete tasks.  \n        - If a tool fails 3 times, execution stalls, or no tool is called for an extended period, stop immediately and report the issue along with any relevant results or errors.\n        ",
-      "goal": "Retrieve top stories from Hacker News, fetch detailed content for each story, generate concise summaries, and format the results for presentation. Finalize with xpfinish-agent-execution-finished, returning the summarized news articles in the 'results'.",
-      "role": "Expert in retrieving and processing Hacker News stories, responsible for fetching top stories and their details"
-    }
-    ```
-    
-    The instructions object provides comprehensive guidance to the agent:
-    - `general`: Overall instructions, constraints, and operational guidelines
-    - `goal`: Specific objective the agent needs to accomplish
-    - `role`: Identity and responsibilities the agent should assume
-    
-    These instructions are used to initialize the agent's memory and guide its decision-making throughout execution.
-    </Accordion>
-  </Step>
-  
-  <Step title="Execute the agent loop locally (optional)">
-    Run the agent execution loop locally. The `is_finished()` method allows you to check if the agent has completed its task, errored out, or is still processing:
-    
-    ```python
-    # Run the agent until completion
-    while not agent.is_finished():
-        # Get LLM response with available tools
-        response = openai_client.chat.completions.create(
-            model="gpt-4o",
-            messages=agent.messages,
-            tools=agent.get_tools(),
-            tool_choice=agent.tool_choice,
-            temperature=0.0
-        )
-                
-        # Process LLM response
-        agent.add_messages(response.model_dump())
+      <Step title="Connect to your agent programmatically">
+        The following steps show how to execute your agent locally, with full control over the execution loop.
         
-        # Extract and run tool calls
-        tool_calls = XpanderClient.extract_tool_calls(llm_response=response.model_dump())
-        agent.run_tools(tool_calls=tool_calls)
-    ```
-    
-    The `is_finished()` API checks the execution state of the agent, enabling you to control the execution loop programmatically. This approach gives you full visibility into the agent's execution process.
-  </Step>
+        First, initialize the clients:
+        
+        ```python
+        from xpander import XpanderClient
+        from openai import OpenAI
+
+        # Initialize clients
+        xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+        openai_client = OpenAI(api_key=OPENAI_API_KEY)
+
+        # Get your agent
+        agent = xpander_client.agents.get(agent_id=XPANDER_AGENT_ID)
+        ```
+      </Step>
+      
+      <Step title="Create a task and initialize state">
+        Create an immutable task for the agent. Tasks are immutable by design, allowing you to track state changes throughout execution:
+        
+        ```python
+        # Create a task for the agent
+        task1 = agent.add_task("""
+        Summarize the last 24 hours top hackernews
+        """)
+
+        # Initialize agent memory with the task
+        agent.memory.init_messages(
+            input=agent.execution.input_message,
+            instructions=agent.instructions
+        )
+        ```
+        
+        <Accordion title="Understanding Task Creation and State Initialization">
+        When you create a task with `agent.add_task()`, xpander:
+        
+        1. Creates an immutable task record that persists throughout execution
+        2. Generates a unique execution ID to track this specific agent run
+        3. Sets up an initial input message that becomes available as `agent.execution.input_message`
+        
+        The `agent.memory.init_messages()` call then:
+        
+        1. Initializes the agent's working memory with the task input and instructions
+        2. Establishes the initial state for the agent's execution
+        3. Prepares the message history that will be sent to the LLM
+        
+        The immutability of tasks ensures you always have a reliable record of what was requested, while the memory system handles the evolving state of the agent as it works. This separation of concerns allows for reliable tracking, debugging, and auditing of agent behavior.
+        </Accordion>
+
+        <Accordion title="Agent Input Message Format">
+        ```json
+        {
+          "content": "Summarize the last 24 hours top hackernews",
+          "role": "user"
+        }
+        ```
+        
+        The input message follows a standard chat format with a role and content. This is automatically generated from your task description and becomes available as `agent.execution.input_message`.
+        </Accordion>
+
+        <Accordion title="Agent Instructions Format">
+        ```json
+        {
+          "general": "You are a Hacker News summarization agent. Retrieve top stories, fetch details, and generate concise summaries using Perplexity AI. Format and present the summarized news. End with xpfinish-agent-execution-finished.\n        IMPORTANT: when making a sub-task (with input_task), make sure to append all related \n        information relevant for the sub-task. For instance, if the sub-task is about sending \n        an email with tags, ensure the tags and any required data are included in the input_task.\n        \n        - Execute tools as needed to complete tasks.  \n        - If a tool fails 3 times, execution stalls, or no tool is called for an extended period, stop immediately and report the issue along with any relevant results or errors.\n        ",
+          "goal": "Retrieve top stories from Hacker News, fetch detailed content for each story, generate concise summaries, and format the results for presentation. Finalize with xpfinish-agent-execution-finished, returning the summarized news articles in the 'results'.",
+          "role": "Expert in retrieving and processing Hacker News stories, responsible for fetching top stories and their details"
+        }
+        ```
+        
+        The instructions object provides comprehensive guidance to the agent:
+        - `general`: Overall instructions, constraints, and operational guidelines
+        - `goal`: Specific objective the agent needs to accomplish
+        - `role`: Identity and responsibilities the agent should assume
+        
+        These instructions are used to initialize the agent's memory and guide its decision-making throughout execution.
+        </Accordion>
+      </Step>
+      
+      <Step title="Execute the agent loop locally (optional)">
+        Run the agent execution loop locally. The `is_finished()` method allows you to check if the agent has completed its task, errored out, or is still processing:
+        
+        ```python
+        # Run the agent until completion
+        while not agent.is_finished():
+            # Get LLM response with available tools
+            response = openai_client.chat.completions.create(
+                model="gpt-4o",
+                messages=agent.messages,
+                tools=agent.get_tools(),
+                tool_choice=agent.tool_choice,
+                temperature=0.0
+            )
+                    
+            # Process LLM response
+            agent.add_messages(response.model_dump())
+            
+            # Extract and run tool calls
+            tool_calls = XpanderClient.extract_tool_calls(llm_response=response.model_dump())
+            agent.run_tools(tool_calls=tool_calls)
+        ```
+        
+        The `is_finished()` API checks the execution state of the agent, enabling you to control the execution loop programmatically. This approach gives you full visibility into the agent's execution process.
+      </Step>
+      
+      <Step title="Retrieve execution results">
+        Once execution is complete, you can retrieve the immutable execution result:
+        
+        ```python
+        # Get final results
+        execution_result = agent.retrieve_execution_result()
+        print("Status:", execution_result.status)
+        print("Result:", execution_result.result)
+        ```
+        
+        The execution result is immutable, meaning it can be safely retrieved at any point during or after execution without affecting the agent's state. This design allows you to monitor progress or record results while the agent continues processing.
+      </Step>
+    </Steps>
+  </Tab>
   
-  <Step title="Retrieve execution results">
-    Once execution is complete, you can retrieve the immutable execution result:
-    
-    ```python
-    # Get final results
-    execution_result = agent.retrieve_execution_result()
-    print("Status:", execution_result.status)
-    print("Result:", execution_result.result)
-    ```
-    
-    The execution result is immutable, meaning it can be safely retrieved at any point during or after execution without affecting the agent's state. This design allows you to monitor progress or record results while the agent continues processing.
-  </Step>
-</Steps>
+  <Tab title="CLI Approach">
+    ## Hello World Example with CLI
+
+    <Steps>
+      <Step title="Install the CLI">
+        Install the xpander CLI globally:
+
+        ```bash
+        npm install -g xpander-cli
+        ```
+      </Step>
+
+      <Step title="Configure your credentials">
+        Set up your API key and organization:
+
+        ```bash
+        xpander configure
+        ```
+
+        You'll see output similar to:
+
+        ```
+        You need to configure your credentials to use the Xpander CLI.
+        ? Would you like to configure your credentials now? Yes
+        ? Enter your Xpander API key: IhPLk2Cu5BXw5BmVBhld3p31mTpAxC892pD6O5E3
+        API Key: IhPL...O5E3 (first and last 4 characters shown)
+        ✔ API key validation successful
+        API key saved to profile "default".
+        Organization ID will be auto-detected for you now...
+        ⠏ Detecting organization ID...Organization ID detected: 8d185373-8b24-47a7-8607-3e9036b968bb
+        Organization ID saved to profile "default".
+        ✔ Organization ID detected: 8d185373-8b24-47a7-8607-3e9036b968bb
+        Found 1 agent(s) in your organization.
+        Set "default" as the default profile.
+        Credentials stored at: /Users/david/.xpander/credentials
+        Profile: default
+
+        Configuration successful.
+        ```
+      </Step>
+
+      <Step title="Create a new agent">
+        Create your agent using the CLI:
+
+        ```bash
+        xpander agent new
+        ```
+
+        Follow the interactive prompts to define your agent's capabilities and behavior.
+      </Step>
+
+      <Step title="Connect to your agent programmatically">
+        The following steps show how to execute your agent created with the CLI:
+        
+        ```python
+        from xpander import XpanderClient
+        from openai import OpenAI
+
+        # Initialize clients
+        xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+        openai_client = OpenAI(api_key=OPENAI_API_KEY)
+
+        # Get your agent
+        agent = xpander_client.agents.get(agent_id=XPANDER_AGENT_ID)
+        ```
+      </Step>
+      
+      <Step title="Execute your agent">
+        Use the same execution pattern as in the UI approach. For more details on working with different LLM models, refer to the [LLM Models documentation](/docs/01-get-started/02-llm-models).
+
+        ```python
+        # Create a task for the agent
+        task = agent.add_task("Your task description here")
+
+        # Initialize agent memory with the task
+        agent.memory.init_messages(
+            input=agent.execution.input_message,
+            instructions=agent.instructions
+        )
+
+        # Run the agent until completion
+        while not agent.is_finished():
+            response = openai_client.chat.completions.create(
+                model="gpt-4o",
+                messages=agent.messages,
+                tools=agent.get_tools(),
+                tool_choice=agent.tool_choice,
+                temperature=0.0
+            )
+                    
+            agent.add_messages(response.model_dump())
+            
+            tool_calls = XpanderClient.extract_tool_calls(llm_response=response.model_dump())
+            agent.run_tools(tool_calls=tool_calls)
+
+        # Get results
+        execution_result = agent.retrieve_execution_result()
+        print("Status:", execution_result.status)
+        print("Result:", execution_result.result)
+        ```
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
 
 ## Example Output
 
@@ -216,4 +331,3 @@ Result: Here are the top Hacker News stories from the last 24 hours:
    - Link: [Read more](https://github.blog/security/sign-in-as-anyone-bypassing-saml-sso-authentication-with-parser-differentials/)
 
 These stories highlight a range of topics from innovative tech projects to significant security insights.
-```
