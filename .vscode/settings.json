@@ -1,0 +1,18 @@
+{
+    "files.associations": {
+        "*.mdx": "markdown",
+        "*.md": "markdown"
+    },
+    "[markdown]": {
+        "editor.wordWrap": "on",
+        "editor.quickSuggestions": {
+            "comments": "on",
+            "strings": "on",
+            "other": "on"
+        }
+    },
+    "editor.defaultFormatter": "unifiedjs.vscode-mdx",
+    "markdown.updateLinksOnFileMove.enabled": "prompt",
+    "markdown.validate.enabled": true,
+    "markdown.extension.toc.updateOnSave": false
+} 
