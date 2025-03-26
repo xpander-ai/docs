@@ -26,13 +26,17 @@ With xpander.ai's native MCP support, you can easily integrate xpander's agentic
     Add a configuration snippet like the following, replacing the URL with your specific xpander MCP endpoint: (The file is located at '~/Library/Application Support/Claude/claude_desktop_config.json')
 
     ```json
+
     {
-      "linkedin": {
-        "command": "npx",
-        "args": [
-          "xpander-mcp-remote",
-          "https://mcp.xpander.ai/f5dd774a-b5dc-4f2b-a49a-08719abcaa0b/IhPLk2Cu5BXw**********892pD6O5E3/"
-        ]
+      "globalShortcut": "Alt+Space",
+      "mcpServers": {
+        "linkedin": {
+          "command": "npx",
+          "args": [
+            "xpander-mcp-remote",
+            "https://mcp.xpander.ai/f5dd774a-b5dc-4f2b-a49a-08719abcaa0b/IhPLk2Cu5BXw5BmV********2pD6O5E3/"
+          ]
+        }
       }
     }
     ```
@@ -42,6 +46,43 @@ With xpander.ai's native MCP support, you can easily integrate xpander's agentic
 <Warning>
   The MCP URL contains your API key, so never share it publicly. Treat it as a sensitive credential.
 </Warning>
+
+You can add multiple MCP servers to your configuration file by adding them to the `mcpServers` object. Each server should have a unique key:
+
+```json
+{
+  "globalShortcut": "Alt+Space",
+  "mcpServers": {
+    "linkedin": {
+      "command": "npx",
+      "args": [
+        "xpander-mcp-remote",
+        "https://mcp.xpander.ai/your-linkedin-mcp-url/"
+      ]
+    },
+    "gmail": {
+      "command": "npx",
+      "args": [
+        "xpander-mcp-remote",
+        "https://mcp.xpander.ai/your-gmail-mcp-url/"
+      ]
+    }
+  }
+}
+```
+
+<Tip>
+  Instead of manually editing the configuration file, you can use the MCP installer by adding this to your configuration file at '~/Library/Application Support/Claude/claude_desktop_config.json':
+  ```json
+  "mcp-installer": {
+    "command": "npx",
+    "args": [
+      "@anaisbetts/mcp-installer"
+    ]
+  }
+  ```
+  Then simply ask Claude to install your MCP URL, and it will handle the installation automatically.
+</Tip>
 
 ### Working with Authenticated Connectors
 
@@ -85,3 +126,16 @@ Once configured, you can test your integration by asking Claude to perform actio
 3. For Weather: "What's the weather like in San Francisco today?"
 
 Claude will seamlessly connect to the xpander MCP server and utilize its agentic interfaces to fulfill your requests. 
+
+### Demo
+
+<Frame>
+<video
+  autoPlay
+  muted
+  loop
+  playsInline
+  className="w-full aspect-video"
+  src="https://assets.xpanderai.io/vidoes/release-notes/mcp-support.mp4"
+></video>
+</Frame>
