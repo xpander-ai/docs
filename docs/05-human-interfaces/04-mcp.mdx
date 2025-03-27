@@ -1,0 +1,208 @@
+---
+title: "Model Context Protocol (MCP) Integration"
+description: "Learn how to integrate xpander's agentic interfaces such as Claude and other AI assistants using MCP"
+icon: "bridge"
+---
+
+The xpander.ai SDK supports the Model Context Protocol (MCP), allowing you to extend Claude and other compatible AI assistants with xpander's agentic interfaces natively.
+
+### Configuring MCP Server for Claude Desktop
+
+With xpander.ai's native MCP support, you can easily integrate xpander's agentic interfaces directly into Claude and other compatible AI assistants:
+
+<Tabs>
+
+<Tab title="Specific Interface MCP">
+
+<Steps>
+  <Step title="Access Agentic Interfaces Settings">
+    Open https://app.xpander.ai
+    In the settings menu, click on "Agentic Interfaces".
+    <Frame>
+    ![alt text](/static/images/screenshots/Agentic%20Interfaces.png)
+    </Frame>
+  </Step>
+  <Step title="Select a specific interface">
+    In the Agentic Interfaces panel, select the specific application (e.g., Slack, HubSpot)
+    <Frame>
+    ![alt text](/static/images/screenshots/specific-interface.png)
+    </Frame>
+  </Step>
+  <Step title="Click on MCP Configuration">
+    Find and click on the "MCP Configuration" option.
+    <Frame>![alt text](/static/images/screenshots/MCP%20Configuration.png)</Frame>
+  </Step>
+  <Step title="Add the MCP Server to Claude">
+    Add a configuration snippet like the following, replacing the URL with your specific Xpander MCP endpoint: (The file is located at '~/Library/Application Support/Claude/claude_desktop_config.json')
+
+    ```json
+    {
+      "globalShortcut": "Alt+Space",
+      "mcpServers": {
+        "slack": {
+          "command": "npx",
+          "args": [
+            "xpander-mcp-remote",
+            "https://mcp.xpander.ai/your-mcp-url/"
+          ]
+        }
+      }
+    }
+    ```
+  </Step>
+</Steps>
+
+</Tab>
+
+<Tab title="Agent as MCP">
+
+<Steps>
+  <Step title="Access Agent Settings">
+    Open https://app.xpander.ai
+    Navigate to your agent's settings page and click on "Add source"
+      <Frame>
+    ![alt text](/static/images/screenshots/agent-add-source.png)
+    </Frame>
+  </Step>
+  <Step title="Add MCP Server to your agent">
+    Find the "MCP" and click on it to generate unique url for your server with your API keys
+
+    <Frame>
+    ![alt text](/static/images/screenshots/add-mcp-panel.png)
+    </Frame>
+  </Step>
+  <Step title="MCP Server url">
+    Copy the url and configure it in your MCP-compatible client (Claude Dekstop etc')
+
+    <Frame>
+    ![alt text](/static/images/screenshots/mcp-settings-agent.png)
+    </Frame>
+  </Step>
+  <Step title="Add the Agent MCP Server to Claude">
+    Add the following configuration to your Claude config file:
+
+    ```json
+    {
+      "globalShortcut": "Alt+Space",
+      "mcpServers": {
+        "agent": {
+          "command": "npx",
+          "args": [
+            "xpander-mcp-remote",
+            "https://mcp.xpander.ai/your-agent-mcp-url/"
+          ]
+        }
+      }
+    }
+    ```
+  </Step>
+</Steps>
+
+<Tip>
+  When using an agent as MCP, Claude can:
+  - Send tasks to the agent for execution
+  - Query the agent's status for long-running tasks
+  - Access all agent capabilities through a single MCP server
+  - Each team member gets their own MCP URL with their specific API key and permissions
+</Tip>
+
+</Tab>
+
+</Tabs>
+
+<Warning>
+  The MCP URL contains your API key, so never share it publicly. Treat it as a sensitive credential.
+</Warning>
+
+You can add multiple MCP servers to your configuration file by adding them to the `mcpServers` object. Each server should have a unique key:
+
+```json
+{
+  "globalShortcut": "Alt+Space",
+  "mcpServers": {
+    "linkedin": {
+      "command": "npx",
+      "args": [
+        "xpander-mcp-remote",
+        "https://mcp.xpander.ai/your-linkedin-mcp-url/"
+      ]
+    },
+    "gmail": {
+      "command": "npx",
+      "args": [
+        "xpander-mcp-remote",
+        "https://mcp.xpander.ai/your-gmail-mcp-url/"
+      ]
+    }
+  }
+}
+```
+
+<Tip>
+  Instead of manually editing the configuration file, you can use the MCP installer by adding this to your configuration file at '~/Library/Application Support/Claude/claude_desktop_config.json':
+  ```json
+  "mcp-installer": {
+    "command": "npx",
+    "args": [
+      "@anaisbetts/mcp-installer"
+    ]
+  }
+  ```
+  Then simply ask Claude to install your MCP URL, and it will handle the installation automatically.
+</Tip>
+
+### Working with Authenticated Connectors
+
+If you've already configured authentication for connectors in xpander.ai (such as Gmail, LinkedIn, or other services), they will work automatically with the provided MCP URL without requiring additional authentication steps in Claude.
+
+For example, if you've already connected your Gmail account in xpander.ai:
+
+1. Add the xpander MCP configuration to Claude as shown above
+2. You can immediately use Gmail capabilities in Claude through natural language
+3. No additional authentication steps are needed in Claude
+
+### Multiple Interface Configuration
+
+You can configure multiple interfaces in a single MCP configuration:
+
+```json
+{
+  "linkedin": {
+    "command": "npx",
+    "args": [
+      "xpander-mcp-remote",
+      "https://mcp.xpander.ai/f5dd774a-b5dc-4f2b-a49a-08719abcaa0b/IhPLk2Cu5B****pD6O5E3/"
+    ]
+  },
+  "gmail": {
+    "command": "npx",
+    "args": [
+      "xpander-mcp-remote",
+      "https://mcp.xpander.ai/f5dd774a-b5dc-4f2b-a49a-08719abcaa0b/IhPLk2Cu5B********92pD6O5E3/"
+    ]
+  }
+}
+```
+
+### Testing Your MCP Integration
+
+Once configured, you can test your integration by asking Claude to perform actions using the connected service:
+
+1. For LinkedIn: "Can you search for AI Product Managers on LinkedIn?"
+2. For Gmail: "Could you check my recent unread emails?"
+3. For Weather: "What's the weather like in San Francisco today?"
+
+Claude will seamlessly connect to the xpander MCP server and utilize its agentic interfaces to fulfill your requests. 
+
+### Demo
+
+<Frame>
+<video
+  autoPlay
+  muted
+  loop
+  playsInline
+  className="w-full aspect-video"
+  src="https://assets.xpanderai.io/vidoes/release-notes/mcp-support.mp4"
+></video>
+</Frame>
