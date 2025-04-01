@@ -1,18 +1,67 @@
 ---
 title: "Model Context Protocol (MCP) Integration"
-description: "Learn how to integrate xpander's agentic interfaces such as Claude and other AI assistants using MCP"
+description: "Use your favorite MCP client with xpander.ai's Agentic Interfaces and AI Agents"
 icon: "bridge"
 ---
 
-The xpander.ai SDK supports the Model Context Protocol (MCP), allowing you to extend Claude and other compatible AI assistants with xpander's agentic interfaces natively.
+The xpander.ai platform supports three flavors of MCP use:
+1. MCP composition: You can pick-and-choose operations from multiple Agentic Interfaces (connectors) and connect a composed list of operations to MCP clients.
+2. MCP to AI Agents: You can trigger your AI Agents with MCP clients.
+3. Specific connectors: You can connect individual Agentic Interfaces (connectors) to MCP clients.
 
-### Configuring MCP Server for Claude Desktop
+<Tip>
+The xpander.ai MCP composition option is an extremely powerful option, allowing you to construct an MCP server that only connects your MCP clients to specific operations across different systems, without any coding. For example, you can select only non-mutating operationg across Jira, Asana and Github, and provide a powerful developer assistant to team members with no risk of deleting or modifying data in those target systems.
+</Tip>
 
-With xpander.ai's native MCP support, you can easily integrate xpander's agentic interfaces directly into Claude and other compatible AI assistants:
+### Using xpander.ai fully-hosted MCP Servers with Claude Desktop
+Check the walkthroughs below to get started quickly with connecting xpander.ai connectors or AI Agents to Claude Desktop.
 
 <Tabs>
+<Tab title="MCP Composition">
+In this option, you can select individual operations from multiple connectors, thus composing a list of operations in various systems that will be available to your MCP client.
+<Steps>
+  <Step title="Open the MCP Servers menu">
+    In the xpander.ai console (https://app.xpander.ai), go to the MCP Servers section
+    <Frame>
+    ![alt text](/static/images/screenshots/mcp-servers1.png)
+    </Frame>
+  </Step>
+  <Step title="Create a new MCP Server">
+    Click on "New MCP Server", and provide a name and description for your MCP Server
+    <Frame>
+    ![alt text](/static/images/screenshots/mcp-server-name.png)
+    </Frame>
+  </Step>
+  <Step title="Select operations">
+    In this step, you can select Operations from one or more interfaces, which will be composed in your MCP server, and available to your MCP clients. 
+    <Frame>
+    ![alt text](/static/images/screenshots/mcp-server-selection.png)
+    </Frame>
+  </Step>
+  <Step title="Add the MCP Server to Claude">
+    After selecting your operations, copy the MCP Server address from the page, and add it to your MCP Client. For example:
 
-<Tab title="Specific Interface MCP">
+    ```json
+    {
+      "globalShortcut": "Alt+Space",
+      "mcpServers": {
+        "slack": {
+          "command": "npx",
+          "args": [
+            "xpander-mcp-remote",
+            "https://mcp.xpander.ai/your-mcp-url/"
+          ]
+        }
+      }
+    }
+    ```
+  </Step>
+  
+</Steps>
+</Tab>
+
+
+<Tab title="Single connector">
 
 <Steps>
   <Step title="Access Agentic Interfaces Settings">
@@ -108,7 +157,10 @@ With xpander.ai's native MCP support, you can easily integrate xpander's agentic
 
 </Tab>
 
+
 </Tabs>
+
+# Other considerations
 
 <Warning>
   The MCP URL contains your API key, so never share it publicly. Treat it as a sensitive credential.
@@ -161,28 +213,6 @@ For example, if you've already connected your Gmail account in xpander.ai:
 2. You can immediately use Gmail capabilities in Claude through natural language
 3. No additional authentication steps are needed in Claude
 
-### Multiple Interface Configuration
-
-You can configure multiple interfaces in a single MCP configuration:
-
-```json
-{
-  "linkedin": {
-    "command": "npx",
-    "args": [
-      "xpander-mcp-remote",
-      "https://mcp.xpander.ai/f5dd774a-b5dc-4f2b-a49a-08719abcaa0b/IhPLk2Cu5B****pD6O5E3/"
-    ]
-  },
-  "gmail": {
-    "command": "npx",
-    "args": [
-      "xpander-mcp-remote",
-      "https://mcp.xpander.ai/f5dd774a-b5dc-4f2b-a49a-08719abcaa0b/IhPLk2Cu5B********92pD6O5E3/"
-    ]
-  }
-}
-```
 
 ### Testing Your MCP Integration
 
@@ -194,7 +224,7 @@ Once configured, you can test your integration by asking Claude to perform actio
 
 Claude will seamlessly connect to the xpander MCP server and utilize its agentic interfaces to fulfill your requests. 
 
-### Demo
+### Demo (single connector MCP server)
 
 <Frame>
 <video
