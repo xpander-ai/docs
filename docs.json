@@ -41,7 +41,7 @@
             ]
           },
           {
-            "group": "Agent Builder",
+            "group": "AI Agent Workbench",
             "icon": {
               "name": "wand-magic-sparkles",
               "style": "regular"
