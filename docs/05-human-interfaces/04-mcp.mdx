@@ -5,16 +5,20 @@ icon: "bridge"
 ---
 
 The xpander.ai platform supports three flavors of MCP use:
-1. MCP composition: You can pick-and-choose operations from multiple Agentic Interfaces (connectors) and connect a composed list of operations to MCP clients.
-2. MCP to AI Agents: You can trigger your AI Agents with MCP clients.
+1. MCP composition: pick-and-choose operations from multiple Agentic Interfaces (connectors) and connect your MCP clients to a fine-grained, controlled list of operations.
+2. MCP to AI Agents: You can trigger your AI Agents from your MCP clients.
 3. Specific connectors: You can connect individual Agentic Interfaces (connectors) to MCP clients.
+
+See below for walkthrouhgts on these three usage patterns.
 
 <Tip>
 The xpander.ai MCP composition option is an extremely powerful option, allowing you to construct an MCP server that only connects your MCP clients to specific operations across different systems, without any coding. For example, you can select only non-mutating operations across Jira, Asana and Github, and provide a powerful developer assistant to team members with no risk of deleting or modifying data in those target systems.
 </Tip>
 
-### Using xpander.ai fully-hosted MCP Servers with Claude Desktop
-Check the walkthroughs below to get started quickly with connecting xpander.ai connectors or AI Agents to Claude Desktop.
+## How is the xpander.ai MCP hosting solution unique?
+    ![alt text](/static/images/screenshots/mcp_diag.gif)
+
+### Using the xpander.ai MCP Servers hosting solution with Claude Desktop
 
 <Tabs>
 <Tab title="MCP Composition">
@@ -62,7 +66,7 @@ In this option, you can select individual operations from multiple connectors, t
 
 
 <Tab title="Single connector">
-
+In this option, you create an MCP server for an entire Agnetic Interfaces (Connector) and connect it to Claude Desktop. For example, Github, Jira, Asana.
 <Steps>
   <Step title="Access Agentic Interfaces Settings">
     Open https://app.xpander.ai
@@ -104,7 +108,7 @@ In this option, you can select individual operations from multiple connectors, t
 </Tab>
 
 <Tab title="Agents as MCP Servers">
-
+In this option, you trigger AI Agents on the xpander.ai platform from your MCP Client.
 <Steps>
   <Step title="Access Agent Settings">
     Open https://app.xpander.ai
