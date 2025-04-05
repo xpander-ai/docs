@@ -1,0 +1,166 @@
+---
+title: "Quickstart - CLI"
+description: "Get started with xpander.ai and build your first AI agent"
+icon: "terminal"
+---
+
+## Using the xpander CLI
+
+    <Steps>
+      <Step title="Install the CLI">
+        Install the xpander CLI globally:
+
+        ```bash
+        npm install -g xpander-cli
+        ```
+      </Step>
+
+      <Step title="Configure your credentials">
+        Set up your API key and organization:
+
+        ```bash
+        xpander configure
+        ```
+
+        You'll see output similar to:
+
+        ```
+        You need to configure your credentials to use the Xpander CLI.
+        ? Would you like to configure your credentials now? Yes
+        ? Enter your Xpander API key: IhPLk2Cu5BXw5BmVBhld3p31mTpAxC892pD6O5E3
+        API Key: IhPL...O5E3 (first and last 4 characters shown)
+        ✔ API key validation successful
+        API key saved to profile "default".
+        Organization ID will be auto-detected for you now...
+        ⠏ Detecting organization ID...Organization ID detected: 8d185373-8b24-47a7-8607-3e9036b968bb
+        Organization ID saved to profile "default".
+        ✔ Organization ID detected: 8d185373-8b24-47a7-8607-3e9036b968bb
+        Found 1 agent(s) in your organization.
+        Set "default" as the default profile.
+        Credentials stored at: /Users/david/.xpander/credentials
+        Profile: default
+
+        Configuration successful.
+        ```
+      </Step>
+
+      <Step title="Create a new agent">
+        Create your agent using the CLI:
+
+        ```bash
+        xpander agent new
+        ```
+
+        Follow the interactive prompts to define your agent's capabilities and behavior.
+
+
+      </Step>
+            <Step title="Add tools to the AI Agent">
+      1. Open the AI Agent Workbench
+      2. Add the HackerNews top stories operations
+      3. Deploy the AI Agent.
+
+        </Step>
+
+      <Step title="Connect to your agent programmatically">
+        The following steps show how to execute your agent created with the CLI:
+        
+        ```python
+        from xpander import XpanderClient
+        from openai import OpenAI
+
+        # Initialize clients
+        xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+        openai_client = OpenAI(api_key=OPENAI_API_KEY)
+
+        # Get your agent
+        agent = xpander_client.agents.get(agent_id=XPANDER_AGENT_ID)
+        ```
+      </Step>
+      
+      <Step title="Execute your agent">
+        Use the same execution pattern as shown in the Workbench approach. For more details on working with different LLM models, refer to the [LLM SDKs documentation](/docs/01-get-started/03-llm-models).
+
+        ```python
+        # Create a task for the agent
+        task = agent.add_task("Your task description here")
+
+        # Initialize agent memory with the task
+        agent.memory.init_messages(
+            input=agent.execution.input_message,
+            instructions=agent.instructions
+        )
+
+        # Run the agent until completion
+        while not agent.is_finished():
+            response = openai_client.chat.completions.create(
+                model="gpt-4o",
+                messages=agent.messages,
+                tools=agent.get_tools(),
+                tool_choice=agent.tool_choice,
+                temperature=0.0
+            )
+                    
+            agent.add_messages(response.model_dump())
+            
+            tool_calls = XpanderClient.extract_tool_calls(llm_response=response.model_dump())
+            agent.run_tools(tool_calls=tool_calls)
+
+        # Get results
+        execution_result = agent.retrieve_execution_result()
+        print("Status:", execution_result.status)
+        print("Result:", execution_result.result)
+        ```
+      </Step>
+
+      <Step>
+      
+## Example Output
+
+```markdown
+# execution_result.status
+Status: ExecutionStatus.COMPLETED
+
+# execution_result.result
+Result: Here are the top Hacker News stories from the last 24 hours:
+
+1. Show HN: Nash, I made a standalone note with a single HTML file
+   - Author: yevgenyhong
+   - Score: 204
+   - Comments: 47
+   - Summary: A user has created a standalone note application using a single HTML file. This tool does not require any membership or software installation and can be used both online and offline. It is suitable for sharing content through messengers like Telegram and can also be used for hosting and blogging.
+   - Link: [Read more](https://keepworking.github.io/nash/)
+
+2. Finding Signal in the Noise: Machine Learning and the Markets (Jane Street)
+   - Author: lewiscarson
+   - Score: 76
+   - Comments: 32
+   - Summary: An article discussing the application of machine learning in financial markets, focusing on how to find meaningful signals amidst the noise.
+   - Link: [Read more](https://signalsandthreads.com/finding-signal-in-the-noise/)
+
+3. Sign in as anyone: Bypassing SAML SSO authentication with parser differentials
+   - Author: campuscodi
+   - Score: 200
+   - Comments: 73
+   - Summary: A security blog post detailing a method to bypass SAML SSO authentication using parser differentials, highlighting a significant security vulnerability.
+   - Link: [Read more](https://github.blog/security/sign-in-as-anyone-bypassing-saml-sso-authentication-with-parser-differentials/)
+
+These stories highlight a range of topics from innovative tech projects to significant security insights.
+```
+      </Step>
+    </Steps>
+
+
+
+### Troubleshooting / FAQ
+<AccordionGroup>
+
+  <Accordion title="How can I check logs for past interactions?">
+  In the AI Agent Workbench, switch to the Activity view
+  </Accordion>
+  <Accordion title="What if my code is not behaving like in the example?">
+    Check the API keys, did you enable the default API key for the AI Agent in the SDK source triggering configuration? 
+  </Accordion>
+  
+</AccordionGroup>
+
