@@ -29,3 +29,17 @@
     border-radius: 4px;
     text-decoration: none;
   }
+  .dark .dark-only {
+    display: block;
+  }
+  .dark .light-only {
+    display: none;
+  }
+  
+  .light-only {
+    display: block;
+  }
+  .dark-only {
+    display: none;
+  }
+  
