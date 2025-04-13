@@ -191,13 +191,10 @@ while not agent.is_finished():
 
 When integrating with different LLM providers, follow these best practices for consistent behavior:
 
-1. Initialize memory without specifying a provider:
+1. Create a task to initialize memory:
 ```python
-agent.memory.init_messages(
-    input=agent.execution.input_message,
-    instructions=agent.instructions
-    # No provider needed here
-)
+# Creating a task automatically initializes the agent's memory
+agent.add_task("Your task description here")
 ```
 
 2. Always specify the provider when retrieving tools:
@@ -229,7 +226,7 @@ tool_calls = XpanderClient.extract_tool_calls(
 )
 ```
 
-> **Note:** The xpander.ai SDK handles format conversion between the standardized memory format and provider-specific formats. However, you must always specify which provider format to use when retrieving tools and extracting tool calls.
+> **Note:** The xpander.ai SDK handles format conversion between the standardized messages format and provider-specific formats. However, you must always specify which provider format to use when retrieving tools and extracting tool calls.
 
 ## Complete Example: Gemini via OpenAI-compatible API
 
@@ -257,14 +254,8 @@ gemini_openai_client = OpenAI(
 # Load agent
 agent = xpander_client.agents.get(agent_id=XPANDER_AGENT_ID)
 
-# Add task
+# Add task - this automatically initializes messages
 agent.add_task("Find employees of xpander.ai.")
-
-# Initialize memory without specifying provider
-agent.memory.init_messages(
-    input=agent.execution.input_message,
-    instructions=agent.instructions
-)
 
 # Run the agent and wait for result
 while not agent.is_finished():
@@ -277,7 +268,7 @@ while not agent.is_finished():
         temperature=0.0
     )
     
-    # Add raw response directly to memory
+    # Add raw response directly to messages
     agent.add_messages(response.model_dump())
     
     # Extract tool calls with explicit provider specification
@@ -302,39 +293,39 @@ The xpander.ai SDK stores messages in a standard, OpenAI-compatible format withi
 - Each message is a dictionary with `role` and `content` fields
 - Roles include `system`, `user`, `assistant`, and `tool`
 - Tool calls are stored in the `tool_calls` field of assistant messages
-- The memory structure is consistent across all providers
+- The messages structure is consistent across all providers
 
 ## Next Steps
 <CardGroup cols={2}>
   <Card 
-    title="Add Voice & Chat Interfaces" 
+    title="Add Human Interfaces" 
     icon="microphone"
-    href="/docs/05-human-interfaces/01-voice-apis"
+    href="/docs/05-human-interfaces/02-slack-bots"
   >
-    Add voice, chat and other human-machine interfaces to your agents
-  </Card>
-
-  <Card 
-    title="Manage Multi-User State" 
-    icon="users"
-    href="/docs/03-ai-state-management/02-multi-agent-collaboration"
-  >
-    Learn how to handle state across multiple users and sessions
+    Add chat interfaces to your agents
   </Card>
 
   <Card 
     title="Manage Agent Memory" 
     icon="brain"
-    href="/docs/03-ai-state-management/01-single-agent-state"
+    href="/docs/03-ai-state-management/01-agent-state-basics"
   > 
-    Configure and manage memory state between your AI agents
+    Configure and manage memory state for your AI agents
   </Card>
 
   <Card 
-    title="Add User Authentication" 
-    icon="lock"
-    href="/docs/04-user-authentication/01-add-provider"
+    title="Thread Management" 
+    icon="comments"
+    href="/docs/03-ai-state-management/02-thread-management"
   >
-    Implement secure user authentication for your agents
+    Learn how to handle state across multiple sessions
+  </Card>
+
+  <Card 
+    title="Debugging State" 
+    icon="bug"
+    href="/docs/03-ai-state-management/04-debugging-state"
+  >
+    Troubleshoot and debug agent state issues
   </Card>
 </CardGroup> 

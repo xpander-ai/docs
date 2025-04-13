@@ -1,0 +1,95 @@
+---
+title: "xpander-cli"
+description: "Command-line interface for xpander.ai"
+icon: "terminal"
+---
+
+# xpander-cli
+
+The xpander-cli is a command-line interface for interacting with the xpander.ai control plane. It allows you to create and manage agents, update configurations, and automate workflows from your terminal.
+
+## Installation
+
+<Tabs>
+  <Tab title="Python">
+    ```bash
+    # Install the CLI
+    pip install xpander-cli
+    
+    # Login to xpander
+    xpander login
+    ```
+  </Tab>
+  <Tab title="Node.js">
+    ```bash
+    # Install the CLI
+    npm install -g @xpander-ai/cli
+    # or
+    yarn global add @xpander-ai/cli
+    
+    # Login to xpander
+    xpander login
+    ```
+  </Tab>
+</Tabs>
+
+## Commands
+
+### Authentication
+
+```bash
+# Login to xpander
+xpander login
+
+# View current authentication status
+xpander auth status
+
+# Logout from xpander
+xpander logout
+```
+
+### Agent Management
+
+```bash
+# List available agents
+xpander agents list
+
+# Create a new agent
+xpander agents create --name "My Agent" --type regular
+
+# Get details for a specific agent
+xpander agents get <agent-id>
+
+# Delete an agent
+xpander agents delete <agent-id>
+```
+
+### Operations
+
+```bash
+# List operations for an agent
+xpander operations list --agent <agent-id>
+
+# Create a new operation
+xpander operations create --agent <agent-id> --name "My Operation" --type function
+
+# Update an operation
+xpander operations update <operation-id> --prompt "New prompt"
+
+# Delete an operation
+xpander operations delete <operation-id>
+```
+
+## Full Command Reference
+
+For a complete list of available commands, run:
+
+```bash
+xpander --help
+```
+
+Or for help with a specific command:
+
+```bash
+xpander <command> --help
+``` 

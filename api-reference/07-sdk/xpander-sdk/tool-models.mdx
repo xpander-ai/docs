@@ -378,11 +378,10 @@ xpander_client = XpanderClient(api_key="your-api-key")
 openai_client = OpenAI(api_key="your-openai-key")
 agent = xpander_client.agents.get(agent_id="agent-1234")
 
-# Initialize memory with OpenAI format
-agent.memory.init_messages(
+# Add task - this initializes memory and supports loading previous threads with thread_id
+agent.add_task(
     input="What's the weather in Paris?",
-    instructions=agent.instructions,
-    llm_provider=LLMProvider.OPEN_AI
+    thread_id="optional-previous-thread-id"  # Optional: continue from previous conversation
 )
 
 # Get tools formatted for OpenAI
@@ -413,16 +412,15 @@ async function llmProviderExample() {
     const openai = new OpenAI({ apiKey: "your-openai-key" });
     const agent = await xpanderClient.agents.get({ agentId: "agent-1234" });
 
-    // Initialize memory with OpenAI format
-    await agent.memory.initMessages({
+    // Add task - this initializes memory and supports loading previous threads
+    await agent.addTask({ 
         input: "What's the weather in Paris?",
-        instructions: agent.instructions,
-        llmProvider: LLMProvider.OPEN_AI
+        threadId: "optional-previous-thread-id"  // Optional: continue from previous conversation
     });
 
     // Get tools formatted for OpenAI
     const tools = agent.getTools({ llmProvider: LLMProvider.OPEN_AI });
-
+    
     // Use the tools with OpenAI
     const response = await openai.chat.completions.create({
         model: "gpt-4o",
@@ -440,19 +438,19 @@ async function llmProviderExample() {
 ```
 </CodeGroup>
 
-## Related Resources
+## Related Documentation
 
 <CardGroup cols={2}>
-  <Card title="Agent Class" icon="robot" href="/api-reference/07-sdk/agent">
-    Learn about the core Agent class
+  <Card title="Agent" icon="robot" href="/api-reference/07-sdk/xpander-sdk/agent">
+    Core agent functionality
   </Card>
-  <Card title="Agent Tools" icon="wrench" href="/api-reference/07-sdk/agent/tools">
+  <Card title="Agent.Tools" icon="wrench" href="/api-reference/07-sdk/xpander-sdk/Agent.Tools">
     Using agent tools and function calling
   </Card>
-  <Card title="Memory Management" icon="brain" href="/api-reference/07-sdk/agent/memory">
-    Working with agent memory
+  <Card title="XpanderClient" icon="plug" href="/api-reference/07-sdk/xpander-sdk/XpanderClient">
+    Main client for the xpander.ai SDK
   </Card>
-  <Card title="LLM Integration" icon="microchip" href="/api-reference/07-sdk/llm-integration">
-    Integrating with different LLM providers
+  <Card title="Client API" icon="code" href="/api-reference/07-sdk/client/index">
+    Detailed client API documentation
   </Card>
 </CardGroup> 

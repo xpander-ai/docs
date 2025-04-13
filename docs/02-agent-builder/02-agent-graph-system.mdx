@@ -1,0 +1,315 @@
+---
+title: "Agent Graph System (AGS)"
+description: "Learn how to create hierarchical constraints for your agents using the Agent Graph System"
+icon: "diagram-project"
+---
+
+## What is the Agent Graph System?
+
+The Agent Graph System (AGS) lets you define hierarchical constraints for your AI agents, controlling which operations they can use and in what order.
+
+<Tip>
+While agents can see all available operations, they must follow the workflow you define. This balances autonomy with predictable behavior.
+</Tip>
+
+<Accordion title="When to use AGS">
+- When your agent needs to follow a specific workflow with dependencies
+- To prevent the agent from skipping important steps
+- To enforce logical progression in data collection
+- When building complex agents with multiple tools
+- To guide the agent without overly restrictive instructions
+</Accordion>
+
+## Core Concepts
+
+An agent graph consists of three simple components:
+
+1. **Nodes** - Individual operations (tools) your agent can use
+2. **Connections** - Define which operations must happen before others
+3. **Hierarchical levels** - Group operations by their position in the workflow
+
+<Frame>
+![Agent Graph Visual Builder](/static/images/screenshots/2025-03-16-22-36-58.png)
+</Frame>
+
+## Example Agent Workflow that requires AGS
+
+Let's explore a practical example of an agent that needs to follow a specific workflow:
+
+Users might ask the agent to research a specific topic, and the agent should follow this sequence:
+1. First, search for general information about the topic
+2. Once basic information is found, extract specific details
+3. Finally, analyze or summarize the collected information
+
+Without AGS constraints, the agent might skip steps or perform them in an incorrect order, leading to incomplete or inaccurate results.
+With AGS we can design a graph that enforces the correct sequence of operations without limiting the agent's ability to make decisions.
+
+<Frame>
+![Without AGS](/static/images/screenshots/2025-03-16-22-49-52.png)
+</Frame>
+
+<Frame>
+![Agent Workflow](/static/images/screenshots/2025-03-16-22-39-18.png)
+</Frame>
+
+<Frame>
+![Search Operation](/static/images/screenshots/2025-03-16-22-40-59.png)
+</Frame> 
+
+This example shows how AGS enforces the correct sequence of operations, ensuring data is gathered methodically and reliably.
+
+<Accordion title="Key Benefits">
+- **Bounded autonomy**: Agents make decisions within your constraints
+- **Logical gatekeeping**: Ensures prerequisites are met before advancing
+- **Reduced hallucinations**: Prevents agents from making up data they should retrieve
+- **Workflow optimization**: Creates efficient paths for multi-step tasks
+- **Simplified maintenance**: Easier to update agent behavior by modifying the graph
+</Accordion>
+
+## Implementation Methods
+
+You can create agent graphs using either the visual UI or programmatically with the SDK. Both approaches offer the same functionality, with the visual builder being more intuitive for non-developers and the SDK providing more flexibility for programmers.
+
+<Tabs>
+  <Tab title="Using the Visual Builder">
+    The xpander.ai UI provides a drag-and-drop interface for creating agent graphs:
+
+    <Steps>
+      <Step title="Access the Graph Builder">
+        Navigate to your agent in the xpander.ai dashboard and select the "Graph" tab
+      </Step>
+      
+      <Step title="Add Operations">
+        Drag operations from the sidebar into your graph workspace
+      </Step>
+      
+      <Step title="Create Connections">
+        Draw lines between operations to establish dependencies
+      </Step>
+      
+      <Step title="Test Your Graph">
+        Use the interface options to test your agent with different invocation methods
+      </Step>
+      
+      <Step title="Deploy">
+        Save changes to deploy your updated graph
+      </Step>
+    </Steps>
+
+    <Tip>
+    The visual builder gives you all the power of AGS without writing code, making it accessible to both developers and non-developers.
+    </Tip>
+
+    <Accordion title="Advanced UI Techniques">
+      ### Multiple Prerequisites
+      
+      To create operations that require multiple previous steps:
+      
+      1. Drag all prerequisite operations into your graph
+      2. Draw connection lines from each prerequisite to the dependent operation
+      3. The dependent operation will only become available after all prerequisites are completed
+      
+      ### Creating Multiple Paths
+      
+      To create branching execution paths:
+      
+      1. Add a "parent" operation (like a search operation)
+      2. Add multiple "child" operations that can follow
+      3. Draw connections from the parent to each possible child
+      4. The agent can choose which path to take after completing the parent operation
+      
+      ### Example: Agent Structure in UI
+      
+      A well-structured agent graph typically demonstrates:
+      
+      - **Top Level**: Operations that run first (initial searches, data gathering)
+      - **Middle Level**: Operations that depend on top-level results
+      - **Bottom Level**: Operations that require specific data from previous steps
+    </Accordion>
+  </Tab>
+  
+  <Tab title="Using the SDK">
+    The SDK offers a programmatic approach that provides the same capabilities as the visual builder, but with the flexibility to create and modify graphs through code:
+
+    <Steps>
+      <Step title="Add Operations to Your Agent">
+        ```python
+        # Attach operations to your agent
+        agent.attach_operations(operations=[operation1, operation2])
+        ```
+      </Step>
+
+      <Step title="Create Graph Nodes">
+        ```python
+        # Create graph nodes from operations
+        node1 = agent.graph.add_node(
+            GraphItem(
+                agent=agent,
+                item_id=operation1.id_to_use_on_graph,
+                name=operation1.name
+            )
+        )
+        
+        node2 = agent.graph.add_node(
+            GraphItem(
+                agent=agent,
+                item_id=operation2.id_to_use_on_graph,
+                name=operation2.name
+            )
+        )
+        ```
+      </Step>
+
+      <Step title="Define Hierarchical Constraints">
+        ```python
+        # Create a hierarchical relationship
+        # The agent must use node1 before it can use node2
+        node1.connect([node2])
+        ```
+      </Step>
+
+      <Step title="Deploy Your Agent">
+        ```python
+        # Deploy the agent with the defined graph structure
+        agent.sync()
+        ```
+      </Step>
+    </Steps>
+
+    ### Creating a Graph Example
+
+    Here's an example of creating a workflow graph with the SDK:
+
+    ```python
+    from xpander_sdk import XpanderClient, GraphItem
+    import os
+    from dotenv import load_dotenv
+
+    # Load environment variables
+    load_dotenv()
+
+    # Initialize client
+    xpander_client = XpanderClient(api_key=os.environ['XPANDER_API_KEY'])
+
+    # Get the agent
+    agent = xpander_client.agents.get(agent_id=os.environ.get('XPANDER_AGENT_ID'))
+
+    # Retrieve operations from an interface
+    available_interfaces = agent.retrieve_agentic_interfaces()
+    search_interface = next((interface for interface in available_interfaces 
+                            if 'search' in interface.name.lower()), None)
+    
+    if search_interface:
+        search_operations = agent.retrieve_agentic_operations(agentic_interface=search_interface)
+        
+        # Attach needed operations to the agent
+        agent.attach_operations(operations=search_operations)
+        agent.sync()  # Apply the operation attachment
+        
+        # Create graph nodes
+        nodes = []
+        for operation in search_operations:
+            node = agent.graph.add_node(
+                GraphItem(
+                    agent=agent,
+                    item_id=operation.id_to_use_on_graph,
+                    name=operation.name
+                )
+            )
+            nodes.append(node)
+        
+        # Create relationships between nodes
+        if len(nodes) >= 2:
+            # Create a simple linear workflow
+            nodes[0].connect([nodes[1]])
+            
+            # Apply the changes
+            agent.sync()
+    ```
+
+    ### Real-world Example: Meeting Recorder Agent
+
+    This example shows how to initialize a basic agent for a meeting recording application:
+
+    ```python
+    from xpander_sdk import XpanderClient, LLMProvider, Tokens, LLMTokens
+    from openai import OpenAI
+    import datetime
+    import time
+    
+    class MeetingAgent:
+        def __init__(self, openai_api_key, xpander_api_key, agent_id):
+            self.agent_id = agent_id
+            self.xpander_client = XpanderClient(api_key=xpander_api_key)
+            self.openai_client = OpenAI(api_key=openai_api_key)
+            self.agent = self.xpander_client.agents.get(agent_id=self.agent_id)
+        
+        def run(self, prompt=None, thread_id=None):
+            """Run the agent with the given prompt"""
+            # Create task with thread management
+            self.agent.add_task(
+                input=prompt or "Check the status of all recorded meetings.", 
+                thread_id=thread_id if thread_id else None
+            )
+            
+            # Run the agent execution loop
+            while not self.agent.is_finished():
+                response = self.openai_client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=self.agent.messages,
+                    tools=self.agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
+                    tool_choice=self.agent.tool_choice,
+                    temperature=0.0
+                )
+                
+                self.agent.add_messages(response.model_dump())
+                
+                tool_calls = XpanderClient.extract_tool_calls(
+                    llm_response=response.model_dump(),
+                    llm_provider=LLMProvider.OPEN_AI
+                )
+                
+                if tool_calls:
+                    self.agent.run_tools(tool_calls=tool_calls)
+                    
+            # Process results
+            result = self.agent.retrieve_execution_result()
+            return result.result, result.memory_thread_id
+    ```
+  </Tab>
+</Tabs>
+
+## Troubleshooting & Best Practices
+
+<Accordion title="Best Practices">
+- **Start simple**: Begin with basic dependencies before adding complexity
+- **Test incrementally**: Verify each operation works before adding constraints
+- **Document your design**: Keep track of the relationships you define
+- **Consider edge cases**: Plan for how the agent should handle operation failures
+- **Balance structure and flexibility**: Define necessary constraints without over-restricting
+- **Design for user intent**: Structure workflows around common user requests
+- **Verify sync calls**: Ensure `agent.sync()` is called after every graph modification
+</Accordion>
+
+<Accordion title="Common Issues">
+| Problem | Solution |
+|---------|----------|
+| Agent ignores constraints | Ensure you've called `agent.sync()` after defining relationships |
+| Operations unavailable | Check that all operations are properly attached to the agent |
+| Circular dependencies | Look for cycles in your graph that might prevent execution |
+| Unintended restrictions | Verify constraints don't block valid execution paths |
+| Changes not applied | Verify that `agent.sync()` is called after making graph modifications |
+| Missing prerequisites | Ensure all node requirements are properly connected |
+</Accordion>
+
+## Next Steps
+
+Now that you understand the Agent Graph System, you might want to explore:
+
+- [Adding more tools to your agents](/docs/02-agent-builder/01-add-tools-to-agents)
+- [Monitoring agent execution in the Activity view](/docs/02-agent-builder/03-activity-view)
+- [Fine-tuning operations with advanced settings](/docs/02-agent-builder/04-advanced-operation-settings)
+- [Managing agent state](/docs/03-ai-state-management/01-agent-state-basics)
+- [Thread & Memory Management](/docs/03-ai-state-management/02-thread-management)
+- [Debugging agent state](/docs/03-ai-state-management/04-debugging-state)
+- [Configuring global agent settings](/docs/02-agent-builder/05-agent-settings)

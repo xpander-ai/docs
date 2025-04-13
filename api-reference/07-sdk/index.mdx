@@ -1,758 +1,250 @@
 ---
-title: "xpander.ai SDK"
-description: "Build powerful AI agents with the xpander.ai SDK"
-icon: "code"
+title: "xpander.ai SDK Ecosystem"
+description: "Overview of xpander.ai development packages"
+icon: "sitemap"
 ---
 
-The xpander.ai SDK is a powerful library that allows you to build, manage, and deploy AI agents with function calling capabilities. The SDK provides a clean, intuitive interface for working with the xpander.ai platform, enabling you to create agents that can perform complex tasks by combining LLMs with tools.
+The xpander.ai ecosystem offers several packages to help you build, manage, and integrate with AI agents. Each package serves a specific purpose in the xpander platform.
 
-## Language Support
+## Available Packages
 
-The xpander.ai SDK is available in multiple programming languages:
+<CardGroup cols={2}>
+  <Card title="xpander-sdk" icon="microchip" href="/api-reference/07-sdk/xpander-sdk/XpanderClient">
+    **Main SDK** for working with xpander.ai agents. Instrument your AI agents to manage messages, tools, and orchestrate multi-step, multi-agent tasks across multiple AI frameworks or LLM models. Available in Python, Node.js, C#, and Java.
+  </Card>
+  <Card title="xpander-cli" icon="terminal" href="/api-reference/07-sdk/client/cli">
+    **Command-line interface** for interacting with the xpander.ai control plane. Create and manage agents, update configurations, and automate workflows from your terminal. Available in Python, Node.js, C#, and Java.
+  </Card>
+  <Card title="xpander-mcp-remote" icon="cloud" href="/api-reference/07-sdk/client/mcp-remote">
+    **MCP bridge utility** that connects MCP clients (like Claude Desktop) to xpander.ai services. Enables MCP clients to access xpander agents and operations through a simple URL-based interface. Primarily used as an npx command-line tool.
+  </Card>
+  <Card title="xpander-utils" icon="tools" href="/api-reference/07-sdk/client/utils">
+    **Integration utilities** for Python developers. Connect xpander.ai with AI agent frameworks like Hugging Face, CrewAI, ChainLit, LangGraph, and more. Python only.
+  </Card>
+</CardGroup>
 
-- **Python** - Full support with published packages
-- **TypeScript/JavaScript** - Full support with published packages
-- **C#** - Supported but not publicly published (contact support for binaries)
-- **Java** - Supported but not publicly published (contact support for binaries)
+## Installation Guides
 
-The SDK is built using PROJEN and JSII, allowing for consistent functionality across programming languages.
+### xpander-sdk
 
-## Installation
+Available in multiple languages:
 
-Install the xpander.ai SDK using your language's package manager:
-
-<CodeGroup>
-```bash Python
-pip install xpander-sdk
-```
-
-```bash TypeScript
-npm install @xpander-ai/sdk
-# or
-yarn add @xpander-ai/sdk
-```
-
-```bash C# / Java
-# Contact support@xpander.ai to get access to the binaries for these languages.
-```
-</CodeGroup>
-
-## Quick Start
-
-<Steps>
-  <Step title="Import and initialize">
-    <CodeGroup>
-    ```python Python
+<Tabs>
+  <Tab title="Python">
+    ```bash
+    pip install xpander-sdk
+    ```
+    
+    ```python
     from xpander_sdk import XpanderClient
-    from dotenv import load_dotenv
-    import os
     
-    # Load API key from environment
-    load_dotenv()
-    XPANDER_API_KEY = os.environ.get("XPANDER_API_KEY")
-    
-    # Initialize client
-    client = XpanderClient(api_key=XPANDER_API_KEY)
+    # Initialize with API key
+    client = XpanderClient(api_key="your-xpander-api-key")
     ```
-
-    ```typescript TypeScript
+  </Tab>
+  <Tab title="Node.js">
+    ```bash
+    npm install @xpander-ai/sdk
+    # or
+    yarn add @xpander-ai/sdk
+    ```
+    
+    ```javascript
     import { XpanderClient } from '@xpander-ai/sdk';
-    import dotenv from 'dotenv';
     
-    // Load API key from environment
-    dotenv.config();
-    const XPANDER_API_KEY = process.env.XPANDER_API_KEY;
-    
-    // Initialize client
-    const client = new XpanderClient({ apiKey: XPANDER_API_KEY });
+    // Initialize with API key
+    const client = new XpanderClient({ apiKey: "your-xpander-api-key" });
     ```
-    </CodeGroup>
-  </Step>
-  <Step title="Get or create an agent">
-    <CodeGroup>
-    ```python Python
-    # List your agents
-    agents = client.agents.list()
+  </Tab>
+  <Tab title="C#">
+    C# binaries available by request.
     
-    # Get an existing agent
-    if agents:
-        agent = client.agents.get(agent_id=agents[0].id)
-    else:
-        # Create a new agent
-        agent = client.agents.create(
-            name="Research Assistant",
-            description="An agent that performs research tasks",
-            instructions="You are a helpful research assistant. Provide accurate information and cite sources."
-        )
+    Contact [support@xpander.ai](mailto:support@xpander.ai) to request the C# SDK.
+    
+    ```csharp
+    using Xpander.SDK;
+    
+    // Initialize with API key
+    var client = new XpanderClient("your-xpander-api-key");
     ```
+  </Tab>
+  <Tab title="Java">
+    Java binaries available by request.
+    
+    Contact [support@xpander.ai](mailto:support@xpander.ai) to request the Java SDK.
+    
+    ```java
+    import ai.xpander.sdk.XpanderClient;
+    
+    // Initialize with API key
+    XpanderClient client = new XpanderClient("your-xpander-api-key");
+    ```
+  </Tab>
+</Tabs>
 
-    ```typescript TypeScript
-    // List your agents (async function)
-    async function getOrCreateAgent() {
-        const agents = await client.agents.list();
-        
-        let agent;
-        if (agents.length > 0) {
-            // Get an existing agent
-            agent = await client.agents.get({ agentId: agents[0].id });
-        } else {
-            // Create a new agent
-            agent = await client.agents.create({
-                name: "Research Assistant",
-                description: "An agent that performs research tasks",
-                instructions: "You are a helpful research assistant. Provide accurate information and cite sources."
-            });
-        }
-        
-        return agent;
+The SDK provides advanced features including:
+- **AGS (Function Calling Dependencies)**: Manage complex function calling dependencies
+- **Scheme Editor**: Visual editor for function calling overides (Input Scheme and Output Scheme)
+- **Managed Human Interfaces**: Integrations with Slack and other collaboration platforms
+- **Cross-Framework Compatibility**: Work seamlessly with various LLM providers and Agent Frameworks
+
+### xpander-cli
+
+Available in multiple languages:
+
+<Tabs>
+  <Tab title="Python">
+    ```bash
+    # Install the CLI
+    pip install xpander-cli
+    
+    # Login to xpander
+    xpander login
+    
+    # List available agents
+    xpander agents list
+    
+    # Create a new agent
+    xpander agents create --name "My Agent" --type regular
+    ```
+  </Tab>
+  <Tab title="Node.js">
+    ```bash
+    # Install the CLI
+    npm install -g @xpander-ai/cli
+    # or
+    yarn global add @xpander-ai/cli
+    
+    # Login to xpander
+    xpander login
+    
+    # List available agents
+    xpander agents list
+    
+    # Create a new agent
+    xpander agents create --name "My Agent" --type regular
+    ```
+  </Tab>
+  <Tab title="C#/.NET">
+    C# binaries available by request.
+    
+    Contact [support@xpander.ai](mailto:support@xpander.ai) to request the C# CLI.
+    
+    ```bash
+    # After installation
+    xpander login
+    xpander agents list
+    xpander agents create --name "My Agent" --type regular
+    ```
+  </Tab>
+  <Tab title="Java">
+    Java binaries available by request.
+    
+    Contact [support@xpander.ai](mailto:support@xpander.ai) to request the Java CLI.
+    
+    ```bash
+    # After installation
+    xpander login
+    xpander agents list
+    xpander agents create --name "My Agent" --type regular
+    ```
+  </Tab>
+</Tabs>
+
+The CLI allows you to manage your xpander.ai resources directly from the terminal.
+
+### xpander-mcp-remote
+
+A command-line utility primarily used with npx to connect MCP clients like Claude Desktop to xpander.ai services.
+
+```bash
+# Install globally (optional, as it's typically used with npx)
+npm install -g xpander-mcp-remote
+```
+
+Typical usage in Claude Desktop configuration:
+
+```json
+{
+  "mcpServers": {
+    "xpander": {
+      "command": "npx",
+      "args": [
+        "xpander-mcp-remote",
+        "https://mcp.xpander.ai/your-mcp-url/"
+      ]
     }
-    ```
-    </CodeGroup>
-  </Step>
-  <Step title="Run a task">
-    <CodeGroup>
-    ```python Python
-    from xpander_sdk import LLMProvider
-    from openai import OpenAI
-    
-    # OpenAI client for LLM interactions
-    openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-    
-    # Add a task
-    agent.add_task(input="What are the environmental benefits of renewable energy?")
-    
-    # Initialize memory
-    agent.memory.init_messages(
-        input=agent.execution.input_message,
-        instructions=agent.instructions,
-        llm_provider=LLMProvider.OPEN_AI
-    )
-    
-    # Run until completion
-    while not agent.is_finished():
-        # Get next action from LLM
-        response = openai_client.chat.completions.create(
-            model="gpt-4o",
-            messages=agent.messages,
-            tools=agent.get_tools(),
-            tool_choice="auto",
-            temperature=0.0
-        )
-        
-        # Add LLM response to memory
-        agent.add_messages(messages=response.model_dump())
-        
-        # Extract and run tool calls
-        tool_calls = XpanderClient.extract_tool_calls(
-            llm_response=response.model_dump(),
-            llm_provider=LLMProvider.OPEN_AI
-        )
-        
-        if tool_calls:
-            results = agent.run_tools(tool_calls=tool_calls)
-            print(f"Executed {len(results)} tools")
-    
-    # Get results
-    result = agent.retrieve_execution_result()
-    print(result.result)
-    ```
+  }
+}
+```
 
-    ```typescript TypeScript
-    import { LLMProvider } from '@xpander-ai/sdk';
-    import OpenAI from 'openai';
-    
-    // OpenAI client for LLM interactions
-    const openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY,
-    });
-    
-    // Add a task
-    await agent.addTask({
-        input: "What are the environmental benefits of renewable energy?"
-    });
+The xpander-mcp-remote package creates a bridge between MCP clients and the xpander.ai platform, enabling:
 
-    // Initialize memory with execution input and agent instructions
-    await agent.memory.initMessages({
-        input: agent.execution.inputMessage,
-        instructions: agent.instructions
-    });
+- **MCP Composition**: Selectively expose operations from multiple connectors
+- **Agent Access**: Trigger AI agents from MCP clients
+- **Connector Integration**: Connect MCP clients to specific connectors like GitHub, Slack, etc.
 
-    // Get tools formatted for OpenAI
-    const tools = agent.getTools({ llmProvider: LLMProvider.OPEN_AI });
+For detailed setup instructions, refer to the [MCP Integration documentation](/docs/05-human-interfaces/04-mcp).
 
-    // Send to OpenAI
-    const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: agent.messages,
-        tools: tools,
-        tool_choice: "auto"
-    });
+### xpander-utils (Python only)
 
-    // Add response to memory
-    await agent.addMessages({ messages: response });
+```bash
+pip install xpander-utils
 
-    // Extract tool calls
-    const toolCalls = XpanderClient.extractToolCalls({
-        llmResponse: response,
-        llmProvider: LLMProvider.OPEN_AI
-    });
+# Use with various frameworks
+import xpander_utils
 
-    // Execute tools
-    if (toolCalls.length > 0) {
-        const results = await agent.runTools({ toolCalls });
-    }
-    ```
-    </CodeGroup>
-  </Step>
-</Steps>
+# Example with LangGraph
+from xpander_utils.integrations import langgraph_connector
+graph = langgraph_connector.create_xpander_graph("my-agent-id")
+```
 
-## SDK Structure
+Utilities library for integrating xpander with AI agent frameworks such as:
+- Hugging Face
+- CrewAI
+- ChainLit
+- LangGraph
+- And more
 
-The xpander.ai SDK is structured into several key components:
-
-### Core Components
+## Core Documentation
 
 <CardGroup cols={2}>
-  <Card title="XpanderClient" icon="plug" href="/api-reference/07-sdk/client">
-    The main entry point to the SDK, handling authentication and API communication
+  <Card title="XpanderClient" icon="plug" href="/api-reference/07-sdk/xpander-sdk/XpanderClient">
+    Main client for the xpander.ai SDK
   </Card>
-  <Card title="Agent" icon="robot" href="/api-reference/07-sdk/agent">
-    Core class for task execution, memory management, and tool usage
+  <Card title="Client API" icon="code" href="/api-reference/07-sdk/client/index">
+    Detailed client API documentation
   </Card>
-  <Card title="Memory" icon="brain" href="/api-reference/07-sdk/agent/memory">
-    Manages conversation history and messages
+  <Card title="Agent" icon="robot" href="/api-reference/07-sdk/xpander-sdk/agent">
+    Core agent functionality
   </Card>
-  <Card title="Tools" icon="wrench" href="/api-reference/07-sdk/agent/tools">
-    Function calling capabilities and tool execution
+  <Card title="Agent.Messages" icon="brain" href="/api-reference/07-sdk/xpander-sdk/Agent.Messages">
+    Working with agent messages
+  </Card>
+  <Card title="Agent.Tools" icon="wrench" href="/api-reference/07-sdk/xpander-sdk/Agent.Tools">
+    Using agent tools and function calling
+  </Card>
+  <Card title="Agent.Graph" icon="diagram-project" href="/api-reference/07-sdk/xpander-sdk/Agent.Graph">
+    Working with knowledge graphs
+  </Card>
+  <Card title="Tasks" icon="play" href="/api-reference/07-sdk/xpander-sdk/Tasks">
+    Managing agent tasks
+  </Card>
+  <Card title="Tool Models" icon="box" href="/api-reference/07-sdk/xpander-sdk/tool-models">
+    Data models for working with tools
   </Card>
 </CardGroup>
 
-### Additional Components
+## Additional Resources
 
-<CardGroup cols={2}>
-  <Card title="Execution" icon="play" href="/api-reference/07-sdk/agent/execution">
-    Managing agent tasks and retrieving results
+<CardGroup cols={3}>
+  <Card title="Getting Started" icon="rocket" href="/docs/01-get-started/02-sdk-overview">
+    Begin building with xpander.ai
   </Card>
-  <Card title="Operations" icon="gears" href="/api-reference/07-sdk/client/operations">
-    Pre-built tools that can be attached to agents
+  <Card title="Examples" icon="code" href="/docs/01-get-started/examples">
+    Sample implementations and use cases
   </Card>
-  <Card title="Graph" icon="diagram-project" href="/api-reference/07-sdk/agent/graph">
-    Build graph-based tool workflows
-  </Card>
-  <Card title="Models" icon="box" href="/api-reference/07-sdk/models">
-    Data models used throughout the SDK
+  <Card title="Concepts" icon="lightbulb" href="/docs/01-get-started/concepts">
+    Core concepts and architecture
   </Card>
 </CardGroup>
-
-## Key Concepts
-
-### Agents
-
-Agents are the central entity in the xpander.ai SDK. Each agent has:
-- **Instructions**: Guidance on how the agent should behave
-- **Memory**: Storage for conversation history
-- **Tools**: Functions the agent can call to perform actions
-- **Executions**: Tasks assigned to the agent
-
-### Tasks and Executions
-
-Tasks are assigned to agents using the `add_task()` method (Python) or `addTask()` method (TypeScript). Each task creates an execution, which represents a single run of the agent with a specific input.
-
-### Function Calling
-
-The xpander.ai SDK provides a powerful system for function calling, allowing agents to invoke both remote tools (hosted on the xpander.ai platform) and local tools (functions defined in your application).
-
-## Examples
-
-### Basic Research Agent
-
-<CodeGroup>
-```python Python
-from xpander_sdk import XpanderClient, LLMProvider
-from openai import OpenAI
-from dotenv import load_dotenv
-import os
-import time
-
-# Load environment variables
-load_dotenv()
-XPANDER_API_KEY = os.environ.get("XPANDER_API_KEY")
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-
-# Initialize clients
-xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
-openai_client = OpenAI(api_key=OPENAI_API_KEY)
-
-# Create or get agent
-agent = xpander_client.agents.create(
-    name="Research Assistant",
-    description="AI assistant for research tasks",
-    instructions="You are a helpful research assistant. Your task is to help users find information from the web, summarize content, and answer questions accurately."
-)
-
-# Add a research task
-agent.add_task(input="What are the latest advancements in renewable energy?")
-
-# Initialize memory
-agent.memory.init_messages(
-    input=agent.execution.input_message,
-    instructions=agent.instructions
-)
-
-# Run until completion
-while not agent.is_finished():
-    # Get next action from LLM
-    response = openai_client.chat.completions.create(
-        model="gpt-4o",
-        messages=agent.messages,
-        tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
-        tool_choice="auto",
-        temperature=0.0
-    )
-    
-    # Add LLM response to memory
-    agent.add_messages(messages=response.model_dump())
-    
-    # Extract and run tool calls
-    tool_calls = XpanderClient.extract_tool_calls(
-        llm_response=response.model_dump(),
-        llm_provider=LLMProvider.OPEN_AI
-    )
-    
-    if tool_calls:
-        results = agent.run_tools(tool_calls=tool_calls)
-        print(f"Executed {len(results)} tools")
-    
-    # Short delay to prevent rate limiting
-    time.sleep(0.5)
-
-# Get results
-result = agent.retrieve_execution_result()
-print(result.result)
-```
-
-```typescript TypeScript
-import { XpanderClient, LLMProvider } from '@xpander-ai/sdk';
-import OpenAI from 'openai';
-import * as dotenv from 'dotenv';
-
-// Load environment variables
-dotenv.config();
-
-async function runResearchAgent() {
-    // Initialize clients
-    const xpanderClient = new XpanderClient({ apiKey: process.env.XPANDER_API_KEY });
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    
-    // Create or get agent
-    const agent = await xpanderClient.agents.create({
-        name: "Research Assistant",
-        description: "AI assistant for research tasks",
-        instructions: "You are a helpful research assistant. Your task is to help users find information from the web, summarize content, and answer questions accurately."
-    });
-    
-    // Add a research task
-    await agent.addTask({ input: "What are the latest advancements in renewable energy?" });
-    
-    // Initialize memory
-    await agent.memory.initMessages({
-        input: agent.execution.inputMessage,
-        instructions: agent.instructions
-    });
-    
-    // Run until completion
-    while (!(await agent.isFinished())) {
-        // Get next action from LLM
-        const response = await openai.chat.completions.create({
-            model: "gpt-4o",
-            messages: agent.messages,
-            tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
-            tool_choice: "auto",
-            temperature: 0
-        });
-        
-        // Add LLM response to memory
-        await agent.addMessages({ messages: response });
-        
-        // Extract and run tool calls
-        const toolCalls = XpanderClient.extractToolCalls({
-            llmResponse: response,
-            llmProvider: LLMProvider.OPEN_AI
-        });
-        
-        if (toolCalls.length > 0) {
-            const results = await agent.runTools({ toolCalls });
-            console.log(`Executed ${results.length} tools`);
-        }
-        
-        // Short delay to prevent rate limiting
-        await new Promise(resolve => setTimeout(resolve, 500));
-    }
-    
-    // Get results
-    const result = await agent.retrieveExecutionResult();
-    console.log(result.result);
-}
-
-runResearchAgent().catch(console.error);
-```
-</CodeGroup>
-
-### Agent with Local Tools
-
-<CodeGroup>
-```python Python
-from xpander_sdk import XpanderClient, LLMProvider, ToolCallType, ToolCallResult
-from openai import OpenAI
-from dotenv import load_dotenv
-import os
-import time
-import math
-
-# Load environment variables
-load_dotenv()
-XPANDER_API_KEY = os.environ.get("XPANDER_API_KEY")
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-
-# Initialize clients
-xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
-openai_client = OpenAI(api_key=OPENAI_API_KEY)
-
-# Create a calculator agent
-agent = xpander_client.agents.create(
-    name="Calculator Assistant",
-    description="An agent that can perform calculations",
-    instructions="You are a helpful assistant that can perform mathematical calculations."
-)
-
-# Define a local tool for calculations
-def calculate(expression):
-    """Safely evaluate a mathematical expression."""
-    try:
-        # Define allowed symbols and functions
-        allowed_names = {
-            "abs": abs, "round": round, "min": min, "max": max,
-            "sum": sum, "pow": pow, "math": math
-        }
-        
-        # Evaluate the expression in a safe way
-        result = eval(expression, {"__builtins__": {}}, allowed_names)
-        return ToolCallResult(
-            function_name="calculate",
-            tool_call_id="some_id",
-            is_success=True,
-            result=str(result)
-        )
-    except Exception as e:
-        return ToolCallResult(
-            function_name="calculate",
-            tool_call_id="some_id", 
-            is_success=False,
-            error=f"Error evaluating expression: {str(e)}"
-        )
-
-# Register the local tool handler
-agent.register_local_tool_handler(tool_name="calculate", handler=calculate)
-
-# Add a task
-agent.add_task(input="I need to calculate the area of a circle with radius 5 cm and also the volume of a sphere with the same radius.")
-
-# Initialize memory
-agent.memory.init_messages(
-    input=agent.execution.input_message,
-    instructions=agent.instructions
-)
-
-# Run agent loop
-while not agent.is_finished():
-    # Get next action from LLM
-    response = openai_client.chat.completions.create(
-        model="gpt-4o",
-        messages=agent.messages,
-        tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
-        tool_choice="auto",
-        temperature=0.0
-    )
-    
-    # Add LLM response to memory
-    agent.add_messages(messages=response.model_dump())
-    
-    # Extract tool calls
-    tool_calls = XpanderClient.extract_tool_calls(
-        llm_response=response.model_dump(),
-        llm_provider=LLMProvider.OPEN_AI
-    )
-    
-    # Filter for local tool calls
-    local_tool_calls = XpanderClient.retrieve_pending_local_tool_calls(
-        tool_calls=tool_calls
-    )
-    
-    # Run local tools
-    if local_tool_calls:
-        results = agent.run_tools(tool_calls=local_tool_calls)
-        print(f"Executed {len(results)} calculations")
-
-# Get result
-result = agent.retrieve_execution_result()
-print(result.result)
-```
-
-```typescript TypeScript
-import { XpanderClient, LLMProvider, ToolCallType, ToolCallResult } from '@xpander-ai/sdk';
-import OpenAI from 'openai';
-import * as dotenv from 'dotenv';
-
-// Load environment variables
-dotenv.config();
-
-async function runCalculatorAgent() {
-    // Initialize clients
-    const xpanderClient = new XpanderClient({ apiKey: process.env.XPANDER_API_KEY });
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    
-    // Create a calculator agent
-    const agent = await xpanderClient.agents.create({
-        name: "Calculator Assistant",
-        description: "An agent that can perform calculations",
-        instructions: "You are a helpful assistant that can perform mathematical calculations."
-    });
-    
-    // Define a local tool for calculations
-    function calculate(expression: string): ToolCallResult {
-        try {
-            // Use Function constructor for sandboxed evaluation
-            // This is safer than eval() in JavaScript
-            const calculate = new Function(
-                'Math', 
-                'return ' + expression.replace(/[^0-9+\-*/^().%><= ,Math]/g, '')
-            );
-            
-            // Execute the calculation
-            const result = calculate(Math);
-            
-            return new ToolCallResult({
-                functionName: "calculate",
-                toolCallId: "some_id",
-                isSuccess: true,
-                result: String(result)
-            });
-        } catch (error) {
-            return new ToolCallResult({
-                functionName: "calculate",
-                toolCallId: "some_id",
-                isSuccess: false,
-                error: `Error evaluating expression: ${error.message}`
-            });
-        }
-    }
-    
-    // Register the local tool handler
-    agent.registerLocalToolHandler({
-        toolName: "calculate",
-        handler: calculate
-    });
-    
-    // Add a task
-    await agent.addTask({
-        input: "I need to calculate the area of a circle with radius 5 cm and also the volume of a sphere with the same radius."
-    });
-    
-    // Initialize memory
-    await agent.memory.initMessages({
-        input: agent.execution.inputMessage,
-        instructions: agent.instructions
-    });
-    
-    // Run agent loop
-    while (!(await agent.isFinished())) {
-        // Get next action from LLM
-        const response = await openai.chat.completions.create({
-            model: "gpt-4o",
-            messages: agent.messages,
-            tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
-            tool_choice: "auto",
-            temperature: 0
-        });
-        
-        // Add LLM response to memory
-        await agent.addMessages({ messages: response });
-        
-        // Extract tool calls
-        const toolCalls = XpanderClient.extractToolCalls({
-            llmResponse: response,
-            llmProvider: LLMProvider.OPEN_AI
-        });
-        
-        // Filter for local tool calls
-        const localToolCalls = XpanderClient.retrievePendingLocalToolCalls({
-            toolCalls: toolCalls
-        });
-        
-        // Run local tools
-        if (localToolCalls.length > 0) {
-            const results = await agent.runTools({ toolCalls: localToolCalls });
-            console.log(`Executed ${results.length} calculations`);
-        }
-    }
-    
-    // Get result
-    const result = await agent.retrieveExecutionResult();
-    console.log(result.result);
-}
-
-runCalculatorAgent().catch(console.error);
-```
-</CodeGroup>
-
-## Best Practices
-
-### Environment Variables
-
-Always store API keys and other sensitive information in environment variables, preferably using a tool like `python-dotenv` to manage them:
-
-<Tabs>
-  <Tab title="Python">
-    ```python
-    from dotenv import load_dotenv
-    import os
-    
-    load_dotenv()
-    XPANDER_API_KEY = os.environ.get("XPANDER_API_KEY")
-    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-    ```
-  </Tab>
-  <Tab title="TypeScript">
-    ```typescript
-    import * as dotenv from 'dotenv';
-    
-    dotenv.config();
-    const XPANDER_API_KEY = process.env.XPANDER_API_KEY;
-    const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-    ```
-  </Tab>
-</Tabs>
-
-### Error Handling
-
-Implement robust error handling for API calls and tool executions:
-
-<Tabs>
-  <Tab title="Python">
-    ```python
-    from xpander_sdk.exceptions import AuthenticationError, ResourceNotFoundError, ApiError
-    
-    try:
-        result = agent.run_tool(tool=tool_call)
-    except AuthenticationError:
-        # Handle authentication issues
-        print("Authentication failed. Check your API key.")
-    except ResourceNotFoundError:
-        # Handle missing resources
-        print("Resource not found. Check your agent ID.")
-    except ApiError as e:
-        # Handle API errors
-        print(f"API error: {e.status_code} - {str(e)}")
-    except Exception as e:
-        # Handle unexpected errors
-        print(f"Unexpected error: {str(e)}")
-    ```
-  </Tab>
-  <Tab title="TypeScript">
-    ```typescript
-    import { AuthenticationError, ResourceNotFoundError, ApiError } from '@xpander-ai/sdk';
-    
-    try {
-        const result = await agent.runTool({ tool: toolCall });
-    } catch (error) {
-        if (error instanceof AuthenticationError) {
-            // Handle authentication issues
-            console.error("Authentication failed. Check your API key.");
-        } else if (error instanceof ResourceNotFoundError) {
-            // Handle missing resources
-            console.error("Resource not found. Check your agent ID.");
-        } else if (error instanceof ApiError) {
-            // Handle API errors
-            console.error(`API error: ${error.statusCode} - ${error.message}`);
-        } else {
-            // Handle unexpected errors
-            console.error(`Unexpected error: ${error.message}`);
-        }
-    }
-    ```
-  </Tab>
-</Tabs>
-
-### Rate Limiting
-
-Add delays between API calls to prevent rate limiting:
-
-<Tabs>
-  <Tab title="Python">
-    ```python
-    import time
-    
-    # Add a short delay between iterations
-    time.sleep(1)
-    ```
-  </Tab>
-  <Tab title="TypeScript">
-    ```typescript
-    // Add a short delay between iterations
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    ```
-  </Tab>
-</Tabs>
-
-### Memory Management
-
-Initialize memory properly before running executions:
-
-<Tabs>
-  <Tab title="Python">
-    ```python
-    agent.memory.init_messages(
-        input=agent.execution.input_message,
-        instructions=agent.instructions,
-        llm_provider=LLMProvider.OPEN_AI
-    )
-    ```
-  </Tab>
-  <Tab title="TypeScript">
-    ```typescript
-    await agent.memory.initMessages({
-        input: agent.execution.inputMessage,
-        instructions: agent.instructions,
-        llmProvider: LLMProvider.OPEN_AI
-    });
-    ```
-  </Tab>
-</Tabs>
-
-## LLM Provider Support
-
-The xpander.ai SDK supports multiple LLM providers:
-
-| Provider         | Enum Value                     | Description                   |
-|------------------|--------------------------------|-------------------------------|
-| OpenAI           | `LLMProvider.OPEN_AI`          | Default OpenAI format         |
-| Claude/Anthropic | `LLMProvider.FRIENDLI_AI`      | Claude via FriendliAI format  |
-| Gemini           | `LLMProvider.GEMINI_OPEN_AI`   | Google Gemini, OpenAI format  |
-| Ollama           | `LLMProvider.OLLAMA`           | Ollama format                 |
-
-## Related Resources
-
-<CardGroup cols={2}>
-  <Card title="Getting Started" icon="rocket" href="/getting-started">
-    Fast-track guide to building with xpander.ai
-  </Card>
-  <Card title="Tutorials" icon="graduation-cap" href="/tutorials">
-    Step-by-step tutorials for common use cases
-  </Card>
-  <Card title="API Reference" icon="code" href="/api-reference">
-    Complete API documentation
-  </Card>
-  <Card title="Examples" icon="file-code" href="/examples">
-    Example applications and code snippets
-  </Card>
-</CardGroup> 

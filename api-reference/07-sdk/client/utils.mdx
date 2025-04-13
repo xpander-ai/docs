@@ -1,0 +1,92 @@
+---
+title: "xpander-utils"
+description: "Integration utilities for Python developers"
+icon: "tools"
+---
+
+# xpander-utils
+
+xpander-utils is a Python library that provides integration utilities for connecting xpander.ai with various AI agent frameworks.
+
+## Installation
+
+```bash
+pip install xpander-utils
+```
+
+## Usage
+
+```python
+import xpander_utils
+
+# Use with various frameworks
+from xpander_utils.integrations import langgraph_connector
+graph = langgraph_connector.create_xpander_graph("my-agent-id")
+```
+
+## Supported Frameworks
+
+xpander-utils provides integrations with the following AI agent frameworks:
+
+- **Hugging Face**: Connect xpander.ai agents with Hugging Face models
+- **CrewAI**: Integrate xpander.ai with CrewAI for multi-agent workflows
+- **ChainLit**: Add xpander.ai capabilities to ChainLit chatbot interfaces
+- **LangGraph**: Create graph-based workflows with xpander.ai and LangGraph
+- **LangChain**: Enhance LangChain chains with xpander.ai functionalities
+
+## Integration Examples
+
+### LangGraph Integration
+
+```python
+from xpander_utils.integrations import langgraph_connector
+
+# Create a graph that uses a xpander.ai agent
+graph = langgraph_connector.create_xpander_graph("my-agent-id")
+
+# Set up nodes and edges
+graph.add_node("start", lambda x: x)
+graph.add_node("xpander_agent", langgraph_connector.call_agent)
+graph.add_node("process_result", lambda x: {"result": x.get("output")})
+
+# Add edges
+graph.add_edge("start", "xpander_agent")
+graph.add_edge("xpander_agent", "process_result")
+
+# Run the graph
+result = graph.invoke({"input": "Hello, world!"})
+```
+
+### CrewAI Integration
+
+```python
+from xpander_utils.integrations import crewai_connector
+from crewai import Crew, Agent, Task
+
+# Create an agent that uses xpander.ai
+xpander_agent = crewai_connector.create_xpander_agent(
+    "my-agent-id",
+    name="Data Analyst",
+    goal="Analyze the provided data"
+)
+
+# Create a task
+task = Task(
+    description="Analyze the customer data and provide insights",
+    agent=xpander_agent
+)
+
+# Create and run the crew
+crew = Crew(agents=[xpander_agent], tasks=[task])
+result = crew.run("Here is the customer data: ...")
+```
+
+## Advanced Usage
+
+xpander-utils provides additional utilities for advanced integration scenarios:
+
+- **State Management**: Utilities for managing state across framework boundaries
+- **Data Conversion**: Tools for converting data between different framework formats
+- **Event Handling**: Functions for handling events from various frameworks
+
+For more details on these advanced features, refer to the API documentation below. 

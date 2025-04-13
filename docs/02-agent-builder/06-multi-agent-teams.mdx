@@ -165,13 +165,8 @@ xpander_client = XpanderClient(api_key=os.environ["XPANDER_API_KEY"])
 first_agent = xpander_client.agents.get(agent_id="first-agent-id")
 next_agent = xpander_client.agents.get(agent_id="next-agent-id")
 
-# Initialize and run your first agent
+# Initialize and run your first agent - this automatically initializes memory
 first_agent.add_task(input="Initial task description")
-first_agent.memory.init_messages(
-    input=first_agent.execution.input_message,
-    instructions=first_agent.instructions,
-    llm_provider=LLMProvider.OPEN_AI
-)
 
 # Process with first agent until you decide to transition
 # (You can use your own logic to determine when to transition)
@@ -181,22 +176,23 @@ first_agent.memory.init_messages(
 # Note that we don't check is_finished() - we explicitly move to the next agent
 result = first_agent.retrieve_execution_result()
 transition_context = result.result if result.status == "COMPLETED" else "Continue processing"
+# Store the thread_id for potential continuity
+first_agent_thread_id = result.memory_thread_id
 
-# Initialize next agent with context from first agent
+# Initialize next agent with context from first agent - this automatically initializes memory
+# Option 1: Start a new thread
 next_agent.add_task(input=f"Continue processing: {transition_context}")
-next_agent.memory.init_messages(
-    input=next_agent.execution.input_message,
-    instructions=next_agent.instructions,
-    llm_provider=LLMProvider.OPEN_AI
-)
 
 # Optional: Transfer relevant memory context
 for msg in first_agent.messages[-5:]:  # Last 5 messages for context
     if msg["role"] != "system":  # Skip system messages
-        next_agent.memory.add_message(msg)
+        next_agent.add_messages(msg)
 
-# Run next agent execution
-# ...execution loop for next agent...
+# Option 2 (Alternative): Continue in the same thread for context continuity
+# next_agent.add_task(
+#     input=f"Continue processing: {transition_context}",
+#     thread_id=first_agent_thread_id
+# )
 ```
 
 This pattern gives you complete control over agent transitions without the overhead of a Manager Agent.

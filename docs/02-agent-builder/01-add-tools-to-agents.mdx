@@ -9,7 +9,7 @@ icon: "screwdriver-wrench"
 Tools in xpander.ai are operations provided by interfaces (LinkedIn, Reddit, Weather, etc.) that allow agents to interact with external systems and data sources.
 
 <Tip>
-If you want to control how your agent uses these tools in a hierarchical structure, check out the [Agent Graph System](/docs/02-agent-builder/01-agent-graph-system) guide.
+If you want to control how your agent uses these tools in a hierarchical structure, check out the [Agent Graph System](/docs/02-agent-builder/02-agent-graph-system) guide.
 </Tip>
 
 ## Exploring Available Interfaces
@@ -217,13 +217,10 @@ Once you've added tools to your agent, it's ready to use. Here's how to create a
 
 <Accordion title="Complete Agent Execution Code">
 ```python
-# Create a task
+# Create a task - this automatically initializes memory
 agent.add_task("""
 Find details about David Twizer the founder of xpander.ai
 """)
-
-# Initialize the agent's memory
-agent.memory.init_messages(input=agent.execution.input_message, instructions=agent.instructions)
 
 # Run the agent
 while not agent.is_finished():
@@ -246,12 +243,12 @@ while not agent.is_finished():
 execution_result = agent.retrieve_execution_result()
 print("Status:", execution_result.status)
 print("Result:", execution_result.result)
+print("Thread ID for future conversations:", execution_result.memory_thread_id)
 ```
 
-The agent will:
-1. Search for the requested information on LinkedIn
-2. Retrieve detailed profile data
-3. Return a comprehensive report with professional details
+<Note>
+**Note**: The `add_task()` method automatically initializes the agent's memory with the input and instructions. There's no need to call `init_messages()` separately. You can also continue a previous conversation by providing a `thread_id` parameter to `add_task()`.
+</Note>
 </Accordion>
 
 ## Available Interfaces
@@ -326,9 +323,8 @@ When working with tools, you might encounter various issues that prevent your ag
 
 ## Next Steps
 
-- [Building complex multi-step workflows](/docs/advanced-workflows)
-- [Integrating multiple interfaces in one agent](/docs/multi-interface-agents)
 - [Monitoring agent execution in the Activity view](/docs/02-agent-builder/03-activity-view)
 - [Fine-tuning operations with advanced settings](/docs/02-agent-builder/04-advanced-operation-settings)
 - [Configuring global agent settings](/docs/02-agent-builder/05-agent-settings)
-- [Customizing agent behavior with instructions](/docs/agent-instructions) 
+- [Working with knowledge graphs](/docs/02-agent-builder/02-agent-graph-system)
+- [Managing thread state](/docs/03-ai-state-management/02-thread-management)

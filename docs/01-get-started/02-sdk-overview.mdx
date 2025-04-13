@@ -125,6 +125,7 @@ task = """
 Find employees of xpander.ai and their roles.
 Then check their LinkedIn profiles for recent updates.
 """
+# Add the task - this automatically initializes memory
 agent.add_task(task)
 
 while not agent.is_finished():
@@ -132,14 +133,26 @@ while not agent.is_finished():
         model="gpt-4-turbo",
         messages=agent.messages,
         tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
-        tool_choice="auto",
+        tool_choice=agent.tool_choice,
         temperature=0.0
     )
     
-    agent.process_llm_response(
-        response.model_dump(), 
+    # Add the LLM response to memory
+    agent.add_messages(response.model_dump())
+    
+    # Extract and execute tool calls with the correct provider
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump(), 
         llm_provider=LLMProvider.OPEN_AI
     )
+    
+    if tool_calls:
+        agent.run_tools(tool_calls=tool_calls)
+
+# Get the final result and thread ID for future conversations
+result = agent.retrieve_execution_result()
+print(f"Result: {result.result}")
+print(f"Thread ID for future use: {result.memory_thread_id}")
 ```
 
 ```python Gemini
@@ -147,6 +160,7 @@ task = """
 Find employees of xpander.ai and their roles.
 Then check their LinkedIn profiles for recent updates.
 """
+# Add the task - this automatically initializes memory
 agent.add_task(task)
 
 while not agent.is_finished():
@@ -154,14 +168,26 @@ while not agent.is_finished():
         model="gemini-2.0-flash",
         messages=agent.messages,
         tools=agent.get_tools(llm_provider=LLMProvider.GEMINI_OPEN_AI),
-        tool_choice="auto",
+        tool_choice=agent.tool_choice,
         temperature=0.0
     )
     
-    agent.process_llm_response(
-        response.model_dump(), 
+    # Add the LLM response to memory
+    agent.add_messages(response.model_dump())
+    
+    # Extract and execute tool calls with the correct provider
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump(),
         llm_provider=LLMProvider.GEMINI_OPEN_AI
     )
+    
+    if tool_calls:
+        agent.run_tools(tool_calls=tool_calls)
+
+# Get the final result and thread ID for future conversations
+result = agent.retrieve_execution_result()
+print(f"Result: {result.result}")
+print(f"Thread ID for future use: {result.memory_thread_id}")
 ```
 
 ```python Claude
@@ -169,6 +195,7 @@ task = """
 Find employees of xpander.ai and their roles.
 Then check their LinkedIn profiles for recent updates.
 """
+# Add the task - this automatically initializes memory
 agent.add_task(task)
 
 while not agent.is_finished():
@@ -176,14 +203,26 @@ while not agent.is_finished():
         model="claude-3-opus",
         messages=agent.messages,
         tools=agent.get_tools(llm_provider=LLMProvider.FRIENDLI_AI),
-        tool_choice="auto",
+        tool_choice=agent.tool_choice,
         temperature=0.0
     )
     
-    agent.process_llm_response(
-        response.model_dump(), 
+    # Add the LLM response to memory
+    agent.add_messages(response.model_dump())
+    
+    # Extract and execute tool calls with the correct provider
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump(),
         llm_provider=LLMProvider.FRIENDLI_AI
     )
+    
+    if tool_calls:
+        agent.run_tools(tool_calls=tool_calls)
+
+# Get the final result and thread ID for future conversations
+result = agent.retrieve_execution_result()
+print(f"Result: {result.result}")
+print(f"Thread ID for future use: {result.memory_thread_id}")
 ```
 </CodeGroup>
 
@@ -191,12 +230,15 @@ while not agent.is_finished():
 
 When integrating with different LLM providers, follow these best practices for consistent behavior:
 
-1. Initialize memory without specifying a provider:
+1. Use add_task to create a task and initialize memory in one step:
 ```python
-agent.memory.init_messages(
-    input=agent.execution.input_message,
-    instructions=agent.instructions
-    # No provider needed here
+# This automatically initializes memory with the system prompt
+agent.add_task(input="What can you help me with?")
+
+# To continue a conversation, provide the thread_id
+agent.add_task(
+    input="Tell me more about that topic",
+    thread_id="thread_abc123"  # Use the thread_id from a previous execution
 )
 ```
 
@@ -260,12 +302,6 @@ agent = xpander_client.agents.get(agent_id=XPANDER_AGENT_ID)
 # Add task
 agent.add_task("Find employees of xpander.ai.")
 
-# Initialize memory without specifying provider
-agent.memory.init_messages(
-    input=agent.execution.input_message,
-    instructions=agent.instructions
-)
-
 # Run the agent and wait for result
 while not agent.is_finished():
     # Call Gemini with tools explicitly formatted for it
@@ -307,34 +343,34 @@ The xpander.ai SDK stores messages in a standard, OpenAI-compatible format withi
 ## Next Steps
 <CardGroup cols={2}>
   <Card 
-    title="Add Voice & Chat Interfaces" 
+    title="Add Human Interfaces" 
     icon="microphone"
-    href="/docs/05-human-interfaces/01-voice-apis"
+    href="/docs/05-human-interfaces/02-slack-bots"
   >
-    Add voice, chat and other human-machine interfaces to your agents
-  </Card>
-
-  <Card 
-    title="Manage Multi-User State" 
-    icon="users"
-    href="/docs/03-ai-state-management/02-multi-agent-collaboration"
-  >
-    Learn how to handle state across multiple users and sessions
+    Add chat and other human-machine interfaces to your agents
   </Card>
 
   <Card 
     title="Manage Agent Memory" 
     icon="brain"
-    href="/docs/03-ai-state-management/01-single-agent-state"
+    href="/docs/03-ai-state-management/01-agent-state-basics"
   > 
     Configure and manage memory state between your AI agents
   </Card>
 
   <Card 
-    title="Add User Authentication" 
-    icon="lock"
-    href="/docs/04-user-authentication/01-add-provider"
+    title="Thread Management" 
+    icon="comments"
+    href="/docs/03-ai-state-management/02-thread-management"
   >
-    Implement secure user authentication for your agents
+    Learn how to handle state across multiple sessions
+  </Card>
+
+  <Card 
+    title="Debugging State" 
+    icon="bug"
+    href="/docs/03-ai-state-management/04-debugging-state"
+  >
+    Troubleshoot and debug agent state issues
   </Card>
 </CardGroup> 
