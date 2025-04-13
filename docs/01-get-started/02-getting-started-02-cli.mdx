@@ -85,12 +85,6 @@ icon: "terminal"
         # Create a task for the agent
         task = agent.add_task("Your task description here")
 
-        # Initialize agent memory with the task
-        agent.memory.init_messages(
-            input=agent.execution.input_message,
-            instructions=agent.instructions
-        )
-
         # Run the agent until completion
         while not agent.is_finished():
             response = openai_client.chat.completions.create(

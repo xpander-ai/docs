@@ -68,8 +68,8 @@
       "style": "regular"
     },
     "pages": [
-      "docs/02-agent-builder/01-agent-graph-system",
-      "docs/02-agent-builder/02-add-tools-to-agents",
+      "docs/02-agent-builder/01-add-tools-to-agents",
+      "docs/02-agent-builder/02-agent-graph-system",
       "docs/02-agent-builder/03-activity-view",
       "docs/02-agent-builder/04-advanced-operation-settings",
       "docs/02-agent-builder/05-agent-settings",
@@ -84,7 +84,8 @@
       "style": "regular"
     },
     "pages": [
-      "docs/03-ai-state-management/01-single-agent-state"
+      "docs/03-ai-state-management/01-agent-state-basics",
+      "docs/03-ai-state-management/02-thread-management"
     ]
   },
   {
@@ -101,7 +102,26 @@
     ]
   }
 ]
-
+      },
+      {
+        "tab": "Tutorials",
+        "icon": {
+          "name": "graduation-cap",
+          "style": "regular"
+        },
+        "groups": [
+          {
+            "group": "Tutorials",
+            "icon": {
+              "name": "graduation-cap",
+              "style": "regular"
+            },
+            "pages": [
+              "tutorials/index",
+              "tutorials/01-hello-world-agent"
+            ]
+          }
+        ]
       },
       {
         "tab": "SDK Reference",
@@ -111,7 +131,7 @@
         },
         "groups": [
           {
-            "group": "Overview",
+            "group": "Getting Started",
             "icon": {
               "name": "book-open",
               "style": "regular"
@@ -121,37 +141,19 @@
             ]
           },
           {
-            "group": "Core Components",
+            "group": "xpander-sdk",
             "icon": {
-              "name": "cubes",
+              "name": "cube",
               "style": "regular"
             },
             "pages": [
-              "api-reference/07-sdk/client/index",
-              "api-reference/07-sdk/agent/index",
-              "api-reference/07-sdk/llm-integration"
-            ]
-          },
-          {
-            "group": "Agent Features",
-            "icon": {
-              "name": "robot",
-              "style": "regular"
-            },
-            "pages": [
-              "api-reference/07-sdk/agent/memory",
-              "api-reference/07-sdk/agent/tools",
-              "api-reference/07-sdk/agent/execution"
-            ]
-          },
-          {
-            "group": "Data Models",
-            "icon": {
-              "name": "box",
-              "style": "regular"
-            },
-            "pages": [
-              "api-reference/07-sdk/models/tool-models"
+              "api-reference/07-sdk/xpander-sdk/XpanderClient",
+              "api-reference/07-sdk/xpander-sdk/agent",
+              "api-reference/07-sdk/xpander-sdk/Agent.Messages",
+              "api-reference/07-sdk/xpander-sdk/Agent.Tools",
+              "api-reference/07-sdk/xpander-sdk/Tasks",
+              "api-reference/07-sdk/xpander-sdk/Agent.Graph",
+              "api-reference/07-sdk/xpander-sdk/tool-models"
             ]
           }
         ]
@@ -174,6 +176,14 @@
             "style": "regular"
           },
           "href": "https://docs.xpander.ai/api-reference/07-sdk/index"
+        },
+        {
+          "dropdown": "Tutorials",
+          "icon": {
+            "name": "graduation-cap",
+            "style": "regular"
+          },
+          "href": "https://docs.xpander.ai/tutorials/index"
         },
         {
           "dropdown": "Release notes",

@@ -205,12 +205,6 @@ echo "XPANDER_AGENT_ID=<your_agent_id>" >> .env
         task1 = agent.add_task("""
         Summarize the last 24 hours top hackernews posts
         """)
-
-        # Initialize agent memory with the task
-        agent.memory.init_messages(
-            input=agent.execution.input_message,
-            instructions=agent.instructions
-        )
         ```
         
         <Accordion title="Understanding Task Creation and State Initialization">
@@ -219,8 +213,9 @@ echo "XPANDER_AGENT_ID=<your_agent_id>" >> .env
         1. Creates an immutable task record that persists throughout execution
         2. Generates a unique execution ID to track this specific agent run
         3. Sets up an initial input message that becomes available as `agent.execution.input_message`
+        4. Initializes the agent's memory with the task input and instructions
         
-        The `agent.memory.init_messages()` call then:
+        The task creation automatically:
         
         1. Initializes the agent's working memory with the task input and instructions
         2. Establishes the initial state for the agent's execution
