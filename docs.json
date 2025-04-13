@@ -249,8 +249,32 @@
       "destination": "/api-reference/07-sdk/index"
     },
     {
+      "source": "/api-reference/07-sdk/",
+      "destination": "/api-reference/07-sdk/index"
+    },
+    {
       "source": "/tutorials",
       "destination": "/tutorials/index"
+    },
+    {
+      "source": "/tutorials/",
+      "destination": "/tutorials/index"
+    },
+    {
+      "source": "/docs",
+      "destination": "/docs/01-get-started/01-index"
+    },
+    {
+      "source": "/docs/",
+      "destination": "/docs/01-get-started/01-index"
+    },
+    {
+      "source": "/changelog",
+      "destination": "/changelog/product-updates"
+    },
+    {
+      "source": "/changelog/",
+      "destination": "/changelog/product-updates"
     }
   ],
   "footer": {
