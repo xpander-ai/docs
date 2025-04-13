@@ -1,0 +1,577 @@
+---
+title: "Agent.Tools"
+description: "Tools API reference for the xpander SDK"
+icon: "wrench"
+---
+
+## Tool Methods
+
+Methods for discovering, executing, and managing tools in the xpander SDK.
+
+### get_tools() / getTools()
+
+Returns available tools, optionally formatted for a specific LLM provider.
+
+<CodeGroup>
+```python Python
+tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
+```
+
+```typescript TypeScript
+const tools = agent.getTools({ llmProvider: LLMProvider.OPEN_AI });
+```
+</CodeGroup>
+
+| Parameter      | Type             | Required | Description                           |
+|----------------|------------------|----------|---------------------------------------|
+| `llm_provider` | LLMProvider enum | No       | Format tools for a specific provider  |
+
+Returns: Array of tool objects formatted for the specified LLM provider.
+
+<Note>
+Different LLM providers require specific tool formats. Always specify the appropriate provider:
+- `LLMProvider.OPEN_AI`: For OpenAI models (GPT-3.5, GPT-4, GPT-4o)
+- `LLMProvider.ANTHROPIC`: For Anthropic Claude models directly
+- `LLMProvider.GENERIC`: Generic provider format
+- `LLMProvider.BEDROCK_CLAUDE`: Amazon Bedrock Claude models
+- `LLMProvider.VERTEX_AI`: Google Vertex AI models
+- `LLMProvider.FRIENDLI_AI`: For Claude models via FriendliAI API
+- `LLMProvider.GEMINI_OPEN_AI`: For Google Gemini with OpenAI format
+</Note>
+
+### run_tool() / runTool()
+
+Executes a single tool by name with specified input parameters.
+
+<CodeGroup>
+```python Python
+result = agent.run_tool(
+    tool_name="web_search",
+    tool_input={"query": "latest AI advancements"}
+)
+```
+
+```typescript TypeScript
+const result = await agent.runTool({
+  toolName: "web_search",
+  toolInput: { query: "latest AI advancements" }
+});
+```
+</CodeGroup>
+
+| Parameter    | Type   | Required | Description                  |
+|--------------|--------|----------|------------------------------|
+| `tool_name`  | string | Yes      | Name of the tool to execute  |
+| `tool_input` | object | Yes      | Input parameters for the tool|
+
+Returns: `ToolCallResult` object containing the execution result.
+
+### run_tools() / runTools()
+
+Executes multiple tool calls extracted from an LLM response.
+
+<CodeGroup>
+```python Python
+results = agent.run_tools(tool_calls=tool_calls)
+```
+
+```typescript TypeScript
+const results = await agent.runTools({ toolCalls });
+```
+</CodeGroup>
+
+| Parameter    | Type                | Required | Description                     |
+|--------------|---------------------|----------|---------------------------------|
+| `tool_calls` | array of ToolCall   | Yes      | Array of tool calls to execute  |
+
+Returns: Array of `ToolCallResult` objects containing execution results.
+
+### add_tool_call_results() / addToolCallResults()
+
+Adds tool execution results to the agent's message history as tool messages.
+
+<CodeGroup>
+```python Python
+from xpander_sdk import ToolCallResult
+
+tool_results = [
+    ToolCallResult(
+        function_name="get_weather",
+        tool_call_id="call-123",
+        is_success=True,
+        result="The weather in New York is sunny with a temperature of 72°F.",
+        payload={"location": "New York"}
+    )
+]
+
+agent.add_tool_call_results(tool_call_results=tool_results)
+```
+
+```typescript TypeScript
+import { ToolCallResult } from '@xpander-ai/sdk';
+
+const toolResults = [
+    new ToolCallResult({
+        functionName: "get_weather",
+        toolCallId: "call-123",
+        isSuccess: true,
+        result: "The weather in New York is sunny with a temperature of 72°F.",
+        payload: { location: "New York" }
+    })
+];
+
+await agent.addToolCallResults({ toolCallResults: toolResults });
+```
+</CodeGroup>
+
+| Parameter          | Type                    | Required | Description                 |
+|--------------------|--------------------------|---------|-----------------------------|
+| `tool_call_results`| List[ToolCallResult]    | Yes     | Array of tool results       |
+
+Returns: `void`
+
+<Note>
+This method is primarily needed for **local tools** whose results aren't automatically reported to the platform. Cloud-based tools managed by the xpander.ai platform automatically add their results to the message history.
+</Note>
+
+### add_local_tools() / addLocalTools()
+
+Adds custom, locally-implemented tools to the agent.
+
+<CodeGroup>
+```python Python
+agent.add_local_tools([{
+    "name": "tool_name",
+    "description": "Tool description",
+    "function": function_reference,
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "param1": {
+                "type": "string",
+                "description": "Parameter description"
+            }
+        },
+        "required": ["param1"]
+    }
+}])
+```
+
+```typescript TypeScript
+await agent.addLocalTools([{
+  name: "tool_name",
+  description: "Tool description",
+  function: functionReference,
+  parameters: {
+    type: "object",
+    properties: {
+      param1: {
+        type: "string",
+        description: "Parameter description"
+      }
+    },
+    required: ["param1"]
+  }
+}]);
+```
+</CodeGroup>
+
+| Parameter | Type             | Required | Description                      |
+|-----------|------------------|----------|----------------------------------|
+| `tools`   | array of objects | Yes      | Array of tool definitions to add |
+
+Returns: `void`
+
+#### Tool Definition Object Properties
+
+| Property      | Type     | Required | Description                           |
+|---------------|----------|----------|---------------------------------------|
+| `name`        | string   | Yes      | Unique name for the tool              |
+| `description` | string   | Yes      | Description of what the tool does     |
+| `function`    | function | Yes      | Reference to implementation function  |
+| `parameters`  | object   | Yes      | JSON Schema of function parameters    |
+
+## Static Utility Methods
+
+### XpanderClient.format_tools() / formatTools()
+
+Static utility method to format tools for various LLM providers.
+
+<CodeGroup>
+```python Python
+from xpander_sdk import XpanderClient, LLMProvider
+
+tools_formatted = XpanderClient.format_tools(
+    tools=[
+        {
+            "name": "search",
+            "description": "Search for information",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "The search query"
+                    }
+                },
+                "required": ["query"]
+            }
+        }
+    ],
+    llm_provider=LLMProvider.OPEN_AI
+)
+```
+
+```typescript TypeScript
+import { XpanderClient, LLMProvider } from '@xpander-ai/sdk';
+
+const toolsFormatted = XpanderClient.formatTools({
+    tools: [
+        {
+            name: "search",
+            description: "Search for information",
+            parameters: {
+                type: "object",
+                properties: {
+                    query: {
+                        type: "string",
+                        description: "The search query"
+                    }
+                },
+                required: ["query"]
+            }
+        }
+    ],
+    llmProvider: LLMProvider.OPEN_AI
+});
+```
+</CodeGroup>
+
+#### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `tools` | array | Yes | Array of tool definitions |
+| `llm_provider` / `llmProvider` | LLMProvider | Yes | Enum value representing the LLM provider |
+
+#### Returns
+
+Returns tools formatted for the specified LLM provider.
+
+### XpanderClient.extract_tool_calls() / extractToolCalls()
+
+Static utility for extracting tool calls from LLM responses.
+
+<CodeGroup>
+```python Python
+from xpander_sdk import XpanderClient, LLMProvider
+from openai import OpenAI
+
+# Initialize OpenAI client
+openai_client = OpenAI(api_key="your-openai-api-key")
+
+# Get a response from OpenAI with tool calls
+response = openai_client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Search for information about AI safety"}],
+    tools=[{
+        "type": "function",
+        "function": {
+            "name": "web_search",
+            "description": "Search the web for information",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "The search query"
+                    }
+                },
+                "required": ["query"]
+            }
+        }
+    }],
+    tool_choice="auto"
+)
+
+# Extract tool calls
+tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response.model_dump(),
+    llm_provider=LLMProvider.OPEN_AI
+)
+
+print(f"Extracted {len(tool_calls)} tool calls")
+for tc in tool_calls:
+    print(f"Tool: {tc.name}")
+    print(f"Payload: {tc.payload}")
+    print(f"Type: {tc.type}")
+```
+
+```typescript TypeScript
+import { XpanderClient, LLMProvider } from '@xpander-ai/sdk';
+import OpenAI from 'openai';
+
+async function extractToolCalls() {
+    // Initialize OpenAI client
+    const openai = new OpenAI({ apiKey: "your-openai-api-key" });
+    
+    // Get a response from OpenAI with tool calls
+    const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: "Search for information about AI safety" }],
+        tools: [{
+            type: "function",
+            function: {
+                name: "web_search",
+                description: "Search the web for information",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        query: {
+                            type: "string",
+                            description: "The search query"
+                        }
+                    },
+                    required: ["query"]
+                }
+            }
+        }],
+        tool_choice: "auto"
+    });
+    
+    // Extract tool calls
+    const toolCalls = XpanderClient.extractToolCalls({
+        llmResponse: response,
+        llmProvider: LLMProvider.OPEN_AI
+    });
+    
+    console.log(`Extracted ${toolCalls.length} tool calls`);
+    for (const tc of toolCalls) {
+        console.log(`Tool: ${tc.name}`);
+        console.log(`Payload: ${tc.payload}`);
+        console.log(`Type: ${tc.type}`);
+    }
+}
+```
+</CodeGroup>
+
+| Parameter      | Type           | Required | Description                                   |
+|----------------|----------------|----------|-----------------------------------------------|
+| `llm_response` | object         | Yes      | Raw response from the LLM                     |
+| `llm_provider` | LLMProvider    | Yes      | Provider that generated the LLM response      |
+
+Returns: Array of `ToolCall` objects extracted from the LLM response.
+
+<Note>
+Always use the same provider for extracting tool calls as you used for retrieving tools. The provider must match the LLM that generated the response.
+</Note>
+
+### XpanderClient.retrieve_pending_local_tool_calls() / retrievePendingLocalToolCalls()
+
+Filters tool calls to retrieve only those that should be processed locally.
+
+<CodeGroup>
+```python Python
+local_tool_calls = XpanderClient.retrieve_pending_local_tool_calls(
+    tool_calls=tool_calls
+)
+```
+
+```typescript TypeScript
+const localToolCalls = XpanderClient.retrievePendingLocalToolCalls({
+    toolCalls: toolCalls
+});
+```
+</CodeGroup>
+
+| Parameter    | Type                | Required | Description                     |
+|--------------|---------------------|----------|---------------------------------|
+| `tool_calls` | array of ToolCall   | Yes      | Array of tool calls to filter   |
+
+Returns: Array of `ToolCall` objects that should be processed locally.
+
+## Agentic Interface Methods
+
+### retrieve_agentic_interfaces() / retrieveAgenticInterfaces()
+
+Returns available connector interfaces that provide pre-built operations.
+
+<CodeGroup>
+```python Python
+interfaces = agent.retrieve_agentic_interfaces()
+```
+
+```typescript TypeScript
+const interfaces = await agent.retrieveAgenticInterfaces();
+```
+</CodeGroup>
+
+Returns: Array of `AgenticInterface` objects representing available connectors.
+
+### retrieve_agentic_operations() / retrieveAgenticOperations()
+
+Retrieves available operations from a specific interface.
+
+<CodeGroup>
+```python Python
+operations = agent.retrieve_agentic_operations(agentic_interface=interface)
+```
+
+```typescript TypeScript
+const operations = await agent.retrieveAgenticOperations({ 
+    agenticInterface: interface 
+});
+```
+</CodeGroup>
+
+| Parameter           | Type             | Required | Description                              |
+|---------------------|------------------|----------|------------------------------------------|
+| `agentic_interface` | AgenticInterface | Yes      | The interface to get operations from     |
+
+Returns: Array of `Operation` objects available from the specified interface.
+
+### attach_operations() / attachOperations()
+
+Attaches operations to the agent so they become available as tools.
+
+<CodeGroup>
+```python Python
+agent.attach_operations(operations=[operation1, operation2])
+```
+
+```typescript TypeScript
+await agent.attachOperations({ operations: [operation1, operation2] });
+```
+</CodeGroup>
+
+| Parameter    | Type                   | Required | Description                            |
+|--------------|------------------------|----------|----------------------------------------|
+| `operations` | array of Operation     | Yes      | Array of operations to attach          |
+
+Returns: `void`
+
+## Type Definitions
+
+### ToolCall
+
+Represents a tool call extracted from an LLM response.
+
+```typescript
+interface ToolCall {
+  id: string;
+  name: string;
+  type: ToolCallType;
+  payload: any;
+  graphApproved: boolean;
+}
+```
+
+### ToolCallResult
+
+Represents the result of executing a tool call.
+
+```typescript
+interface ToolCallResult {
+  toolCallId: string;
+  functionName: string;
+  isSuccess: boolean;
+  result: string;
+  payload: any;
+  graphApproved: boolean;
+}
+```
+
+### AgenticInterface
+
+Represents a connector interface that provides operations.
+
+```typescript
+interface AgenticInterface {
+  id: string;
+  name: string;
+  description: string;
+  iconUrl: string;
+}
+```
+
+### Operation
+
+Represents a pre-built operation from an interface.
+
+```typescript
+interface Operation {
+  id: string;
+  name: string;
+  description: string;
+  interface: AgenticInterface;
+  parameters: object;
+}
+```
+
+## Usage Example
+
+<CodeGroup>
+```python Python
+# Getting and executing tools
+tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
+
+# Extract tool calls from LLM response
+tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response,
+    llm_provider=LLMProvider.OPEN_AI
+)
+
+# Execute the tools
+results = agent.run_tools(tool_calls=tool_calls)
+
+# Working with operations
+interfaces = agent.retrieve_agentic_interfaces()
+github_interface = next((i for i in interfaces if "github" in i.name.lower()), None)
+
+if github_interface:
+    operations = agent.retrieve_agentic_operations(agentic_interface=github_interface)
+    agent.attach_operations(operations=[operations[0]])
+```
+
+```typescript TypeScript
+// Getting and executing tools
+const tools = agent.getTools({ llmProvider: LLMProvider.OPEN_AI });
+
+// Extract tool calls from LLM response
+const toolCalls = XpanderClient.extractToolCalls({
+    llmResponse: response,
+    llmProvider: LLMProvider.OPEN_AI
+});
+
+// Execute the tools
+const results = await agent.runTools({ toolCalls });
+
+// Working with operations
+const interfaces = await agent.retrieveAgenticInterfaces();
+const githubInterface = interfaces.find(i => i.name.toLowerCase().includes("github"));
+
+if (githubInterface) {
+    const operations = await agent.retrieveAgenticOperations({ 
+        agenticInterface: githubInterface 
+    });
+    await agent.attachOperations({ operations: [operations[0]] });
+}
+```
+</CodeGroup>
+
+## Related Documentation
+
+<CardGroup cols={2}>
+  <Card title="Agent" icon="robot" href="/api-reference/07-sdk/xpander-sdk/agent">
+    Core agent functionality
+  </Card>
+  <Card title="Agent.Messages" icon="brain" href="/api-reference/07-sdk/xpander-sdk/Agent.Messages">
+    Working with agent messages
+  </Card>
+  <Card title="Tasks" icon="play" href="/api-reference/07-sdk/xpander-sdk/Tasks">
+    Managing agent tasks
+  </Card>
+  <Card title="XpanderClient" icon="plug" href="/api-reference/07-sdk/xpander-sdk/XpanderClient">
+    Main client for the xpander.ai SDK
+  </Card>
+</CardGroup> 

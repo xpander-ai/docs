@@ -1,0 +1,330 @@
+---
+title: "Adding Tools to Agents"
+description: "Learn how to enhance your agents with tools from different interfaces"
+icon: "screwdriver-wrench"
+---
+
+## What are Agent Tools?
+
+Tools in xpander.ai are operations provided by interfaces (LinkedIn, Reddit, Weather, etc.) that allow agents to interact with external systems and data sources.
+
+<Tip>
+If you want to control how your agent uses these tools in a hierarchical structure, check out the [Agent Graph System](/docs/02-agent-builder/02-agent-graph-system) guide.
+</Tip>
+
+## Exploring Available Interfaces
+
+xpander.ai provides a rich library of pre-built interfaces that your agents can leverage without any development work. These interfaces span across various domains and services to help your agents accomplish a wide range of tasks.
+
+<Frame>
+![Agentic Interfaces Library](/static/images/screenshots/2025-03-15-23-10-34.png)
+</Frame>
+
+<Accordion title="Pre-built Interfaces">
+The interface library includes connections to popular services across multiple categories:
+
+- **Professional Networks**: LinkedIn, Crunchbase
+- **Content Platforms**: Reddit, HackerNews
+- **Productivity Tools**: Gmail, Google Workspace 
+- **Data Services**: Market Insights, Live Sports Data
+- **Research Resources**: arXiv
+- **Developer Tools**: GitHub, GitLab, Confluence
+- **Project Management**: Asana, Airtable, Figma
+- **Marketing Tools**: Google Analytics, Google Ads
+- **And many more**...
+
+Interfaces marked with "xpander built-in auth" are pre-authenticated and ready to use, while those showing "Auth required" need account credentials to be configured before use.
+</Accordion>
+
+<Accordion title="Creating Custom Interfaces">
+Beyond the pre-built interfaces, xpander.ai enables you to create custom interfaces to connect to your own APIs or services:
+
+1. Click the "New Custom Interface" button
+2. Provide an interface name and description
+3. Specify the web interface URL
+4. Upload an OpenAPI specification file or Postman collection
+
+xpander.ai's Agentic Connector Generator will automatically analyze your API specifications and generate AI-ready interfaces with properly configured operations. This transforms any API into tools your agents can use without writing code.
+
+
+<Frame>
+![Create Custom Interface](/static/images/screenshots/2025-03-15-23-09-13.png)
+</Frame>
+
+This capability allows you to connect agents to:
+- Internal company systems
+- Custom databases
+- Proprietary services
+- Legacy systems
+- Any API with OpenAPI/Swagger documentation
+</Accordion>
+
+<Accordion title="Authentication & API Management">
+xpander.ai provides a comprehensive authentication layer that simplifies connecting to various services:
+
+- **Managed Authentication**: Many interfaces (marked "xpander built-in auth") come with pre-configured authentication, allowing immediate use without setup
+- **Custom Authentication**: For services requiring your credentials, xpander.ai offers a streamlined authentication flow
+- **Multiple Auth Methods**: Support for OAuth2, API keys, and other authentication protocols
+- **Granular Scope Control**: Configure exactly what permissions your agent needs for each service
+- **Secure Credential Storage**: All authentication details are securely stored and managed
+
+<Frame>
+![Authentication Configuration](/static/images/screenshots/2025-03-15-23-13-28.png)
+</Frame>
+
+Beyond authentication, xpander.ai includes a full API management portal that helps you:
+
+- Browse available operations grouped by functionality
+- View detailed API documentation for each endpoint
+- Configure operation-specific parameters
+- Monitor API usage and rate limits
+- Test endpoints directly from the interface
+
+This comprehensive API management layer eliminates the need to build and maintain your own API integrations, saving significant development time.
+</Accordion>
+
+## Adding Tools to Your Agent
+
+You can add tools to your agents using either the visual UI or programmatically with the SDK.
+
+<Tabs>
+  <Tab title="Using the UI">
+    xpander.ai's visual interface makes adding tools intuitive without writing code:
+    
+    <Steps>
+      <Step title="Access the Interfaces Panel">
+        Navigate to your agent and click the "Interfaces" button in the top-right corner
+      </Step>
+      
+      <Step title="Browse Available Tools">
+        Explore interfaces like LinkedIn, Reddit, and more
+      </Step>
+      
+      <Step title="Select Operations">
+        Choose the specific operations you want to add to your agent
+      </Step>
+      
+      <Step title="Configure Settings">
+        Adjust any operation-specific settings if needed
+      </Step>
+      
+      <Step title="Add to Agent">
+        Click "Add" to attach the operations to your agent
+      </Step>
+    </Steps>
+    
+    <Frame>
+    ![LinkedIn Agent with Tools](/static/images/screenshots/2025-03-15-23-15-24.png)
+    </Frame>
+    
+    <Accordion title="Organizing Tools Visually">
+    After adding operations:
+    
+    1. Click the "Graph" tab to see all operations
+    2. Drag operations to rearrange them
+    3. Draw connections to create dependencies
+    4. Test directly from the interface
+    
+    This visual approach makes it easier to understand how your agent's tools relate to each other.
+    </Accordion>
+    
+    <Accordion title="Testing in Real-Time">
+    The UI provides multiple testing options:
+    
+    - **Chat**: Test in a conversational interface
+    - **Task**: Run specific tasks with detailed logs
+    - **Webhook**: Configure webhook integrations
+    - **SDK**: Generate SDK integration code
+    
+    These options appear at the top of the agent interface.
+    
+    For detailed analysis of your agent's execution, check the [Activity view](/docs/02-agent-builder/03-activity-view), which provides full visibility into operations, API calls, and LLM responses.
+    </Accordion>
+  </Tab>
+  
+  <Tab title="Using the SDK">
+    <Steps>
+      <Step title="Initialize Environment">
+        ```python
+        from xpander_sdk import XpanderClient, GraphItem
+        from openai import OpenAI
+        from dotenv import load_dotenv
+        from os import environ
+        
+        load_dotenv()
+        
+        OPENAI_API_KEY = environ["OPENAI_API_KEY"]
+        XPANDER_API_KEY = environ["XPANDER_API_KEY"]
+        
+        # Initialize clients
+        xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+        openai_client = OpenAI(api_key=OPENAI_API_KEY)
+        ```
+      </Step>
+    
+      <Step title="Create an Agent">
+        ```python
+        # Create a new agent
+        agent = xpander_client.agents.create(name="LinkedIn Researcher")
+        print(f"Created agent {agent.id} - https://app.xpander.ai/agents/{agent.id}")
+        
+        # Or use an existing agent
+        # AGENT_ID = "your-agent-id"
+        # agent = xpander_client.agents.get(AGENT_ID)
+        ```
+      </Step>
+    
+      <Step title="Discover Interfaces">
+        ```python
+        # List all available interfaces
+        agentic_interfaces = agent.retrieve_agentic_interfaces()
+        
+        # Find the LinkedIn interface
+        linkedin_interface = next((interface for interface in agentic_interfaces 
+                                  if "linkedin" in interface.name.lower()), None)
+        ```
+      </Step>
+    
+      <Step title="Find Operations">
+        ```python
+        # Retrieve all operations for the LinkedIn interface
+        linkedin_operations = agent.retrieve_agentic_operations(agentic_interface=linkedin_interface)
+        
+        # Select operations by their path
+        search_profile_operation = next((operation for operation in linkedin_operations 
+                                        if operation.path == "/search-people"), None)
+        get_profile_operation = next((operation for operation in linkedin_operations 
+                                     if operation.path == "/get-profile-data-by-url"), None)
+        ```
+      </Step>
+    
+      <Step title="Add Operations to Agent">
+        ```python
+        # Attach the operations to your agent
+        agent.attach_operations(operations=[search_profile_operation, get_profile_operation])
+        
+        # Deploy the agent with the attached operations
+        agent.sync()
+        ```
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+## Running Your LinkedIn Researcher Agent
+
+Once you've added tools to your agent, it's ready to use. Here's how to create and execute a task:
+
+<Accordion title="Complete Agent Execution Code">
+```python
+# Create a task - this automatically initializes memory
+agent.add_task("""
+Find details about David Twizer the founder of xpander.ai
+""")
+
+# Run the agent
+while not agent.is_finished():
+    response = openai_client.chat.completions.create(
+                model="gpt-4o",
+                messages=agent.messages,
+                tools=agent.get_tools(),
+                tool_choice=agent.tool_choice,
+                temperature=0.0
+        )
+            
+    # Add messages from the LLM response
+    agent.add_messages(response.model_dump())
+    
+    # Extract and run tool calls
+    tool_calls = XpanderClient.extract_tool_calls(llm_response=response.model_dump())
+    agent.run_tools(tool_calls=tool_calls)
+
+# Get the execution result
+execution_result = agent.retrieve_execution_result()
+print("Status:", execution_result.status)
+print("Result:", execution_result.result)
+print("Thread ID for future conversations:", execution_result.memory_thread_id)
+```
+
+<Note>
+**Note**: The `add_task()` method automatically initializes the agent's memory with the input and instructions. There's no need to call `init_messages()` separately. You can also continue a previous conversation by providing a `thread_id` parameter to `add_task()`.
+</Note>
+</Accordion>
+
+## Available Interfaces
+
+<Accordion title="Popular Interfaces">
+xpander.ai provides interfaces for various services including:
+
+| Interface | Capabilities |
+|-----------|--------------|
+| LinkedIn | Search profiles, companies, jobs |
+| Reddit | Find posts, comments, user info |
+| Weather | Get conditions, forecasts, historical data |
+| Google Suite | Interact with Gmail, Docs, Calendar |
+| News/Research | Access arXiv papers, news articles |
+
+Each interface offers operations with different capabilities and requirements.
+</Accordion>
+
+## Best Practices
+
+<Accordion title="Tool Selection Tips">
+- **Be selective**: Only add tools your agent needs for its specific task
+- **Understand parameters**: Review what each operation requires
+- **Test individually**: Verify each operation works before combining them
+- **Group logically**: Organize related operations from the same interface
+- **Document choices**: Track which operations you've added and why
+</Accordion>
+
+## Troubleshooting Tool Access
+
+When working with tools, you might encounter various issues that prevent your agent from accessing or properly using them. Here are common problems and their solutions:
+
+<Accordion title="Authentication Errors">
+- **Invalid Signature Error**: 
+  ```json
+  {"error": 401, "detail": {"detail": "error(401): {\"message\":\"invalid signature\"}"}
+  ```
+  **Solution**: Check your API key validity and ensure it hasn't expired. Regenerate your API key in the interface settings if needed.
+
+- **Missing Credentials**: 
+  ```
+  Unable to list projects due to an authentication error (invalid signature). Please check your credentials and try again.
+  ```
+  **Solution**: Verify that you've correctly configured the authentication for the interface. For interfaces requiring OAuth, ensure you've completed the authorization flow.
+
+- **Token Expired**:
+  **Solution**: Re-authenticate the interface by going to Interface Settings and clicking "Reconnect" for the specific interface.
+
+<Frame>
+![Replace API keys](/static/images/screenshots/2025-03-16-10-54-41.png)
+</Frame>
+
+</Accordion>
+
+<Accordion title="Debugging Tips">
+- Use the Activity View to inspect the full request and response for each tool call
+- Test operations directly from the interface page before attaching them to agents
+- For SDK usage, implement detailed logging to capture all interactions:
+  ```python
+  import logging
+  logging.basicConfig(level=logging.DEBUG)
+  ```
+- Check interface connection status regularly in the dashboard
+- For custom interfaces, validate your OpenAPI specification with a tool like Swagger Editor
+
+<Frame>
+![Activity View](/static/images/screenshots/2025-03-16-10-54-19.png)
+</Frame>
+
+
+</Accordion>
+
+## Next Steps
+
+- [Monitoring agent execution in the Activity view](/docs/02-agent-builder/03-activity-view)
+- [Fine-tuning operations with advanced settings](/docs/02-agent-builder/04-advanced-operation-settings)
+- [Configuring global agent settings](/docs/02-agent-builder/05-agent-settings)
+- [Working with knowledge graphs](/docs/02-agent-builder/02-agent-graph-system)
+- [Managing thread state](/docs/03-ai-state-management/02-thread-management)

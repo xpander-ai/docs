@@ -1,0 +1,303 @@
+---
+title: "Thread & Messages Management"
+description: "Learn how to manage stateful conversations and agent messages"
+icon: "comments"
+---
+
+# Thread & Messages Management
+
+xpander.ai's state management system enables agents to maintain continuity across multiple interactions and effectively manage messages. This guide explains how to implement stateful agents that remember previous conversations and maintain context over time.
+
+## Thread Concepts
+
+Threads in xpander.ai are the foundation of persistent conversations. A thread represents:
+
+- A sequence of messages between the user and agent(s)
+- The conversation context that persists across multiple executions
+- An identifiable object that can be retrieved for future interactions
+
+## Understanding Agent Messages
+
+Agent messages, which are stored within threads, consists of:
+
+- **Message History**: Sequential record of all messages in the conversation
+- **Context Information**: Additional data that informs the agent's understanding
+- **Tool Call Results**: Results from previous tool executions
+- **System Instructions**: Core guidelines defining the agent's behavior
+
+The messages system ensures that agents maintain a coherent context throughout interactions.
+
+## Creating and Using Threads
+
+When you create a new task for an agent, you can either:
+
+1. Start a new conversation thread (default behavior)
+2. Continue an existing thread by providing a `thread_id`
+
+<CodeGroup>
+```python Python
+# Create a new thread
+agent.add_task(input="Hello, I would like to analyze some data")
+# A new thread_id is automatically generated
+
+# Continue an existing thread
+agent.add_task(
+    input="What were the key insights from our previous analysis?",
+    thread_id="thread_abc123"  # Use the thread_id from a previous execution
+)
+```
+
+```typescript TypeScript
+// Create a new thread
+await agent.addTask({ input: "Hello, I would like to analyze some data" });
+// A new thread_id is automatically generated
+
+// Continue an existing thread
+await agent.addTask({
+    input: "What were the key insights from our previous analysis?",
+    threadId: "thread_abc123"  // Use the thread_id from a previous execution
+});
+```
+</CodeGroup>
+
+### Retrieving and Storing Thread IDs
+
+After an execution completes, you can retrieve the thread ID for future use:
+
+<CodeGroup>
+```python Python
+# After an execution completes
+result = agent.retrieve_execution_result()
+thread_id = result.memory_thread_id
+
+# Save the thread ID in your application's database
+# In a real application, you would store this in a database
+# database.save_thread_id(user_id="user123", thread_id=thread_id)
+```
+
+```typescript TypeScript
+// After an execution completes
+const result = await agent.retrieveExecutionResult();
+const threadId = result.memoryThreadId;
+
+// Save the thread ID in your application's database
+// In a real application, you would store this in a database
+// await database.saveThreadId({ userId: "user123", threadId });
+```
+</CodeGroup>
+
+## Working with Message History
+
+You can directly access and modify the agent's messages within a thread:
+
+```python
+# Access the current messages
+current_messages = agent.messages
+
+# Print the last user message
+user_messages = [msg for msg in current_messages if msg.get("role") == "user"]
+if user_messages:
+    print(f"Last user message: {user_messages[-1].get('content')}")
+
+# Add a custom message
+agent.add_messages({
+    "role": "user",
+    "content": "Could you also include examples of machine learning applications?"
+})
+
+# Add a system message to provide additional context
+agent.add_messages({
+    "role": "system",
+    "content": "Focus on practical applications rather than theoretical concepts."
+})
+```
+
+## Searching and Analyzing Messages
+
+You can analyze the agent's messages to make decisions:
+
+```python
+# Check if certain information is already in messages
+has_ml_info = any("machine learning" in msg.get("content", "") 
+                   for msg in agent.messages)
+
+# Find all tools that have been used
+tool_messages = [msg for msg in agent.messages if msg.get("role") == "tool"]
+used_tool_ids = [msg.get("tool_call_id") for msg in tool_messages]
+print(f"Tools used so far: {used_tool_ids}")
+
+# Add context information based on messages analysis
+if not has_ml_info:
+    agent.add_messages({
+        "role": "system",
+        "content": "The user is looking for information about machine learning applications."
+    })
+```
+
+## Agent Execution Loop with Thread Management
+
+Here's a simple implementation showing how to build an agent that can maintain conversation state:
+
+<Warning>
+**Important Note About Message Initialization**
+
+When you call `add_task()`, the system automatically:
+1. Creates a new thread with the system prompt
+2. Initializes the agent's messages with necessary messages
+3. Makes the execution input available as `agent.execution.input_message`
+
+Do not use `agent.memory.init_messages()` - it's deprecated and should be replaced with `agent.add_task()`, which handles message initialization automatically and supports thread continuity through the optional `thread_id` parameter.
+</Warning>
+
+<CodeGroup>
+```python Python
+from xpander_sdk import XpanderClient, LLMProvider
+from openai import OpenAI
+import os
+
+# Function to run an agent with thread continuity
+def run_agent_with_thread(prompt, thread_id=None):
+    """Run an agent with optional thread continuity"""
+    
+    # Initialize clients
+    xpander_client = XpanderClient(api_key=os.environ.get("XPANDER_API_KEY"))
+    openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+    
+    # Get the agent
+    agent = xpander_client.agents.get(agent_id=os.environ.get("XPANDER_AGENT_ID"))
+    
+    # Add a task (with optional thread_id)
+    # This automatically creates a new thread or continues an existing one
+    agent.add_task(input=prompt, thread_id=thread_id)
+    
+    # Run the agent until the task is complete
+    while not agent.is_finished():
+        # Get next action from LLM
+        response = openai_client.chat.completions.create(
+            model="gpt-4o",
+            messages=agent.messages,
+            tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
+            tool_choice=agent.tool_choice,
+            temperature=0.0
+        )
+        
+        # Add LLM response to messages
+        agent.add_messages(response.model_dump())
+        
+        # Extract and execute tool calls
+        tool_calls = XpanderClient.extract_tool_calls(
+            llm_response=response.model_dump(),
+            llm_provider=LLMProvider.OPEN_AI
+        )
+        
+        if tool_calls:
+            agent.run_tools(tool_calls=tool_calls)
+    
+    # Get the final result
+    result = agent.retrieve_execution_result()
+    
+    # Return both the result text and the thread_id for future use
+    return result.result, result.memory_thread_id
+
+# Example usage: First conversation
+result, thread_id = run_agent_with_thread("What's the latest news about AI?")
+print(f"Result: {result}")
+print(f"Thread ID: {thread_id}")
+
+# Continue the conversation (use previous thread_id)
+follow_up, thread_id = run_agent_with_thread(
+    "Tell me more about the ethical implications.", 
+    thread_id=thread_id
+)
+print(f"Follow-up: {follow_up}")
+```
+
+```typescript TypeScript
+import { XpanderClient, LLMProvider } from '@xpander-ai/sdk';
+import OpenAI from 'openai';
+
+// Function to run an agent with thread continuity
+async function runAgentWithThread(prompt: string, threadId?: string) {
+    // Initialize clients
+    const xpanderClient = new XpanderClient({ apiKey: process.env.XPANDER_API_KEY });
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    
+    // Get the agent
+    const agent = await xpanderClient.agents.get({ agentId: process.env.XPANDER_AGENT_ID });
+    
+    // Add a task (with optional thread_id)
+    await agent.addTask({
+        input: prompt,
+        threadId: threadId  // Provide a thread ID to continue a conversation
+    });
+    
+    // Run the agent until the task is complete
+    while (!(await agent.isFinished())) {
+        // Get next action from LLM
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o",
+            messages: agent.messages,
+            tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
+            tool_choice: agent.toolChoice,
+            temperature: 0
+        });
+        
+        // Add response to messages
+        await agent.addMessages({ messages: response });
+        
+        // Extract and execute tool calls
+        const toolCalls = XpanderClient.extractToolCalls({
+            llmResponse: response,
+            llmProvider: LLMProvider.OPEN_AI
+        });
+        
+        if (toolCalls.length > 0) {
+            await agent.runTools({ toolCalls });
+        }
+    }
+    
+    // Get the final result
+    const result = await agent.retrieveExecutionResult();
+    
+    // Return both the result and thread ID
+    return {
+        result: result.result,
+        threadId: result.memoryThreadId
+    };
+}
+
+// Example usage
+async function runConversation() {
+    // First message
+    const { result, threadId } = await runAgentWithThread("What's the latest news about AI?");
+    console.log(`Result: ${result}`);
+    console.log(`Thread ID: ${threadId}`);
+    
+    // Follow-up using the same thread
+    const followUp = await runAgentWithThread(
+        "Tell me more about the ethical implications.", 
+        threadId
+    );
+    console.log(`Follow-up: ${followUp.result}`);
+}
+
+runConversation().catch(console.error);
+```
+</CodeGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Agent Execution" icon="play" href="/api-reference/07-sdk/Tasks">
+    Learn how to manage agent execution flow
+  </Card>
+  <Card title="Agent.Messages" icon="code" href="/api-reference/07-sdk/Agent.Messages">
+    Detailed API reference for agent messages
+  </Card>
+  <Card title="Stateful Agents Guide" icon="brain" href="/docs/03-ai-state-management/03-agent-state">
+    Create agents that maintain state
+  </Card>
+  <Card title="Debugging Guide" icon="bug" href="/docs/03-ai-state-management/04-debugging-state">
+    Debug agent execution issues
+  </Card>
+</CardGroup> 

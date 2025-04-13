@@ -1,0 +1,222 @@
+---
+title: "XpanderClient"
+description: "XpanderClient API Reference for the xpander SDK"
+icon: "plug"
+---
+
+The `XpanderClient` is the main entry point for the xpander SDK. It provides methods for managing agents and utility functions for working with LLM responses.
+
+## Initialization
+
+<CodeGroup>
+```python Python
+from xpander_sdk import XpanderClient
+
+client = XpanderClient(
+    api_key="your-xpander-api-key",
+    base_url="https://inbound.xpander.ai",  # Optional, defaults to production
+    organization_id="your-org-id",  # Optional, needed for multi-organization and local run
+    should_reset_cache=False  # Optional
+)
+
+# For running Xpander locally:
+# client = XpanderClient(
+#     api_key="my-agent-controller-api-key", 
+#     base_url="http://localhost:9991", 
+#     organization_id="your-org-id"
+# )
+```
+
+```typescript TypeScript
+import { XpanderClient } from '@xpander-ai/sdk';
+
+const client = new XpanderClient({ 
+    apiKey: "your-xpander-api-key",
+    baseUrl: "https://inbound.xpander.ai",  // Optional, defaults to production
+    organizationId: "your-org-id",  // Optional, needed for multi-organization and local run
+    shouldResetCache: false  // Optional
+});
+
+// For running Xpander locally:
+// const client = new XpanderClient({ 
+//     apiKey: "my-agent-controller-api-key", 
+//     baseUrl: "http://localhost:9991", 
+//     organizationId: "your-org-id"
+// });
+```
+</CodeGroup>
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `api_key` / `apiKey` | string | Yes | Your xpander API key |
+| `base_url` / `baseUrl` | string | No | API endpoint URL, defaults to production URL (https://inbound.xpander.ai). Set to http://localhost:9991 for local runs |
+| `organization_id` / `organizationId` | string | No | Organization ID, needed for multi-organization and local run |
+| `should_reset_cache` / `shouldResetCache` | boolean | No | Whether to reset the cache when creating the client |
+
+## Properties
+
+### agents
+
+The agents property provides access to agent management methods.
+
+## Agent Management Methods
+
+### agents.get()
+
+Retrieves an agent by ID.
+
+<CodeGroup>
+```python Python
+agent = client.agents.get(agent_id="agent-id-123")
+```
+
+```typescript TypeScript
+const agent = await client.agents.get({ agentId: "agent-id-123" });
+```
+</CodeGroup>
+
+#### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `agent_id` / `agentId` | string | Yes | ID of the agent to retrieve |
+
+#### Returns
+
+Returns an `Agent` object.
+
+### agents.list()
+
+Lists all available agents.
+
+<CodeGroup>
+```python Python
+agents = client.agents.list()
+```
+
+```typescript TypeScript
+const agents = await client.agents.list();
+```
+</CodeGroup>
+
+#### Returns
+
+Returns an array of `Agent` objects.
+
+### agents.create()
+
+Creates a new agent.
+
+<CodeGroup>
+```python Python
+agent = client.agents.create(
+    name="New Agent",
+    description="Description of the agent",
+    agent_type="regular",
+    instructions="Your instructions for the agent"
+)
+```
+
+```typescript TypeScript
+const agent = await client.agents.create({
+    name: "New Agent",
+    description: "Description of the agent",
+    agentType: "regular",
+    instructions: "Your instructions for the agent"
+});
+```
+</CodeGroup>
+
+#### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | Name of the agent |
+| `description` | string | No | Description of the agent |
+| `agent_type` / `agentType` | string | Yes | Type of agent: "regular" or "agentic_interface" |
+| `instructions` | string | No | Instructions for the agent |
+
+#### Returns
+
+Returns the newly created `Agent` object.
+
+## Enums
+
+### LLMProvider
+
+Enumeration of supported LLM providers:
+
+```typescript
+enum LLMProvider {
+  OPEN_AI = "openai",
+  ANTHROPIC = "anthropic",
+  GENERIC = "generic",
+  BEDROCK_CLAUDE = "bedrock_claude",
+  VERTEX_AI = "vertex_ai",
+  CLAUDE_3_OPUS = "claude-3-opus-20240229",
+  CLAUDE_3_SONNET = "claude-3-sonnet-20240229",
+  CLAUDE_3_HAIKU = "claude-3-haiku-20240307",
+  FRIENDLI_AI = "friendli_ai",
+  GEMINI_OPEN_AI = "gemini_openai",
+  NVIDIA_NIM = "nvidia_nim",
+  OLLAMA = "ollama"
+}
+```
+
+## Complete Usage Example
+
+<CodeGroup>
+```python Python
+from xpander_sdk import XpanderClient, LLMProvider
+import os
+
+# Initialize the client
+client = XpanderClient(api_key=os.environ["XPANDER_API_KEY"])
+
+# Create a new agent
+agent = client.agents.create(
+    name="Research Assistant",
+    description="Agent that helps with research tasks",
+    agent_type="regular",
+    instructions="You are a helpful research assistant."
+)
+
+# Get an existing agent
+agent = client.agents.get(agent_id=agent.id)
+
+# List all agents
+all_agents = client.agents.list()
+```
+
+```typescript TypeScript
+import { XpanderClient, LLMProvider } from '@xpander-ai/sdk';
+
+// Initialize the client
+const client = new XpanderClient({ 
+    apiKey: process.env.XPANDER_API_KEY 
+});
+
+// Async function for operations
+async function main() {
+    // Create a new agent
+    const agent = await client.agents.create({
+        name: "Research Assistant",
+        description: "Agent that helps with research tasks",
+        agentType: "regular",
+        instructions: "You are a helpful research assistant."
+    });
+
+    // Get an existing agent
+    const existingAgent = await client.agents.get({ 
+        agentId: agent.id 
+    });
+
+    // List all agents
+    const allAgents = await client.agents.list();
+}
+
+main().catch(console.error);
+```
+</CodeGroup> 

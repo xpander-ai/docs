@@ -1,0 +1,251 @@
+---
+title: "Agent.Messages"
+description: "Messages API reference for the xpander SDK"
+icon: "brain"
+---
+
+## Message Properties and Methods
+
+The Messages API provides access to conversation history and methods for modifying messages in xpander agents.
+
+### agent.messages
+
+Array of conversation messages in OpenAI-compatible format.
+
+<CodeGroup>
+```python Python
+messages = agent.messages
+```
+
+```typescript TypeScript
+const messages = agent.messages;
+```
+</CodeGroup>
+
+Returns: Array of message objects with the following structure:
+
+```typescript
+interface Message {
+  role: string;         // "system", "user", "assistant", or "tool"
+  content: string;      // The message content
+  tool_calls?: ToolCall[]; // For assistant messages with tool calls
+  tool_call_id?: string;   // For tool messages
+}
+```
+
+<Note>
+Messages are automatically populated when `agent.add_task()` is called. The array is in OpenAI-compatible format and can be used directly with any supported LLM provider without manual conversion.
+</Note>
+
+### add_messages() / addMessages()
+
+Adds one or more messages to the conversation history.
+
+<CodeGroup>
+```python Python
+# Add LLM response to messages
+agent.add_messages(response.model_dump())
+
+# Add custom message
+agent.add_messages({
+    "role": "system", 
+    "content": "Provide concise answers."
+})
+
+# Add multiple messages
+agent.add_messages([
+    {"role": "user", "content": "Hello"},
+    {"role": "assistant", "content": "Hi there!"}
+])
+```
+
+```typescript TypeScript
+// Add LLM response to messages
+await agent.addMessages(response);
+
+// Add custom message
+await agent.addMessages({
+    role: "system", 
+    content: "Provide concise answers."
+});
+
+// Add multiple messages
+await agent.addMessages([
+    {role: "user", content: "Hello"},
+    {role: "assistant", content: "Hi there!"}
+]);
+```
+</CodeGroup>
+
+| Parameter  | Type                      | Required | Description                         |
+|------------|---------------------------|----------|-------------------------------------|
+| `messages` | LLM response or Message(s)| Yes      | Messages to add (accepts raw LLM responses, single messages, or arrays) |
+
+Returns: `void`
+
+## Type Definitions
+
+### Message
+
+Standard message object in OpenAI-compatible format.
+
+```typescript
+interface Message {
+  role: string;         // "system", "user", "assistant", or "tool"
+  content: string;      // The message content
+  tool_calls?: ToolCall[]; // For assistant messages with tool calls
+  tool_call_id?: string;   // For tool messages
+}
+```
+
+## Usage Examples
+
+### Passing Messages to LLM API
+
+<CodeGroup>
+```python Python
+# Pass messages directly to LLM API
+response = openai_client.chat.completions.create(
+    model="gpt-4o",
+    messages=agent.messages,
+    tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
+    temperature=0.0
+)
+```
+
+```typescript TypeScript
+// Pass messages directly to LLM API
+const response = await openai.chat.completions.create({
+    model: "gpt-4o",
+    messages: agent.messages,
+    tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
+    temperature: 0
+});
+```
+</CodeGroup>
+
+### Analyzing Messages
+
+<CodeGroup>
+```python Python
+# Count tokens
+from tiktoken import encoding_for_model
+enc = encoding_for_model("gpt-4o")
+total_tokens = sum(len(enc.encode(msg.get("content", ""))) for msg in agent.messages)
+
+# Extract user messages
+user_messages = [
+    msg.get("content") for msg in agent.messages 
+    if msg.get("role") == "user"
+]
+
+# Find messages containing specific content
+relevant_messages = [
+    msg for msg in agent.messages
+    if msg.get("content") and "specific term" in msg.get("content").lower()
+]
+```
+
+```typescript TypeScript
+// Count tokens
+import { encode } from "gpt-tokenizer";
+const totalTokens = agent.messages
+    .reduce((sum, msg) => sum + encode(msg.content || "").length, 0);
+
+// Extract user messages
+const userMessages = agent.messages
+    .filter(msg => msg.role === "user")
+    .map(msg => msg.content);
+
+// Find messages containing specific content
+const relevantMessages = agent.messages
+    .filter(msg => msg.content && msg.content.toLowerCase().includes("specific term"));
+```
+</CodeGroup>
+
+### Complete Agent Loop with Messages
+
+<CodeGroup>
+```python Python
+# Initialize task and get initial messages
+agent.add_task(input="What's the weather in New York?")
+
+while not agent.is_finished():
+    # Get LLM response
+    response = openai_client.chat.completions.create(
+        model="gpt-4o",
+        messages=agent.messages,
+        tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
+        temperature=0
+    )
+
+    # Add LLM response to messages
+    agent.add_messages(response.model_dump())
+
+    # Extract and run tool calls
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump(),
+        llm_provider=LLMProvider.OPEN_AI
+    )
+
+    if tool_calls:
+        results = agent.run_tools(tool_calls=tool_calls)
+        # Tool results are automatically added to messages
+```
+
+```typescript TypeScript
+// Initialize task and get initial messages
+await agent.addTask({ input: "What's the weather in New York?" });
+
+while (!agent.isFinished()) {
+    // Get LLM response
+    const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: agent.messages,
+        tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
+        temperature: 0
+    });
+
+    // Add LLM response to messages
+    await agent.addMessages(response);
+
+    // Extract and run tool calls
+    const toolCalls = XpanderClient.extractToolCalls({
+        llmResponse: response,
+        llmProvider: LLMProvider.OPEN_AI
+    });
+
+    if (toolCalls.length > 0) {
+        const results = await agent.runTools({ toolCalls });
+        // Tool results are automatically added to messages
+    }
+}
+```
+</CodeGroup>
+
+## Integration with Tasks API
+
+The Messages API is tightly integrated with the Tasks API:
+
+- Messages are initialized when `agent.add_task()` is called
+- Message history is loaded when a `thread_id` is provided to `add_task()`
+- The execution ends when the LLM calls the `xpfinish-agent-execution-finished` tool
+
+For task management functionality, see the [Tasks API documentation](/api-reference/07-sdk/Tasks).
+
+## Related Documentation
+
+<CardGroup cols={2}>
+  <Card title="Agent" icon="robot" href="/api-reference/07-sdk/xpander-sdk/agent">
+    Core agent functionality
+  </Card>
+  <Card title="Agent.Tools" icon="wrench" href="/api-reference/07-sdk/xpander-sdk/Agent.Tools">
+    Using agent tools and function calling
+  </Card>
+  <Card title="Tasks" icon="play" href="/api-reference/07-sdk/xpander-sdk/Tasks">
+    Managing agent tasks
+  </Card>
+  <Card title="XpanderClient" icon="plug" href="/api-reference/07-sdk/xpander-sdk/XpanderClient">
+    Main client for the xpander.ai SDK
+  </Card>
+</CardGroup> 

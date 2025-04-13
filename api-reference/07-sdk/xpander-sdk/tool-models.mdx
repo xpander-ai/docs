@@ -1,0 +1,456 @@
+---
+title: "Tool Models"
+description: "Data models for working with tools in the xpander.ai SDK"
+icon: "box"
+---
+
+The xpander.ai SDK uses several data models for working with tools and function calls. This documentation covers the key models used when working with tools.
+
+## ToolCallType
+
+An enumeration defining the different types of tool calls.
+
+<CodeGroup>
+```python Python
+from xpander_sdk import ToolCallType
+
+# Tool call types
+print(ToolCallType.XPANDER)  # Tools provided by the xpander.ai platform
+print(ToolCallType.LOCAL)    # Tools implemented locally in your code
+print(ToolCallType.UNKNOWN)  # Unrecognized tool type
+```
+
+```typescript TypeScript
+import { ToolCallType } from '@xpander-ai/sdk';
+
+// Tool call types
+console.log(ToolCallType.XPANDER);  // Tools provided by the xpander.ai platform
+console.log(ToolCallType.LOCAL);    // Tools implemented locally in your code
+console.log(ToolCallType.UNKNOWN);  // Unrecognized tool type
+```
+</CodeGroup>
+
+| Enum Value             | Description                                           |
+|------------------------|-------------------------------------------------------|
+| `ToolCallType.XPANDER` | Tool calls executed on the xpander.ai platform           |
+| `ToolCallType.LOCAL`   | Tool calls executed locally in your application       |
+| `ToolCallType.UNKNOWN` | Unrecognized tool calls (typically a fallback value)  |
+
+## ToolCall
+
+Represents a function call from an LLM.
+
+<CodeGroup>
+```python Python
+from xpander_sdk import ToolCall, ToolCallType
+
+# Create a tool call for a web search
+web_search = ToolCall(
+    name="web_search",
+    type=ToolCallType.XPANDER,
+    payload={
+        "bodyParams": {
+            "query": "latest AI research papers"
+        }
+    },
+    tool_call_id="call_123456789"
+)
+
+# Access tool call properties
+print(f"Tool name: {web_search.name}")
+print(f"Tool type: {web_search.type}")
+print(f"Tool payload: {web_search.payload}")
+print(f"Tool call ID: {web_search.tool_call_id}")
+```
+
+```typescript TypeScript
+import { ToolCall, ToolCallType } from '@xpander-ai/sdk';
+
+// Create a tool call for a web search
+const webSearch = new ToolCall({
+    name: "web_search",
+    type: ToolCallType.XPANDER,
+    payload: {
+        bodyParams: {
+            query: "latest AI research papers"
+        }
+    },
+    toolCallId: "call_123456789"
+});
+
+// Access tool call properties
+console.log(`Tool name: ${webSearch.name}`);
+console.log(`Tool type: ${webSearch.type}`);
+console.log(`Tool payload: ${JSON.stringify(webSearch.payload)}`);
+console.log(`Tool call ID: ${webSearch.toolCallId}`);
+```
+</CodeGroup>
+
+### Properties
+
+| Property      | Type           | Description                                        |
+|---------------|----------------|----------------------------------------------------|
+| `name`        | string         | The name of the tool being called                  |
+| `type`        | ToolCallType   | The type of the tool (XPANDER, LOCAL, etc.)        |
+| `payload`     | Object         | The parameters passed to the tool                  |
+| `tool_call_id`| string         | A unique identifier for the tool call              |
+
+### Usage
+
+Tool calls are typically extracted from LLM responses using the `extract_tool_calls()` method:
+
+<CodeGroup>
+```python Python
+from xpander_sdk import XpanderClient, LLMProvider
+from openai import OpenAI
+
+# Initialize OpenAI client
+openai_client = OpenAI(api_key="your-openai-key")
+
+# Get LLM response with tool calls
+response = openai_client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "What's the weather in London?"}],
+    tools=[{
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Get the current weather in a location",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "The city and state or country"
+                    }
+                },
+                "required": ["location"]
+            }
+        }
+    }]
+)
+
+# Extract tool calls in xpander.ai format
+tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response.model_dump(),
+    llm_provider=LLMProvider.OPEN_AI
+)
+
+# Process the tool calls
+for tool_call in tool_calls:
+    print(f"Tool: {tool_call.name}")
+    print(f"Type: {tool_call.type}")
+    print(f"Payload: {tool_call.payload}")
+```
+
+```typescript TypeScript
+import { XpanderClient, LLMProvider } from '@xpander-ai/sdk';
+import OpenAI from 'openai';
+
+async function extractToolCalls() {
+    // Initialize OpenAI client
+    const openai = new OpenAI({ apiKey: "your-openai-key" });
+    
+    // Get LLM response with tool calls
+    const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: "What's the weather in London?" }],
+        tools: [{
+            type: "function",
+            function: {
+                name: "get_weather",
+                description: "Get the current weather in a location",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        location: {
+                            type: "string",
+                            description: "The city and state or country"
+                        }
+                    },
+                    required: ["location"]
+                }
+            }
+        }]
+    });
+    
+    // Extract tool calls in xpander.ai format
+    const toolCalls = XpanderClient.extractToolCalls({
+        llmResponse: response,
+        llmProvider: LLMProvider.OPEN_AI
+    });
+    
+    // Process the tool calls
+    for (const toolCall of toolCalls) {
+        console.log(`Tool: ${toolCall.name}`);
+        console.log(`Type: ${toolCall.type}`);
+        console.log(`Payload: ${JSON.stringify(toolCall.payload)}`);
+    }
+}
+```
+</CodeGroup>
+
+## ToolCallResult
+
+Represents the result of executing a tool call.
+
+<CodeGroup>
+```python Python
+from xpander_sdk import ToolCallResult
+
+# Create a successful tool call result
+success_result = ToolCallResult(
+    function_name="web_search",
+    tool_call_id="call_123456789",
+    is_success=True,
+    result="Found the following information: OpenAI released GPT-4 Turbo on...",
+    payload={"query": "latest AI research"}
+)
+
+# Create a failed tool call result
+error_result = ToolCallResult(
+    function_name="get_stock_price",
+    tool_call_id="call_987654321",
+    is_success=False,
+    error="API rate limit exceeded",
+    payload={"symbol": "AAPL"}
+)
+
+# Access properties
+print(f"Tool name: {success_result.function_name}")
+print(f"Success: {success_result.is_success}")
+print(f"Result: {success_result.result}")
+```
+
+```typescript TypeScript
+import { ToolCallResult } from '@xpander-ai/sdk';
+
+// Create a successful tool call result
+const successResult = new ToolCallResult({
+    functionName: "web_search",
+    toolCallId: "call_123456789",
+    isSuccess: true,
+    result: "Found the following information: OpenAI released GPT-4 Turbo on...",
+    payload: { query: "latest AI research" }
+});
+
+// Create a failed tool call result
+const errorResult = new ToolCallResult({
+    functionName: "get_stock_price",
+    toolCallId: "call_987654321",
+    isSuccess: false,
+    error: "API rate limit exceeded",
+    payload: { symbol: "AAPL" }
+});
+
+// Access properties
+console.log(`Tool name: ${successResult.functionName}`);
+console.log(`Success: ${successResult.isSuccess}`);
+console.log(`Result: ${successResult.result}`);
+```
+</CodeGroup>
+
+### Properties
+
+| Property        | Type    | Description                                          |
+|----------------|---------|------------------------------------------------------|
+| `function_name` | string  | The name of the function that was called             |
+| `tool_call_id`  | string  | The ID of the original tool call                     |
+| `is_success`    | boolean | Whether the tool call was successful                 |
+| `result`        | string  | The result of the tool call (if successful)          |
+| `error`         | string  | Error message (if the tool call failed)              |
+| `payload`       | Object  | The original parameters passed to the tool           |
+
+### Usage
+
+Tool call results are typically returned from the `run_tool()` or `run_tools()` methods:
+
+<CodeGroup>
+```python Python
+from xpander_sdk import XpanderClient, ToolCall, ToolCallType
+
+# Initialize client and get agent
+client = XpanderClient(api_key="your-api-key")
+agent = client.agents.get(agent_id="agent-1234")
+
+# Create a tool call
+tool_call = ToolCall(
+    name="web_search",
+    type=ToolCallType.XPANDER,
+    payload={
+        "bodyParams": {
+            "query": "latest advances in quantum computing"
+        }
+    },
+    tool_call_id="call_1234"
+)
+
+# Execute the tool
+result = agent.run_tool(tool=tool_call)
+
+# Process the result
+if result.is_success:
+    print(f"Tool succeeded with result: {result.result[:100]}...")
+else:
+    print(f"Tool failed with error: {result.error}")
+```
+
+```typescript TypeScript
+import { XpanderClient, ToolCall, ToolCallType } from '@xpander-ai/sdk';
+
+async function executeToolCall() {
+    // Initialize client and get agent
+    const client = new XpanderClient({ apiKey: "your-api-key" });
+    const agent = await client.agents.get({ agentId: "agent-1234" });
+
+    // Create a tool call
+    const toolCall = new ToolCall({
+        name: "web_search",
+        type: ToolCallType.XPANDER,
+        payload: {
+            bodyParams: {
+                query: "latest advances in quantum computing"
+            }
+        },
+        toolCallId: "call_1234"
+    });
+
+    // Execute the tool
+    const result = await agent.runTool({ tool: toolCall });
+
+    // Process the result
+    if (result.isSuccess) {
+        console.log(`Tool succeeded with result: ${result.result.substring(0, 100)}...`);
+    } else {
+        console.log(`Tool failed with error: ${result.error}`);
+    }
+}
+```
+</CodeGroup>
+
+## LLMProvider
+
+An enumeration representing different LLM providers for formatting tools and extracting tool calls.
+
+<CodeGroup>
+```python Python
+from xpander_sdk import LLMProvider
+
+# Available LLM providers
+print(LLMProvider.OPEN_AI)        # OpenAI (GPT models)
+print(LLMProvider.FRIENDLI_AI)    # Claude (via FriendliAI)
+print(LLMProvider.GEMINI_OPEN_AI) # Google Gemini (OpenAI-compatible)
+print(LLMProvider.OLLAMA)         # Ollama (local models)
+```
+
+```typescript TypeScript
+import { LLMProvider } from '@xpander-ai/sdk';
+
+// Available LLM providers
+console.log(LLMProvider.OPEN_AI);        // OpenAI (GPT models)
+console.log(LLMProvider.FRIENDLI_AI);    // Claude (via FriendliAI)
+console.log(LLMProvider.GEMINI_OPEN_AI); // Google Gemini (OpenAI-compatible)
+console.log(LLMProvider.OLLAMA);         // Ollama (local models)
+```
+</CodeGroup>
+
+| Enum Value                   | Description                                     |
+|------------------------------|-------------------------------------------------|
+| `LLMProvider.OPEN_AI`        | OpenAI's format for GPT models                  |
+| `LLMProvider.FRIENDLI_AI`    | Claude format (via FriendliAI)                  |
+| `LLMProvider.GEMINI_OPEN_AI` | Google Gemini with OpenAI-compatible format     |
+| `LLMProvider.OLLAMA`         | Ollama format for local models                  |
+
+### Usage
+
+The LLM provider is used when:
+1. Initializing memory for an agent
+2. Getting tools formatted for a specific LLM provider
+3. Extracting tool calls from an LLM response
+
+<CodeGroup>
+```python Python
+from xpander_sdk import XpanderClient, LLMProvider
+from openai import OpenAI
+
+# Initialize clients
+xpander_client = XpanderClient(api_key="your-api-key")
+openai_client = OpenAI(api_key="your-openai-key")
+agent = xpander_client.agents.get(agent_id="agent-1234")
+
+# Add task - this initializes memory and supports loading previous threads with thread_id
+agent.add_task(
+    input="What's the weather in Paris?",
+    thread_id="optional-previous-thread-id"  # Optional: continue from previous conversation
+)
+
+# Get tools formatted for OpenAI
+tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
+
+# Use the tools with OpenAI
+response = openai_client.chat.completions.create(
+    model="gpt-4o",
+    messages=agent.messages,
+    tools=tools,
+    tool_choice="auto"
+)
+
+# Extract tool calls from the response
+tool_calls = XpanderClient.extract_tool_calls(
+    llm_response=response.model_dump(),
+    llm_provider=LLMProvider.OPEN_AI
+)
+```
+
+```typescript TypeScript
+import { XpanderClient, LLMProvider } from '@xpander-ai/sdk';
+import OpenAI from 'openai';
+
+async function llmProviderExample() {
+    // Initialize clients
+    const xpanderClient = new XpanderClient({ apiKey: "your-api-key" });
+    const openai = new OpenAI({ apiKey: "your-openai-key" });
+    const agent = await xpanderClient.agents.get({ agentId: "agent-1234" });
+
+    // Add task - this initializes memory and supports loading previous threads
+    await agent.addTask({ 
+        input: "What's the weather in Paris?",
+        threadId: "optional-previous-thread-id"  // Optional: continue from previous conversation
+    });
+
+    // Get tools formatted for OpenAI
+    const tools = agent.getTools({ llmProvider: LLMProvider.OPEN_AI });
+    
+    // Use the tools with OpenAI
+    const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: agent.messages,
+        tools: tools,
+        tool_choice: "auto"
+    });
+
+    // Extract tool calls from the response
+    const toolCalls = XpanderClient.extractToolCalls({
+        llmResponse: response,
+        llmProvider: LLMProvider.OPEN_AI
+    });
+}
+```
+</CodeGroup>
+
+## Related Documentation
+
+<CardGroup cols={2}>
+  <Card title="Agent" icon="robot" href="/api-reference/07-sdk/xpander-sdk/agent">
+    Core agent functionality
+  </Card>
+  <Card title="Agent.Tools" icon="wrench" href="/api-reference/07-sdk/xpander-sdk/Agent.Tools">
+    Using agent tools and function calling
+  </Card>
+  <Card title="XpanderClient" icon="plug" href="/api-reference/07-sdk/xpander-sdk/XpanderClient">
+    Main client for the xpander.ai SDK
+  </Card>
+  <Card title="Client API" icon="code" href="/api-reference/07-sdk/xpander-sdk/client">
+    Detailed client API documentation
+  </Card>
+</CardGroup> 
