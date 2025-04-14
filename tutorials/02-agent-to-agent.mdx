@@ -1,0 +1,870 @@
+---
+title: "Agent-to-Agent Communication"
+description: "Learn how to build multi-agent systems where agents can communicate with each other"
+icon: "comments"
+---
+
+<img className="block dark:hidden" src="/images/agent-to-agent-light.png" alt="Agent to Agent Communication" />
+<img className="hidden dark:block" src="/images/agent-to-agent-dark.png" alt="Agent to Agent Communication" />
+
+# Agent-to-Agent Communication Tutorial
+
+This tutorial builds on our [Hello World Agent](/tutorials/01-hello-world-agent) guide and shows you how to create systems where multiple agents can communicate with each other. Agent-to-Agent (A2A) communication is one of the most powerful features of the Xpander platform, allowing you to create specialized agents that work together to solve complex problems.
+
+<Note>
+The A2A protocol enables agents to communicate with each other in a standardized way, similar to how humans use language to collaborate. This tutorial follows the [A2A documentation](https://google.github.io/A2A/#/documentation) for establishing agent communication patterns.
+</Note>
+
+## Why Use Multiple Agents?
+
+<CardGroup cols={2}>
+  <Card title="Specialization" icon="user-gear">
+    Different agents can specialize in different domains or tasks
+  </Card>
+  <Card title="Parallelization" icon="network-wired">
+    Multiple agents can work on different parts of a problem simultaneously
+  </Card>
+  <Card title="Resilience" icon="shield-halved">
+    Systems with multiple agents are more robust to individual failures
+  </Card>
+  <Card title="Scalability" icon="arrow-up-right-dots">
+    Agent networks can grow to handle increasingly complex tasks
+  </Card>
+</CardGroup>
+
+<Steps>
+<Step title="Set up your environment">
+
+First, make sure you have the required packages installed:
+
+```bash
+pip install xpander-sdk openai python-dotenv
+```
+
+Create a `.env` file with your API keys:
+
+```
+XPANDER_API_KEY=your_xpander_api_key
+OPENAI_API_KEY=your_openai_api_key
+```
+
+</Step>
+<Step title="Create two specialized agents">
+
+Let's create a file named `two_agents.py` that sets up two agents with different specializations:
+
+```python
+from xpander_sdk import XpanderClient, LLMProvider, Tokens, LLMTokens
+from openai import OpenAI
+import os
+import time
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=os.environ['XPANDER_API_KEY'])
+openai_client = OpenAI(api_key=os.environ['OPENAI_API_KEY'])
+
+# Agent execution loop with monitoring
+def agent_loop(agent):
+    # Initialize token tracking and timing
+    execution_tokens = Tokens(worker=LLMTokens(completion_tokens=0, prompt_tokens=0, total_tokens=0))
+    execution_start_time = time.perf_counter()
+    
+    while not agent.is_finished():
+        # Get response from OpenAI
+        start_time = time.perf_counter()
+        response = openai_client.chat.completions.create(
+            model="gpt-4o",
+            messages=agent.messages,
+            tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
+            tool_choice=agent.tool_choice,
+            temperature=0
+        )
+        
+        # Track token usage
+        execution_tokens.worker.completion_tokens += response.usage.completion_tokens
+        execution_tokens.worker.prompt_tokens += response.usage.prompt_tokens
+        execution_tokens.worker.total_tokens += response.usage.total_tokens
+        
+        # Report LLM usage to Xpander
+        agent.report_llm_usage(
+            llm_response=response.model_dump(),
+            llm_inference_duration=time.perf_counter() - start_time,
+            llm_provider=LLMProvider.OPEN_AI
+        )
+        
+        agent.add_messages(response.model_dump())
+        
+        tool_calls = XpanderClient.extract_tool_calls(
+            llm_response=response.model_dump(),
+            llm_provider=LLMProvider.OPEN_AI
+        )
+        
+        if tool_calls:
+            agent.run_tools(tool_calls=tool_calls)
+    
+    # Report execution metrics to Xpander
+    agent.report_execution_metrics(
+        llm_tokens=execution_tokens,
+        ai_model="gpt-4o"
+    )
+    
+    print(f"✨ Execution duration: {time.perf_counter() - execution_start_time:.2f} seconds")
+    print(f"🔢 Total tokens used: {execution_tokens.worker.total_tokens}")
+
+# Create the first agent (researcher)
+researcher = xpander_client.agents.create(name="Research Agent")
+researcher.instructions.goal = """You are a research agent specialized in gathering and summarizing information.
+Your job is to collect facts and provide clear, concise information about topics.
+When asked a question, focus on providing factual, well-structured responses with relevant details.
+"""
+researcher.sync()
+researcher_id = researcher.id
+print(f"🔍 Created researcher agent with ID: {researcher_id}")
+print(f"📝 Add this to your .env as RESEARCHER_AGENT_ID={researcher_id}")
+
+# Create the second agent (writer)
+writer = xpander_client.agents.create(name="Writing Agent")
+writer.instructions.goal = """You are a writing agent specialized in creative and engaging content.
+Your job is to take information and transform it into compelling narratives, stories, or blog posts.
+When given facts or data, focus on creating an engaging presentation that keeps readers interested.
+"""
+writer.sync()
+writer_id = writer.id
+print(f"✍️ Created writer agent with ID: {writer_id}")
+print(f"📝 Add this to your .env as WRITER_AGENT_ID={writer_id}")
+
+# Test the individual agents
+print("\n🧪 Testing researcher agent...")
+researcher.add_task(input="Tell me about quantum computing in a factual way.")
+agent_loop(researcher)
+result = researcher.retrieve_execution_result()
+print(f"\n🤖 Researcher: {result.result}")
+
+print("\n🧪 Testing writer agent...")
+writer.add_task(input="Write a short story about a quantum computer becoming self-aware.")
+agent_loop(writer)
+result = writer.retrieve_execution_result()
+print(f"\n🤖 Writer: {result.result}")
+
+print("\n📌 Note the different styles of the two agents. Next, we'll make them communicate!")
+```
+
+Run this script to create the two agents:
+
+```bash
+python two_agents.py
+```
+
+Make sure to add the agent IDs to your `.env` file as instructed by the script output.
+
+<Tip>
+Each agent has been given a specific role: one for research and one for creative writing. This specialization allows each agent to focus on what they do best.
+</Tip>
+
+</Step>
+<Step title="Implement Agent-to-Agent Communication">
+
+Now let's create a script that allows the two agents to communicate with each other. Create a file named `agent_communication.py`:
+
+```python
+from xpander_sdk import XpanderClient, LLMProvider, Tokens, LLMTokens, AgentTools
+from openai import OpenAI
+import os
+import time
+import json
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=os.environ['XPANDER_API_KEY'])
+openai_client = OpenAI(api_key=os.environ['OPENAI_API_KEY'])
+
+# Load the agents
+researcher = xpander_client.agents.get(agent_id=os.environ['RESEARCHER_AGENT_ID'])
+writer = xpander_client.agents.get(agent_id=os.environ['WRITER_AGENT_ID'])
+
+print(f"🔄 Loaded researcher agent: {researcher.name}")
+print(f"🔄 Loaded writer agent: {writer.name}")
+
+# Agent execution loop with monitoring
+def agent_loop(agent):
+    # Initialize token tracking and timing
+    execution_tokens = Tokens(worker=LLMTokens(completion_tokens=0, prompt_tokens=0, total_tokens=0))
+    execution_start_time = time.perf_counter()
+    
+    while not agent.is_finished():
+        # Get response from OpenAI
+        start_time = time.perf_counter()
+        response = openai_client.chat.completions.create(
+            model="gpt-4o",
+            messages=agent.messages,
+            tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
+            tool_choice=agent.tool_choice,
+            temperature=0
+        )
+        
+        # Track token usage
+        execution_tokens.worker.completion_tokens += response.usage.completion_tokens
+        execution_tokens.worker.prompt_tokens += response.usage.prompt_tokens
+        execution_tokens.worker.total_tokens += response.usage.total_tokens
+        
+        # Report LLM usage to Xpander
+        agent.report_llm_usage(
+            llm_response=response.model_dump(),
+            llm_inference_duration=time.perf_counter() - start_time,
+            llm_provider=LLMProvider.OPEN_AI
+        )
+        
+        agent.add_messages(response.model_dump())
+        
+        tool_calls = XpanderClient.extract_tool_calls(
+            llm_response=response.model_dump(),
+            llm_provider=LLMProvider.OPEN_AI
+        )
+        
+        if tool_calls:
+            for call in tool_calls:
+                name = getattr(call, 'name', None) or getattr(getattr(call, 'function', {}), 'name', "unnamed")
+                print(f"🔧 Using tool: {name}")
+            agent.run_tools(tool_calls=tool_calls)
+    
+    # Report execution metrics to Xpander
+    agent.report_execution_metrics(
+        llm_tokens=execution_tokens,
+        ai_model="gpt-4o"
+    )
+    
+    print(f"✨ Execution duration: {time.perf_counter() - execution_start_time:.2f} seconds")
+    print(f"🔢 Total tokens used: {execution_tokens.worker.total_tokens}")
+    
+    return agent.retrieve_execution_result()
+
+# Define a function to set up inter-agent communication
+def setup_agent_communication(agent, target_agent, tool_name, description):
+    # Create A2A communication tool schema
+    communication_tool = {
+        "type": "function",
+        "function": {
+            "name": tool_name,
+            "description": description,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "description": "The message to send to the target agent"
+                    }
+                },
+                "required": ["message"]
+            }
+        }
+    }
+    
+    # Define the handler for the communication
+    def communicate_with_agent(payload):
+        message = payload.get('message', '')
+        print(f"📨 Message sent to {target_agent.name}: {message}")
+        
+        # Create a task for the target agent with the message
+        target_agent.add_task(input=message)
+        
+        # Run the target agent
+        result = agent_loop(target_agent)
+        
+        response = result.result
+        print(f"📩 Response from {target_agent.name}: {response}")
+        
+        return {
+            "response": response
+        }
+    
+    # Add the tool to the agent's toolset
+    agent.attach_custom_tool(
+        custom_tool=AgentTools.CustomTool(
+            raw_definition=communication_tool,
+            callback=communicate_with_agent
+        )
+    )
+    
+    print(f"🔌 Added communication tool '{tool_name}' to {agent.name}")
+
+# Set up bi-directional communication between agents
+setup_agent_communication(
+    agent=researcher, 
+    target_agent=writer, 
+    tool_name="ask_writer", 
+    description="Ask the writing agent to create engaging content based on your research"
+)
+
+setup_agent_communication(
+    agent=writer, 
+    target_agent=researcher, 
+    tool_name="ask_researcher", 
+    description="Ask the research agent to provide factual information to enhance your writing"
+)
+
+# Start a collaborative task
+print("\n🚀 Starting collaboration between agents...")
+topic = "The impact of artificial intelligence on modern society"
+print(f"📋 Task: Create content about '{topic}'")
+
+# First, ask the researcher to gather information
+researcher.add_task(input=f"Research '{topic}' and then use the ask_writer tool to request the writer to create an engaging blog post based on your findings.")
+
+# Run the researcher, which will automatically call the writer when it uses the ask_writer tool
+result = agent_loop(researcher)
+
+print("\n✅ Collaboration complete!")
+print(f"Final output from the collaboration process: {result.result}")
+```
+
+Run this script to see the agents work together:
+
+```bash
+python agent_communication.py
+```
+
+<Info>
+This implementation follows the A2A protocol by creating custom tools that allow agents to send messages to each other. Each agent can invoke the other agent through a defined function call.
+</Info>
+
+</Step>
+<Step title="Create a multi-agent workflow">
+
+Now let's create a more complex workflow with a coordinator agent that manages multiple specialized agents. Create a file named `multi_agent_workflow.py`:
+
+```python
+from xpander_sdk import XpanderClient, LLMProvider, Tokens, LLMTokens, AgentTools
+from openai import OpenAI
+import os
+import time
+import json
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=os.environ['XPANDER_API_KEY'])
+openai_client = OpenAI(api_key=os.environ['OPENAI_API_KEY'])
+
+# Load existing specialized agents
+researcher = xpander_client.agents.get(agent_id=os.environ['RESEARCHER_AGENT_ID'])
+writer = xpander_client.agents.get(agent_id=os.environ['WRITER_AGENT_ID'])
+
+print(f"🔄 Loaded researcher agent: {researcher.name}")
+print(f"🔄 Loaded writer agent: {writer.name}")
+
+# Create a new coordinator agent
+coordinator = xpander_client.agents.create(name="Coordinator Agent")
+coordinator.instructions.goal = """You are a coordinator agent that manages workflows across multiple specialized agents.
+Your job is to break down complex tasks, delegate subtasks to the appropriate specialized agents, and synthesize their results.
+When given a task, think about how to best divide the work among available agents, then use the appropriate tools to delegate.
+Finally, synthesize the results into a cohesive final product.
+"""
+coordinator.sync()
+coordinator_id = coordinator.id
+print(f"🎯 Created coordinator agent with ID: {coordinator_id}")
+print(f"📝 Add this to your .env as COORDINATOR_AGENT_ID={coordinator_id}")
+
+# Agent execution loop with monitoring
+def agent_loop(agent):
+    # Initialize token tracking and timing
+    execution_tokens = Tokens(worker=LLMTokens(completion_tokens=0, prompt_tokens=0, total_tokens=0))
+    execution_start_time = time.perf_counter()
+    
+    while not agent.is_finished():
+        # Get response from OpenAI
+        start_time = time.perf_counter()
+        response = openai_client.chat.completions.create(
+            model="gpt-4o",
+            messages=agent.messages,
+            tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
+            tool_choice=agent.tool_choice,
+            temperature=0
+        )
+        
+        # Track token usage
+        execution_tokens.worker.completion_tokens += response.usage.completion_tokens
+        execution_tokens.worker.prompt_tokens += response.usage.prompt_tokens
+        execution_tokens.worker.total_tokens += response.usage.total_tokens
+        
+        # Report LLM usage to Xpander
+        agent.report_llm_usage(
+            llm_response=response.model_dump(),
+            llm_inference_duration=time.perf_counter() - start_time,
+            llm_provider=LLMProvider.OPEN_AI
+        )
+        
+        agent.add_messages(response.model_dump())
+        
+        tool_calls = XpanderClient.extract_tool_calls(
+            llm_response=response.model_dump(),
+            llm_provider=LLMProvider.OPEN_AI
+        )
+        
+        if tool_calls:
+            for call in tool_calls:
+                name = getattr(call, 'name', None) or getattr(getattr(call, 'function', {}), 'name', "unnamed")
+                print(f"🔧 Using tool: {name}")
+            agent.run_tools(tool_calls=tool_calls)
+    
+    # Report execution metrics to Xpander
+    agent.report_execution_metrics(
+        llm_tokens=execution_tokens,
+        ai_model="gpt-4o"
+    )
+    
+    print(f"✨ Execution duration: {time.perf_counter() - execution_start_time:.2f} seconds")
+    print(f"🔢 Total tokens used: {execution_tokens.worker.total_tokens}")
+    
+    return agent.retrieve_execution_result()
+
+# Define a function to set up inter-agent communication
+def setup_agent_communication(agent, target_agent, tool_name, description):
+    # Create A2A communication tool schema
+    communication_tool = {
+        "type": "function",
+        "function": {
+            "name": tool_name,
+            "description": description,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "description": "The message to send to the target agent"
+                    }
+                },
+                "required": ["message"]
+            }
+        }
+    }
+    
+    # Define the handler for the communication
+    def communicate_with_agent(payload):
+        message = payload.get('message', '')
+        print(f"📨 Message sent to {target_agent.name}: {message}")
+        
+        # Create a task for the target agent with the message
+        target_agent.add_task(input=message)
+        
+        # Run the target agent
+        result = agent_loop(target_agent)
+        
+        response = result.result
+        print(f"📩 Response from {target_agent.name}: {response}")
+        
+        return {
+            "response": response
+        }
+    
+    # Add the tool to the agent's toolset
+    agent.attach_custom_tool(
+        custom_tool=AgentTools.CustomTool(
+            raw_definition=communication_tool,
+            callback=communicate_with_agent
+        )
+    )
+    
+    print(f"🔌 Added communication tool '{tool_name}' to {agent.name}")
+
+# Set up communication from coordinator to specialized agents
+setup_agent_communication(
+    agent=coordinator, 
+    target_agent=researcher, 
+    tool_name="research_topic", 
+    description="Ask the research agent to gather and analyze information about a topic"
+)
+
+setup_agent_communication(
+    agent=coordinator, 
+    target_agent=writer, 
+    tool_name="create_content", 
+    description="Ask the writing agent to create engaging content based on information"
+)
+
+# Start a complex, multi-agent task
+print("\n🚀 Starting multi-agent workflow...")
+complex_task = "Create a compelling blog post about the future of space exploration, including current NASA and SpaceX projects, the potential for Mars colonization, and how this might change human society in the next 50 years."
+print(f"📋 Complex task: {complex_task}")
+
+coordinator.add_task(input=f"""
+Task: {complex_task}
+
+Follow these steps:
+1. Break down this task into research questions for the researcher agent
+2. Send each question to the researcher agent using the research_topic tool
+3. Compile the research findings
+4. Create a content brief based on the research
+5. Send the brief to the writer agent using the create_content tool
+6. Review the final content and make any suggestions for improvement
+7. Provide the final blog post
+""")
+
+# Run the coordinator, which will orchestrate the other agents
+result = agent_loop(coordinator)
+
+print("\n✅ Multi-agent workflow complete!")
+print(f"Final output from the coordination process:\n\n{result.result}")
+```
+
+Run this script to see the multi-agent workflow in action:
+
+```bash
+python multi_agent_workflow.py
+```
+
+<Accordion title="A2A Communication Protocol">
+  The A2A (Agent-to-Agent) protocol standardizes how agents communicate with each other. In this implementation, we've used a simplified version where:
+  
+  1. Each agent exposes custom tools that other agents can call
+  2. When a tool is called, the message is passed to the target agent
+  3. The target agent processes the message and returns a response
+  4. The response is returned to the calling agent
+  
+  This follows the same principles defined in the [A2A documentation](https://google.github.io/A2A/#/documentation), allowing agents to collaborate effectively.
+</Accordion>
+
+</Step>
+<Step title="Implement persistent agent memory">
+
+To create truly powerful multi-agent systems, we need to ensure that agents can remember their conversations and learn from previous interactions. Let's create a file named `persistent_agent_memory.py`:
+
+```python
+from xpander_sdk import XpanderClient, LLMProvider, Tokens, LLMTokens, AgentTools
+from openai import OpenAI
+import os
+import time
+import json
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=os.environ['XPANDER_API_KEY'])
+openai_client = OpenAI(api_key=os.environ['OPENAI_API_KEY'])
+
+# Load the agents
+coordinator = xpander_client.agents.get(agent_id=os.environ['COORDINATOR_AGENT_ID'])
+researcher = xpander_client.agents.get(agent_id=os.environ['RESEARCHER_AGENT_ID'])
+writer = xpander_client.agents.get(agent_id=os.environ['WRITER_AGENT_ID'])
+
+print(f"🔄 Loaded coordinator agent: {coordinator.name}")
+print(f"🔄 Loaded researcher agent: {researcher.name}")
+print(f"🔄 Loaded writer agent: {writer.name}")
+
+# Agent execution loop with monitoring and thread support
+def agent_loop(agent, thread_id=None):
+    # Initialize token tracking and timing
+    execution_tokens = Tokens(worker=LLMTokens(completion_tokens=0, prompt_tokens=0, total_tokens=0))
+    execution_start_time = time.perf_counter()
+    
+    while not agent.is_finished():
+        # Get response from OpenAI
+        start_time = time.perf_counter()
+        response = openai_client.chat.completions.create(
+            model="gpt-4o",
+            messages=agent.messages,
+            tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
+            tool_choice=agent.tool_choice,
+            temperature=0
+        )
+        
+        # Track token usage
+        execution_tokens.worker.completion_tokens += response.usage.completion_tokens
+        execution_tokens.worker.prompt_tokens += response.usage.prompt_tokens
+        execution_tokens.worker.total_tokens += response.usage.total_tokens
+        
+        # Report LLM usage to Xpander
+        agent.report_llm_usage(
+            llm_response=response.model_dump(),
+            llm_inference_duration=time.perf_counter() - start_time,
+            llm_provider=LLMProvider.OPEN_AI
+        )
+        
+        agent.add_messages(response.model_dump())
+        
+        tool_calls = XpanderClient.extract_tool_calls(
+            llm_response=response.model_dump(),
+            llm_provider=LLMProvider.OPEN_AI
+        )
+        
+        if tool_calls:
+            for call in tool_calls:
+                name = getattr(call, 'name', None) or getattr(getattr(call, 'function', {}), 'name', "unnamed")
+                print(f"🔧 Using tool: {name}")
+            agent.run_tools(tool_calls=tool_calls)
+    
+    # Report execution metrics to Xpander
+    agent.report_execution_metrics(
+        llm_tokens=execution_tokens,
+        ai_model="gpt-4o"
+    )
+    
+    print(f"✨ Execution duration: {time.perf_counter() - execution_start_time:.2f} seconds")
+    print(f"🔢 Total tokens used: {execution_tokens.worker.total_tokens}")
+    
+    result = agent.retrieve_execution_result()
+    return result
+
+# Define a function to set up inter-agent communication with thread support
+def setup_agent_communication(agent, target_agent, tool_name, description):
+    # Keep track of conversation threads between agents
+    agent_threads = {}
+    
+    # Create A2A communication tool schema
+    communication_tool = {
+        "type": "function",
+        "function": {
+            "name": tool_name,
+            "description": description,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "description": "The message to send to the target agent"
+                    },
+                    "continue_conversation": {
+                        "type": "boolean",
+                        "description": "Whether to continue the previous conversation with this agent"
+                    }
+                },
+                "required": ["message"]
+            }
+        }
+    }
+    
+    # Define the handler for the communication
+    def communicate_with_agent(payload):
+        message = payload.get('message', '')
+        continue_conversation = payload.get('continue_conversation', True)
+        
+        print(f"📨 Message sent to {target_agent.name}: {message}")
+        
+        # Get the thread ID for this agent pair
+        agent_pair_key = f"{agent.id}_{target_agent.id}"
+        thread_id = agent_threads.get(agent_pair_key) if continue_conversation else None
+        
+        # Create a task for the target agent with the message
+        target_agent.add_task(input=message, thread_id=thread_id)
+        
+        # Run the target agent
+        result = agent_loop(target_agent)
+        
+        # Store the thread ID for future conversations
+        agent_threads[agent_pair_key] = result.memory_thread_id
+        
+        response = result.result
+        print(f"📩 Response from {target_agent.name}: {response}")
+        
+        return {
+            "response": response,
+            "thread_id": result.memory_thread_id
+        }
+    
+    # Add the tool to the agent's toolset
+    agent.attach_custom_tool(
+        custom_tool=AgentTools.CustomTool(
+            raw_definition=communication_tool,
+            callback=communicate_with_agent
+        )
+    )
+    
+    print(f"🔌 Added communication tool '{tool_name}' to {agent.name} with thread support")
+
+# Set up communication with thread support
+setup_agent_communication(
+    agent=coordinator, 
+    target_agent=researcher, 
+    tool_name="research_topic", 
+    description="Ask the research agent to gather and analyze information about a topic"
+)
+
+setup_agent_communication(
+    agent=coordinator, 
+    target_agent=writer, 
+    tool_name="create_content", 
+    description="Ask the writing agent to create engaging content based on information"
+)
+
+# Also set up direct communication between researcher and writer
+setup_agent_communication(
+    agent=researcher, 
+    target_agent=writer, 
+    tool_name="ask_writer", 
+    description="Ask the writing agent to create content based on your research"
+)
+
+setup_agent_communication(
+    agent=writer, 
+    target_agent=researcher, 
+    tool_name="ask_researcher", 
+    description="Ask the research agent for additional information to enhance your writing"
+)
+
+# Run a multi-stage task with persistent memory
+def run_multi_stage_project():
+    print("\n🚀 Starting multi-stage project with memory persistence...")
+    
+    # Stage 1: Initial research and content
+    print("\n📋 Stage 1: Initial research and content development")
+    coordinator.add_task(input="""
+    We're starting a three-part blog series about artificial intelligence. 
+    
+    For Part 1, research the current state of AI technology and create an introductory blog post for a general audience.
+    
+    Follow these steps:
+    1. Use the research_topic tool to gather information about current AI technologies
+    2. Use the create_content tool to create a blog post based on the research
+    3. Provide the final blog post for Part 1
+    """)
+    
+    stage1_result = agent_loop(coordinator)
+    print(f"\n✅ Stage 1 complete! Blog post Part 1 created.\n")
+    
+    # Wait a moment before continuing
+    time.sleep(2)
+    
+    # Stage 2: Follow-up content that builds on previous knowledge
+    print("\n📋 Stage 2: Follow-up content that builds on previous work")
+    coordinator.add_task(input="""
+    Now that we have Part 1 of our AI blog series, let's create Part 2.
+    
+    For Part 2, research AI ethics and potential risks, then create a blog post that builds on the introduction from Part 1.
+    Remember what we've already covered in Part 1 and don't repeat the same content.
+    
+    Follow these steps:
+    1. Use the research_topic tool to gather information about AI ethics and risks
+    2. Use the create_content tool to create a blog post based on the research
+    3. Provide the final blog post for Part 2
+    """)
+    
+    stage2_result = agent_loop(coordinator)
+    print(f"\n✅ Stage 2 complete! Blog post Part 2 created.\n")
+    
+    # Wait a moment before continuing
+    time.sleep(2)
+    
+    # Stage 3: Final content that completes the series
+    print("\n📋 Stage 3: Final content that completes the series")
+    coordinator.add_task(input="""
+    Let's complete our AI blog series with Part 3.
+    
+    For Part 3, research the future of AI and potential breakthroughs, then create a blog post that completes the series.
+    Remember what we've already covered in Parts 1 and 2, and create content that builds on that foundation.
+    
+    Follow these steps:
+    1. Use the research_topic tool to gather information about future AI developments
+    2. Use the create_content tool to create a blog post based on the research
+    3. Provide the final blog post for Part 3
+    """)
+    
+    stage3_result = agent_loop(coordinator)
+    print(f"\n✅ Stage 3 complete! Blog post Part 3 created.\n")
+    
+    print("\n🏆 Multi-stage project with memory persistence is complete!")
+    
+    return {
+        "part1": stage1_result.result,
+        "part2": stage2_result.result,
+        "part3": stage3_result.result
+    }
+
+# Run the multi-stage project
+project_results = run_multi_stage_project()
+
+# Print a summary of the results
+print("\n📚 Blog Series Summary:")
+print(f"Part 1: {project_results['part1'][:100]}...")
+print(f"Part 2: {project_results['part2'][:100]}...")
+print(f"Part 3: {project_results['part3'][:100]}...")
+
+# Save the results to a file
+with open("ai_blog_series.json", "w") as f:
+    json.dump(project_results, f, indent=2)
+
+print("\n💾 Saved complete blog series to ai_blog_series.json")
+```
+
+Run this script to see how agents can maintain persistent memory across multiple interactions:
+
+```bash
+python persistent_agent_memory.py
+```
+
+<Warning>
+The persistent memory feature is crucial for complex multi-agent systems. Without it, agents would forget previous interactions and wouldn't be able to build on previous work. The thread_id parameter is what enables this continuity.
+</Warning>
+
+</Step>
+</Steps>
+
+## Advanced A2A Patterns
+
+Now that you understand the basics of agent-to-agent communication in Xpander, here are some advanced communication patterns you can implement:
+
+<CardGroup cols={2}>
+  <Card title="Chain of Thought" icon="link">
+    Agents pass information sequentially through a chain, each adding their expertise before passing to the next agent.
+  </Card>
+  <Card title="Hub and Spoke" icon="diagram-project">
+    A central coordinator agent manages multiple specialized agents, distributing tasks and aggregating results.
+  </Card>
+  <Card title="Peer-to-Peer" icon="people-group">
+    Agents communicate directly with each other in a mesh network, deciding individually when to collaborate.
+  </Card>
+  <Card title="Competitive Evaluation" icon="ranking-star">
+    Multiple agents propose solutions to the same problem, with another agent evaluating and selecting the best option.
+  </Card>
+</CardGroup>
+
+## Best Practices for Multi-Agent Systems
+
+<Tabs>
+  <Tab title="Agent Design">
+    - Give each agent a clear, specialized role
+    - Include detailed instructions about when to collaborate
+    - Avoid overlapping responsibilities between agents
+  </Tab>
+  <Tab title="Communication">
+    - Design clear communication protocols
+    - Include context in messages between agents
+    - Monitor for communication loops
+  </Tab>
+  <Tab title="Error Handling">
+    - Implement fallback mechanisms
+    - Design agents to handle unexpected responses
+    - Use the coordinator agent to resolve conflicts
+  </Tab>
+  <Tab title="Performance">
+    - Monitor token usage across the agent network
+    - Implement caching for frequently requested information
+    - Consider asynchronous execution for independent tasks
+  </Tab>
+</Tabs>
+
+## Conclusion
+
+Agent-to-Agent (A2A) communication unlocks powerful capabilities in your Xpander applications. By creating specialized agents that work together, you can tackle complex problems that would be difficult for a single agent to solve.
+
+The key components we've covered in this tutorial:
+
+1. Creating specialized agents with different capabilities
+2. Implementing communication channels between agents
+3. Designing multi-agent workflows with a coordinator
+4. Maintaining persistent memory for continuous collaboration
+
+As you build more complex systems, remember that clear communication protocols and well-defined roles are essential for effective agent collaboration.
+
+<Info>
+For more information on the A2A protocol, refer to the [Google A2A documentation](https://google.github.io/A2A/#/documentation). While our implementation is simplified, it follows the same principles of standardized agent communication.
+</Info> 
