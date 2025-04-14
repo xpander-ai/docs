@@ -22,7 +22,7 @@ The easiest and fastest way to get started with xpander.ai and build your first 
 
 Once you're logged in, you'll see the landing page of xpander Workbench. To start building your agent with Planner, simply click the “New AI Agent”  or “Create AI Agent” button. This opens up the Planner, where you’ll be prompted to describe the kind of AI agent you want to build. Be as specific as possible, as this helps the Planner generate the right logic for your agent.
 
-![img_1](/images/tutorial_2/xp_img_1.png)
+![img_1](/images/tutorial-2/xp_img_1.png)
 
 In our use case, we’ll build an AI agent that can take a user message and transform it into a format that matches a Google Docs template stored on Google Drive. Here’s an example of the prompt we can give to the Planner:
 
@@ -30,7 +30,7 @@ In our use case, we’ll build an AI agent that can take a user message and tran
 
 Once you've entered the prompt, click the “Build AI Agent” button. In just a few seconds, the Planner will generate the agent for you. In the end, you should see a ready-to-run AI agent represented in a graph similar to the following:
 
-![img_2](/images/tutorial_2/xp_img_2.png)
+![img_2](/images/tutorial-2/xp_img_2.png)
 
 ## Enabling Interface Connectors and Tools in an Agent
 
@@ -38,13 +38,13 @@ You can see that the AI agent has been created with logic that directly reflects
 
 Aside of Google Drive and Google Docs, xpander.ai also supports a collection of interfaces and tools from popular SaaS platforms like Reddit, Slack, Notion, OneDrive, and more. These interfaces can be easily integrated with your agent, giving it access to those platforms and enabling you to automate countless use cases.
 
-![img_3](/images/tutorial_2/xp_img_3.png)
+![img_3](/images/tutorial-2/xp_img_3.png)
 
 Each interface comes with its own set of operations (tools). An operation serves a specific purpose, either retrieving an event ID, reading an event's content, updating an event, or something else.
 
 Your AI agent can call one or more of these operations as part of its workflow to complete a task. For example, in the visualization below, you can see that the Google Docs interface has three distinct operations to choose from. You can view detailed descriptions of each operation directly in the xpander Workbench.
 
-![img_4](/images/tutorial_2/xp_img_4.png)
+![img_4](/images/tutorial-2/xp_img_4.png)
 
 By looking at the graph visualization, we can see that xpander has intelligently integrated several operations from both Google Docs and Google Drive into our agent. These operations are not random; they are highly relevant operations selected by xpander that can help the agent to complete the task. However, you might also notice a warning icon next to each operation. This means they aren’t usable just yet.
 
@@ -58,11 +58,11 @@ To do that:
 4. Give the interface a name of your choice.
 5. Proceed with the authentication method that works best for you.
 
-![img_5](/images/tutorial_2/xp_img_5.png)
+![img_5](/images/tutorial-2/xp_img_5.png)
 
 Once access is granted, you’ll see in the graph visualization that the operations are now fully activated and ready to be used by your agent.
 
-![img_6](/images/tutorial_2/xp_img_6.png)
+![img_6](/images/tutorial-2/xp_img_6.png)
 
 You can also fine-tune your agent’s settings by clicking the gear icon at the top right of the agent box in the graph. There, you can configure options like the LLM provider, model, memory strategy, and more.
 
@@ -78,13 +78,13 @@ Let’s say we want to test the agent with the following prompt:
 
 And the Google Docs template we’re working with (stored on Google Drive) looks like this:
 
-![img_7](/images/tutorial_2/xp_img_7.png)
+![img_7](/images/tutorial-2/xp_img_7.png)
 
 If everything is set up correctly, the AI agent should take the input message from our prompt, transform it according to the structure in the Google Docs template, and return the final result to us.
 
 To test this, put the prompt in the Chat feature and watch how the agent works through each step using the visual workflow tracker.
 
-![img_8](/images/tutorial_2/xp_img_8.png)
+![img_8](/images/tutorial-2/xp_img_8.png)
 
 In our example, the agent will:
 
@@ -98,13 +98,13 @@ You can also click on the dropdown arrow of each operation executed by the agent
 
 If you want to test the agent with your team, you can easily share it. Just click the “Chat” node at the top of the graph visualization, and you’ll see a unique URL for the agent. Anyone with the link can interact with the agent via a Chainlit-powered chat interface.
 
-![img_9](/images/tutorial_2/xp_img_9.png)
+![img_9](/images/tutorial-2/xp_img_9.png)
 
 ## Removing or Adding Interfaces and Updating Agent’s Workflow
 
 From the Visual Tester, we can see that to complete the task, our AI agent only needs two operations, even though four operations were initially provided. If needed, we can remove the unused ones. To do this, hover over the box of the operation you want to remove, then click the trash icon in the top-right corner of the box.
 
-![img_10](/images/tutorial_2/xp_img_10.png)
+![img_10](/images/tutorial-2/xp_img_10.png)
 
 We can also add new interfaces and operations for the agent to use. For example, let’s say we want the agent’s response to be sent via email. To do this, we can use xpander’s built-in action "Send Email with Content".  As the name suggests, this function allows the agent to send plain text (in our case, the reformatted message) to an email address we specify in the prompt. You can find this function by clicking the “\+” icon in the top-right of the UI and selecting “Built-in actions”.
 
@@ -112,7 +112,7 @@ Aside from adding or removing operations, you can also modify the agent’s work
 
 In our use case, we want the agent to send the message via email after it finishes the reformatting process. To do this, we can create a new connection in the graph by dragging a line from the end node of the “Retrieve Last Document Version” operation to the start node of “Send Email with Content.”
 
-![img_11](/images/tutorial_2/xp_img_11.png)
+![img_11](/images/tutorial-2/xp_img_11.png)
 
 Once you’ve made changes to the graph, you’ll need to re-deploy the agent before testing it. Just click the “Deploy” button, and you’re ready to go. You can now test the updated workflow with a prompt like the following:
 
@@ -124,7 +124,7 @@ Once you’ve made changes to the graph, you’ll need to re-deploy the agent be
 
 As you can see in the image below, after reformatting the message using the “Retrieve Latest Document Version” operation, the agent now uses the newly added “Send Email with Content” operation to send the result to the specified email address.
 
-![img_12](/images/tutorial_2/xp_img_12.png)
+![img_12](/images/tutorial-2/xp_img_12.png)
 
 ## Using xpander’s SDK to Interact with an Agent
 
@@ -145,7 +145,7 @@ Before we can interact with our agent via the SDK, we need to set up three confi
 
 To get your xpander API key and agent ID, click the “SDK” node at the top of the graph visualization in Workbench. There, you'll find the agent ID, and by clicking “Assign API Keys”, you’ll see your xpander API key and make sure to link it to the agent ID by ticking the box beside it.
 
-![img_13](/images/tutorial_2/xp_img_13.png)
+![img_13](/images/tutorial-2/xp_img_13.png)
 
 Once you have all three configurations, you can either store them in a `.env` file and load it with the `dotenv` library, or just assign them directly as variables if you’re using the code privately. Below is an example of how you can initialize the interaction with the agent.
 
@@ -473,7 +473,7 @@ When interacting with xpander’s SDK, you can easily track the agent’s execut
 - **Thread** – A thread is created every time you assign a task or input prompt to an agent. It includes information such as the total number of tokens generated and the creation timestamp.
 - **Log** – This contains a detailed breakdown of your agent’s execution steps. You’ll see the agent’s responses, any tools it called, the payload used for those tool calls, and the responses received after each call.
 
-![img_14](/images/tutorial_2/xp_img_14.png)
+![img_14](/images/tutorial-2/xp_img_14.png)
 
 ## Conclusion
 
