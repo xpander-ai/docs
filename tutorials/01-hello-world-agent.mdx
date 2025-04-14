@@ -99,8 +99,6 @@ def agent_loop(agent):
 # Create a new agent
 agent = xpander_client.agents.create(name="Hello World Agent")
 agent.instructions.goal = "Answer questions helpfully and accurately."
-agent.sync()
-
 # Save the agent ID for reuse
 agent_id = agent.id
 print(f"🎉 Created agent ID: {agent_id}")
