@@ -311,7 +311,9 @@ def add_tavily_search(agent: Agent):
             GraphItem(
                 agent=agent,
                 item_id=tavily_op.id_to_use_on_graph,
-                name=tavily_op.name
+                name=tavily_op.name,
+                type=AgentGraphItemType.TOOL,
+                is_local_tool=False
             )
         )
         agent.sync()
@@ -596,7 +598,9 @@ def add_tavily_search(agent: Agent):
             GraphItem(
                 agent=agent,
                 item_id=tavily_op.id_to_use_on_graph,
-                name=tavily_op.name
+                name=tavily_op.name,
+                type=AgentGraphItemType.TOOL,
+                is_local_tool=False
             )
         )
         agent.sync()
