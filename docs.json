@@ -118,7 +118,9 @@
             },
             "pages": [
               "tutorials/index",
-              "tutorials/01-hello-world-agent"
+              "tutorials/01-structured-output-agent",
+              "tutorials/02-hello-world-agent",
+              "tutorials/03-outage-manager-agent"
             ]
           }
         ]
