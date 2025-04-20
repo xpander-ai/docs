@@ -41,25 +41,18 @@
     reb2b.load("EN4M0HKQZJOM");
   }();
 
-  // User behavior tracking
-  !function(s,n,i,t,c,h){
-    s.SnitchObject=i;
-    s[i]||(s[i]=function(){
-      (s[i].q=s[i].q||[]).push(arguments)
-    });
-    s[i].l=+new Date;
-    c=n.createElement(t);
-    h=n.getElementsByTagName(t)[0];
-    c.src='//snid.snitcher.com/8429711.js';
-    h.parentNode.insertBefore(c,h)
-  }(window,document,'snid','script');
-  snid('verify', '8429711');
-
-  // Engagement metrics
+  // Swan script
   !function(){
-    const script = document.createElement('script');
-    script.src = 'https://api.app.bullseye.so/api/v1/visitor-tracking/script/25fb5e2d-b7f4-4e78-8a84-63a7085f54d4';
-    script.referrerPolicy = 'strict-origin-when-cross-origin';
-    document.body.appendChild(script);
+    var w = window;
+    var swan = (w.swan = w.swan || []);
+    if (swan.isLoaded) return;
+    swan.isLoaded = true;
+    swan.pk = 'cm9gruwlf0012lg05hqu0s4ih';
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.src = 'https://swan-scripts.s3.amazonaws.com/bundle.js';
+    var head = document.getElementsByTagName('head')[0];
+    head.appendChild(script);
   }();
 })(); 
