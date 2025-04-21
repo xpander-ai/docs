@@ -1,0 +1,209 @@
+---
+title: "Google Drive"
+description: "Learn how to build AI agents with Google Drive access using xpander.ai. Create intelligent document-aware AI assistants that can read, write, organize, and analyze files automatically."
+icon: "google-drive"
+---
+
+Learn how to build AI agents with Google Drive access using xpander.ai. This integration enables intelligent document-aware AI assistants that can read, write, organize, and analyze files automatically.
+
+<Frame>
+![](/images/apps/google-drive.png)
+</Frame>
+
+
+## Authentication Options
+
+Choose the authentication method that best fits your needs:
+
+<Tabs>
+  <Tab title="Built-in xpander.ai Auth">
+    <Frame caption="Sign in with Google using xpander.ai's built-in authentication">
+      ![Sign in with Google](/images/placeholders/sign-in-with-google.png)
+    </Frame>
+
+    The simplest way to connect Google Drive is using xpander.ai's built-in authentication:
+
+    1. Go to the **Apps** section in xpander.ai dashboard
+    2. Select **Google Drive** from available integrations
+    3. Click **Sign in with Google**
+    4. Select your Google account and grant permissions
+    5. Your connection is immediately active and ready to use
+
+    <Note>
+    This method is recommended for most users. xpander.ai securely manages your OAuth tokens without exposing any credentials.
+    </Note>
+  </Tab>
+
+  <Tab title="API Access">
+    <Frame caption="Google Drive API access configuration">
+      ![Google Drive API Access](/images/placeholders/google-drive-api.png)
+    </Frame>
+
+    For programmatic access and automation:
+
+    1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+    2. Create a new project or select an existing one
+    3. Enable the **Google Drive API** in Library
+    4. Go to **Credentials** and create an **API Key**
+    5. Restrict the API key to Google Drive API only
+    6. Copy the API key to xpander.ai's Google Drive connection settings
+    7. Set appropriate API access restrictions in Google Cloud Console
+
+    <Warning>
+    API keys provide limited functionality and are best for read-only operations on public files. For full access, use OAuth methods.
+    </Warning>
+  </Tab>
+
+  <Tab title="Manual OAuth Configuration">
+    <Frame caption="Manual OAuth configuration for Google Drive">
+      ![Manual OAuth Configuration](/images/placeholders/oauth-configuration.png)
+    </Frame>
+
+    For advanced customization and enterprise setups:
+
+    ### Step 1: Create OAuth Credentials
+
+    1. Log into [Google Cloud Console](https://console.cloud.google.com/)
+    2. Create a new project or select existing one
+    3. Enable the **Google Drive API** in Library
+    4. Configure **OAuth consent screen** with appropriate scopes:
+       - `/auth/drive.file` (recommended)
+       - `/auth/drive` (full access)
+       - `/auth/drive.readonly` (read-only)
+    5. Create **OAuth 2.0 credentials** (Client ID & Secret)
+    6. Add `https://app.xpander.ai/oauth/callback` as redirect URI
+
+    ### Step 2: Configure in xpander.ai
+
+    1. Go to **Apps** section in xpander.ai dashboard
+    2. Select **Google Drive** and choose **Manual Configuration**
+    3. Enter your **Client ID** and **Client Secret**
+    4. Specify the required scopes
+    5. Click **Authorize** and complete the OAuth flow
+    6. Verify connection is active
+
+    <Tip>
+    Manual configuration gives you precise control over permissions and is recommended for enterprise deployments or specific security requirements.
+    </Tip>
+  </Tab>
+  
+  <Tab title="Service Accounts">
+    <Frame caption="Google Drive authentication using service accounts">
+      ![Service Account Authentication](/images/placeholders/service-account.png)
+    </Frame>
+
+    For organization-wide access or automated workflows without user intervention:
+
+    ### Step 1: Create a Service Account
+
+    1. Log into [Google Cloud Console](https://console.cloud.google.com/)
+    2. Navigate to your project → **IAM & Admin** → **Service Accounts**
+    3. Click **Create Service Account**
+    4. Give it a name and description
+    5. Assign appropriate roles (e.g., "Drive File Creator")
+    6. Create and download a JSON key file
+
+    ### Step 2: Configure in xpander.ai
+
+    1. Go to **Apps** section in xpander.ai dashboard
+    2. Select **Google Drive** and choose **Service Account**
+    3. Upload the JSON key file
+    4. Verify the connection status
+
+    ### Step 3: Share Resources
+
+    - Share specific Google Drive folders/files with the service account's email address
+    - The email usually follows this format: `service-account-name@project-id.iam.gserviceaccount.com`
+
+    <Note>
+    Service accounts act as separate Google identities and are ideal for background processes, automation, and accessing shared organizational resources without user intervention.
+    </Note>
+  </Tab>
+</Tabs>
+
+## Model Context Protocol (MCP) for Google Drive Integration
+
+xpander.ai's Model Context Protocol (MCP) is the proprietary technology that powers AI agent interactions with Google Drive. Unlike basic integrations, MCP provides:
+
+- **Secure credential handling** - OAuth tokens are managed securely without exposing keys
+- **Enhanced context awareness** - AI agents maintain context across file operations
+- **Document state management** - Track changes and updates across sessions
+- **Structured data exchange** - Standardized format for AI-to-Drive communication
+- **Intelligent operation routing** - Automatic selection of appropriate Drive API endpoints
+
+This protocol enables your AI agents to interact with Google Drive in a more natural, secure, and efficient way than standard API integrations.
+
+## AI Agent Google Drive Prompt Library
+
+<Frame caption="Effective prompts for Google Drive AI agents">
+  ![AI Agent Google Drive Prompt Library](/images/placeholders/gdrive-prompts.png)
+</Frame>
+
+### Document Creation Prompts
+
+Use these prompts to have your AI agent create Google Drive documents:
+
+```
+Create a new Google Doc titled "{title}" with the following sections:
+- Executive Summary
+- Project Scope
+- Timeline
+- Budget
+- Team Responsibilities
+```
+
+```
+Generate a weekly report for {project} based on the data in the "{spreadsheet}" file. Include progress metrics, blockers, and next steps.
+```
+
+```
+Draft an email to the team about {topic} and save it as a Google Doc. Include key points from our last meeting on {date}.
+```
+
+### Document Analysis Prompts
+
+These prompts help your AI agent extract insights from Google Drive documents:
+
+```
+Analyze the document "{document_name}" and extract the main points about {topic}. Provide a 3-paragraph summary.
+```
+
+```
+Read through all documents in the folder "{folder_name}" and identify common themes related to {keyword}. Create a summary document.
+```
+
+```
+Compare the two presentations "{doc1}" and "{doc2}" and highlight the key differences in approach and content.
+```
+
+### File Management Prompts
+
+Enable your AI agent to organize and manage Google Drive files with these prompts:
+
+```
+Find all files related to {project_name} created in the last {time_period} and organize them into folders by document type.
+```
+
+```
+Create a folder structure for project {project_name} with the following subfolders: Documentation, Assets, Planning, and Reports.
+```
+
+```
+Search my Drive for files containing information about {topic} and share them with {email_address} with view-only permissions.
+```
+
+## Google Drive AI Integration Troubleshooting
+
+### Common Authentication Issues
+
+- Verify Client ID and Secret are entered correctly in xpander.ai
+- Ensure the complete OAuth flow was successfully completed
+- Check that redirect URIs match exactly between Google Cloud and xpander.ai
+- Confirm Google Drive API is enabled in Google Cloud Console for your project
+
+## Related Resources
+
+- [Understanding Model Context Protocol (MCP)](/docs/model-context-protocol)
+- [Build Document-Aware AI Assistants](/tutorials/document-aware-assistants)
+- [Google Drive API Documentation](https://developers.google.com/drive/api/v3/about-sdk)
+- [Advanced AI Document Processing Guide](/docs/ai-document-processing) 
