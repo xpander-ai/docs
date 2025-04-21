@@ -184,7 +184,8 @@
               "style": "regular"
             },
             "pages": [
-              "apps/google-drive"
+              "apps/google-drive",
+              "apps/jira"
             ]
           }
         ]
