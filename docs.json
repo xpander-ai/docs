@@ -159,6 +159,35 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Apps",
+        "icon": {
+          "name": "plug",
+          "style": "regular"
+        },
+        "groups": [
+          {
+            "group": "Overview",
+            "icon": {
+              "name": "book-open",
+              "style": "regular"
+            },
+            "pages": [
+              "apps/index"
+            ]
+          },
+          {
+            "group": "Productivity",
+            "icon": {
+              "name": "briefcase",
+              "style": "regular"
+            },
+            "pages": [
+              "apps/google-drive"
+            ]
+          }
+        ]
       }
     ],
     "global": {
@@ -186,6 +215,14 @@
             "style": "regular"
           },
           "href": "https://docs.xpander.ai/tutorials/index"
+        },
+        {
+          "dropdown": "Apps",
+          "icon": {
+            "name": "plug",
+            "style": "regular"
+          },
+          "href": "https://docs.xpander.ai/apps/index"
         },
         {
           "dropdown": "Release notes",
@@ -277,6 +314,10 @@
     {
       "source": "/changelog/",
       "destination": "/changelog/product-updates"
+    },
+    {
+      "source": "/apps",
+      "destination": "/apps/index"
     }
   ],
   "footer": {
