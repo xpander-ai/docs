@@ -185,7 +185,8 @@
             },
             "pages": [
               "apps/google-drive",
-              "apps/jira"
+              "apps/jira",
+              "apps/confluence"
             ]
           }
         ]
