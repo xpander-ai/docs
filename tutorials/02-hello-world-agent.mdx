@@ -333,23 +333,20 @@ Update your main execution code:
 
 ```python
 # Add Tavily search capability
-tavily_ready = add_tavily_search(agent)
+add_tavily_search(agent)
 
-# Test the agent with available capabilities
-if tavily_ready:
-    print("\n🔍 Testing agent with both time function and search capability...")
-    # First message - asking about time
-    thread_id = chat(agent, "What time is it right now? Use the get_current_time tool.", 
-                    local_tools_by_name=local_tools_by_name)
-    
-    # Second message in same thread - asking about search
-    chat(agent, "What are the latest developments in AI?", thread_id, 
-        local_tools_by_name=local_tools_by_name)
-else:
-    print("\n⏰ Testing agent with time function only...")
-    # Just test the time function since search isn't ready yet
-    thread_id = chat(agent, "What time is it right now? Use the get_current_time tool.", 
-                    local_tools_by_name=local_tools_by_name)
+# Add local tools to the agent
+agent.add_local_tools(local_tools_list)
+print("🧰 Local tools added to agent")
+
+print("\n🔍 Testing agent with time function and search capability...")
+# First message - asking about time
+thread_id = chat(agent, "What time is it right now? Use the get_current_time tool.", 
+                local_tools_by_name=local_tools_by_name)
+
+# Second message in same thread - asking about search
+chat(agent, "What are the latest developments in AI?", thread_id, 
+    local_tools_by_name=local_tools_by_name)
 ```
 
 <Accordion title="How Tavily Search Works">
@@ -389,7 +386,7 @@ These building blocks allow you to create sophisticated agents that can perform 
 Below is the complete code that combines all the features we've covered in this tutorial:
 
 ```python
-from xpander_sdk import Agent, XpanderClient, LLMProvider, ToolCallResult, GraphItem, Tokens, LLMTokens
+from xpander_sdk import Agent, XpanderClient, LLMProvider, ToolCallResult, GraphItem, Tokens, LLMTokens, AgentGraphItemType
 from openai import OpenAI
 import os
 import time
@@ -617,33 +614,21 @@ def add_tavily_search(agent: Agent):
 def main():
     # Set up or load the agent
     agent = setup_agent()
-    
+        
+    # Add Tavily search capability
+    add_tavily_search(agent)
     # Add local tools to the agent
     agent.add_local_tools(local_tools_list)
     print("🧰 Local tools added to agent")
     
-    # Add Tavily search capability
-    tavily_ready = add_tavily_search(agent)
+    print("\n🔍 Testing agent with time function and search capability...")
+    # First message - asking about time
+    thread_id = chat(agent, "What time is it right now? Use the get_current_time tool.", 
+                    local_tools_by_name=local_tools_by_name)
     
-    # Have a conversation with the agent
-    if tavily_ready:
-        print("\n🔍 Testing agent with time function and search capability...")
-        # First message - asking about time
-        thread_id = chat(agent, "What time is it right now? Use the get_current_time tool.", 
-                       local_tools_by_name=local_tools_by_name)
-        
-        # Second message in same thread - asking about search
-        chat(agent, "What are the latest developments in AI?", thread_id, 
-            local_tools_by_name=local_tools_by_name)
-    else:
-        print("\n⏰ Testing agent with time function only...")
-        # First message - asking about time
-        thread_id = chat(agent, "What time is it right now? Use the get_current_time tool.", 
-                       local_tools_by_name=local_tools_by_name)
-        
-        # Second message in same thread
-        chat(agent, "Tell me more about time zones.", thread_id, 
-            local_tools_by_name=local_tools_by_name)
+    # Second message in same thread - asking about search
+    chat(agent, "What are the latest developments in AI?", thread_id, 
+        local_tools_by_name=local_tools_by_name)
 
 # Run the example when the script is executed directly
 if __name__ == "__main__":
