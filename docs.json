@@ -185,8 +185,11 @@
             },
             "pages": [
               "apps/google-drive",
+              "apps/google-forms",
               "apps/jira",
-              "apps/confluence"
+              "apps/confluence",
+              "apps/asana",
+              "apps/monday"
             ]
           }
         ]
