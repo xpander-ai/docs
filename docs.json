@@ -185,7 +185,8 @@
             },
             "pages": [
               "apps/google-drive",
-              "apps/google-calendar"
+              "apps/google-calendar",
+              "apps/jira"
             ]
           }
         ]
