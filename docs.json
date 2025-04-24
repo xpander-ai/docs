@@ -185,6 +185,7 @@
             },
             "pages": [
               "apps/google-drive",
+              "apps/google-sheets",
               "apps/jira"
             ]
           }
