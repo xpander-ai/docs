@@ -188,6 +188,8 @@
               "apps/google-bigquery",
               "apps/jira",
               "apps/confluence"
+              "apps/google-calendar",
+              "apps/jira"
             ]
           }
         ]
