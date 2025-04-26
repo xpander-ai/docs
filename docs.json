@@ -185,14 +185,11 @@
             },
             "pages": [
               "apps/google-drive",
+              "apps/confluence"
               "apps/google-gmail",
               "apps/jira",
-              "apps/confluence"
               "apps/google-bigquery",
-              "apps/jira",
-              "apps/confluence"
               "apps/google-calendar",
-              "apps/jira"
             ]
           }
         ]

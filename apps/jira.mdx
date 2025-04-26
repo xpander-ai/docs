@@ -22,15 +22,18 @@ Learn how to build AI agents with Jira access using xpander.ai. This integration
     1. Sign in at
     https://id.atlassian.com/manage-profile/security/api-tokens.
 
+
     2. Click **Create API token**:
-      <Frame caption="Google Drive API access configuration">
+      <Frame caption="Jira API access configuration">
       ![Jira API Access](/images/screenshots/jira_api_token_2.png)
       </Frame>
+
 
     3. Enter a descriptive name.
       <Frame> 
       ![](/images/screenshots/jira_api_token_3.png)
       </Frame>
+
 
     4. Select the `Expires on` field:
       <Frame>
@@ -61,11 +64,74 @@ Learn how to build AI agents with Jira access using xpander.ai. This integration
     Tokens that never expire can compromise security, so Atlassian sets a one‑year expiry by default. You can choose any lifetime from 1 to 365 days when you create a token.
     </Warning>
 
-  **Note:** After you close this window the token value cannot be retrieved. Save it right away—preferably in a password manager.
-  Now we can see the tokens generated and see it was never used, but that'll change once we create the xpander.ai interface:
-    <Frame>
-    ![](/images/screenshots/jira_api_token_9.png)
-    </Frame>  
+    **Note:** After you close this window the token value cannot be retrieved. Save it right away—preferably in a password manager.
+    
+    
+    Now we can see the tokens generated and see it was never used, but that'll change once we create the xpander.ai interface:
+      <Frame>
+      ![](/images/screenshots/jira_api_token_9.png)
+      </Frame>  
+    
+    ### Let's create the Xpander.ai Jira interface!
+
+    9. After succesfully logging into https://app.xpander.ai, click on the Interfaces button:
+      <Frame>
+      ![](/images/screenshots/jiram__2025-04-22-11-09-59.png)
+      </Frame>
+    
+    10. Search for the Jira Interface by clicking on the search bar, and write `Jira`:
+      <Frame>
+      ![](/images/screenshots/jiram_2025-04-22-11-16-59.png)
+      </Frame>
+      After writing `Jira` in the search bar, you'll need to click on the Interface button that states `Auth required`:
+        <Frame>
+        ![](/images/screenshots/jiram_2025-04-22-11-20-44.png)
+        </Frame>
+      
+      You will also see your existing Interfaces (marked in blue).
+    
+    11. Click on Other auth options:
+      <Frame>
+      ![](/images/screenshots/jiram_2025-04-22-11-22-51.png)
+      </Frame>
+    
+    12. Enter your Jira interface's name here:
+      <Frame>
+      ![](/images/screenshots/jiram_2025-04-22-11-24-41.png)
+      </Frame>
+    
+    13. Select which Access you would like to set for this interface by clicking on the Interface access button (in red):
+      <Frame>
+			![](/images/screenshots/jiram_2025-04-22-11-28-09.png)
+			</Frame>
+      you can select Personal or Organizational (options marked in blue).
+      In this example we selected the Personal access.
+
+    14. Select the API Key Authentication mode by clicking on the Authentication mode button (**in red**), then click on **API Key** (marked in blue):
+    	<Frame>
+			![](/images/screenshots/jiram_2025-04-22-11-32-27.png)
+			</Frame>
+    
+    15. Paste the API Token generated in step 7 here:
+    	<Frame>
+			![](/images/screenshots/jiram_2025-04-22-11-34-12.png)
+			</Frame>
+    
+    16. Now select the auth type by clicking on the select auth type button (marked in red), and then click on **Bearer** (marked in blue):
+    	<Frame>
+			![](/images/screenshots/jiram_2025-04-22-11-38-06.png)
+			</Frame>
+
+    Now click on the save button:
+    	<Frame>
+			![](/images/screenshots/jiram_2025-04-22-11-39-30.png)
+			</Frame>
+    
+    And you have a new Jira xpander.ai interface!
+    	<Frame>
+			![](/images/screenshots/jiram_2025-04-22-11-42-28.png)
+			</Frame>
+
 
   </Tab>
 </Tabs>
