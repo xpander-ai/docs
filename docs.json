@@ -190,7 +190,6 @@
               "apps/google-gmail",
               "apps/google-bigquery",
               "apps/google-calendar",
-              "apps/google-sheets",
               "apps/jira",
               "apps/confluence",
               "apps/asana",
