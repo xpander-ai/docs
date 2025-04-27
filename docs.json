@@ -26,82 +26,82 @@
           "name": "book",
           "style": "regular"
         },
-"groups": [
-  {
-    "group": "Get Started",
-    "icon": {
-      "name": "rocket",
-      "style": "regular"
-    },
-    "pages": [
-      "docs/01-get-started/01-index",
-      {
-        "group": "Quickstart",
-        "icon": {
-          "name": "rocket",
-          "style": "regular"
-        },
-        "pages": [
-          "docs/01-get-started/02-getting-started-00",
-          "docs/01-get-started/02-getting-started-01-workbench",
-          "docs/01-get-started/02-getting-started-02-cli"
+        "groups": [
+          {
+            "group": "Get Started",
+            "icon": {
+              "name": "rocket",
+              "style": "regular"
+            },
+            "pages": [
+              "docs/01-get-started/01-index",
+              {
+                "group": "Quickstart",
+                "icon": {
+                  "name": "rocket",
+                  "style": "regular"
+                },
+                "pages": [
+                  "docs/01-get-started/02-getting-started-00",
+                  "docs/01-get-started/02-getting-started-01-workbench",
+                  "docs/01-get-started/02-getting-started-02-cli"
+                ]
+              },
+              {
+                "group": "Use the SDK",
+                "icon": {
+                  "name": "code",
+                  "style": "regular"
+                },
+                "pages": [
+                  "docs/01-get-started/02-sdk-overview",
+                  "docs/01-get-started/03-llm-models",
+                  "docs/01-get-started/04-agent-frameworks"
+                ]
+              }
+            ]
+          },  
+          {
+            "group": "AI Agent Workbench",
+            "icon": {
+              "name": "wand-magic-sparkles",
+              "style": "regular"
+            },
+            "pages": [
+              "docs/02-agent-builder/01-add-tools-to-agents",
+              "docs/02-agent-builder/02-agent-graph-system",
+              "docs/02-agent-builder/03-activity-view",
+              "docs/02-agent-builder/04-advanced-operation-settings",
+              "docs/02-agent-builder/05-agent-settings",
+              "docs/02-agent-builder/06-multi-agent-teams",
+              "docs/02-agent-builder/07-sequential-agent-teams"
+            ]
+          },
+          {
+            "group": "AI State Management",
+            "icon": {
+              "name": "database",
+              "style": "regular"
+            },
+            "pages": [
+              "docs/03-ai-state-management/01-agent-state-basics",
+              "docs/03-ai-state-management/02-thread-management"
+            ]
+          },
+          {
+            "group": "Human Interfaces",
+            "icon": {
+              "name": "comments",
+              "style": "regular"
+            },
+            "pages": [
+              "docs/05-human-interfaces/02-slack-bots",
+              "docs/05-human-interfaces/03-webui",
+              "docs/05-human-interfaces/04-mcp",
+              "docs/05-human-interfaces/05-webhooks"
+            ]
+          }
         ]
-      },
-      {
-        "group": "Use the SDK",
-        "icon": {
-          "name": "code",
-          "style": "regular"
-        },
-        "pages": [
-          "docs/01-get-started/02-sdk-overview",
-          "docs/01-get-started/03-llm-models",
-          "docs/01-get-started/04-agent-frameworks"
-        ]
-      }
-    ]
-  },  
-  {
-    "group": "AI Agent Workbench",
-    "icon": {
-      "name": "wand-magic-sparkles",
-      "style": "regular"
-    },
-    "pages": [
-      "docs/02-agent-builder/01-add-tools-to-agents",
-      "docs/02-agent-builder/02-agent-graph-system",
-      "docs/02-agent-builder/03-activity-view",
-      "docs/02-agent-builder/04-advanced-operation-settings",
-      "docs/02-agent-builder/05-agent-settings",
-      "docs/02-agent-builder/06-multi-agent-teams",
-      "docs/02-agent-builder/07-sequential-agent-teams"
-    ]
-  },
-  {
-    "group": "AI State Management",
-    "icon": {
-      "name": "database",
-      "style": "regular"
-    },
-    "pages": [
-      "docs/03-ai-state-management/01-agent-state-basics",
-      "docs/03-ai-state-management/02-thread-management"
-    ]
-  },
-  {
-    "group": "Human Interfaces",
-    "icon": {
-      "name": "comments",
-      "style": "regular"
-    },
-    "pages": [
-      "docs/05-human-interfaces/02-slack-bots",
-      "docs/05-human-interfaces/03-webui",
-      "docs/05-human-interfaces/04-mcp",
-      "docs/05-human-interfaces/05-webhooks"
-    ]
-  }
-]
       },
       {
         "tab": "Tutorials",
@@ -186,7 +186,11 @@
             "pages": [
               "apps/google-drive",
               "apps/google-sheets",
-              "apps/jira"
+              "apps/confluence",
+              "apps/google-gmail",
+              "apps/jira",
+              "apps/google-bigquery",
+              "apps/google-calendar"
             ]
           }
         ]
