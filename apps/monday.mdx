@@ -1,0 +1,42 @@
+---
+title: Monday
+description: Learn how to build AI agents with Monday access using xpander.ai.
+icon: monday
+---
+
+Learn how to build AI agents with Monday access using xpander.ai. This integration enables intelligent document-aware AI assistants that can read, write, organize, and analyze data of different projects automatically.
+
+## Authentication Options
+
+<Tabs>
+  <Tab title="API Access">
+    <Frame caption="Monday API access configuration">
+      ![Monday API Access](/images/placeholders/monday-api.png)
+    </Frame>
+
+    For programmatic access and automation:
+
+    1. Sign in to your [monday.com](https://monday.com) account.
+    2. Click on your profile picture located in the top-right corner.
+    3. Select Developers. This will open the Developer Center in a new tab.
+    4. Click My Access Tokens > Show.
+    5. Copy your personal token. Keep in mind that regenerating a new token will deactivate any existing ones.
+
+    <Warning>
+    The API gives you powerful capabilities in order to enhance your monday.com experience. It's very important to keep your API token secure.
+    </Warning>
+        
+    ### Let's create the Xpander.ai Monday interface!
+    1. Write your interface name, select the interface access you'd like, Select the `API key` authentication method, select `Custom` as the Auth type, paste the token copied earlier in the API Key field, and insert `Authorization` in the Custom header name, like so:
+
+    <Frame>
+		![](/images/screenshots/monday_2025-04-27-10-57-27.png)
+	</Frame>
+
+    Then save the interface.
+
+
+    For more information about the Monday API Tokens, [click here](https://developer.monday.com/api-reference/docs/authentication#accessing-api-tokens).
+
+  </Tab>
+</Tabs>

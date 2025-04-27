@@ -186,11 +186,14 @@
             "pages": [
               "apps/google-drive",
               "apps/google-sheets",
-              "apps/confluence",
+              "apps/google-forms",
               "apps/google-gmail",
-              "apps/jira",
               "apps/google-bigquery",
-              "apps/google-calendar"
+              "apps/google-calendar",
+              "apps/jira",
+              "apps/confluence",
+              "apps/asana",
+              "apps/monday"
             ]
           }
         ]

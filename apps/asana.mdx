@@ -1,0 +1,40 @@
+---
+title: Asana
+description: Learn how to build AI agents with Asana access using xpander.ai.
+icon: asana
+---
+
+Learn how to build AI agents with Asana access using xpander.ai. This integration enables intelligent document-aware AI assistants that can read, write, organize, and analyze pages of different projects automatically.
+
+## Authentication Options
+
+<Tabs>
+  <Tab title="API Access">
+    <Frame caption="Asana API access configuration">
+      ![Asana API Access](/images/placeholders/asana-api.png)
+    </Frame>
+
+    For programmatic access and automation:
+    
+    1. Sign in to your [Asana](https://app.asana.com/0/my-apps) account.
+    2. Click on Create new token.
+    3. Give the token a suitable name and click on the checkbox of the "I agree to the Asana API Terms" button, and then click Create token.
+    4. Copy your personal token, and make sure it's authorized for the relevant workspace you'd like to work with!
+
+    <Warning>
+    API keys provide limited functionality and are best for read-only operations on public files. For full access, use OAuth methods.
+    </Warning>
+    
+    ### Let's create the Xpander.ai Asana interface!
+    Write your interface name, select the interface access you'd like, Select the API key authentication method, and select `Bearer` as the Auth type, and paste the token copied earlier in the API Key field, like so:    
+    <Frame>
+		![](/images/screenshots/asana_2025-04-27-10-48-11.png)
+	</Frame>
+
+    Then save the interface.
+    
+
+    For more information about the Asana Private Access Token, [click here](https://developers.asana.com/docs/personal-access-token).
+
+  </Tab>
+</Tabs>

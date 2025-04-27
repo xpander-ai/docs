@@ -1,0 +1,76 @@
+---
+title: "Google Forms"
+description: "Learn how to build AI agents with Google Forms access using xpander.ai. Create intelligent document-aware AI assistants that can read, write, organize, and analyze files automatically."
+icon: "google-forms"
+---
+
+Learn how to build AI agents with Google Forms access using xpander.ai. This integration enables intelligent document-aware AI assistants that can read, write, organize, and analyze forms automatically.
+
+<Frame>
+  ![](/images/apps/google-forms.png)
+</Frame>
+
+
+## Authentication Options
+
+Choose the authentication method that best fits your needs:
+
+<Tabs>
+  <Tab title="API Access">
+    <Frame caption="Google Forms API access configuration">
+      ![Google Forms API Access](/images/placeholders/google-forms-api.png)
+    </Frame>
+
+    
+    For programmatic access and automation:
+
+    1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+    2. Create a new project or select an existing one
+    3. Enable the **Google Forms API** in Library
+    4. Go to **Credentials** and create an **API Key**
+    5. Restrict the API key to Google Forms API only
+    6. Copy the API key to xpander.ai's Google Forms connection settings
+    7. Set appropriate API access restrictions in Google Cloud Console
+
+    <Warning>
+        API keys provide limited functionality and are best for read-only operations on public files. For full access and to keep your forms private, use OAuth methods.
+    </Warning>
+    
+  ### Let's create the Xpander.ai Google Forms interface!
+
+
+    This app is using basic authentication.
+
+    To configure it in xpander.ai, follow the following screenshot: 
+    <Frame>
+      ![](/images/screenshots/g_forms_2025-04-27-15-51-03.png)
+    </Frame>
+
+    Then save the interface.
+
+    For more information about the Google API enablement, [click here](https://support.google.com/googleapi/answer/6158841?hl=en).
+  </Tab>
+
+
+  <Tab title="Built-in xpander.ai Auth">
+    <Frame caption="Sign in with Google using xpander.ai's built-in authentication">
+      ![Sign in with Google](/images/placeholders/sign-in-with-google.png)
+    </Frame>
+
+    The simplest way to connect Google Forms is using xpander.ai's built-in authentication:
+
+    1. Go to the **Apps** section in xpander.ai dashboard
+    2. Select **Google Forms** from available integrations
+    3. Click **Sign in with Google**
+    4. Select your Google account and grant permissions
+    5. Your connection is immediately active and ready to use
+
+    <Note>
+    This method is recommended for most users. xpander.ai securely manages your OAuth tokens without exposing any credentials.
+    </Note>
+
+    ### Let's create the Xpander.ai Google Forms interface!
+
+
+  </Tab>
+</Tabs>
