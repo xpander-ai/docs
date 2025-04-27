@@ -1,0 +1,46 @@
+---
+title: "Google BigQuery"
+description: "Learn how to build AI agents with Google BigQuery access using xpander.ai. Create powerful data-driven AI assistants that can query, analyze, and manage large-scale datasets in real time to automate insights, reporting, and decision-making."
+icon: "google-bigquery"
+---
+
+Learn how to build AI agents with Google BigQuery access using xpander.ai. Create powerful data-driven AI assistants that can query, analyze, and manage large-scale datasets in real time to automate insights, reporting, and decision-making.
+
+<Frame>
+![](/images/apps/google-bigquery.png)
+</Frame>
+
+
+## Authentication Options
+
+Choose the authentication method that best fits your needs:
+
+<Tabs>
+  <Tab title="API Access">
+    <Frame caption="BigQuery API access configuration">
+      ![Google BigQuery API Access](/images/placeholders/google-bigquery-api.png)
+    </Frame>
+
+    For programmatic access and automation:
+    
+    1. You will need access to the Google Cloud CLI tool in order to get your token. If you have it installed, continue to step 5.
+    2. Download [Google Cloud's CLI tool](https://cloud.google.com/sdk/docs/install-sdk)
+    2. Run the installation script from the directiry where you downloaded and extracted the content of the SDK:
+        ```./google-cloud-sdk/install.sh```
+    3. After installing the SDK, update your `$PATH` to include the bin folder under the SDK (```export PATH="$PATH:$HOME/Downloads/google-cloud-sdk/bin"```).
+    4. To initialize the gcloud CLI, run gcloud init:
+        ```./google-cloud-sdk/bin/gcloud init```
+
+    5. Run the following command, and copy the token it generates:
+        ```gcloud auth print-access-token```
+    
+    ### Let's create the Xpander.ai Google BigQuery interface!
+
+    1. Write your interface name, select the interface access you'd like, Select the API key authentication method, and then paste the token copied earlier in the API Key field, and select `Bearer` as the Auth type, like so:
+    <Frame>
+		![](/images/screenshots/bigqu4ry_2025-04-24-12-21-23.png)
+	</Frame>
+    Then save the interface.
+
+  </Tab>
+</Tabs>
