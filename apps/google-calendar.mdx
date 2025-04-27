@@ -16,6 +16,40 @@ Learn how to build AI agents with Google Calendar access using xpander.ai. Creat
 Choose the authentication method that best fits your needs:
 
 <Tabs>
+  <Tab title="API Access">
+    <Frame caption="Google Calendar API access configuration">
+      ![Google Calendar API Access](/images/placeholders/google-calendar-api.png)
+    </Frame>
+
+    
+    For programmatic access and automation:
+
+    1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+    2. Create a new project or select an existing one
+    3. Enable the **Google Calendar API** in Library
+    4. Go to **Credentials** and create an **API Key**
+    5. Restrict the API key to Google Calendar API only
+    6. Copy the API key to xpander.ai's Google Calendar connection settings
+    7. Set appropriate API access restrictions in Google Cloud Console
+
+    <Warning>
+        API keys provide limited functionality and are best for read-only operations on public files. For full access, use OAuth methods.
+    </Warning>
+    
+    ### Let's create the Xpander.ai Google BigQuery interface!
+
+    Write your interface name, select the interface access you'd like, Select the API key authentication method, and then paste the token copied earlier in the API Key field, and select `Bearer` as the Auth type, like so:
+
+    <Frame>
+		
+	</Frame>
+
+    Then save the interface.
+    
+    For more information about the Google API enablement, [click here](https://support.google.com/googleapi/answer/6158841?hl=en).
+
+  </Tab>
+
   <Tab title="Built-in xpander.ai Auth">
     <Frame caption="Sign in with Google using xpander.ai's built-in authentication">
       ![Sign in with Google](/images/placeholders/sign-in-with-google.png)

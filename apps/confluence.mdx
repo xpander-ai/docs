@@ -16,145 +16,32 @@ Learn how to build AI agents with Confluence access using xpander.ai. This integ
 
     For programmatic access and automation:
 
+
     1. Sign in at
-    https://id.atlassian.com/manage-profile/security/api-tokens.
+      https://id.atlassian.com/manage-profile/security/api-tokens
 
-
-    2. Click **Create API token**:
-      <Frame caption="Confluence API access configuration">
-      ![Confluence API Access](/images/screenshots/jira_api_token_2.png)
-      </Frame>
-
-
+    2. Click **Create Classic API token**.
     3. Enter a descriptive name.
-      <Frame> 
-      ![](/images/screenshots/jira_api_token_3.png)
-      </Frame>
+    4. Select the `Expires on` field, and fill it with an expiry date (between 1–365 days from current date).
+    6. Click **Create**.
+	  7. Click **Copy to clipboard** and store it somewhere secure.
 
-
-    4. Select the `Expires on` field:
-      <Frame>
-      ![](/images/screenshots/jira_api_token_4.png)
-      </Frame>
-
-	  5. Fill it with an expiry date (between 1–365 days from current date):
-      <Frame>
-      ![](/images/screenshots/jira_api_token_5.png)
-      </Frame>
-
-    6. Click **Create**:
-      <Frame>
-      ![](/images/screenshots/jira_api_token_6.png)
-      </Frame>
-
-	  7. Click **Copy to clipboard** and immediately paste the token into your script or store it somewhere secure.
-      <Frame>
-      ![](/images/screenshots/jira_api_token_7.png)
-      </Frame>
-
-    8. Once you copied the Token, click Done:
-      <Frame>
-      ![](/images/screenshots/jira_api_token_8.png)
-      </Frame>
-
-    <Warning>
-    Tokens that never expire can compromise security, so Atlassian sets a one‑year expiry by default. You can choose any lifetime from 1 to 365 days when you create a token.
-    </Warning>
-
-    **Note:** After you close this window the token value cannot be retrieved. Save it right away—preferably in a password manager.
-    
-    
-    Now we can see the tokens generated and see it was never used, but that'll change once we create the xpander.ai interface:
-      <Frame>
-      ![](/images/screenshots/jira_api_token_9.png)
-      </Frame>  
-    
     ### Let's create the Xpander.ai Confluence interface!
+    Write your interface name, select the interface access you'd like, Select the API key authentication method, and select `Basic` as the Auth type, and paste the token copied earlier in the API Key field, like so:
+    <Frame>
+		  ![](/images/screenshots/confluence_2025-04-27-11-45-03.png)
+	  </Frame>
 
-    9. After succesfully logging into https://app.xpander.ai, click on the Interfaces button:
-      <Frame>
-      ![](/images/screenshots/jiram__2025-04-22-11-09-59.png)
-      </Frame>
-    
-    10. Search for the Confluence Interface by clicking on the search bar, and write `Confluence`:
-      <Frame>
-      ![](/images/screenshots/jiram_2025-04-22-11-16-59.png)
-      </Frame>
+    Then, enter your domain properly, like so:
+    <Frame>
+      ![](/images/screenshots/confluence_2025-04-27-11-43-03.png)
+    </Frame>
 
-
-      After writing `Confluence` in the search bar, you'll need to click on the Interface button that states `Auth required`:
-      <Frame>
-			![](/images/screenshots/conf_2025-04-22-12-40-19.png)
-			</Frame>
-    
-    11. Click on Other auth options:
-    	<Frame>
-			![](/images/screenshots/conf_2025-04-22-12-41-22.png)
-			</Frame>
-
-    12. Enter your Confluence interface's name here:
-    	<Frame>
-			![](/images/screenshots/conf_2025-04-22-12-42-06.png)
-			</Frame>
-    
-    13. Select which Access you would like to set for this interface by clicking on the Interface access button (in red):
-    	<Frame>
-			![](/images/screenshots/conf_2025-04-22-12-43-24.png)
-			</Frame>
-      you can select Personal or Organizational (options marked in blue).
-      In this example we selected the Personal access.
-
-    14. Select the API Key Authentication mode by clicking on the Authentication mode button (**in red**), then click on **API Key** (marked in blue):
-    	<Frame>
-			![](/images/screenshots/conf_2025-04-22-12-44-24.png)
-			</Frame>
-    
-    15. Paste the API Token generated in step 7 here:
-    	<Frame>
-			![](/images/screenshots/conf_2025-04-22-12-47-13.png)
-			</Frame>
-    
-    {/*
-    16. Select the auth type by clicking on the select auth type button (marked in red), and then click on **Bearer** (marked in blue):
-    	
-      #VERIFY THIS IS FUNCTIONAL
-      <Frame>
-        ![](/images/screenshots/conf_2025-04-22-12-54-32.png)
-      </Frame>
-
-
-    17. Click on the Interface specific settings bar (in red), and replace the `{your-domain}` placeholder with your own Confluence domain:
-      <Frame>
-        ![](/images/screenshots/conf_2025-04-22-12-57-41.png)
-      </Frame>
-
-    To figure out what is your Confluence domain, sign into your Atlassian account by using the following URL:
-    https://www.atlassian.com/software/confluence 
-    Click on the `sign in` button:
-    	<Frame>
-			  ![](/images/screenshots/conf_2025-04-22-13-00-52.png)
-			</Frame>
-    after signing in, click on Confluence:
-    	<Frame>
-			  ![](/images/screenshots/conf_2025-04-22-13-02-26.png)
-			</Frame>
-    and copy the domain you see here (just before the dot in the URL):
-    	<Frame>
-			  ![](/images/screenshots/conf_2025-04-22-13-03-47.png)
-			</Frame>
-    Now paste the domain instead of the placeholder:
-    	<Frame>
-			  ![](/images/screenshots/conf_2025-04-22-13-05-16.png)
-			</Frame>
+    Now save the interface.
     
 
-    18. Now click on the save button, and you have a new Confluence xpander.ai interface!
-    	<Frame>
-			  ![](/images/screenshots/conf_2025-04-22-13-06-42.png)
-			</Frame>
-      */}
-  </Tab>
+    For more information about the Confluence REST APIs, [click here](https://developer.atlassian.com/cloud/confluence/using-the-rest-api/),  and to read more about how to manage your Atlassian's API tokens, [click here](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/#Create-an-API-token).
 
-  <Tab title="OAuth">
+
   </Tab>
 </Tabs>

@@ -189,9 +189,9 @@
               "apps/google-gmail",
               "apps/google-bigquery",
               "apps/google-calendar",
+              "apps/google-sheets",
               "apps/jira",
-              "apps/google-bigquery",
-              "apps/google-calendar",
+              "apps/confluence",
               "apps/asana",
               "apps/monday"
             ]
