@@ -1,0 +1,61 @@
+---
+title: Zendesk
+description: Learn how to build AI agents with Zendesk access using xpander.ai.
+icon: zendesk
+---
+
+Learn how to build AI agents with Zendesk access using xpander.ai. This integration enables intelligent support-aware AI assistants that can manage, respond to, organize, and analyze tickets, conversations, and customer interactions automatically.
+
+## Authentication Options
+
+<Tabs>
+  <Tab title="API Access">
+    <Frame caption="Zendesk API access configuration">
+      ![Zendesk API Access](/images/placeholders/zendesk-api.png)
+    </Frame>
+    
+    For programmatic access and automation:
+
+    1. Sign in to your [Zendesk Account](), and Click the Zendesk Products icon <Frame>![](/images/screenshots/zendesk_2025-04-28-16-59-09.png)</Frame>
+    2. Select Admin Center.
+    3. In Admin Center, click  Apps and integrations in the sidebar, then select APIs > Zendesk API.
+    4. In the Settings tab, enable token access:
+        <Frame>
+			![](/images/screenshots/zendesk_2025-04-28-16-25-29.png)
+		</Frame>
+    5. Now click the **Add API token** button to the right of Active API tokens, create the API token, copy it and save:
+        <Frame>
+			![](/images/screenshots/zendesk_2025-04-28-16-27-32.png)
+		</Frame>
+
+    <Warning>
+    The API gives you powerful capabilities in order to enhance your Zendesk experience. It's very important to keep your API token secure.
+    </Warning>
+
+  ### Let's create the Xpander.ai Zendesk interface!
+   1. Write your interface name.
+   2. Select the interface access you'd like 
+   3. Select the API key authentication method
+   4. Select the Integration user authentication scope
+   5. Select **Basic** as the Auth type.
+   6. Hash the token you copied earlier from the Zendesk platform, to a base-64 encoding format using this template: `{YOUR_EMAIL_ADDRESS}/token:{YOUR_API_KEY}`
+   7. Paste the hashed string in the API Key field.
+   8. Enter your domain like so:
+        <Frame>
+			![](/images/screenshots/zendesk_2025-04-28-16-54-31.png)
+		</Frame>
+
+  Now save the interface.
+
+    you can use this online [base64 encoder](https://www.base64encode.org/) to generate a hashed token.  
+
+    **Note:** Make sure to replace `{YOUR_API_KEY}` and `{YOUR_EMAIL_ADDRESS}` with your actual Zendesk API key and user email values before hashing it!
+
+  <Info>
+  For more information about the Zendesk API token creation, [click here](https://support.zendesk.com/hc/en-us/articles/4408889192858-Managing-access-to-the-Zendesk-API).
+  
+  For more information about the Zendesk authentication methods (developers), [click here.](https://developer.zendesk.com/api-reference/introduction/security-and-auth/).
+  </Info>
+
+  </Tab>
+</Tabs>
