@@ -192,6 +192,7 @@
               "apps/google-calendar",
               "apps/jira",
               "apps/confluence",
+              "apps/statuspage",
               "apps/asana",
               "apps/monday"
             ]
