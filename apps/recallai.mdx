@@ -15,7 +15,7 @@ Learn how to build AI agents with Recall.ai access using xpander.ai. This integr
     </Frame>
 
     For programmatic access and automation:
-    Sign in to your Recall dashboard, there you should be able to manage your API tokens:
+    1. Sign in to your Recall dashboard, there you can manage your API tokens:
 
         [(US) us-east-1](https://us-east-1.recall.ai/dashboard/api-keys)
 
@@ -24,29 +24,27 @@ Learn how to build AI agents with Recall.ai access using xpander.ai. This integr
         [(EU) eu-central-1](https://eu-central-1.recall.ai/dashboard/api-keys)
 
         [(JP) ap-northeast-1](https://ap-northeast-1.recall.ai/dashboard/api-keys)
-      {/*
-      TODO: Fix the documentation below when you can access the recall platform:
-    2. Click **Create API token**.
-    3. Enter a descriptive name.
-    4. Click **Create**.
-      <Frame>
-        ![](/images/screenshots/recall__.png)
-      </Frame>
-	  7. Click **Copy to clipboard** and store it somewhere secure.
+    
+    2. Create an API token and copy it to your clipboard.
 
-      */}
-    ### Let's create the Xpander.ai Recall interface!
-    Write your interface name, select the interface access you'd like, Select the API key authentication method,
-      select `Custom` as the Auth type, Enter `Authorization` as the Custom Header name, and paste the token copied
-      earlier in the API Key field, like so:
+  ### Let's create the Xpander.ai Recall interface!
+    1. Write your interface name.
+    2. Select the interface access you'd like 
+    3. Select the API key authentication method
+    4. Select the Integration user authentication scope
+    5. Select **Custom** as the Auth type and **Authorization** as the Custom header name.
+    6. Paste the token copied earlier in the API Key field using this template: `Token [YOUR_API_KEY]`
+        
+      **Note:** Make sure to replace `[YOUR_API_KEY]` with your actual StatusPage API key.
 
-		<Frame>
-			![](/images/screenshots/recall_2025_2025-04-28-12-32-31.png)
-        </Frame>
+    <Frame>
+      ![](/images/screenshots/recall_2025_2025-04-28-12-32-31.png)
+    </Frame>
 
     Then save the interface.
 
-    For more information about the Recall API authentication, [click here](https://docs.recall.ai/reference/authentication).
+    For more information about Recall's platform, [click here](https://docs.recall.ai/docs),
+    and for information about Recall's API authentication, [click here](https://docs.recall.ai/reference/authentication).
 
 
   </Tab>
