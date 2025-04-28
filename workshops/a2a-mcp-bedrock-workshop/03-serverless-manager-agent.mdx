@@ -1,0 +1,257 @@
+---
+title: "Module 3: Build Your Serverless Manager Agent"
+description: "Create a serverless agent that orchestrates and monitors your coding agent fleet through MCP"
+icon: "sitemap"
+---
+
+In this module, you'll create a serverless agent using the xpander WebUI. This agent will orchestrate and monitor your coding agent fleet, bringing centralized control to your agent ecosystem.
+
+## Learning Objectives
+
+By the end of this module, you will:
+- Architect a serverless manager agent
+- Configure it to monitor your coding agents
+- Set up task delegation functionality
+- Create aggregation mechanisms for results
+- Connect it to your Cursor IDE via Model Context Protocol (MCP)
+
+## Steps
+
+### 1. Set Up the Serverless Framework
+
+First, let's set up the serverless environment:
+
+```bash
+# Install the serverless framework if you haven't already
+npm install -g serverless
+
+# Create a new serverless project
+serverless create --template aws-nodejs --path manager-agent
+cd manager-agent
+```
+
+### 2. Configure Your Manager Agent
+
+Create the manager agent configuration:
+
+```bash
+# Install dependencies
+npm init -y
+npm install xpander-sdk aws-sdk
+
+# Create the manager agent file
+touch handler.js
+```
+
+Edit `handler.js` to implement the manager functionality:
+
+```javascript
+const { XpanderClient, ManagerAgent } = require('xpander-sdk');
+const AWS = require('aws-sdk');
+
+// Initialize the manager agent
+const managerAgent = new ManagerAgent({
+  name: 'CodingManagerAgent',
+  description: 'Orchestrates and monitors coding agents'
+});
+
+// Configure monitoring capabilities
+managerAgent.addMonitoring({
+  agentIds: ['agent-1-id', 'agent-2-id'],
+  metrics: ['status', 'performance', 'outputs']
+});
+
+// Configure task delegation
+managerAgent.addTaskDelegator({
+  taskTypes: {
+    'code-generation': 'agent-1-id',
+    'code-refactoring': 'agent-2-id',
+    'unknown': 'agent-1-id' // default agent
+  }
+});
+
+// Configure result aggregation
+managerAgent.addResultAggregator({
+  strategy: 'consensus', // or 'weighted', 'priority', etc.
+  conflictResolution: 'manager-decides'
+});
+
+// NLP handler for MCP integration
+managerAgent.addNLPIntentHandler((intent, entities) => {
+  // Map natural language intents to actions
+  switch(intent) {
+    case 'review_code':
+      return {
+        action: 'review_branch',
+        parameters: {
+          branchName: entities.branchName,
+          repoPath: entities.repoPath || process.env.DEFAULT_REPO_PATH
+        }
+      };
+    case 'delegate_task':
+      return {
+        action: 'delegate',
+        parameters: {
+          task: entities.task,
+          agentId: entities.agentId || null // auto-select if not specified
+        }
+      };
+    // Add more intents as needed
+    default:
+      return {
+        action: 'process_nlp',
+        parameters: { rawInput: intent }
+      };
+  }
+});
+
+module.exports.handleRequest = async (event) => {
+  try {
+    // Parse the incoming request
+    const body = JSON.parse(event.body || '{}');
+    
+    // Check if this is an MCP request (natural language)
+    if (body.type === 'mcp_request' && body.query) {
+      // Process the natural language query
+      const result = await managerAgent.processNaturalLanguage(body.query);
+      return {
+        statusCode: 200,
+        body: JSON.stringify(result)
+      };
+    }
+    
+    // Handle structured API requests
+    // ... existing code ...
+    
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: 'Request processed' })
+    };
+  } catch (error) {
+    console.error('Error processing request:', error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: error.message })
+    };
+  }
+};
+```
+
+### 3. Deploy the Serverless Manager Agent
+
+Configure and deploy your serverless manager:
+
+```bash
+# Edit serverless.yml to define your functions and APIs
+nano serverless.yml
+```
+
+Example `serverless.yml`:
+```yaml
+service: manager-agent
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: us-west-2
+  environment:
+    AGENT_1_ID: ${env:AGENT_1_ID}
+    AGENT_2_ID: ${env:AGENT_2_ID}
+    XPANDER_API_KEY: ${env:XPANDER_API_KEY}
+    DEFAULT_REPO_PATH: ${env:DEFAULT_REPO_PATH}
+
+functions:
+  managerAgent:
+    handler: handler.handleRequest
+    events:
+      - http:
+          path: /task
+          method: post
+          cors: true
+      - http:
+          path: /mcp
+          method: post
+          cors: true
+```
+
+Deploy the serverless manager:
+```bash
+serverless deploy
+```
+
+### 4. Set Up MCP Integration in xpander.ai
+
+Instead of building a custom MCP connector, we'll use xpander.ai's built-in MCP hosting solution:
+
+1. Log in to the [xpander.ai console](https://app.xpander.ai)
+2. Navigate to "MCP Servers" in the sidebar
+3. Click "New MCP Server"
+4. Name your server "Manager Agent MCP"
+5. Select "Agent as MCP Server" in the type selector
+6. Select your deployed Manager Agent from the dropdown
+7. Click "Create MCP Server"
+
+Once created, you'll receive a unique MCP URL that contains your authentication details. This URL will connect your Cursor IDE to your manager agent through MCP.
+
+### 5. Configure Cursor IDE Integration
+
+Set up your Cursor IDE to connect to the manager agent via MCP:
+
+1. Open your Cursor settings or config file
+2. Add the MCP configuration:
+
+```json
+{
+  "mcpServers": {
+    "managerAgent": {
+      "command": "npx",
+      "args": [
+        "xpander-mcp-remote",
+        "https://mcp.xpander.ai/your-unique-mcp-url/"
+      ]
+    }
+  }
+}
+```
+
+Replace `your-unique-mcp-url` with the URL provided by xpander.ai.
+
+### 6. Test the MCP Integration
+
+Test the integration by sending natural language queries to your manager agent through Cursor:
+
+1. Open Cursor and start a conversation with the AI
+2. Ask the manager agent to perform tasks using natural language:
+
+```
+Can you check the status of my coding agents?
+```
+
+```
+Review the code in my feature-login branch
+```
+
+```
+Which agent would be best for implementing a user authentication system?
+```
+
+The manager agent should be able to understand these natural language queries, perform the requested actions through its API, and return the results.
+
+## Verification
+
+To ensure your serverless manager agent and MCP integration are properly configured:
+
+1. Send a natural language query through Cursor to your manager agent
+2. Verify the manager understands the intent and performs the correct action
+3. Check that the manager returns a meaningful response through the MCP interface
+
+## Goal
+
+✅ By the end of this module, you should have a fully operational Serverless Manager Agent that can orchestrate your coding agent fleet, monitor their performance, and integrate with your Cursor IDE via the Model Context Protocol (MCP).
+
+## Additional Resources
+
+- [Serverless Framework Documentation](https://www.serverless.com/framework/docs/)
+- [MCP Integration Guide](/docs/05-human-interfaces/04-mcp)
+- [Agent Orchestration Patterns](/docs/02-agent-builder/07-sequential-agent-teams)
+- [Natural Language Processing in Agents](/docs/02-agent-builder/01-add-tools-to-agents) 

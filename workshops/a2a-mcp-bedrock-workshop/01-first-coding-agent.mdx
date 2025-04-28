@@ -1,0 +1,154 @@
+---
+title: "Module 1: Build and Understand Your First Coding Agent"
+description: "Set up a local coding agent with MCP compliance and understand its core capabilities"
+icon: "code"
+---
+
+In this first module, you'll clone the base coding agent repository, explore its capabilities, and understand how it integrates with xpander.ai's webUI for monitoring and control.
+
+## Learning Objectives
+
+By the end of this module, you will:
+- Have a functioning local coding agent
+- Understand its code generation capabilities
+- Know how to set up Git commit automation
+- Grasp how the agent handles event triggers
+- Monitor agent activities through the xpander.ai webUI
+
+## Steps
+
+### 1. Clone the Base Coding Agent Repository
+
+Start by cloning the base coding agent repository that will serve as the foundation for this workshop:
+
+```bash
+git clone https://github.com/xpander-ai/coding-agent.git
+cd coding-agent
+```
+
+### 2. Set Up the Environment
+
+Install the required dependencies and configure your environment:
+
+```bash
+# Create and activate a virtual environment (recommended)
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Set up environment variables
+cp .env.example .env
+# Edit the .env file with your API keys
+```
+
+Open the `.env` file and add your API keys:
+```
+XPANDER_API_KEY=your_xpander_api_key
+OPENAI_API_KEY=your_openai_api_key
+```
+
+### 3. Explore the Agent's Core Structure
+
+Open the main agent file `coding_agent.py` to understand how it's structured:
+
+```python
+# Key components to notice in coding_agent.py:
+# 1. Initialization of the agent
+# 2. Tool definitions
+# 3. Agent execution loop
+# 4. Event handling
+# 5. Git integration
+```
+
+### 4. Run the Coding Agent
+
+Start the coding agent:
+
+```bash
+python main.py
+```
+
+This will initialize your agent and register it with the xpander.ai platform.
+
+### 5. Explore Core Capabilities in the Web UI
+
+Now, let's check out how the agent's capabilities are displayed in the xpander.ai webUI:
+
+1. Log into [app.xpander.ai](https://app.xpander.ai)
+2. Navigate to the "AI Agents" section
+3. Find your newly registered agent in the list
+
+#### Code Generation Workflows
+
+In the webUI, explore the agent's code generation capabilities:
+
+1. Click on your agent to open its details
+2. Navigate to the "Activity" tab to see past code generation activities
+3. Examine a recent code generation job to see:
+   - Input requirements
+   - Generated code solutions
+   - Any optimization steps taken
+
+#### Git Commit Automation
+
+Examine how the agent handles Git operations:
+
+1. In the "Activity" tab, find a Git operation
+2. See how the agent:
+   - Creates new branches for features
+   - Formats commit messages
+   - Manages the Git workflow
+
+### 6. Understand Event-Driven Architecture
+
+The agent is designed with an event-driven architecture. In the webUI:
+
+1. Go to the "Settings" tab of your agent
+2. Navigate to the "Events" section
+3. Review the registered event types:
+   - IDE events
+   - API events
+   - System events
+
+### 7. Monitor Real-Time Activities
+
+Set up monitoring for your agent:
+
+1. In the agent details page, navigate to the "Monitoring" tab
+2. Enable real-time monitoring
+3. Run a simple task on your local agent:
+
+```bash
+python task_runner.py --task "Generate a simple Python function to calculate Fibonacci numbers"
+```
+
+4. Watch the activity appear in real-time on the monitoring dashboard
+
+## Verification
+
+To ensure your coding agent is set up correctly:
+
+1. Run a simple code generation task:
+```bash
+python task_runner.py --task "Create a REST API endpoint in Python that returns current time in different time zones"
+```
+
+2. Verify the agent creates a new branch:
+```bash
+git branch
+# Should see a new branch created by the agent
+```
+
+3. Check the webUI Activity tab to see the recorded event
+
+## Goal
+
+✅ By the end of this module, you should have a fully operational Local Coding Agent that is observable through the xpander.ai webUI, ready for the next steps in our workshop.
+
+## Additional Resources
+
+- [Agent Activity Monitoring](/docs/02-agent-builder/03-activity-view)
+- [Event Configuration](/docs/05-human-interfaces/05-webhooks)
+- [Git Integration Guide](/docs/02-agent-builder/01-add-tools-to-agents) 
