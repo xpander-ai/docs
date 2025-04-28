@@ -1,0 +1,53 @@
+---
+title: Recall.ai
+description: Learn how to build AI agents with Recall access using xpander.ai.
+icon: recallai
+---
+
+Learn how to build AI agents with Recall.ai access using xpander.ai. This integration enables intelligent meeting-aware AI assistants that can access, process, summarize, and analyze meeting recordings and transcripts automatically.
+
+## Authentication Options
+
+<Tabs>
+  <Tab title="API Access">
+    <Frame caption="Recall API access configuration">
+      ![Recall API Access](/images/placeholders/recall-api.png)
+    </Frame>
+
+    For programmatic access and automation:
+    Sign in to your Recall dashboard, there you should be able to manage your API tokens:
+
+        [(US) us-east-1](https://us-east-1.recall.ai/dashboard/api-keys)
+
+        [(Pay-as-you-go) us-west-2](https://us-west-2.recall.ai/dashboard/api-keys)
+
+        [(EU) eu-central-1](https://eu-central-1.recall.ai/dashboard/api-keys)
+
+        [(JP) ap-northeast-1](https://ap-northeast-1.recall.ai/dashboard/api-keys)
+      {/*
+      TODO: Fix the documentation below when you can access the recall platform:
+    2. Click **Create API token**.
+    3. Enter a descriptive name.
+    4. Click **Create**.
+      <Frame>
+        ![](/images/screenshots/recall__.png)
+      </Frame>
+	  7. Click **Copy to clipboard** and store it somewhere secure.
+
+      */}
+    ### Let's create the Xpander.ai Recall interface!
+    Write your interface name, select the interface access you'd like, Select the API key authentication method,
+      select `Custom` as the Auth type, Enter `Authorization` as the Custom Header name, and paste the token copied
+      earlier in the API Key field, like so:
+
+		<Frame>
+			![](/images/screenshots/recall_2025_2025-04-28-12-32-31.png)
+        </Frame>
+
+    Then save the interface.
+
+    For more information about the Recall API authentication, [click here](https://docs.recall.ai/reference/authentication).
+
+
+  </Tab>
+</Tabs>
