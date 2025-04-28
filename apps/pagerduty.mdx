@@ -19,26 +19,37 @@ Learn how to build AI agents with PagerDuty access using xpander.ai. This integr
 
         1. Sign in at
         https://app.pagerduty.com/
-        2. navigate to Integrations -> API Access Keys, under **Developer Tools**.
+        2. navigate to Integrations -> API Access Keys, under **Developer Tools**:
+		<Frame>
+			![](/images/screenshots/pagerduty_2025-04-28-13-04-54.png)
+		</Frame>
         3. Click Create New API Key.
         4. Enter a description to help you identify the key.
-        5. Click **Create Key** and store it somewhere secure.
+        5. Click **Create Key** and store it somewhere secure:
+        <Frame>
+			![](/images/screenshots/pagerduty_2025-04-28-13-06-19.png)
+		</Frame>
 
         **Note:** After you close this window the token value cannot be retrieved. Save it right away—preferably in a
         password manager.
 
         ### Let's create the Xpander.ai PagerDuty interface!
 
-        {/*
-        TODO: Need to update the part below!
-        */}
+        1. Write your interface name.
+        2. Select the interface access you'd like 
+        3. Select the API key authentication method
+        4. Select the Integration user authentication scope
+        5. Select **Custom** as the Auth type and **Authorization** as the Custom header name.
+        6. Paste the token copied earlier in the API Key field using this template: `Token token=[YOUR_API_KEY]`
+        
+        **Note:** Make sure to replace `[YOUR_API_KEY]` with your actual PagerDuty API key.
 
-        Write your interface name, select the interface access you'd like, Select the API key authentication method, and
-        select `Basic` as the Auth type, and paste the token copied earlier in the API Key field, like so:
 
-        {/*
-        TODO: Need to update the part above!
-        */}
+        Your interface should look like so:
+
+        <Frame>
+            ![](/images/screenshots/pagerduty_2025-04-28-14-47-40.png)
+        </Frame>
 
         Then save the interface.
 
