@@ -1,185 +1,204 @@
 ---
-title: "Module 5: Vibe Coding — Launch Your Agent Fleet"
-description: "Activate your full agent fleet to collaboratively build a complete application"
+title: "Module 5: Launch Your Agent Fleet"
+description: "Coordinate your agent fleet to build a complete application using xpander.ai"
 icon: "rocket-launch"
 ---
 
-In this module, you'll bring together all the components created in previous modules to launch a collaborative agent fleet that can build a complete application through natural language interactions. This represents the culmination of your agent architecture.
+In this module, you'll bring together the agents you've created in previous modules to collaboratively build a complete application through natural language interactions.
 
-## Learning Objectives
+🚀 You'll set up a project in the xpander.ai platform, coordinate your multi-agent team using your manager agent, and watch as they work together to build a functional application!
+
+## 🎯 Learning Objectives
 
 By the end of this module, you will:
-- Activate your full agent fleet
-- Coordinate multiple agents to work on a single project
-- Implement complete development workflows from ideation to PR
+- Activate your full agent fleet in the xpander.ai platform
+- Create a new project for your agent team
+- Configure collaborative workflows between your agents
 - Build a real application using your agent fleet
 
-## Steps
+## 🔧 Set Up Project Workspace
 
-### 1. Prepare the Agent Fleet
-
-First, ensure all your agents are ready to work together:
+First, let's create a local workspace for your project:
 
 ```bash
-# Start the local coding agents
-cd agent-1
-npm start &
+# Create a project directory
+mkdir vibe-app
+cd vibe-app
 
-cd ../agent-2
-npm start &
+# Initialize a git repository
+git init
+git branch -M main
 
-# Ensure your serverless manager agent is deployed and running
-# Note: This should already be running from Module 4
+# Create a basic README file
+echo "# Vibe App\n\nA collaborative project built by my agent fleet." > README.md
+git add README.md
+git commit -m "Initial commit"
 ```
 
-### 2. Choose Your Project
+## 📝 Create Project Specification
 
-Select the type of application you want to build. Here are some ideas:
-
-- **Web App**: A simple web application with frontend and backend components
-- **CLI Tool**: A command-line utility to solve a specific problem
-- **Chat Bot**: A conversational agent for a specific domain
-- **Data Processing Tool**: An application to transform or analyze data
-- **API Service**: A microservice providing specific functionality
-
-Document your project idea:
+Create a project specification that defines what you want to build:
 
 ```bash
-mkdir project
-cd project
-
-# Create a project specification
+# Create a project specification file
 cat > project-spec.md << EOF
-# Project: [Your Project Name]
+# Project: Vibe App
 
 ## Overview
-[Brief description of what the application will do]
+A simple web application that helps users track their daily mood and activities to identify patterns in well-being.
 
 ## Features
-- [Feature 1]
-- [Feature 2]
-- [Feature 3]
+- Daily mood check-in with emoji selection
+- Activity tracker (sleep, exercise, work, social)
+- Simple visualization of mood patterns
+- Basic user authentication
 
 ## Technology Stack
-- [Technology 1]
-- [Technology 2]
-- [Technology 3]
+- Frontend: React with simple UI
+- Backend: Express.js API
+- Database: JSON file storage (for simplicity)
+- Authentication: JWT tokens
 
 ## Development Milestones
-1. [Milestone 1]
-2. [Milestone 2]
-3. [Milestone 3]
+1. Set up project structure and basic APIs
+2. Implement authentication system
+3. Create mood and activity tracking interfaces
+4. Build visualization component
+5. Finalize styling and user experience
 EOF
-```
 
-### 3. Set Up the Project Repository
-
-Initialize a new Git repository for your project:
-
-```bash
-# Initialize the repository
-git init
+# Add to repository
 git add project-spec.md
-git commit -m "Initial project specification"
-
-# Create a GitHub repository (if you haven't already)
-# Replace with your GitHub username and desired repo name
-gh repo create yourusername/project-name --public -y
-git remote add origin https://github.com/yourusername/project-name.git
-git push -u origin main
+git commit -m "Add project specification"
 ```
 
-### 4. Configure the Fleet for Your Project
+## 🔄 Create an Agent Team Project
 
-Create a fleet configuration file:
+Now, let's set up a dedicated project in the xpander.ai platform:
 
-```bash
-cat > fleet-config.json << EOF
-{
-  "project": {
-    "name": "Your Project Name",
-    "repositoryUrl": "https://github.com/yourusername/project-name.git",
-    "localPath": "$(pwd)"
-  },
-  "agents": {
-    "codeExpert": {
-      "endpoint": "http://localhost:3001",
-      "responsibilities": ["backend", "infrastructure", "optimization"]
-    },
-    "codeCreative": {
-      "endpoint": "http://localhost:3002",
-      "responsibilities": ["frontend", "design", "user experience"]
-    },
-    "manager": {
-      "endpoint": "https://your-deployed-serverless-url.amazonaws.com",
-      "responsibilities": ["planning", "review", "coordination"]
-    }
-  },
-  "workflow": {
-    "ideation": "manager",
-    "planning": "manager",
-    "implementation": ["codeExpert", "codeCreative"],
-    "review": "manager",
-    "deployment": "manager"
-  }
-}
-EOF
-```
+1. Go to [https://app.xpander.ai](https://app.xpander.ai) and sign in
+2. Navigate to the **Projects** section in the sidebar
+3. Click **New Project**
+4. Fill in the project details:
+   - **Name**: Vibe App
+   - **Description**: A collaborative project built by my agent fleet
+   - **Associated Team**: Select your "Coding Fleet" team created in Module 3
+5. Click **Create Project**
 
-### 5. Launch the Project Development
+<Frame>![](/images/screenshots/project-setup.png)</Frame>
+
+## 🚀 Set Up Team Workflow
+
+Configure your agent team's workflow for this project:
+
+1. In your new project, go to the **Workflow** tab
+2. Create a workflow with the following stages:
+   - **Planning**: Assigned to your Manager Agent
+   - **Frontend Development**: Assigned to dev-agent-2 (Llama)
+   - **Backend Development**: Assigned to dev-agent-1 (Claude)
+   - **Integration**: Assigned to your Manager Agent
+3. Set up dependencies between stages to ensure they execute in the proper order
+4. Click **Save Workflow**
+
+<Frame>![](/images/screenshots/workflow-setup.png)</Frame>
+
+## 📚 Upload Project Context
+
+Upload your project specification to provide context to your agents:
+
+1. Go to the **Resources** tab in your project
+2. Click **Upload Resource**
+3. Select your `project-spec.md` file
+4. Set visibility to "All Agents"
+5. Click **Upload**
+
+## 🏁 Launch the Project Development
 
 Now, it's time to start the development process using your agent fleet:
 
-```bash
-# Send the initial task to the manager agent via MCP
-curl -X POST https://your-deployed-serverless-url.amazonaws.com/task \
-  -H "Content-Type: application/json" \
-  -d '{
-    "action": "start_project",
-    "project": {
-      "name": "Your Project Name",
-      "specification": "$(cat project-spec.md | base64)",
-      "repository": "https://github.com/yourusername/project-name.git"
-    },
-    "fleetConfig": $(cat fleet-config.json)
-  }'
+1. Navigate to the **Chat** tab in your project
+2. Send the following message to initiate development:
+
+```
+Let's build the Vibe App according to our project specification. We need to create a simple mood tracking web application with user authentication, mood check-ins, and visualization. Please start by planning the architecture and then coordinate the development work between the specialized agents.
 ```
 
-### 6. Monitor and Interact with the Agent Fleet
+3. Watch as your manager agent:
+   - Analyzes the project requirements
+   - Creates a development plan
+   - Delegates tasks to the specialized coding agents
+   - Coordinates the integration of components
 
-Watch your agents work and interact with them as needed:
+<Frame>![](/images/screenshots/project-development.png)</Frame>
 
-- Monitor the logs of each agent to see their activities
-- Check the project repository for new branches and commits
-- Review Pull Requests generated by the manager agent
-- Provide additional guidance or clarification through the MCP interface
+## 👀 Monitor Development Progress
 
-### 7. Review the Development Process
+As your agents work on the project, you can monitor their progress:
 
-As your agents work on the project, observe and document how they:
+1. Go to the **Activity** tab to see all agent actions
+2. Check the **Repository** tab to view code being generated
+3. Monitor the **Pull Requests** section to see integration happening
 
-- Break down tasks based on the project specification
-- Allocate work between specialized agents
-- Commit code to feature branches
-- Submit and review Pull Requests
-- Iteratively improve the application
+Your agents will be working on:
+- Setting up the project structure
+- Creating frontend components for mood tracking
+- Developing backend APIs
+- Implementing authentication
+- Integrating the components into a cohesive application
 
-## Verification
+## 🔄 Guide and Provide Feedback
 
-To ensure your agent fleet is functioning properly:
+While your agents are working, you can guide their progress:
 
-1. Check that all agents are active and communicating
-2. Verify that code is being generated for the specified features
-3. Monitor branch creation and commit patterns
-4. Review Pull Requests to ensure they follow best practices
-5. Test the application functionality as it develops
+1. Provide feedback on their code and approach
+2. Answer any questions they might have about the requirements
+3. Suggest improvements or clarify aspects they might be unsure about
+4. Ask for status updates on specific components
 
-## Goal
+Example guidance messages:
 
-✅ By the end of this module, your agent fleet should be autonomously developing a real application, handling the entire lifecycle from ideation through code generation, commits, and Pull Requests.
+```
+How is the authentication system coming along? Please make sure it uses JWT tokens as specified.
+```
 
-## Additional Resources
+```
+I'd like the mood selection interface to use emoji buttons in a simple grid layout.
+```
 
-- [Agent Collaboration Patterns](/docs/02-agent-builder/06-multi-agent-teams)
-- [MCP Implementation Examples](/docs/05-human-interfaces/04-mcp)
-- [Git Workflow Best Practices](https://docs.github.com/en/get-started/quickstart/github-flow) 
+## 💾 Save and Export Your Project
+
+When your agents have completed the initial version of the application:
+
+1. Go to the **Repository** tab
+2. Click **Export Code**
+3. Choose between:
+   - **Download ZIP**: Get all project files as a ZIP archive
+   - **Clone Repository**: Get a Git URL to clone the complete repository
+
+<Tip>
+  You can continue to work with your agent fleet on this project after the workshop. Your agents will maintain their knowledge of the project and can help you extend and improve it over time.
+</Tip>
+
+## 🔍 Verify Your Application
+
+To ensure your agent fleet has built a functional application:
+
+1. Clone or download the exported code
+2. Follow the setup instructions in the README
+3. Start the application locally
+4. Test the key features:
+   - User authentication
+   - Mood check-in
+   - Activity tracking
+   - Visualization
+
+## 🚀 Next Steps
+
+Congratulations! You've successfully built and deployed a fleet of autonomous coding agents that can collaborate to create real applications. Here are some ways to continue your agent journey:
+
+1. Expand your agent fleet with more specialized agents
+2. Tackle larger and more complex projects
+3. Create custom tools for your agents
+4. Integrate your agents into your daily development workflow
+
+You now have all the skills needed to build and manage powerful agent fleets for software development! 

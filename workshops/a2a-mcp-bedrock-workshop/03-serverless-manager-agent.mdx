@@ -1,257 +1,142 @@
 ---
-title: "Module 3: Build Your Serverless Manager Agent"
-description: "Create a serverless agent that orchestrates and monitors your coding agent fleet through MCP"
+title: "Module 3: Build Your Manager Agent"
+description: "Create a manager agent that orchestrates your coding agent fleet using the xpander.ai platform"
 icon: "sitemap"
 ---
 
-In this module, you'll create a serverless agent using the xpander WebUI. This agent will orchestrate and monitor your coding agent fleet, bringing centralized control to your agent ecosystem.
+In this module, you'll create a manager agent using the xpander.ai platform. This agent will orchestrate your coding agents, bringing centralized control to your agent ecosystem.
 
-## Learning Objectives
+🚀 You'll use the visual Agent Workbench to design your manager agent, configure it to coordinate your existing agents, test it in the platform, and connect it to your development workflow!
 
-By the end of this module, you will:
-- Architect a serverless manager agent
-- Configure it to monitor your coding agents
-- Set up task delegation functionality
-- Create aggregation mechanisms for results
-- Connect it to your Cursor IDE via Model Context Protocol (MCP)
+## 🔧 Access the xpander.ai Workbench
 
-## Steps
+First, let's access the xpander.ai platform to create your manager agent:
 
-### 1. Set Up the Serverless Framework
+1. Go to [https://app.xpander.ai](https://app.xpander.ai) and sign in with your credentials
+2. In the left navigation menu, go to **AI Agents**
+3. Click the **New AI Agent** button to open the Workbench
 
-First, let's set up the serverless environment:
+## 🔄 Configure Agent Team Structure
 
-```bash
-# Install the serverless framework if you haven't already
-npm install -g serverless
+Next, you'll need to set up your agent team with the proper structure:
 
-# Create a new serverless project
-serverless create --template aws-nodejs --path manager-agent
-cd manager-agent
-```
+1. Click on the **Agent Teams** tab in the navigation bar
+2. Click the **Create AI Agents Team** button
+3. Name your team "Coding Fleet"
+4. Add both of your coding agents to the team:
+   - Click the "Add Agent" button
+   - Select dev-agent-1 and dev-agent-2 from the dropdown
+   - Click "Done"
+5. Configure the team layout:
+   - Click the "Builder" tab to access the visual canvas
+   - Change the layout type from "Router" to "Manager" in the Delegation settings
+   - Select your new manager agent as the manager
+   - Verify the connections between the manager and the coding agents
 
-### 2. Configure Your Manager Agent
+<Frame>![](/images/screenshots/team-structure.png)</Frame>
 
-Create the manager agent configuration:
+## 📝 Customize Manager Instructions
 
-```bash
-# Install dependencies
-npm init -y
-npm install xpander-sdk aws-sdk
+Your manager agent needs clear instructions on how to coordinate the team:
 
-# Create the manager agent file
-touch handler.js
-```
-
-Edit `handler.js` to implement the manager functionality:
-
-```javascript
-const { XpanderClient, ManagerAgent } = require('xpander-sdk');
-const AWS = require('aws-sdk');
-
-// Initialize the manager agent
-const managerAgent = new ManagerAgent({
-  name: 'CodingManagerAgent',
-  description: 'Orchestrates and monitors coding agents'
-});
-
-// Configure monitoring capabilities
-managerAgent.addMonitoring({
-  agentIds: ['agent-1-id', 'agent-2-id'],
-  metrics: ['status', 'performance', 'outputs']
-});
-
-// Configure task delegation
-managerAgent.addTaskDelegator({
-  taskTypes: {
-    'code-generation': 'agent-1-id',
-    'code-refactoring': 'agent-2-id',
-    'unknown': 'agent-1-id' // default agent
-  }
-});
-
-// Configure result aggregation
-managerAgent.addResultAggregator({
-  strategy: 'consensus', // or 'weighted', 'priority', etc.
-  conflictResolution: 'manager-decides'
-});
-
-// NLP handler for MCP integration
-managerAgent.addNLPIntentHandler((intent, entities) => {
-  // Map natural language intents to actions
-  switch(intent) {
-    case 'review_code':
-      return {
-        action: 'review_branch',
-        parameters: {
-          branchName: entities.branchName,
-          repoPath: entities.repoPath || process.env.DEFAULT_REPO_PATH
-        }
-      };
-    case 'delegate_task':
-      return {
-        action: 'delegate',
-        parameters: {
-          task: entities.task,
-          agentId: entities.agentId || null // auto-select if not specified
-        }
-      };
-    // Add more intents as needed
-    default:
-      return {
-        action: 'process_nlp',
-        parameters: { rawInput: intent }
-      };
-  }
-});
-
-module.exports.handleRequest = async (event) => {
-  try {
-    // Parse the incoming request
-    const body = JSON.parse(event.body || '{}');
-    
-    // Check if this is an MCP request (natural language)
-    if (body.type === 'mcp_request' && body.query) {
-      // Process the natural language query
-      const result = await managerAgent.processNaturalLanguage(body.query);
-      return {
-        statusCode: 200,
-        body: JSON.stringify(result)
-      };
-    }
-    
-    // Handle structured API requests
-    // ... existing code ...
-    
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'Request processed' })
-    };
-  } catch (error) {
-    console.error('Error processing request:', error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message })
-    };
-  }
-};
-```
-
-### 3. Deploy the Serverless Manager Agent
-
-Configure and deploy your serverless manager:
-
-```bash
-# Edit serverless.yml to define your functions and APIs
-nano serverless.yml
-```
-
-Example `serverless.yml`:
-```yaml
-service: manager-agent
-
-provider:
-  name: aws
-  runtime: nodejs14.x
-  region: us-west-2
-  environment:
-    AGENT_1_ID: ${env:AGENT_1_ID}
-    AGENT_2_ID: ${env:AGENT_2_ID}
-    XPANDER_API_KEY: ${env:XPANDER_API_KEY}
-    DEFAULT_REPO_PATH: ${env:DEFAULT_REPO_PATH}
-
-functions:
-  managerAgent:
-    handler: handler.handleRequest
-    events:
-      - http:
-          path: /task
-          method: post
-          cors: true
-      - http:
-          path: /mcp
-          method: post
-          cors: true
-```
-
-Deploy the serverless manager:
-```bash
-serverless deploy
-```
-
-### 4. Set Up MCP Integration in xpander.ai
-
-Instead of building a custom MCP connector, we'll use xpander.ai's built-in MCP hosting solution:
-
-1. Log in to the [xpander.ai console](https://app.xpander.ai)
-2. Navigate to "MCP Servers" in the sidebar
-3. Click "New MCP Server"
-4. Name your server "Manager Agent MCP"
-5. Select "Agent as MCP Server" in the type selector
-6. Select your deployed Manager Agent from the dropdown
-7. Click "Create MCP Server"
-
-Once created, you'll receive a unique MCP URL that contains your authentication details. This URL will connect your Cursor IDE to your manager agent through MCP.
-
-### 5. Configure Cursor IDE Integration
-
-Set up your Cursor IDE to connect to the manager agent via MCP:
-
-1. Open your Cursor settings or config file
-2. Add the MCP configuration:
+1. Return to the AI Agents section and select your manager agent
+2. Click on the "Instructions" tab
+3. Customize the instructions with the following:
 
 ```json
 {
-  "mcpServers": {
-    "managerAgent": {
-      "command": "npx",
-      "args": [
-        "xpander-mcp-remote",
-        "https://mcp.xpander.ai/your-unique-mcp-url/"
-      ]
-    }
-  }
+  "role": "Development Team Coordinator",
+  "goal": "Coordinate coding agents by assigning tasks based on their specialties and aggregating their results to provide complete solutions",
+  "general": "You are a specialized manager agent responsible for coordinating a team of coding agents. Follow these guidelines:\n\n1. Task Analysis:\n   - Analyze incoming user requests to determine required coding tasks\n   - Break complex requests into smaller, manageable subtasks\n   - Identify which agent would be best suited for each subtask\n\n2. Agent Selection:\n   - dev-agent-1 (Claude): Specializes in precise, validated code development\n   - dev-agent-2 (Llama): Focuses on creative and experimental approaches\n\n3. Task Delegation:\n   - Assign tasks to appropriate agents based on their specialties\n   - Provide clear instructions and context for each subtask\n   - Include relevant details and requirements\n\n4. Result Aggregation:\n   - Collect outputs from all agents\n   - Combine results into a cohesive solution\n   - Ensure consistency across different agents' contributions\n   - Format the final response for clarity\n\n5. Conflict Resolution:\n   - If agents provide conflicting approaches, evaluate trade-offs\n   - Make final decisions based on user requirements\n   - Explain reasoning for chosen solutions\n\nPrioritize efficient coordination while ensuring high-quality outputs that leverage each agent's strengths."
 }
 ```
 
-Replace `your-unique-mcp-url` with the URL provided by xpander.ai.
+## 🧪 Test Your Manager Agent
 
-### 6. Test the MCP Integration
+Now it's time to test your manager agent's ability to coordinate your coding agents:
 
-Test the integration by sending natural language queries to your manager agent through Cursor:
-
-1. Open Cursor and start a conversation with the AI
-2. Ask the manager agent to perform tasks using natural language:
+1. In the Workbench, use the Agent Tester (left pane) to test your manager agent
+2. Enter a test prompt that requires coordination, such as:
 
 ```
-Can you check the status of my coding agents?
+Create a weather data visualization application. I need both a reliable backend API and an innovative frontend.
 ```
 
+3. Watch as your manager agent:
+   - Analyzes the task
+   - Breaks it down into subtasks
+   - Delegates to the appropriate coding agents
+   - Aggregates the results
+
+<Frame>![](/images/screenshots/manager-test.png)</Frame>
+
+## 🚀 Deploy Your Manager Agent
+
+Deploy your manager agent to make it available for use:
+
+1. Click the **Deploy** button in the Workbench
+2. Once deployment is complete, your manager agent will be available via the API and other interfaces
+
+<Tip>
+  You can monitor your manager agent's activity in the Activity tab, where you'll see all interactions and delegations to your coding agents.
+</Tip>
+
+## 🔄 Connect to Your Development Workflow
+
+Your manager agent can now be used in your development workflow through multiple interfaces:
+
+### Chat Interface
+
+The simplest way to interact with your manager agent is through the built-in chat interface:
+
+1. From the AI Agents list, click on your manager agent
+2. Select the "Chat" tab
+3. Start sending requests that require coordination between your coding agents
+
+### SDK Integration
+
+For programmatic access, integrate your manager agent into your workflow using the xpander SDK:
+
+```python
+from xpander_sdk import XpanderClient
+import os
+
+# Initialize client
+xpander_client = XpanderClient(api_key=os.environ["XPANDER_API_KEY"])
+
+# Load your manager agent
+manager_agent = xpander_client.agents.get(agent_id="your-manager-agent-id")
+
+# Create a task for the manager
+manager_agent.add_task("""
+Create a user authentication system with a secure backend and an intuitive frontend.
+""")
+
+# Run the manager agent
+while not manager_agent.is_finished():
+    # The manager will automatically coordinate with your coding agents
+    # through the team configuration you set up
+    manager_agent.agent_loop_step()
+
+# Get the final aggregated result
+result = manager_agent.retrieve_execution_result()
+print(result.result)
 ```
-Review the code in my feature-login branch
-```
 
-```
-Which agent would be best for implementing a user authentication system?
-```
+## 🔍 Understanding Manager Delegation
 
-The manager agent should be able to understand these natural language queries, perform the requested actions through its API, and return the results.
+The manager agent follows a structured decision process when coordinating your coding agents:
 
-## Verification
+1. **Task Analysis**: The manager evaluates the incoming request to understand requirements
+2. **Task Decomposition**: Complex tasks are broken down into smaller, manageable subtasks
+3. **Agent Selection**: The manager determines which coding agent is best suited for each subtask
+4. **Delegation**: Tasks are assigned to appropriate agents with clear instructions
+5. **Result Collection**: The manager collects outputs from all agents
+6. **Result Aggregation**: The manager combines all outputs into a cohesive solution
+7. **Quality Assurance**: The manager reviews the combined solution for consistency and completeness
 
-To ensure your serverless manager agent and MCP integration are properly configured:
+This process happens automatically through the team configuration you've set up in the platform.
 
-1. Send a natural language query through Cursor to your manager agent
-2. Verify the manager understands the intent and performs the correct action
-3. Check that the manager returns a meaningful response through the MCP interface
+## 🚀 Next Steps
 
-## Goal
-
-✅ By the end of this module, you should have a fully operational Serverless Manager Agent that can orchestrate your coding agent fleet, monitor their performance, and integrate with your Cursor IDE via the Model Context Protocol (MCP).
-
-## Additional Resources
-
-- [Serverless Framework Documentation](https://www.serverless.com/framework/docs/)
-- [MCP Integration Guide](/docs/05-human-interfaces/04-mcp)
-- [Agent Orchestration Patterns](/docs/02-agent-builder/07-sequential-agent-teams)
-- [Natural Language Processing in Agents](/docs/02-agent-builder/01-add-tools-to-agents) 
+Now that you have a complete fleet with a manager agent coordinating your specialized coding agents, you're ready to tackle complex development tasks more efficiently! 

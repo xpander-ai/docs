@@ -1,413 +1,118 @@
 ---
 title: "Module 4: Extend the Manager — Enable Pull Request (PR) Automation"
-description: "Enhance your Manager Agent to automatically review and generate Pull Requests with natural language requests"
+description: "Enhance your Manager Agent to handle GitHub Pull Requests with visual configuration"
 icon: "code-branch"
 ---
 
-In this module, you'll extend your Manager Agent's capabilities to handle code review and Pull Request (PR) automation. By the end, your agent will be able to review code, generate PRs, and manage the entire PR lifecycle based on natural language requests.
+In this module, you'll extend your Manager Agent's capabilities to handle GitHub Pull Request (PR) operations. By the end, your agent will be able to create and list PRs based on natural language requests.
 
-## Learning Objectives
+🚀 You'll use the xpander.ai Workbench to add GitHub operations to your manager agent, configure them visually, and test them without writing any custom code!
+
+## 🎯 Learning Objectives
 
 By the end of this module, you will:
-- Implement code review capabilities in your Manager Agent
-- Create a system for automatic PR generation
-- Build workflows to maintain MCP context integrity across PRs
-- Enable MCP-based natural language interaction for PR automation
-- Use Cursor to trigger PR workflows with simple English requests
+- Extend your manager agent with GitHub PR operations
+- Configure PR creation and listing capabilities
+- Test your agent's ability to interact with GitHub repositories
+- Use natural language to trigger PR operations
 
-## Steps
+## 🔧 Access Your Manager Agent in the Workbench
 
-### 1. Implement Code Review Functionality
+First, access your manager agent in the xpander.ai platform:
 
-First, extend your manager agent to include code review capabilities:
+1. Go to [https://app.xpander.ai](https://app.xpander.ai) and sign in with your credentials
+2. In the left navigation menu, go to **AI Agents**
+3. Find and select your manager agent from the list
+4. Click on the **Builder** tab to open the visual editor
 
-```bash
-# Navigate to your manager agent directory
-cd manager-agent
+## ➕ Add GitHub PR Operations
 
-# Create a code review module
-touch code-review.js
+Now, let's add GitHub PR operations to your manager agent:
+
+1. Hover over an existing operation in the graph
+2. Click the **+** button that appears to add a new operation
+3. In the operation selection dialog, navigate to **GitHub** operations
+4. Select the following operations:
+   - **Create New Pull Request in Repository**
+   - **List Pull Requests in Repository**
+5. Click **Done** to add these operations to your agent
+
+<Frame>![](/images/screenshots/github-operations.png)</Frame>
+
+## ⚙️ Configure GitHub Operations
+
+Each GitHub operation needs to be properly configured:
+
+### Create New Pull Request in Repository
+
+1. Click on the **Create New Pull Request in Repository** operation in your graph
+2. Configure the following parameters:
+   - **Repository Owner**: The GitHub username or organization that owns the repository
+   - **Repository Name**: The name of the repository (without .git extension)
+   - **Head Branch**: The branch containing your changes
+   - **Base Branch**: The branch you want to merge into (usually "main" or "master")
+   - **Title**: The title for your pull request
+   - **Body**: The description for your pull request
+
+### List Pull Requests in Repository
+
+1. Click on the **List Pull Requests in Repository** operation in your graph
+2. Configure the following parameters:
+   - **Repository Owner**: The GitHub username or organization that owns the repository
+   - **Repository Name**: The name of the repository (without .git extension)
+   - **State**: The state of PRs to retrieve (open, closed, or all)
+
+## 📝 Update Manager Instructions
+
+Your manager agent needs updated instructions to handle GitHub operations:
+
+1. Click on the **Instructions** tab
+2. Add the following to your existing instructions:
+
+```json
+{
+  "general": "You are a specialized manager agent responsible for coordinating a team of coding agents and handling GitHub operations. In addition to your existing capabilities:\n\n1. GitHub PR Creation:\n   - When asked to create a PR, extract the repository, branch names, and PR details from the request\n   - Use the 'Create New Pull Request in Repository' operation with the appropriate parameters\n   - Confirm to the user when the PR has been created successfully\n\n2. GitHub PR Listing:\n   - When asked to list PRs, extract the repository information from the request\n   - Use the 'List Pull Requests in Repository' operation to retrieve PR data\n   - Format the PR information in a clear, readable format for the user\n\nFor all GitHub operations, ensure you have the necessary information (repo owner, repo name, branches, etc.) before proceeding. Ask the user for any missing details."
+}
 ```
 
-Implement the code review functionality in `code-review.js`:
+## 🚀 Deploy Your Updated Manager Agent
 
-```javascript
-const { XpanderClient } = require('xpander-sdk');
-const { execSync } = require('child_process');
+Deploy your changes to make the updated agent available:
 
-// Initialize code review system
-const codeReviewer = {
-  // Review code in a branch
-  reviewBranch: async (repoPath, branchName) => {
-    try {
-      // Get diff from main branch
-      const diff = execSync(`cd ${repoPath} && git diff main..${branchName}`).toString();
-      
-      // Use an LLM to review the code changes
-      const xpander = new XpanderClient({ apiKey: process.env.XPANDER_API_KEY });
-      const reviewAgent = await xpander.agents.get(process.env.REVIEW_AGENT_ID);
-      
-      // Send the diff for review
-      reviewAgent.add_task(input: `Review this code diff:\n\n${diff}`);
-      
-      // Process the review results
-      // ... implementation details ...
-      
-      return {
-        approved: true, // or false based on review
-        comments: [], // any review comments
-        suggestions: [] // suggested changes
-      };
-    } catch (error) {
-      console.error('Error reviewing branch:', error);
-      return { error: error.message, approved: false };
-    }
-  }
-};
+1. Click the **Deploy** button in the Workbench
+2. Once deployment is complete, your manager agent will have access to the new GitHub operations
 
-module.exports = codeReviewer;
-```
+## 🧪 Test Your PR Operations
 
-### 2. Create the PR Generation System
+Now let's test your agent's GitHub operations:
 
-Next, implement the PR generation functionality:
-
-```bash
-# Create a PR generator module
-touch pr-generator.js
-```
-
-Implement the PR generator in `pr-generator.js`:
-
-```javascript
-const { Octokit } = require('@octokit/rest');
-const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
-
-// Initialize PR generator
-const prGenerator = {
-  // Generate a PR for a branch
-  createPR: async (owner, repo, branchName, reviewResults) => {
-    try {
-      // Create PR title and body based on commits and review
-      const title = `Feature: ${branchName.replace(/-/g, ' ')}`;
-      
-      // Get commit messages for PR description
-      const exec = require('child_process').execSync;
-      const commits = exec(`cd ${repoPath} && git log main..${branchName} --pretty=format:"%s"`).toString();
-      
-      const body = `## Automated Pull Request
-      
-      ### Changes in this PR:
-      ${commits.split('\n').map(c => `- ${c}`).join('\n')}
-      
-      ### Review Results:
-      ${reviewResults.comments.map(c => `- ${c}`).join('\n')}
-      
-      This PR was automatically generated by the Manager Agent.`;
-      
-      // Create the PR
-      const response = await octokit.pulls.create({
-        owner,
-        repo,
-        title,
-        body,
-        head: branchName,
-        base: 'main'
-      });
-      
-      return {
-        success: true,
-        prNumber: response.data.number,
-        prUrl: response.data.html_url
-      };
-    } catch (error) {
-      console.error('Error creating PR:', error);
-      return { error: error.message, success: false };
-    }
-  }
-};
-
-module.exports = prGenerator;
-```
-
-### 3. Extend the Manager Agent with NLP Capabilities for PR Workflows
-
-Update your manager agent's handler to understand natural language requests for PR operations:
-
-```javascript
-// In handler.js, add the following to your NLP intent handler
-managerAgent.addNLPIntentHandler((intent, entities) => {
-  // Existing intent handlers...
-  
-  // Add PR-specific intents
-  switch(intent) {
-    // ... existing intents ...
-    
-    case 'review_branch':
-      return {
-        action: 'review_branch',
-        parameters: {
-          branchName: entities.branchName,
-          repoPath: entities.repoPath || process.env.DEFAULT_REPO_PATH,
-          owner: entities.owner || process.env.DEFAULT_OWNER,
-          repo: entities.repo || process.env.DEFAULT_REPO
-        }
-      };
-      
-    case 'create_pr':
-      return {
-        action: 'create_pr',
-        parameters: {
-          branchName: entities.branchName,
-          repoPath: entities.repoPath || process.env.DEFAULT_REPO_PATH,
-          owner: entities.owner || process.env.DEFAULT_OWNER,
-          repo: entities.repo || process.env.DEFAULT_REPO,
-          skipReview: entities.skipReview || false
-        }
-      };
-      
-    case 'review_and_pr':
-      return {
-        action: 'review_and_pr',
-        parameters: {
-          branchName: entities.branchName,
-          repoPath: entities.repoPath || process.env.DEFAULT_REPO_PATH,
-          owner: entities.owner || process.env.DEFAULT_OWNER,
-          repo: entities.repo || process.env.DEFAULT_REPO
-        }
-      };
-      
-    // ... other intents ...
-  }
-});
-
-// Update your request handler to process these new actions
-const codeReviewer = require('./code-review');
-const prGenerator = require('./pr-generator');
-
-module.exports.handleRequest = async (event) => {
-  try {
-    const body = JSON.parse(event.body || '{}');
-    
-    // Process MCP natural language requests
-    if (body.type === 'mcp_request' && body.query) {
-      const result = await managerAgent.processNaturalLanguage(body.query);
-      
-      // Process the parsed intent and entities
-      if (result.action === 'review_branch') {
-        const reviewResults = await codeReviewer.reviewBranch(
-          result.parameters.repoPath,
-          result.parameters.branchName
-        );
-        
-        return {
-          statusCode: 200,
-          body: JSON.stringify({
-            message: `Branch '${result.parameters.branchName}' review complete`,
-            approved: reviewResults.approved,
-            comments: reviewResults.comments
-          })
-        };
-      }
-      
-      if (result.action === 'create_pr') {
-        let reviewResults = { approved: true, comments: [] };
-        
-        // Optionally review the branch first
-        if (!result.parameters.skipReview) {
-          reviewResults = await codeReviewer.reviewBranch(
-            result.parameters.repoPath,
-            result.parameters.branchName
-          );
-          
-          if (!reviewResults.approved) {
-            return {
-              statusCode: 200,
-              body: JSON.stringify({
-                message: `Branch '${result.parameters.branchName}' did not pass review`,
-                approved: false,
-                comments: reviewResults.comments
-              })
-            };
-          }
-        }
-        
-        // Create the PR
-        const prResult = await prGenerator.createPR(
-          result.parameters.owner,
-          result.parameters.repo,
-          result.parameters.branchName,
-          reviewResults
-        );
-        
-        return {
-          statusCode: 200,
-          body: JSON.stringify({
-            message: `Pull request created for branch '${result.parameters.branchName}'`,
-            prNumber: prResult.prNumber,
-            prUrl: prResult.prUrl
-          })
-        };
-      }
-      
-      if (result.action === 'review_and_pr') {
-        // First review the branch
-        const reviewResults = await codeReviewer.reviewBranch(
-          result.parameters.repoPath,
-          result.parameters.branchName
-        );
-        
-        // If approved, create a PR
-        if (reviewResults.approved) {
-          const prResult = await prGenerator.createPR(
-            result.parameters.owner,
-            result.parameters.repo,
-            result.parameters.branchName,
-            reviewResults
-          );
-          
-          return {
-            statusCode: 200,
-            body: JSON.stringify({
-              message: `Branch '${result.parameters.branchName}' passed review and PR was created`,
-              prNumber: prResult.prNumber,
-              prUrl: prResult.prUrl
-            })
-          };
-        } else {
-          return {
-            statusCode: 200,
-            body: JSON.stringify({
-              message: `Branch '${result.parameters.branchName}' did not pass review`,
-              approved: false,
-              comments: reviewResults.comments
-            })
-          };
-        }
-      }
-    }
-    
-    // Handle structured API requests (for backward compatibility)
-    // ... existing code ...
-    
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'Request processed' })
-    };
-  } catch (error) {
-    console.error('Error processing request:', error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message })
-    };
-  }
-};
-```
-
-### 4. Implement MCP Context Integrity
-
-Create a module to maintain context across PR workflows:
-
-```bash
-# Create a context manager module
-touch context-manager.js
-```
-
-Implement the context manager:
-
-```javascript
-// Context manager to maintain MCP context across PRs
-const contextManager = {
-  // Store context for a PR
-  storePRContext: async (prNumber, mcpContext) => {
-    // Implementation to store context (e.g., in DynamoDB)
-    // ...
-  },
-  
-  // Retrieve context for a PR
-  getPRContext: async (prNumber) => {
-    // Implementation to retrieve context
-    // ...
-  },
-  
-  // Update context with new information
-  updatePRContext: async (prNumber, newContext) => {
-    // Implementation to update context
-    // ...
-  }
-};
-
-module.exports = contextManager;
-```
-
-### 5. Update Your Serverless Configuration
-
-Update your `serverless.yml` to include the new environment variables:
-
-```yaml
-# Add to your existing serverless.yml
-provider:
-  environment:
-    # Existing env vars...
-    DEFAULT_OWNER: ${env:DEFAULT_OWNER}
-    DEFAULT_REPO: ${env:DEFAULT_REPO}
-    DEFAULT_REPO_PATH: ${env:DEFAULT_REPO_PATH}
-    GITHUB_TOKEN: ${env:GITHUB_TOKEN}
-    REVIEW_AGENT_ID: ${env:REVIEW_AGENT_ID}
-```
-
-### 6. Deploy the Updated Manager Agent
-
-Deploy your changes:
-
-```bash
-serverless deploy
-```
-
-### 7. Using the PR Automation through Cursor MCP
-
-Now, you can interact with your PR automation functionality through natural language queries in Cursor:
-
-1. Open Cursor and engage with the AI assistant
-2. Use natural language to request PR actions:
-
-Examples of natural language queries:
+1. In the Agent Tester (left pane), try the following prompts:
 
 ```
-Can you review my code in the feature-login branch?
+Create a pull request from feature-login to main in my repository
 ```
 
 ```
-Please create a pull request for my user-profile branch
+List all open pull requests in my repository
 ```
 
-```
-Review the code in authentication-fix branch and create a PR if it looks good
-```
+2. Your agent should:
+   - Extract the necessary information from your request
+   - Execute the appropriate GitHub operation
+   - Return the results in a clear format
 
-```
-What were the issues found in my last code review?
-```
+<Tip>
+  Your agent will ask for any missing information needed to complete the GitHub operations, such as repository owner or name if they weren't provided in your initial request.
+</Tip>
 
-The MCP integration will parse these natural language requests, extract the relevant information (branch names, actions required), and trigger the appropriate functions in your manager agent. The results will be returned in a conversational format.
+## 🔄 Verify PR Operations
 
-## Verification
+To verify your PR operations are working correctly:
 
-To ensure your PR automation is working correctly via MCP:
+1. Create a real PR using your agent by providing actual repository and branch information
+2. Check your GitHub repository to confirm the PR was created with the correct details
+3. Ask your agent to list PRs and verify it returns the PR you just created
 
-1. Make changes in a development branch
-2. Ask Cursor (via MCP) to review the branch using natural language
-3. Verify that the agent correctly evaluates the code
-4. Ask Cursor to create a PR if the review passed
-5. Check GitHub to confirm the PR was created with the appropriate details
+## 🚀 Next Steps
 
-## Goal
-
-✅ By the end of this module, your Manager Agent should be able to autonomously review code branches and generate Pull Requests for approved changes through natural language requests in Cursor, all while maintaining context integrity across the entire workflow.
-
-## Additional Resources
-
-- [GitHub REST API Documentation](https://docs.github.com/en/rest)
-- [Code Review Best Practices](/docs/02-agent-builder/01-add-tools-to-agents)
-- [MCP Context Management](/docs/05-human-interfaces/04-mcp)
-- [Natural Language Processing for Code Tasks](/docs/05-human-interfaces/04-mcp) 
+Now that your manager agent can handle GitHub PR operations, you have a powerful tool for coordinating not just code development, but also code integration through pull requests. You can continue to extend your agent's capabilities by adding more GitHub operations or other development tools! 

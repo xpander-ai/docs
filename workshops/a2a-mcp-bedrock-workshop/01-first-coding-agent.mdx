@@ -36,7 +36,7 @@ cursor .
   ```
   
   If you need to upgrade, use the following methods:
-  - **macOS**: `brew install python@3.12` (with Homebrew) (Or `brew install python` to install the latest)
+  - **macOS**: `brew uninstall python  --ignore-dependencies && brew install python3 && python3 --version` 
   - **Windows**: Download the latest installer from [python.org](https://www.python.org/downloads/)
 </Note>
 
@@ -68,6 +68,8 @@ Create a `.env` file in the root directory with the following credentials:
 AWS_ACCESS_KEY_ID=your_aws_access_key
 AWS_SECRET_ACCESS_KEY=your_aws_secret_key
 AWS_SESSION_TOKEN=your_aws_session_token  # if using temporary credentials
+AWS_PROFILE=your_profile # if using AWS Profile without keys
+AWS_REGION=us-west-2
 XPANDER_API_KEY=your_xpander_api_key ## From the output above
 ```
 
@@ -149,65 +151,83 @@ python main.py
 Here's what you might see in the terminal as your agent runs:
 
 ```bash
+❯ python main.py
 Sandbox base directory: /Users/david/Developer/workshop/dev-agent-1/sandboxes
-loading agent 8f5253fc-7a01-4a6b-b3c0-b5b3f0ae5aa9
-/Users/david/Developer/workshop/dev-agent-1/agent_instructions.json
+loading agent 9002f816-1926-4556-a275-6e6fcc8bb86a
 🧠 Adding task to a new thread
-d8e0adaf-4555-4e0b-a310-053c8fbda1f9
-🧠 Thread id: d8e0adaf-4555-4e0b-a310-053c8fbda1f9
 🪄 Starting Agent Loop
+🧠 Thread id: 81b08c86-ca55-4b3e-a14d-af690f07846e
 --------------------------------------------------------------------------------
 🔍 Step 1
-running tool git_clone on agent 8f5253fc-7a01-4a6b-b3c0-b5b3f0ae5aa9 with execution 6a236df3-5ed4-489f-b25e-f1124a5d6f40
+running tool git_clone on agent 9002f816-1926-4556-a275-6e6fcc8bb86a with execution 1da0e645-068b-4fdf-8d71-762a5c880241
 🔦 Executing local tool: git_clone with generated payload: {'repo_url': 'https://github.com/xpander-ai/coding-agent'}
 ✅ git_clone
+🧠 Thread id: 81b08c86-ca55-4b3e-a14d-af690f07846e
+--------------------------------------------------------------------------------
+🔍 Step 2
+running tool describe_folders_and_files on agent 9002f816-1926-4556-a275-6e6fcc8bb86a with execution 1da0e645-068b-4fdf-8d71-762a5c880241
+🔦 Executing local tool: describe_folders_and_files with generated payload: {}
+✅ describe_folders_and_files
+🧠 Thread id: 81b08c86-ca55-4b3e-a14d-af690f07846e
+--------------------------------------------------------------------------------
+🔍 Step 3
+running tool read_file on agent 9002f816-1926-4556-a275-6e6fcc8bb86a with execution 1da0e645-068b-4fdf-8d71-762a5c880241
+🔦 Executing local tool: read_file with generated payload: {'file_path': 'coding-agent/README.md'}
+✅ read_file
+🧠 Thread id: 81b08c86-ca55-4b3e-a14d-af690f07846e
+--------------------------------------------------------------------------------
+🔍 Step 4
+running tool read_file on agent 9002f816-1926-4556-a275-6e6fcc8bb86a with execution 1da0e645-068b-4fdf-8d71-762a5c880241
+🔦 Executing local tool: read_file with generated payload: {'file_path': 'coding-agent/coding_agent.py'}
+✅ read_file
+🧠 Thread id: 81b08c86-ca55-4b3e-a14d-af690f07846e
+--------------------------------------------------------------------------------
+🔍 Step 5
+running tool read_file on agent 9002f816-1926-4556-a275-6e6fcc8bb86a with execution 1da0e645-068b-4fdf-8d71-762a5c880241
+🔦 Executing local tool: read_file with generated payload: {'file_path': 'coding-agent/main.py'}
+✅ read_file
+🧠 Thread id: 81b08c86-ca55-4b3e-a14d-af690f07846e
+--------------------------------------------------------------------------------
+🔍 Step 6
+running tool read_file on agent 9002f816-1926-4556-a275-6e6fcc8bb86a with execution 1da0e645-068b-4fdf-8d71-762a5c880241
+🔦 Executing local tool: read_file with generated payload: {'file_path': 'coding-agent/local_tools.py'}
+✅ read_file
+🧠 Thread id: 81b08c86-ca55-4b3e-a14d-af690f07846e
+--------------------------------------------------------------------------------
+🔍 Step 7
+running tool new_file on agent 9002f816-1926-4556-a275-6e6fcc8bb86a with execution 1da0e645-068b-4fdf-8d71-762a5c880241
+🔦 Executing local tool: new_file with generated payload: {'file_path': 'coding-agent-intro.md', 'content': '# 🤖 Autonomous Coding Agent\n\n## Introduction\n\nI am an autonomous Coding Agent built with the xpander-ai/coding-agent framework. As a self-driven software engineer, I can generate, execute, and manage code through structured function-calling and a smart agent loop. I operate independently to help you build, test, and deploy software with minimal human intervention.\n\n## Modular Architecture\n\nMy architecture is designed with modularity at its core:\n\n```\n┌───────────────┐         ┌──────────────┐         ┌────────────────────┐\n│ Any other     │         │ coding_agent ├─Native─►│  Any LLM provider  │\n│ Agent         ├─--A2A──►│              │         └────────────────────┘\n└───────────────┘         └──────────────┘\n                                 │\n                                 │ function‑calls (MCP)\n                                 ▼\n                          ┌─────────────────────────┐\n                          │  xpander.ai connectors  │───▶ Any Rest API\n                          └─────────────────────────┘\n                                 │\n                                 ▼\n                          ┌─────────────────────────┐\n                          │  Secure sandbox (FS)    │\n                          └─────────────────────────┘\n```\n\n### Key Components:\n\n1. **LLM-Agnostic Core**: I can work with any LLM provider (OpenAI, Anthropic, Bedrock, etc.) without modification.\n2. **Secure Sandbox**: All file operations occur in an isolated environment to prevent security risks.\n3. **Function-Call Interface**: I interact with systems through a standardized function-calling mechanism.\n4. **Agent-to-Agent Communication**: I can collaborate with other specialized agents in a coordinated workflow.\n\n## Schema-Driven Actions\n\nI operate using well-defined schemas for all actions:\n\n- **Tool Declarations**: Each function I can call is precisely defined with parameter types and requirements\n- **Model Context Protocol (MCP)**: I follow standardized protocols for interacting with external systems\n- **Validation Layers**: All inputs and outputs are validated against schemas to ensure correctness\n\nThis schema-driven approach ensures that my actions are predictable, secure, and compatible with various systems.\n\n## Multi-Step Planning\n\nI break down complex tasks into manageable steps:\n\n1. **Task Analysis**: I analyze the requirements to determine necessary actions\n2. **Dependency Mapping**: I identify dependencies between subtasks\n3. **Sequential Execution**: I execute steps in the optimal order\n4. **Error Handling**: I detect failures and adapt my approach accordingly\n\nThis planning capability allows me to tackle complex software engineering tasks that require multiple coordinated actions.\n\n## Context-Aware Memory\n\nMy memory system maintains state across interactions:\n\n- **Thread-Based Memory**: Each conversation maintains its own persistent state\n- **Contextual Awareness**: I remember previous actions and their outcomes\n- **File System Awareness**: I track changes to the codebase over time\n- **Execution History**: I maintain a record of all tool calls and their results\n\nThis memory system enables me to work on long-running tasks and maintain context across multiple interactions.\n\n## Connector-Based System Integration\n\nI integrate with external systems through a flexible connector architecture:\n\n- **Git Operations**: Clone repositories, commit changes, and push to branches\n- **File System Operations**: Create, read, update, and delete files securely\n- **API Integrations**: Connect to any REST or gRPC endpoint\n- **Testing Frameworks**: Execute and interpret test results\n\nThese connectors allow me to interact with real-world systems while maintaining security and reliability.\n\n## The Agent Loop: Reliable, Auditable, Deterministic Automation\n\nAt the heart of my operation is the agent loop, which enables reliable, auditable, and deterministic automation:\n\n1. **Input Processing**: I receive and interpret user instructions\n2. **Planning**: I determine the sequence of actions needed\n3. **Tool Selection**: I choose the appropriate tools for each step\n4. **Execution**: I call functions with validated parameters\n5. **Result Analysis**: I interpret the results of each action\n6. **Adaptation**: I adjust my approach based on outcomes\n7. **Communication**: I provide clear updates on progress and results\n\nThis structured loop ensures that my actions are:\n\n- **Reliable**: I follow consistent patterns and handle errors gracefully\n- **Auditable**: Every action is logged and can be reviewed\n- **Deterministic**: Given the same inputs, I produce consistent outputs\n\nBy combining these capabilities, I can autonomously handle complex software engineering tasks while maintaining the high standards expected in professional development environments.'}
+✅ new_file
+🧠 Thread id: 81b08c86-ca55-4b3e-a14d-af690f07846e
+--------------------------------------------------------------------------------
+🔍 Step 8
+running tool xpfinish-agent-execution-finished on agent 9002f816-1926-4556-a275-6e6fcc8bb86a with execution 1da0e645-068b-4fdf-8d71-762a5c880241
+✅ xpfinish-agent-execution-finished
+📝 Last message: {'toolResult': {'toolUseId': 'tooluse_20vLMJVATIOaHWVJmx477Q', 'content': [{'text': '"I\'ve successfully cloned the xpander-ai/coding-agent repository and created a comprehensive introduction file called \'coding-agent-intro.md\'. This file introduces the Autonomous Coding Agent as a self-driven software engineer capable of generating, executing, and managing code through structured function-calling and a smart agent loop.\\n\\nThe introduction covers:\\n\\n1. The agent\'s modular architecture that works with any LLM provider\\n2. Schema-driven actions that ensure predictable and secure operations\\n3. Multi-step planning capabilities for complex tasks\\n4. Context-aware memory system that maintains state across interactions\\n5. Connector-based system integration for working with external systems\\n6. The agent loop that enables reliable, auditable, and deterministic automation\\n\\nThe file is ready for review in the repository. As requested, I did not commit any changes."'}]}}
 ```
-
-The agent will proceed through several steps, analyzing the repository and performing actions based on its instructions.
 
 After completing various tasks (like creating a markdown introduction file), you'll see the final agent response:
 
 ```
-🧠 AI Agent response: I've created a comprehensive introduction to the Xpander Coding Agent framework. The document has been saved as `coding-agent-intro.md` in your workspace.
+🧠 AI Agent response: I've successfully cloned the xpander-ai/coding-agent repository and created a comprehensive introduction file called 'coding-agent-intro.md'. This file introduces the Autonomous Coding Agent as a self-driven software engineer capable of generating, executing, and managing code through structured function-calling and a smart agent loop.
 
 The introduction covers:
 
-- My identity as an autonomous Coding Agent built with the xpander-ai/coding-agent framework
-- The modular architecture featuring the core agent system, secure sandbox, and tool library
-- Key capabilities including schema-driven actions, multi-step planning, and context-aware memory
-- How the connector-based system integration works with Git, AWS Bedrock, filesystem, and thread isolation
-- An explanation of the agent loop that enables reliable, auditable, and deterministic automation
+1. The agent's modular architecture that works with any LLM provider
+2. Schema-driven actions that ensure predictable and secure operations
+3. Multi-step planning capabilities for complex tasks
+4. Context-aware memory system that maintains state across interactions
+5. Connector-based system integration for working with external systems
+6. The agent loop that enables reliable, auditable, and deterministic automation
 
-This document provides a clear overview of how I function as a self-driven software engineer capable of generating, executing, and managing code through structured function-calling and intelligent agent loops.
-
-Note: I attempted to commit the changes to a new branch named 'coding-agent-intro', but the commit operation wasn't successful. The file is still available in your local workspace.
+The file is ready for review in the repository. As requested, I did not commit any changes.
 ```
 
 You can now interact with your agent through the terminal by typing messages and questions!
 
-## 🌐 Stream Events from the Cloud
+## 🌐 Stream Events from the Cloud to Your Local Agent
 
 Now let's set up your agent to receive events from the xpander.ai cloud platform. This allows you to interact with your agent through the web UI while processing happens on your local machine.
-
-### Modify the Event Handler
-
-Edit the `xpander_handler.py` file to forward cloud events to your local agent:
-
-```python
-## ... rest of code
-from xpander_utils.events import XpanderEventListener, AgentExecutionResult, AgentExecution, ExecutionStatus
-from coding_agent import CodingAgent
-coding_agent = CodingAgent(agent=agent)
-## ... rest of code
-
-def on_execution_request(execution_task: AgentExecution) -> AgentExecutionResult:
-    ## ... rest of code
-    agent.init_task(execution=execution_task.model_dump())    
-    execution_status = coding_agent._agent_loop()
-    return AgentExecutionResult(result=execution_status.result,is_success=True if execution_status.status == ExecutionStatus.COMPLETED else False)
-```
-
-### Run the Event Handler
 
 Start the event handler to listen for cloud events:
 
@@ -215,19 +235,30 @@ Start the event handler to listen for cloud events:
 python xpander_handler.py
 ```
 
-You should see output similar to:
-
-```bash
-loading agent 8f5253fc-7a01-4a6b-b3c0-b5b3f0ae5aa9
-https://app.xpander.ai/agents/8f5253fc-7a01-4a6b-b3c0-b5b3f0ae5aa9
-```
-
-### Access Your Agent in the Web UI
-
-1. Navigate to the URL displayed in the terminal output (e.g., `https://app.xpander.ai/agents/8f5253fc-7a01-4a6b-b3c0-b5b3f0ae5aa9`)
+1. Navigate to the URL displayed in the terminal output (e.g., `https://app.xpander.ai/agents/your-agent-id`)
 2. You'll see your agent in the xpander.ai web interface
 3. Try sending a message like "Hi" to your agent
 4. Watch as the request is processed by your local machine and the response appears in the web UI
+
+Did you notice that it returned "Your execution result"? That's a static response configured in the xpander_handler.py file.
+
+Now, let's modify the handler to return the real agent response by updating the on_execution_request function:
+
+```python
+# Initialize agent instance
+coding_agent = CodingAgent(agent=agent)
+
+def on_execution_request(execution_task: AgentExecution) -> AgentExecutionResult:
+    agent.init_task(execution=execution_task.model_dump())
+    execution_status = coding_agent._agent_loop()
+    
+    return AgentExecutionResult(
+        result=execution_status.result,
+        is_success=True if execution_status.status == ExecutionStatus.COMPLETED else False,
+    )
+```
+
+After making this change, you will see the following result:
 
 <Frame>![](/images/screenshots/2025-04-29-10-09-32.png)</Frame>
 
@@ -240,6 +271,32 @@ Deploy the agent to the cloud:
 ```bash
 xpander deploy
 ```
+
+## 🔑 Configure Cloud Environment Variables
+
+Congratulations on deploying your agent to the cloud! While the deployment is in progress, let's configure the necessary environment variables in the xpander vault to ensure your agent can run properly in the cloud environment.
+
+1. Navigate to the xpander.ai platform and sign in
+2. Go to settings > Environment Secrets
+3. Add the following keys with their respective values:
+
+```
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AWS_SESSION_TOKEN=your_aws_session_token  # if using temporary credentials
+```
+
+These credentials will allow your cloud-deployed agent to access Amazon Bedrock services securely without storing sensitive information in your code.
+
+<Tip>
+  Configuring these environment variables in the vault is crucial for cloud deployment. Your local .env file is not uploaded to the cloud for security reasons, so these values must be configured separately in the xpander platform.
+</Tip>
+
+Once deployment is complete and environment variables are configured, your agent will be fully operational in the cloud, allowing others to interact with it through the web interface.
+
+<Tip>
+  run `xpander logs` to stream logs from the remote server to your terminal
+</Tip>
 
 ## 🔄 Next Steps
 

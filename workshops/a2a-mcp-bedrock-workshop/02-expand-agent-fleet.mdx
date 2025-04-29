@@ -1,218 +1,137 @@
 ---
-title: "Module 2: Expand Your Fleet — Build and Configure Two Coding Agents"
-description: "Create multiple coding agents with different LLM models and deploy using the CLI"
+title: "Module 2: Expand Your Agent Fleet"
+description: "Create a second coding agent with a different LLM model and custom instructions"
 icon: "users"
 ---
 
-In this module, you'll scale up from a single agent to a small fleet by duplicating your base agent, configuring one to use the Llama model instead of Claude, and deploying using the xpander CLI.
+In this module, you'll expand your agent fleet by creating a second coding agent that uses the Llama model rather than Claude. This will give you experience working with multiple agents and different LLM configurations.
 
-## Learning Objectives
+🚀 You'll duplicate your existing agent setup, customize it with new instructions, configure it to use Llama, and deploy it to the cloud. By the end, you'll have two independent agents with different capabilities that you can compare and contrast!
 
-By the end of this module, you will:
-- Create multiple instances of your coding agent
-- Configure an agent to work with the Llama model
-- Install and use the xpander CLI for agent deployment
-- Ensure agents can operate independently but predictably
+## 🔄 Duplicate Your Agent Setup
 
-## Steps
-
-### 1. Duplicate the Base Agent
-
-First, let's create a copy of your base agent to form a small fleet of specialized agents:
+First, let's create a copy of your first agent to build upon:
 
 ```bash
-# Create a new directory for your Llama agent
-mkdir llama-agent
+# Navigate back to your workshop directory if needed
+cd ~/workshop
 
-# Copy the base agent files
-cp -r coding-agent/* llama-agent/
+# Create a new directory for your second agent
+mkdir dev-agent-2
 
-# Navigate to the new agent directory
-cd llama-agent
+# Copy the agent files, excluding the virtual environment
+cp -r dev-agent-1/agent_instructions.json dev-agent-1/coding_agent.py dev-agent-1/main.py dev-agent-1/local_tools.py dev-agent-1/requirements.txt dev-agent-1/xpander_handler.py dev-agent-1/sandbox.py dev-agent-1/.env dev-agent-2/ 
+
+# Change to the new directory
+cd dev-agent-2
+
+cursor .
 ```
 
-### 2. Configure the Agent to Use Llama Model
-
-Let's modify the `coding_agent.py` file to use the Llama model instead of Claude:
+Update the requirement.txt to the following
 
 ```bash
-# Open the coding_agent.py file in your editor
-nano coding_agent.py  # or use any text editor
+xpander-sdk
+xpander-utils
+boto3
+python-dotenv
 ```
 
-Look for the section where the LLM provider is configured, and modify it to use Llama:
-
-```python
-# Original code using Claude
-"""
-response = anthropic_client.messages.create(
-    model="claude-3-opus-20240229",
-    max_tokens=4000,
-    temperature=0.2,
-    messages=agent.messages,
-    tools=agent.get_tools(llm_provider=LLMProvider.ANTHROPIC),
-    tool_choice=agent.tool_choice,
-)
-"""
-
-# Replace with Llama model integration
-from transformers import LlamaForCausalLM, LlamaTokenizer
-
-# Initialize Llama model
-tokenizer = LlamaTokenizer.from_pretrained("meta-llama/Llama-2-70b-chat-hf")
-model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-70b-chat-hf")
-
-# Modify the agent execution loop
-while not agent.is_finished():
-    # Format the messages for Llama
-    formatted_prompt = format_messages_for_llama(agent.messages)
-    
-    # Get response from Llama
-    inputs = tokenizer(formatted_prompt, return_tensors="pt")
-    outputs = model.generate(**inputs, max_length=4000)
-    llm_response = tokenizer.decode(outputs[0])
-    
-    # Process the response
-    # Note: You'll need to implement a parser for Llama's tool calling format
-    parsed_response = parse_llama_response(llm_response)
-    
-    # Add response to agent messages
-    agent.add_messages(parsed_response)
-    
-    # Extract and run tool calls
-    tool_calls = extract_tool_calls_from_llama(parsed_response)
-    agent.run_tools(tool_calls=tool_calls)
+# Create a fresh virtual environment and install dependencies
+python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
 ```
 
-Also update the tool extraction function to handle Llama's formatting:
+<Warning>
+  Never copy the `.venv` directory between projects. Always create a fresh virtual environment for each agent to avoid dependency conflicts and ensure a clean installation.
+</Warning>
 
-```python
-def extract_tool_calls_from_llama(llm_response):
-    # Custom implementation to extract tool calls from Llama's output format
-    # This is a simplified version - you'll need to adapt based on Llama's actual output
-    tool_calls = []
-    
-    # Parse the response to find tool calls
-    # ...
-    
-    return tool_calls
-```
+## ✏️ Create Different Agent Instructions
 
-### 3. Install the xpander CLI
+Edit the `agent_instructions.json` file to give your new agent a different personality and focus (or ask cursor):
 
-Now, let's install and set up the xpander CLI to deploy our agents:
-
-```bash
-# Install the xpander CLI globally
-npm install -g xpander-cli
-
-# Configure the CLI with your credentials
-xpander configure
-```
-
-You'll need to provide your xpander API key during configuration. Once configured, you can verify the setup:
-
-```bash
-xpander profile list
-```
-
-### 4. Prepare the Agents for Deployment
-
-Create a deployment configuration file in each agent directory:
-
-For the original agent (in the `coding-agent` directory):
-```bash
-cd ../coding-agent
-cat > agent-config.json << EOF
+```json
 {
-  "name": "Claude Coding Agent",
-  "description": "A coding agent powered by Claude 3 Opus for general development tasks",
-  "model": "claude-3-opus-20240229",
-  "temperature": 0.2,
-  "specialties": ["code-generation", "refactoring", "bug-fixing"]
+  "role": "Experimental Code Explorer and Innovator",
+  "goal": "Help users explore creative coding approaches, generate experimental prototypes, and implement innovative solutions that push boundaries",
+  "general": "You are a coding agent specializing in creative and experimental approaches to software development. Follow these guidelines when assisting users:\n\n1. Ideation and Exploration:\n   - Suggest multiple possible approaches to problems\n   - Embrace experimental technologies and techniques\n   - Help users explore the bleeding edge of development\n\n2. Creative Implementation:\n   - Generate code that demonstrates novel approaches\n   - Balance innovation with practicality\n   - Provide clear explanations of experimental techniques\n\n3. Rapid Prototyping:\n   - Focus on quick, functional prototypes over perfect code\n   - Use modern frameworks and libraries that accelerate development\n   - Encourage iterative development and testing\n\n4. Risk Assessment:\n   - Clearly identify experimental features and their potential risks\n   - Suggest fallback approaches when appropriate\n   - Highlight areas where established patterns might be more suitable\n\n5. Learning Encouragement:\n   - Explain the rationale behind innovative approaches\n   - Point users to resources for emerging technologies\n   - Foster a mindset of curiosity and continuous learning\n\nAs an experimental coding agent, prioritize creativity and innovation while still delivering functional solutions."
 }
-EOF
 ```
 
-For the Llama agent (in the `llama-agent` directory):
-```bash
-cd ../llama-agent
-cat > agent-config.json << EOF
-{
-  "name": "Llama Coding Agent",
-  "description": "A coding agent powered by Llama for creative coding solutions",
-  "model": "meta-llama/Llama-2-70b-chat-hf",
-  "temperature": 0.7,
-  "specialties": ["prototyping", "creative-coding", "experimental-features"]
-}
-EOF
-```
+## 🔧 Configure for Llama Model
 
-### 5. Deploy the Agents Using the CLI
-
-Now, let's deploy both agents using the xpander CLI:
-
-For the Claude agent:
-```bash
-cd ../coding-agent
-xpander agent deploy --config agent-config.json
-```
-
-For the Llama agent:
-```bash
-cd ../llama-agent
-xpander agent deploy --config agent-config.json
-```
-
-After deployment, the CLI will provide you with agent IDs. Make sure to save these for future reference:
+Now, let's create a new agent using the xpander CLI:
 
 ```bash
-echo "CLAUDE_AGENT_ID=your_claude_agent_id" >> ../.env
-echo "LLAMA_AGENT_ID=your_llama_agent_id" >> ../.env
+xpander agent new
 ```
 
-### 6. Verify the Deployments in the xpander WebUI
-
-1. Log into [app.xpander.ai](https://app.xpander.ai)
-2. Navigate to the "AI Agents" section
-3. Verify that both agents are listed with their correct configurations
-4. Click on each agent to check their settings and ensure they match your configurations
-
-### 7. Test Independent Operation
-
-Verify that each agent can work independently:
-
-For the Claude agent:
-```bash
-cd ../coding-agent
-python task_runner.py --task "Create a sorting algorithm with O(n log n) time complexity" --agent_id $CLAUDE_AGENT_ID
-```
-
-For the Llama agent:
-```bash
-cd ../llama-agent
-python task_runner.py --task "Design a creative visualization for a social network graph" --agent_id $LLAMA_AGENT_ID
-```
-
-## Verification
-
-To ensure your agent fleet is properly configured:
-
-1. Run the same code task on both agents
-2. Compare the outputs to observe the behavioral differences between Claude and Llama
-3. Verify that both agents are visible in the xpander webUI
-4. Check that the CLI can list both deployed agents:
+You'll see the agent creation wizard:
 
 ```bash
-xpander agent list
+✨ Agent Creation Wizard ✨
+──────────────────────────────────────────────────
+Create a powerful AI agent for your organization
+──────────────────────────────────────────────────
+
+
+? What name would you like for your agent? dev-agent-2
+⠋ Creating agent "dev-agent-2"...Creating agent in organization: 8d185373-8b24-47a7-8607-3e9036b968bb...
+✔ Agent "dev-agent-2" created successfully!
+
+🚀 Your Agent is Ready!
+──────────────────────────────────────────────────
+Name:     dev-agent-2
+ID:       24fcf4ff-de9a-4a5e-94e0-fdd1b5a05428
+Icon:     🚀
+Model:    openai/gpt-4o
+──────────────────────────────────────────────────
+
+✅ Agent creation complete!
+
+? Do you want to load this agent into your current workdir? Yes
+
+✨ Initializing agent
+────────────────────────────────────────────────────────────
+ℹ Agent dev-agent-2 retrieved successfully
+? The current directory is not empty. Proceeding will override 'requirements.txt' and add or update xpander-related files (xpander_config.json, 
+agent_instructions.json, etc). Yes
+✔ Agent initialized successfully
 ```
 
-## Goal
+Next, you need to edit the `coding_agent.py`
 
-✅ By the end of this module, you should have two fully functional coding agents with different behaviors, one using Claude and one using Llama, both deployed through the xpander CLI and ready for orchestration.
+Replace the model to the meta llama 4 model
 
-## Additional Resources
+MODEL_ID = "meta.llama4-maverick-17b-instruct-v1:0"
 
-- [xpander CLI Documentation](/docs/01-get-started/02-getting-started-02-cli)
-- [LLM Models Guide](/docs/01-get-started/03-llm-models)
-- [Agent Configuration Reference](/docs/02-agent-builder/05-agent-settings) 
+## 🧪 Test Your Second Agent Locally
+
+Just like with your first agent, you can test this one locally:
+
+```bash
+python main.py
+```
+
+<Note>
+  The Llama model has different strengths compared to Claude. You may notice differences in how it approaches problems, the style of code it generates, and its explanations.
+</Note>
+
+
+Verify that the handler is working correctly by running `python xpander_handler.py` and sending a message from the UI. 
+
+Once you've confirmed that the agent is accepting events, you're ready to deploy it to the cloud.
+
+## 🚀 Deploy to the Cloud
+
+Deploy your second agent to the cloud:
+
+```bash
+xpander deploy
+```
+
+<Tip>
+  run `xpander logs` to stream logs from the remote server to your terminal
+</Tip>
+
+
+Now that you have two agents ready for your commands, the next step is to build a manager for them!
