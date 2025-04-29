@@ -149,6 +149,85 @@ Note: I attempted to commit the changes to a new branch named 'coding-agent-intr
 
 You can now interact with your agent through the terminal by typing messages and questions!
 
+## Stream Events from the Cloud
+
+Now let's set up your agent to receive events from the xpander.ai cloud platform. This allows you to interact with your agent through the web UI while processing happens on your local machine.
+
+### Modify the Event Handler
+
+Edit the `xpander_handler.py` file to forward cloud events to your local agent:
+
+```python
+import json
+from xpander_utils.events import XpanderEventListener, AgentExecutionResult, AgentExecution, ExecutionStatus
+from xpander_sdk import XpanderClient
+from coding_agent import CodingAgent
+
+# === Load Configuration ===
+# Reads API credentials and organization context from a local JSON file
+with open('xpander_config.json', 'r') as config_file:
+    xpander_config: dict = json.load(config_file)
+
+# === Initialize Event Listener ===
+# Create a listener to subscribe to execution requests from specified agent(s)
+listener = XpanderEventListener(**xpander_config)
+
+# initialize xpander_client
+xpander = XpanderClient(api_key=xpander_config.get("api_key"))
+
+# initialize agent instance
+agent = xpander.agents.get(agent_id=xpander_config.get("agent_id"))
+coding_agent = CodingAgent(agent=agent)
+# === Define Execution Handler ===
+def on_execution_request(execution_task: AgentExecution) -> AgentExecutionResult:
+    """
+    Callback triggered when an execution request is received from a registered agent.
+    
+    Args:
+        execution_task (AgentExecution): Object containing execution metadata and input.
+
+    Returns:
+        AgentExecutionResult: Object describing the output of the execution.
+    """
+    # You can access the execution input via `execution_task.input`
+    # Example: Extracting a specific input field
+    # user_input = execution_task.input.get("user_prompt", "")
+    
+    agent.init_task(execution=execution_task.model_dump())    
+    execution_status = coding_agent._agent_loop()
+    return AgentExecutionResult(result=execution_status.result,is_success=True if execution_status.status == ExecutionStatus.COMPLETED else False)
+
+# === Register Callback ===
+# Attach your custom handler to the listener
+listener.register(on_execution_request=on_execution_request)
+```
+
+### Run the Event Handler
+
+Start the event handler to listen for cloud events:
+
+```bash
+python xpander_handler.py
+```
+
+You should see output similar to:
+
+```
+loading agent 8f5253fc-7a01-4a6b-b3c0-b5b3f0ae5aa9
+https://app.xpander.ai/agents/8f5253fc-7a01-4a6b-b3c0-b5b3f0ae5aa9
+```
+
+### Access Your Agent in the Web UI
+
+1. Navigate to the URL displayed in the terminal output (e.g., `https://app.xpander.ai/agents/8f5253fc-7a01-4a6b-b3c0-b5b3f0ae5aa9`)
+2. You'll see your agent in the xpander.ai web interface
+3. Try sending a message like "Hi" to your agent
+4. Watch as the request is processed by your local machine and the response appears in the web UI
+
+<Frame>![](/images/screenshots/2025-04-29-10-09-32.png)</Frame>
+
+This setup creates a powerful hybrid system where your agent can be accessed through the cloud interface while all the processing happens securely on your local machine.
+
 ## Next Steps
 
 Now that you've built your first coding agent, you're ready to expand your agent fleet in the [next module](/workshops/a2a-mcp-bedrock-workshop/02-expand-agent-fleet). 
