@@ -177,11 +177,14 @@ Now let's set up your agent to receive events from the xpander.ai cloud platform
 Edit the `xpander_handler.py` file to forward cloud events to your local agent:
 
 ```python
+## ... rest of code
+from xpander_utils.events import XpanderEventListener, AgentExecutionResult, AgentExecution, ExecutionStatus
 from coding_agent import CodingAgent
 coding_agent = CodingAgent(agent=agent)
-# === Define Execution Handler ===
+## ... rest of code
+
 def on_execution_request(execution_task: AgentExecution) -> AgentExecutionResult:
-    ...
+    ## ... rest of code
     agent.init_task(execution=execution_task.model_dump())    
     execution_status = coding_agent._agent_loop()
     return AgentExecutionResult(result=execution_status.result,is_success=True if execution_status.status == ExecutionStatus.COMPLETED else False)
