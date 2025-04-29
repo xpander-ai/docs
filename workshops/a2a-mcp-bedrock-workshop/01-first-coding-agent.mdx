@@ -1,154 +1,154 @@
 ---
-title: "Module 1: Build and Understand Your First Coding Agent"
+title: "Build Your First Coding Agent"
 description: "Set up a local coding agent with MCP compliance and understand its core capabilities"
 icon: "code"
 ---
 
-In this first module, you'll clone the base coding agent repository, explore its capabilities, and understand how it integrates with xpander.ai's webUI for monitoring and control.
+In this module, you'll build your first autonomous coding agent using xpander.ai's framework. This agent will be able to understand and manipulate code, helping you automate development tasks.
 
-## Learning Objectives
+## Setup Your Development Environment
 
-By the end of this module, you will:
-- Have a functioning local coding agent
-- Understand its code generation capabilities
-- Know how to set up Git commit automation
-- Grasp how the agent handles event triggers
-- Monitor agent activities through the xpander.ai webUI
-
-## Steps
-
-### 1. Clone the Base Coding Agent Repository
-
-Start by cloning the base coding agent repository that will serve as the foundation for this workshop:
+Let's start by creating a workspace directory and cloning the base agent repository:
 
 ```bash
+mkdir workshop 
+cd workshop/
 git clone https://github.com/xpander-ai/coding-agent.git
-cd coding-agent
+mv coding-agent dev-agent-1
 ```
 
-### 2. Set Up the Environment
-
-Install the required dependencies and configure your environment:
+Open the project in Cursor IDE:
 
 ```bash
-# Create and activate a virtual environment (recommended)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Set up environment variables
-cp .env.example .env
-# Edit the .env file with your API keys
+cursor .
 ```
 
-Open the `.env` file and add your API keys:
+## Configure Your Local Environment
+
+Inside the Cursor terminal, set up your Python environment and install dependencies:
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
 ```
+
+Create a `.env` file in the root directory with the following credentials:
+
+```
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AWS_SESSION_TOKEN=your_aws_session_token  # if using temporary credentials
 XPANDER_API_KEY=your_xpander_api_key
-OPENAI_API_KEY=your_openai_api_key
 ```
 
-### 3. Explore the Agent's Core Structure
+<Tip>
+  Make sure you have your AWS credentials set up with Amazon Bedrock access and an xpander.ai API key ready for this step.
+</Tip>
 
-Open the main agent file `coding_agent.py` to understand how it's structured:
+## Create Your Agent
 
-```python
-# Key components to notice in coding_agent.py:
-# 1. Initialization of the agent
-# 2. Tool definitions
-# 3. Agent execution loop
-# 4. Event handling
-# 5. Git integration
+Now let's use the xpander CLI to create a new agent:
+
+```bash
+xpander agent new
 ```
 
-### 4. Run the Coding Agent
+Complete the agent creation wizard:
 
-Start the coding agent:
+```
+✨ Create New Agent
+────────────────────────────────────────────────────────────
+? Enter a name for your new agent: dev-agent-1
+⠋ Creating agent "dev-agent-1"...Creating agent in organization: 8d185373-8b24-47a7-8607-3e9036b968bb...
+✔ Agent created successfully
+? Would you like to personalize your agent now? No
+⠋ Deploying agent...Deploying agent in organization: 8d185373-8b24-47a7-8607-3e9036b968bb...
+⠋ Deploying agent...API Error (404): Unknown error
+✔ Agent deployed successfully
+
+✅ Agent created and ready to use!
+? Would you like to locally initialize your agent now? Yes
+
+
+✨ Initializing agent
+────────────────────────────────────────────────────────────
+ℹ Agent dev-agent-1 retrieved successfully
+? The current directory is not empty. Proceeding will override 'requirements.txt' and add or update xpander-related files (xpander_config.json, agent_instructions.json, 
+etc). Yes
+✔ Agent initialized successfully
+? Would you like to deploy your agent now? No
+```
+
+## Customize Agent Instructions
+
+Now ask Cursor to help you create effective agent instructions:
+
+```
+Write instructions to my agent that is capable of the tools listed in local_tools.py and carefully validate the code before commiting it.
+```
+
+Copy the generated instructions into the `agent_instructions.json` file. Here's an example of what your instructions might look like:
+
+```json
+{
+  "role": "Code Development and Validation Assistant",
+  "goal": "Help users clone repositories, inspect code, make precise edits, create new files, and commit changes to Git with thorough validation to ensure code quality and correctness",
+  "general": "You are a specialized development agent with access to Git operations and file management tools. Follow these guidelines when assisting users:\n\n1. Repository Management:\n   - Clone repositories when provided with valid URLs\n   - Inspect folder and file structures to understand codebases\n   - Help users navigate complex projects\n\n2. Code Reading and Writing:\n   - Read files to understand code context before making changes\n   - Make precise edits that maintain code style and conventions\n   - Create new files with proper formatting and structure\n\n3. Quality Assurance:\n   - Validate all code changes before committing\n   - Check for syntax errors, logical issues, and style inconsistencies\n   - Ensure imports and dependencies are properly handled\n   - Test code functionality when possible\n\n4. Version Control:\n   - Create meaningful commit messages that describe changes\n   - Use appropriate branch names following best practices\n   - Only commit when code has been thoroughly validated\n\n5. Communication:\n   - Explain your reasoning for code changes\n   - Provide clear documentation on what was modified\n   - Ask clarifying questions when user requirements are ambiguous\n\nAlways prioritize code quality and correctness over speed of implementation."
+}
+```
+
+## Run Your Agent Locally
+
+Now it's time to test your agent:
 
 ```bash
 python main.py
 ```
 
-This will initialize your agent and register it with the xpander.ai platform.
+<Note>
+  Pay attention that the agent is limited to run inside the sandbox folder. To see files generated by the agent, navigate to the `sandboxes` folder and look for the thread ID from the terminal output.
+</Note>
 
-### 5. Explore Core Capabilities in the Web UI
+## Example Agent Interaction
 
-Now, let's check out how the agent's capabilities are displayed in the xpander.ai webUI:
+Here's what you might see in the terminal as your agent runs:
 
-1. Log into [app.xpander.ai](https://app.xpander.ai)
-2. Navigate to the "AI Agents" section
-3. Find your newly registered agent in the list
-
-#### Code Generation Workflows
-
-In the webUI, explore the agent's code generation capabilities:
-
-1. Click on your agent to open its details
-2. Navigate to the "Activity" tab to see past code generation activities
-3. Examine a recent code generation job to see:
-   - Input requirements
-   - Generated code solutions
-   - Any optimization steps taken
-
-#### Git Commit Automation
-
-Examine how the agent handles Git operations:
-
-1. In the "Activity" tab, find a Git operation
-2. See how the agent:
-   - Creates new branches for features
-   - Formats commit messages
-   - Manages the Git workflow
-
-### 6. Understand Event-Driven Architecture
-
-The agent is designed with an event-driven architecture. In the webUI:
-
-1. Go to the "Settings" tab of your agent
-2. Navigate to the "Events" section
-3. Review the registered event types:
-   - IDE events
-   - API events
-   - System events
-
-### 7. Monitor Real-Time Activities
-
-Set up monitoring for your agent:
-
-1. In the agent details page, navigate to the "Monitoring" tab
-2. Enable real-time monitoring
-3. Run a simple task on your local agent:
-
-```bash
-python task_runner.py --task "Generate a simple Python function to calculate Fibonacci numbers"
+```
+Sandbox base directory: /Users/david/Developer/workshop/dev-agent-1/sandboxes
+loading agent 8f5253fc-7a01-4a6b-b3c0-b5b3f0ae5aa9
+/Users/david/Developer/workshop/dev-agent-1/agent_instructions.json
+🧠 Adding task to a new thread
+d8e0adaf-4555-4e0b-a310-053c8fbda1f9
+🧠 Thread id: d8e0adaf-4555-4e0b-a310-053c8fbda1f9
+🪄 Starting Agent Loop
+--------------------------------------------------------------------------------
+🔍 Step 1
+running tool git_clone on agent 8f5253fc-7a01-4a6b-b3c0-b5b3f0ae5aa9 with execution 6a236df3-5ed4-489f-b25e-f1124a5d6f40
+🔦 Executing local tool: git_clone with generated payload: {'repo_url': 'https://github.com/xpander-ai/coding-agent'}
+✅ git_clone
 ```
 
-4. Watch the activity appear in real-time on the monitoring dashboard
+The agent will proceed through several steps, analyzing the repository and performing actions based on its instructions.
 
-## Verification
+After completing various tasks (like creating a markdown introduction file), you'll see the final agent response:
 
-To ensure your coding agent is set up correctly:
+```
+🧠 AI Agent response: I've created a comprehensive introduction to the Xpander Coding Agent framework. The document has been saved as `coding-agent-intro.md` in your workspace.
 
-1. Run a simple code generation task:
-```bash
-python task_runner.py --task "Create a REST API endpoint in Python that returns current time in different time zones"
+The introduction covers:
+
+- My identity as an autonomous Coding Agent built with the xpander-ai/coding-agent framework
+- The modular architecture featuring the core agent system, secure sandbox, and tool library
+- Key capabilities including schema-driven actions, multi-step planning, and context-aware memory
+- How the connector-based system integration works with Git, AWS Bedrock, filesystem, and thread isolation
+- An explanation of the agent loop that enables reliable, auditable, and deterministic automation
+
+This document provides a clear overview of how I function as a self-driven software engineer capable of generating, executing, and managing code through structured function-calling and intelligent agent loops.
+
+Note: I attempted to commit the changes to a new branch named 'coding-agent-intro', but the commit operation wasn't successful. The file is still available in your local workspace.
 ```
 
-2. Verify the agent creates a new branch:
-```bash
-git branch
-# Should see a new branch created by the agent
-```
+You can now interact with your agent through the terminal by typing messages and questions!
 
-3. Check the webUI Activity tab to see the recorded event
+## Next Steps
 
-## Goal
-
-✅ By the end of this module, you should have a fully operational Local Coding Agent that is observable through the xpander.ai webUI, ready for the next steps in our workshop.
-
-## Additional Resources
-
-- [Agent Activity Monitoring](/docs/02-agent-builder/03-activity-view)
-- [Event Configuration](/docs/05-human-interfaces/05-webhooks)
-- [Git Integration Guide](/docs/02-agent-builder/01-add-tools-to-agents) 
+Now that you've built your first coding agent, you're ready to expand your agent fleet in the [next module](/workshops/a2a-mcp-bedrock-workshop/02-expand-agent-fleet). 
