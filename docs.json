@@ -223,9 +223,14 @@
               "apps/google-gmail",
               "apps/google-bigquery",
               "apps/google-calendar",
+              "apps/zendesk",
               "apps/jira",
               "apps/confluence",
+              "apps/pagerduty",
+              "apps/recallai",
+              "apps/statuspage",
               "apps/asana",
+              "apps/fibery",
               "apps/monday"
             ]
           }
