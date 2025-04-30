@@ -1,0 +1,118 @@
+---
+title: "Module 4: Extend the Manager — Enable Pull Request (PR) Automation"
+description: "Enhance your Manager Agent to handle GitHub Pull Requests with visual configuration"
+icon: "code-branch"
+---
+
+In this module, you'll extend your Manager Agent's capabilities to handle GitHub Pull Request (PR) operations. By the end, your agent will be able to create and list PRs based on natural language requests.
+
+🚀 You'll use the xpander.ai Workbench to add GitHub operations to your manager agent, configure them visually, and test them without writing any custom code!
+
+## 🎯 Learning Objectives
+
+By the end of this module, you will:
+- Extend your manager agent with GitHub PR operations
+- Configure PR creation and listing capabilities
+- Test your agent's ability to interact with GitHub repositories
+- Use natural language to trigger PR operations
+
+## 🔧 Access Your Manager Agent in the Workbench
+
+First, access your manager agent in the xpander.ai platform:
+
+1. Go to [https://app.xpander.ai](https://app.xpander.ai) and sign in with your credentials
+2. In the left navigation menu, go to **AI Agents**
+3. Find and select your manager agent from the list
+4. Click on the **Builder** tab to open the visual editor
+
+## ➕ Add GitHub PR Operations
+
+Now, let's add GitHub PR operations to your manager agent:
+
+1. Hover over an existing operation in the graph
+2. Click the **+** button that appears to add a new operation
+3. In the operation selection dialog, navigate to **GitHub** operations
+4. Select the following operations:
+   - **Create New Pull Request in Repository**
+   - **List Pull Requests in Repository**
+5. Click **Done** to add these operations to your agent
+
+<Frame>![](/images/screenshots/github-operations.png)</Frame>
+
+## ⚙️ Configure GitHub Operations
+
+Each GitHub operation needs to be properly configured:
+
+### Create New Pull Request in Repository
+
+1. Click on the **Create New Pull Request in Repository** operation in your graph
+2. Configure the following parameters:
+   - **Repository Owner**: The GitHub username or organization that owns the repository
+   - **Repository Name**: The name of the repository (without .git extension)
+   - **Head Branch**: The branch containing your changes
+   - **Base Branch**: The branch you want to merge into (usually "main" or "master")
+   - **Title**: The title for your pull request
+   - **Body**: The description for your pull request
+
+### List Pull Requests in Repository
+
+1. Click on the **List Pull Requests in Repository** operation in your graph
+2. Configure the following parameters:
+   - **Repository Owner**: The GitHub username or organization that owns the repository
+   - **Repository Name**: The name of the repository (without .git extension)
+   - **State**: The state of PRs to retrieve (open, closed, or all)
+
+## 📝 Update Manager Instructions
+
+Your manager agent needs updated instructions to handle GitHub operations:
+
+1. Click on the **Instructions** tab
+2. Add the following to your existing instructions:
+
+```json
+{
+  "general": "You are a specialized manager agent responsible for coordinating a team of coding agents and handling GitHub operations. In addition to your existing capabilities:\n\n1. GitHub PR Creation:\n   - When asked to create a PR, extract the repository, branch names, and PR details from the request\n   - Use the 'Create New Pull Request in Repository' operation with the appropriate parameters\n   - Confirm to the user when the PR has been created successfully\n\n2. GitHub PR Listing:\n   - When asked to list PRs, extract the repository information from the request\n   - Use the 'List Pull Requests in Repository' operation to retrieve PR data\n   - Format the PR information in a clear, readable format for the user\n\nFor all GitHub operations, ensure you have the necessary information (repo owner, repo name, branches, etc.) before proceeding. Ask the user for any missing details."
+}
+```
+
+## 🚀 Deploy Your Updated Manager Agent
+
+Deploy your changes to make the updated agent available:
+
+1. Click the **Deploy** button in the Workbench
+2. Once deployment is complete, your manager agent will have access to the new GitHub operations
+
+## 🧪 Test Your PR Operations
+
+Now let's test your agent's GitHub operations:
+
+1. In the Agent Tester (left pane), try the following prompts:
+
+```
+Create a pull request from feature-login to main in my repository
+```
+
+```
+List all open pull requests in my repository
+```
+
+2. Your agent should:
+   - Extract the necessary information from your request
+   - Execute the appropriate GitHub operation
+   - Return the results in a clear format
+
+<Tip>
+  Your agent will ask for any missing information needed to complete the GitHub operations, such as repository owner or name if they weren't provided in your initial request.
+</Tip>
+
+## 🔄 Verify PR Operations
+
+To verify your PR operations are working correctly:
+
+1. Create a real PR using your agent by providing actual repository and branch information
+2. Check your GitHub repository to confirm the PR was created with the correct details
+3. Ask your agent to list PRs and verify it returns the PR you just created
+
+## 🚀 Next Steps
+
+Now that your manager agent can handle GitHub PR operations, you have a powerful tool for coordinating not just code development, but also code integration through pull requests. You can continue to extend your agent's capabilities by adding more GitHub operations or other development tools! 

@@ -1,0 +1,142 @@
+---
+title: "Module 3: Build Your Manager Agent"
+description: "Create a manager agent that orchestrates your coding agent fleet using the xpander.ai platform"
+icon: "sitemap"
+---
+
+In this module, you'll create a manager agent using the xpander.ai platform. This agent will orchestrate your coding agents, bringing centralized control to your agent ecosystem.
+
+🚀 You'll use the visual Agent Workbench to design your manager agent, configure it to coordinate your existing agents, test it in the platform, and connect it to your development workflow!
+
+## 🔧 Access the xpander.ai Workbench
+
+First, let's access the xpander.ai platform to create your manager agent:
+
+1. Go to [https://app.xpander.ai](https://app.xpander.ai) and sign in with your credentials
+2. In the left navigation menu, go to **AI Agents**
+3. Click the **New AI Agent** button to open the Workbench
+
+## 🔄 Configure Agent Team Structure
+
+Next, you'll need to set up your agent team with the proper structure:
+
+1. Click on the **Agent Teams** tab in the navigation bar
+2. Click the **Create AI Agents Team** button
+3. Name your team "Coding Fleet"
+4. Add both of your coding agents to the team:
+   - Click the "Add Agent" button
+   - Select dev-agent-1 and dev-agent-2 from the dropdown
+   - Click "Done"
+5. Configure the team layout:
+   - Click the "Builder" tab to access the visual canvas
+   - Change the layout type from "Router" to "Manager" in the Delegation settings
+   - Select your new manager agent as the manager
+   - Verify the connections between the manager and the coding agents
+
+<Frame>![](/images/screenshots/team-structure.png)</Frame>
+
+## 📝 Customize Manager Instructions
+
+Your manager agent needs clear instructions on how to coordinate the team:
+
+1. Return to the AI Agents section and select your manager agent
+2. Click on the "Instructions" tab
+3. Customize the instructions with the following:
+
+```json
+{
+  "role": "Development Team Coordinator",
+  "goal": "Coordinate coding agents by assigning tasks based on their specialties and aggregating their results to provide complete solutions",
+  "general": "You are a specialized manager agent responsible for coordinating a team of coding agents. Follow these guidelines:\n\n1. Task Analysis:\n   - Analyze incoming user requests to determine required coding tasks\n   - Break complex requests into smaller, manageable subtasks\n   - Identify which agent would be best suited for each subtask\n\n2. Agent Selection:\n   - dev-agent-1 (Claude): Specializes in precise, validated code development\n   - dev-agent-2 (Llama): Focuses on creative and experimental approaches\n\n3. Task Delegation:\n   - Assign tasks to appropriate agents based on their specialties\n   - Provide clear instructions and context for each subtask\n   - Include relevant details and requirements\n\n4. Result Aggregation:\n   - Collect outputs from all agents\n   - Combine results into a cohesive solution\n   - Ensure consistency across different agents' contributions\n   - Format the final response for clarity\n\n5. Conflict Resolution:\n   - If agents provide conflicting approaches, evaluate trade-offs\n   - Make final decisions based on user requirements\n   - Explain reasoning for chosen solutions\n\nPrioritize efficient coordination while ensuring high-quality outputs that leverage each agent's strengths."
+}
+```
+
+## 🧪 Test Your Manager Agent
+
+Now it's time to test your manager agent's ability to coordinate your coding agents:
+
+1. In the Workbench, use the Agent Tester (left pane) to test your manager agent
+2. Enter a test prompt that requires coordination, such as:
+
+```
+Create a weather data visualization application. I need both a reliable backend API and an innovative frontend.
+```
+
+3. Watch as your manager agent:
+   - Analyzes the task
+   - Breaks it down into subtasks
+   - Delegates to the appropriate coding agents
+   - Aggregates the results
+
+<Frame>![](/images/screenshots/manager-test.png)</Frame>
+
+## 🚀 Deploy Your Manager Agent
+
+Deploy your manager agent to make it available for use:
+
+1. Click the **Deploy** button in the Workbench
+2. Once deployment is complete, your manager agent will be available via the API and other interfaces
+
+<Tip>
+  You can monitor your manager agent's activity in the Activity tab, where you'll see all interactions and delegations to your coding agents.
+</Tip>
+
+## 🔄 Connect to Your Development Workflow
+
+Your manager agent can now be used in your development workflow through multiple interfaces:
+
+### Chat Interface
+
+The simplest way to interact with your manager agent is through the built-in chat interface:
+
+1. From the AI Agents list, click on your manager agent
+2. Select the "Chat" tab
+3. Start sending requests that require coordination between your coding agents
+
+### SDK Integration
+
+For programmatic access, integrate your manager agent into your workflow using the xpander SDK:
+
+```python
+from xpander_sdk import XpanderClient
+import os
+
+# Initialize client
+xpander_client = XpanderClient(api_key=os.environ["XPANDER_API_KEY"])
+
+# Load your manager agent
+manager_agent = xpander_client.agents.get(agent_id="your-manager-agent-id")
+
+# Create a task for the manager
+manager_agent.add_task("""
+Create a user authentication system with a secure backend and an intuitive frontend.
+""")
+
+# Run the manager agent
+while not manager_agent.is_finished():
+    # The manager will automatically coordinate with your coding agents
+    # through the team configuration you set up
+    manager_agent.agent_loop_step()
+
+# Get the final aggregated result
+result = manager_agent.retrieve_execution_result()
+print(result.result)
+```
+
+## 🔍 Understanding Manager Delegation
+
+The manager agent follows a structured decision process when coordinating your coding agents:
+
+1. **Task Analysis**: The manager evaluates the incoming request to understand requirements
+2. **Task Decomposition**: Complex tasks are broken down into smaller, manageable subtasks
+3. **Agent Selection**: The manager determines which coding agent is best suited for each subtask
+4. **Delegation**: Tasks are assigned to appropriate agents with clear instructions
+5. **Result Collection**: The manager collects outputs from all agents
+6. **Result Aggregation**: The manager combines all outputs into a cohesive solution
+7. **Quality Assurance**: The manager reviews the combined solution for consistency and completeness
+
+This process happens automatically through the team configuration you've set up in the platform.
+
+## 🚀 Next Steps
+
+Now that you have a complete fleet with a manager agent coordinating your specialized coding agents, you're ready to tackle complex development tasks more efficiently! 
