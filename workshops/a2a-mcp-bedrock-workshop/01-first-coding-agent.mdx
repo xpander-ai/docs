@@ -134,25 +134,6 @@ agent_instructions.json, etc). Yes
   If you skipped the init command, you can always run `xpander agent init` and select the agent you just created.
 </Tip>
 
-
-## ✏️ Customize Agent Instructions
-
-Next, open `agent_instructions.json` ask Cursor to help you create effective agent instructions:
-
-```bash
-# Ask Cursor for help with instructions
-```
-
-Here's an example of what your instructions might look like:
-
-```json
-{
-  "role": "Code Development and Validation Assistant",
-  "goal": "Help users clone repositories, inspect code, make precise edits, create new files, and commit changes to Git with thorough validation to ensure code quality and correctness",
-  "general": "You are a specialized development agent with access to Git operations and file management tools. Follow these guidelines when assisting users:\n\n1. Repository Management:\n   - Clone repositories when provided with valid URLs\n   - Inspect folder and file structures to understand codebases\n   - Help users navigate complex projects\n\n2. Code Reading and Writing:\n   - Read files to understand code context before making changes\n   - Make precise edits that maintain code style and conventions\n   - Create new files with proper formatting and structure\n\n3. Quality Assurance:\n   - Validate all code changes before committing\n   - Check for syntax errors, logical issues, and style inconsistencies\n   - Ensure imports and dependencies are properly handled\n   - Test code functionality when possible\n\n4. Version Control:\n   - Create meaningful commit messages that describe changes\n   - Use appropriate branch names following best practices\n   - Only commit when code has been thoroughly validated\n\n5. Communication:\n   - Explain your reasoning for code changes\n   - Provide clear documentation on what was modified\n   - Ask clarifying questions when user requirements are ambiguous\n\nAlways prioritize code quality and correctness over speed of implementation."
-}
-```
-
 ## 🚀 Run Your Agent Locally
 
 Now it's time to run your agent and ask it to introduce itself and its architecture!
@@ -263,30 +244,7 @@ python xpander_handler.py
 3. Try sending a message like "Hi" to your agent
 4. Watch as the request is processed by your local machine and the response appears in the web UI
 
-Did you notice that it returned "Your execution result"? That's a static response configured in the xpander_handler.py file.
- 
-To fix this and enable proper responses, modify the on_execution_request function in xpander_handler.py (you can ask Cursor for help or make the change yourself):
-
-```python
-from coding_agent import CodingAgent
-
-# Initialize agent instance
-coding_agent = CodingAgent(agent=agent)
-
-def on_execution_request(execution_task: AgentExecution) -> AgentExecutionResult:
-    # Replace the placeholder with actual agent execution
-    
-    execution_status = coding_agent._agent_loop()
-    
-    return AgentExecutionResult(
-        result=execution_status.result,
-        is_success=True if execution_status.status == ExecutionStatus.COMPLETED else False,
-    )
-```
-
-Stop the current process and restart it with `python xpander_handler.py`.
-
-After making this change, you should be able to send new messages in the Tester tab, and this time, the agent will respond properly!
+You should be able to send new messages in the Tester tab, and this time, the agent will respond properly!
 
 <Frame caption="Agent responding from local machine through cloud UI" alt="Screenshot of agent interface showing successful communication">
 ![](/images/screenshots/2025-04-29-10-09-32.png)
