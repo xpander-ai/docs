@@ -228,6 +228,7 @@
               "apps/jira",
               "apps/confluence",
               "apps/asana",
+              "apps/fibery",
               "apps/monday"
             ]
           }
