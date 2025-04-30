@@ -6,78 +6,82 @@ icon: "rocket"
 
 <Note>
 **Module Summary**
-* **Goal**: Build an application with your agent fleet and submit it to the workshop repository
+* **Goal**: Learn how to work with your manager agent to build and submit an application using the web UI and CLI tools
 * **Estimated Time**: 10-20 minutes
 * **Prerequisites**: Manager agent with MCP and GitHub PR capabilities
 </Note>
 
-In this final module, you'll activate your agent fleet to collaboratively build an application of your choice and submit it to the xpander.ai repository. This is where your preparation in the previous modules comes together!
+In this final module, you'll activate your agent fleet by working directly with your **manager agent**. You'll use the web UI to instruct your manager agent, monitor its orchestration of developer agents, and submit your finished application to the xpander.ai repository. This is where your preparation in the previous modules comes together!
 
-## 🚀 Vibe Coding with Your Agent Fleet
+## 🕹️ Working with Your Manager Agent via the Web UI
 
-Now that you have:
-- Built two developer agents with different models
-- Created a manager agent that can orchestrate them
-- Connected your manager to Cursor IDE via MCP
-- Added PR capabilities to your manager
+The manager agent is your main point of contact for building applications with your agent fleet. You'll interact with it through the xpander.ai web UI:
 
-It's time to let your agents build something practical! This approach, which we call "Vibe Coding," lets you express your creative ideas while your agents handle the technical implementation.
-
-## 👩‍💻 Submit Your Request via MCP
-
-Using Cursor with MCP enabled, simply ask your manager agent to build the application you want. Be specific about functionality you need:
+1. Go to [https://app.xpander.ai](https://app.xpander.ai) and open your manager agent's chat interface.
+2. Enter a prompt describing the application you want to build and instruct the manager agent to submit it when ready. For example:
 
 ```
-Build a personal portfolio website with a clean, modern design that showcases projects and skills.
-```
-
-```
-Create a weather dashboard that shows forecasts for multiple cities with beautiful visualizations.
-```
-
-```
-Develop a markdown note-taking app with tags and search functionality.
-```
-
-<Note>
-Your manager agent will coordinate the work between your two developer agents, review their code, and select the best implementation. This all happens automatically thanks to the Agent-to-Agent (A2A) capabilities you configured.
-</Note>
-
-## 📊 Monitor Your Agents' Activity
-
-While your agents are working, you can track their progress:
-
-1. Go to [https://app.xpander.ai](https://app.xpander.ai)
-2. Navigate to the **Activity** tab
-3. Watch as your agents collaborate, write code, and solve problems
-
-## 🚀 Automatic PR Creation
-
-Once your agents have built the application, ask your manager agent to submit the code to the xpander.ai repository:
-
-```
-Submit my [weather dashboard/portfolio website/markdown note app] application to the xpander-ai/apps-by-agents repository. Create a PR to the 'agents' branch using the following structure:
+Build a personal portfolio website with a clean, modern design that showcases projects and skills. Submit my application once it's ready to the xpander-ai/apps-by-agents repository. Create a PR to the 'agents' branch using the following structure:
 1. Fork the repository if needed
 2. Create a folder named YYYY-MM-DD@[my-app-name] at the root level
 3. Add all application files and a detailed README.md
 4. Create a PR with the title "Workshop Submission: [My App Name]" and mention which models were used
 ```
 
-Your manager agent will:
-1. Fork the repository
-2. Create the appropriate folder structure
-3. Add your application code
-4. Create a README file
-5. Submit a pull request to the agents branch
+The manager agent will interpret your request, coordinate the developer agents, and handle the submission process for you.
 
-<Tip>
-The repository structure should follow this pattern using ISO date format:
+### More Example Prompts for the Manager Agent
+
+- "Create a weather dashboard that shows forecasts for multiple cities with beautiful visualizations. Submit it to the repository as described."
+- "Develop a markdown note-taking app with tags and search functionality. When finished, submit a PR to the agents branch."
+- "Build a simple task tracker with add/edit/delete features and a clean UI. Submit the code and a README as a pull request."
+- "Generate a static blog site with three sample posts and a responsive layout. Submit it to the xpander-ai/apps-by-agents repository."
+
+Feel free to get creative! The manager agent will break down your request and assign tasks to the developer agents.
+
+<Note>
+Your manager agent will coordinate the work between your developer agents, review their code, and select the best implementation. This all happens automatically thanks to the Agent-to-Agent (A2A) capabilities you configured.
+</Note>
+
+## ✅ Confirm Agent Activity
+
+After submitting your prompt in the web UI, wait a few moments for the manager agent to begin orchestrating the build process. You should see updates in the thread as the manager agent delegates tasks and coordinates the developer agents.
+
+## 📡 Monitor Agent Collaboration with xpander logs
+
+If you want to see detailed logs of agent collaboration and task execution:
+
+1. In your terminal, navigate to both your manager and developer agent folders.
+2. Run the following command in each folder:
+
 ```
---root
-----YYYY-MM-DD@your-application-name
-------your-generated-app
+xpander logs
 ```
-</Tip>
+
+This will let you see how the manager agent triggers the developer agents, delegates tasks, and reviews their work in real time.
+
+### What to Expect in the Logs
+
+When you run `xpander logs`, you'll see detailed output from your agents. Here are some examples and what they mean:
+
+```bash xpander logs output
+Sandbox base directory: /usr/src/app/sandboxes
+2025-04-30 11:17:10.616 | INFO     | xpander_utils.events.git_init:configure_git_credentials:17 - Setting up GIT for user dudutwizer
+2025-04-30 11:17:10.621 | INFO     | xpander_utils.events.git_init:configure_git_credentials:29 - ✅ Git configured with PAT
+2025-04-30 11:17:10.628 | INFO     | xpander_utils.events.listener:register:287 - Starting events listener
+2025-04-30 11:17:12.713 | INFO     | xpander_utils.events.listener:_register_agent_worker:238 - Worker registered - 12687c2c-467f-4a38-8cbf-54efccfd2ed9
+2025-04-30 11:17:12.713 | INFO     | xpander_utils.events.listener:_register_agent_worker:244 - Agent Name: dev-agent-1
+ Chat URL: https://chocolate-jaguar.agents.xpander.ai
+loading agent e62daf10-b8fd-45c8-8862-6168fb20b3c9
+🪄 Starting Agent Loop
+🧠 Thread id: 56dee347-dce3-42b3-b73f-0ff904ccf497
+--------------------------------------------------------------------------------
+🔍 Step 1
+running tool xpfinish-agent-execution-finished on agent e62daf10-b8fd-45c8-8862-6168fb20b3c9 with execution e28f7897-988f-4450-b947-794bb2f17d94
+✅ xpfinish-agent-execution-finished
+```
+
+After a few minutes, the manager agent will update the thread in the web UI with the results and next steps. You can follow along and interact as needed.
 
 ## 🏆 See What Everyone Built!
 
