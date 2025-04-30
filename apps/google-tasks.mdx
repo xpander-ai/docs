@@ -1,0 +1,89 @@
+---
+title: "Google Tasks"
+description: “Learn how to build AI agents with Google Tasks access using xpander.ai. This integration enables intelligent document-aware AI assistants that can create, edit, organize, and analyze documents automatically.”
+icon: "google-tasks"
+---
+
+Learn how to build AI agents with Google Tasks access using xpander.ai. This integration enables intelligent document-aware AI assistants that can create, edit, organize, and analyze documents automatically.
+
+<Frame>
+![](/images/apps/google-tasks.png)
+</Frame>
+
+
+## Authentication Options
+
+Choose the authentication method that best fits your needs:
+
+<Tabs>
+  <Tab title="API Access">
+    <Frame caption="Google Tasks API access configuration">
+      ![Google Tasks API Access](/images/placeholders/google-tasks-api.png)
+    </Frame>
+
+
+    For programmatic access and automation:
+
+    1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+    2. Create a new project or select an existing one
+    3. Enable the **Google Tasks API** in Library
+    4. Go to **Credentials** and create an **API Key**
+    5. Restrict the API key to Google Tasks API only
+    6. Copy the API key to xpander.ai's Google Tasks connection settings
+    7. Set appropriate API access restrictions in Google Cloud Console
+
+    <Warning>
+        API keys provide limited functionality and are best for read-only operations on public files. For full access, use OAuth methods.
+    </Warning>
+
+  ### To create the Xpander.ai Google Tasks interface - Please use an OAuth method
+
+    This app is using basic authentication.
+
+    To configure it in xpander.ai, use an OAuth method.
+
+    For more information about the Google API enablement, [click here](https://support.google.com/googleapi/answer/6158841?hl=en).
+
+  </Tab>
+  <Tab title="Built-in xpander.ai Auth">
+    <Frame caption="Sign in with Google using xpander.ai's built-in authentication">
+      ![Sign in with Google](/images/placeholders/sign-in-with-google.png)
+    </Frame>
+
+    For programmatic access and automation:
+
+    1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+    2. Create a new project or select an existing one
+    3. Enable the **Google Tasks API** in Library
+
+    The simplest way to connect Google Tasks is using xpander.ai's built-in authentication:
+
+    1. Go to the **Apps** section in xpander.ai dashboard
+    2. Select **Google Tasks** from available integrations, and now you have two options:
+
+        2.1 Click **Sign in with Google Tasks**:
+
+		<Frame>
+			![](/images/screenshots/g_tasks_2025-04-28-18-48-26.png)
+		</Frame>
+
+        Select your Google account and grant permissions.
+
+        2.2 Click **other auth options**, and fill in your Interface name, interface access, Set `Authentication mode` as `OAuth2`.
+
+        Now click **Sign in with Google Tasks**:
+
+		<Frame>
+			![](/images/screenshots/g_tasks_2025-04-28-18-49-50.png)
+		</Frame>
+
+        Select your Authentication scope, and save the interface.
+
+    3. Your connection is immediately active and ready to use.
+
+    <Note>
+    This method is recommended for most users. xpander.ai securely manages your OAuth tokens without exposing any credentials.
+    </Note>
+
+  </Tab>
+</Tabs>

@@ -1,0 +1,65 @@
+---
+title: StatusPage
+description: Learn how to build AI agents with StatusPage access using xpander.ai.
+icon: statuspage
+---
+
+Learn how to build AI agents with StatusPage access using xpander.ai. This integration enables intelligent, incident-aware AI assistants that can monitor, update, organize, and analyze system status information automatically.
+
+## Authentication Options
+
+<Tabs>
+  <Tab title="API Access">
+    <Frame caption="StatusPage API access configuration">
+      ![StatusPage API Access](/images/placeholders/statuspage-api.png)
+    </Frame>
+
+    For programmatic access and automation:
+
+    1. Sign in to your [StatusPage Account](https://manage.statuspage.io/login).
+    2. Click on your avater on the top right, and then click on API Info:
+  
+      <Frame>
+          ![](/images/screenshots/status_page_2025-04-28-10-13-11.png)
+      </Frame>
+  
+    4. Click **Create key**, and enter a descriptive name.
+    5. Click **Copy to clipboard** and store it somewhere secure.
+    6. Verify your code works by executing the following command, replacing the placeholders:
+
+      ```
+      curl "https://api.statuspage.io/v1/pages/YOUR-PAGE-CODE-GOES-HERE.json?api_key=YOUR-API-KEY-GOES-HERE"
+      ```
+
+      Or:
+
+      ```
+      curl -i -X GET \
+      -H 'Authorization:OAuth YOUR-API-KEY-GOES-HERE' \
+        'https://api.statuspage.io/v1/pages/YOUR-PAGE-CODE-GOES-HERE/incidents'
+      ```
+
+    <Warning>
+    The API gives you powerful capabilities in order to enhance your StatusPage experience. It's very important to keep your API token secure.
+    </Warning>
+
+    ### Let's create the Xpander.ai StatusPage interface!
+    1. Write your interface name.
+    2. Select the interface access you'd like 
+    3. Select the API key authentication method
+    4. Select the Integration user authentication scope
+    5. Select **Custom** as the Auth type and **Authorization** as the Custom header name.
+    6. Paste the token copied earlier in the API Key field using this template: `OAuth [YOUR_API_KEY]`
+        
+      **Note:** Make sure to replace `[YOUR_API_KEY]` with your actual StatusPage API key.
+
+      <Frame>
+  			![](/images/screenshots/status_page_2025-04-28-11-01-52.png)
+	    </Frame>
+
+    Then save the interface.
+
+    For more information about the StatusPage API, [click here](https://developer.statuspage.io/).
+
+  </Tab>
+</Tabs>

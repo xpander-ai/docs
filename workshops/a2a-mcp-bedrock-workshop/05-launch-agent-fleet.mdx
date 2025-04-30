@@ -1,0 +1,204 @@
+---
+title: "Module 5: Launch Your Agent Fleet"
+description: "Coordinate your agent fleet to build a complete application using xpander.ai"
+icon: "rocket-launch"
+---
+
+In this module, you'll bring together the agents you've created in previous modules to collaboratively build a complete application through natural language interactions.
+
+🚀 You'll set up a project in the xpander.ai platform, coordinate your multi-agent team using your manager agent, and watch as they work together to build a functional application!
+
+## 🎯 Learning Objectives
+
+By the end of this module, you will:
+- Activate your full agent fleet in the xpander.ai platform
+- Create a new project for your agent team
+- Configure collaborative workflows between your agents
+- Build a real application using your agent fleet
+
+## 🔧 Set Up Project Workspace
+
+First, let's create a local workspace for your project:
+
+```bash
+# Create a project directory
+mkdir vibe-app
+cd vibe-app
+
+# Initialize a git repository
+git init
+git branch -M main
+
+# Create a basic README file
+echo "# Vibe App\n\nA collaborative project built by my agent fleet." > README.md
+git add README.md
+git commit -m "Initial commit"
+```
+
+## 📝 Create Project Specification
+
+Create a project specification that defines what you want to build:
+
+```bash
+# Create a project specification file
+cat > project-spec.md << EOF
+# Project: Vibe App
+
+## Overview
+A simple web application that helps users track their daily mood and activities to identify patterns in well-being.
+
+## Features
+- Daily mood check-in with emoji selection
+- Activity tracker (sleep, exercise, work, social)
+- Simple visualization of mood patterns
+- Basic user authentication
+
+## Technology Stack
+- Frontend: React with simple UI
+- Backend: Express.js API
+- Database: JSON file storage (for simplicity)
+- Authentication: JWT tokens
+
+## Development Milestones
+1. Set up project structure and basic APIs
+2. Implement authentication system
+3. Create mood and activity tracking interfaces
+4. Build visualization component
+5. Finalize styling and user experience
+EOF
+
+# Add to repository
+git add project-spec.md
+git commit -m "Add project specification"
+```
+
+## 🔄 Create an Agent Team Project
+
+Now, let's set up a dedicated project in the xpander.ai platform:
+
+1. Go to [https://app.xpander.ai](https://app.xpander.ai) and sign in
+2. Navigate to the **Projects** section in the sidebar
+3. Click **New Project**
+4. Fill in the project details:
+   - **Name**: Vibe App
+   - **Description**: A collaborative project built by my agent fleet
+   - **Associated Team**: Select your "Coding Fleet" team created in Module 3
+5. Click **Create Project**
+
+<Frame>![](/images/screenshots/project-setup.png)</Frame>
+
+## 🚀 Set Up Team Workflow
+
+Configure your agent team's workflow for this project:
+
+1. In your new project, go to the **Workflow** tab
+2. Create a workflow with the following stages:
+   - **Planning**: Assigned to your Manager Agent
+   - **Frontend Development**: Assigned to dev-agent-2 (Llama)
+   - **Backend Development**: Assigned to dev-agent-1 (Claude)
+   - **Integration**: Assigned to your Manager Agent
+3. Set up dependencies between stages to ensure they execute in the proper order
+4. Click **Save Workflow**
+
+<Frame>![](/images/screenshots/workflow-setup.png)</Frame>
+
+## 📚 Upload Project Context
+
+Upload your project specification to provide context to your agents:
+
+1. Go to the **Resources** tab in your project
+2. Click **Upload Resource**
+3. Select your `project-spec.md` file
+4. Set visibility to "All Agents"
+5. Click **Upload**
+
+## 🏁 Launch the Project Development
+
+Now, it's time to start the development process using your agent fleet:
+
+1. Navigate to the **Chat** tab in your project
+2. Send the following message to initiate development:
+
+```
+Let's build the Vibe App according to our project specification. We need to create a simple mood tracking web application with user authentication, mood check-ins, and visualization. Please start by planning the architecture and then coordinate the development work between the specialized agents.
+```
+
+3. Watch as your manager agent:
+   - Analyzes the project requirements
+   - Creates a development plan
+   - Delegates tasks to the specialized coding agents
+   - Coordinates the integration of components
+
+<Frame>![](/images/screenshots/project-development.png)</Frame>
+
+## 👀 Monitor Development Progress
+
+As your agents work on the project, you can monitor their progress:
+
+1. Go to the **Activity** tab to see all agent actions
+2. Check the **Repository** tab to view code being generated
+3. Monitor the **Pull Requests** section to see integration happening
+
+Your agents will be working on:
+- Setting up the project structure
+- Creating frontend components for mood tracking
+- Developing backend APIs
+- Implementing authentication
+- Integrating the components into a cohesive application
+
+## 🔄 Guide and Provide Feedback
+
+While your agents are working, you can guide their progress:
+
+1. Provide feedback on their code and approach
+2. Answer any questions they might have about the requirements
+3. Suggest improvements or clarify aspects they might be unsure about
+4. Ask for status updates on specific components
+
+Example guidance messages:
+
+```
+How is the authentication system coming along? Please make sure it uses JWT tokens as specified.
+```
+
+```
+I'd like the mood selection interface to use emoji buttons in a simple grid layout.
+```
+
+## 💾 Save and Export Your Project
+
+When your agents have completed the initial version of the application:
+
+1. Go to the **Repository** tab
+2. Click **Export Code**
+3. Choose between:
+   - **Download ZIP**: Get all project files as a ZIP archive
+   - **Clone Repository**: Get a Git URL to clone the complete repository
+
+<Tip>
+  You can continue to work with your agent fleet on this project after the workshop. Your agents will maintain their knowledge of the project and can help you extend and improve it over time.
+</Tip>
+
+## 🔍 Verify Your Application
+
+To ensure your agent fleet has built a functional application:
+
+1. Clone or download the exported code
+2. Follow the setup instructions in the README
+3. Start the application locally
+4. Test the key features:
+   - User authentication
+   - Mood check-in
+   - Activity tracking
+   - Visualization
+
+## 🚀 Next Steps
+
+Congratulations! You've successfully built and deployed a fleet of autonomous coding agents that can collaborate to create real applications. Here are some ways to continue your agent journey:
+
+1. Expand your agent fleet with more specialized agents
+2. Tackle larger and more complex projects
+3. Create custom tools for your agents
+4. Integrate your agents into your daily development workflow
+
+You now have all the skills needed to build and manage powerful agent fleets for software development! 

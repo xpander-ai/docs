@@ -126,6 +126,41 @@
         ]
       },
       {
+        "tab": "Workshops",
+        "icon": {
+          "name": "school",
+          "style": "regular"
+        },
+        "groups": [
+          {
+            "group": "Workshops",
+            "icon": {
+              "name": "school",
+              "style": "regular"
+            },
+            "pages": [
+              "workshops/index",
+              {
+                "group": "Build AI Agents with A2A, MCP, and Amazon Bedrock",
+                "icon": {
+                  "name": "aws",
+                  "style": "regular"
+                },
+                "pages": [
+                  "workshops/a2a-mcp-bedrock-workshop/index",
+                  "workshops/a2a-mcp-bedrock-workshop/01-first-coding-agent",
+                  "workshops/a2a-mcp-bedrock-workshop/02-expand-agent-fleet",
+                  "workshops/a2a-mcp-bedrock-workshop/03-serverless-manager-agent",
+                  "workshops/a2a-mcp-bedrock-workshop/04-pr-automation",
+                  "workshops/a2a-mcp-bedrock-workshop/05-launch-agent-fleet",
+                  "workshops/a2a-mcp-bedrock-workshop/06-submit-application"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
         "tab": "SDK Reference",
         "icon": {
           "name": "code",
@@ -190,10 +225,13 @@
               "apps/google-gmail",
               "apps/google-bigquery",
               "apps/google-calendar",
+              "apps/zendesk",
               "apps/jira",
               "apps/confluence",
               "apps/pagerduty",
+              "apps/statuspage",
               "apps/asana",
+              "apps/fibery",
               "apps/monday"
             ]
           }
@@ -225,6 +263,14 @@
             "style": "regular"
           },
           "href": "https://docs.xpander.ai/tutorials/index"
+        },
+        {
+          "dropdown": "Workshops",
+          "icon": {
+            "name": "school",
+            "style": "regular"
+          },
+          "href": "https://docs.xpander.ai/workshops/index"
         },
         {
           "dropdown": "Apps",
@@ -308,6 +354,18 @@
     {
       "source": "/tutorials/",
       "destination": "/tutorials/index"
+    },
+    {
+      "source": "/workshops",
+      "destination": "/workshops/index"
+    },
+    {
+      "source": "/workshops/",
+      "destination": "/workshops/index"
+    },
+    {
+      "source": "/workshops/01-a2a-mcp-bedrock-workshop",
+      "destination": "/workshops/a2a-mcp-bedrock-workshop/index"
     },
     {
       "source": "/docs",
