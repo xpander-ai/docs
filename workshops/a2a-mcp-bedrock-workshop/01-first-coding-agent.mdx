@@ -1,12 +1,19 @@
 ---
-title: "Build Your First Coding Agent"
-description: "Set up a local coding agent with MCP compliance and understand its core capabilities"
+title: "Module 1: Build Your First Coding Agent"
+description: "Set up a local developer agent and understand its core capabilities"
 icon: "code"
 ---
 
-In this module, you'll build your first autonomous coding agent using xpander.ai's framework. This agent will be able to understand and manipulate code, helping you automate development tasks.
+<Note>
+**Module Summary**
+* **Goal**: Create and deploy your first AI developer agent
+* **Estimated Time**: 20-30 minutes
+* **Prerequisites**: AWS credentials, Python 3.12+, Cursor IDE
+</Note>
 
-🚀 In this module, you'll set up a complete AI coding assistant powered by xpander.ai and Amazon Bedrock. You'll create a local development environment, configure your agent with custom instructions, test it with repository management tasks, and connect it to the cloud for remote access. By the end, you'll have a powerful AI coding partner that can clone repositories, read and write code, and help automate your development workflow!
+In this module, you'll build your first autonomous developer agent using xpander.ai's framework. This agent will be able to understand and manipulate code, helping you automate development tasks.
+
+🚀 In this module, you'll set up a complete AI coding assistant powered by xpander.ai and Amazon Bedrock. You'll create a local development environment, configure your agent with custom instructions, test it with repository management tasks, and connect it to the cloud for remote access. By the end, you'll have a powerful AI developer agent that can clone repositories, read and write code, and help automate your development workflow!
 
 ## 🔧 Setup Your Development Environment
 
@@ -36,14 +43,17 @@ cursor .
   ```
   
   If you need to upgrade, use the following methods:
-  - **macOS**: `brew uninstall python  --ignore-dependencies && brew install python3 && python3 --version` 
-  - **Windows**: Download the latest installer from [python.org](https://www.python.org/downloads/)
+  - **macOS**: `brew uninstall python --ignore-dependencies && \
+                brew install python3 && python3 --version` 
+  - **Windows (WSL/Git Bash)**: Download the latest installer from [python.org](https://www.python.org/downloads/)
 </Note>
 
 Inside the Cursor terminal, set up your Python environment and install dependencies:
 
 ```bash
-python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+python3 -m venv .venv && \
+source .venv/bin/activate && \
+pip install -r requirements.txt --no-cache-dir
 npm install -g xpander-cli
 ```
 
@@ -52,12 +62,13 @@ npm install -g xpander-cli
 xpander login
 ```
 
-This command will open the xpander.ai platform and ask you to login or register. Once confirmed, you will be redirected back to the terminal, which will display the following:
-```bash
+This command will open the xpander.ai platform and ask you to login or register. Once confirmed, you will be redirected back to the terminal, which will display something similar to:
+```
+❯ xpander login
+⠏ Authorizing
 Hi David, Welcome to xpander!
-
-Your organization id: {id-}
-Your personal API Key is: {id-}
+Your organization id: 8d185373*********
+Your personal API Key is: IhPLk2C*******
 
 I've created default profile configured in ~/.xpander
 ```
@@ -86,29 +97,37 @@ Now let's use the xpander CLI to create a new agent:
 xpander agent new
 ```
 
-Complete the agent creation wizard:
+Complete the agent creation wizard (Answer yes to load the agent locally):
 
-```bash
-✨ Create New Agent
-────────────────────────────────────────────────────────────
-? Enter a name for your new agent: dev-agent-1
-⠋ Creating agent "dev-agent-1"...Creating agent in organization: 
-✔ Agent created successfully
-? Would you like to personalize your agent now? No ##
-⠋ Deploying agent...Deploying agent in organization: 
-✔ Agent deployed successfully
+```
+✨ Agent Creation Wizard ✨
+──────────────────────────────────────────────────
+Create a powerful AI agent for your organization
+──────────────────────────────────────────────────
 
-✅ Agent created and ready to use!
-? Would you like to locally initialize your agent now? Yes
+? What name would you like for your agent? dev-agent-1
+⠋ Creating agent "dev-agent-1"...Creating agent in organization: 8d185373-8b24-47a7-8607-3e9036b968bb...
+✔ Agent "dev-agent-1" created successfully!
+
+🚀 Your Agent is Ready!
+──────────────────────────────────────────────────
+Name:     dev-agent-1
+ID:       4fe1163d-bb00-4837-9e25-6f82aed8038c
+Icon:     🚀
+Model:    openai/gpt-4o
+──────────────────────────────────────────────────
+
+✅ Agent creation complete!
+
+? Do you want to load this agent into your current workdir? Yes
 
 
 ✨ Initializing agent
 ────────────────────────────────────────────────────────────
 ℹ Agent dev-agent-1 retrieved successfully
-? The current directory is not empty. Proceeding will override 'requirements.txt' and add or update xpander-related files (xpander_config.json, agent_instructions.json, 
-etc). Yes
+? The current directory is not empty. Proceeding will override 'requirements.txt' and add or update xpander-related files (xpander_config.json, 
+agent_instructions.json, etc). Yes
 ✔ Agent initialized successfully
-? Would you like to deploy your agent now? No
 ```
 
 <Tip>
@@ -120,8 +139,8 @@ etc). Yes
 
 Next, open `agent_instructions.json` ask Cursor to help you create effective agent instructions:
 
-```
-Write instructions to my agent that is capable of the tools listed in local_tools.py and carefully validate the code before committing it.
+```bash
+# Ask Cursor for help with instructions
 ```
 
 Here's an example of what your instructions might look like:
@@ -136,7 +155,7 @@ Here's an example of what your instructions might look like:
 
 ## 🚀 Run Your Agent Locally
 
-Now it's time to test your agent:
+Now it's time to run your agent and ask it to introduce itself and its architecture!
 
 ```bash
 python main.py
@@ -150,7 +169,7 @@ python main.py
 
 Here's what you might see in the terminal as your agent runs:
 
-```bash
+```
 ❯ python main.py
 Sandbox base directory: /Users/david/Developer/workshop/dev-agent-1/sandboxes
 loading agent 9002f816-1926-4556-a275-6e6fcc8bb86a
@@ -225,6 +244,10 @@ The file is ready for review in the repository. As requested, I did not commit a
 
 You can now interact with your agent through the terminal by typing messages and questions!
 
+<Note>
+  Ask your agent follow-up questions about how function calling works and how it succeeded in performing the git clone operation. Also ask it to explain what the agent loop is.
+</Note>
+
 ## 🌐 Stream Events from the Cloud to Your Local Agent
 
 Now let's set up your agent to receive events from the xpander.ai cloud platform. This allows you to interact with your agent through the web UI while processing happens on your local machine.
@@ -235,21 +258,24 @@ Start the event handler to listen for cloud events:
 python xpander_handler.py
 ```
 
-1. Navigate to the URL displayed in the terminal output (e.g., `https://app.xpander.ai/agents/your-agent-id`)
+1. Navigate to the URL displayed in the terminal output (e.g., `https://app.xpander.ai/agents/your-agent-id`) or to https://app.xpander.ai and search for dev-agent-1
 2. You'll see your agent in the xpander.ai web interface
 3. Try sending a message like "Hi" to your agent
 4. Watch as the request is processed by your local machine and the response appears in the web UI
 
 Did you notice that it returned "Your execution result"? That's a static response configured in the xpander_handler.py file.
-
-Now, let's modify the handler to return the real agent response by updating the on_execution_request function:
+ 
+To fix this and enable proper responses, modify the on_execution_request function in xpander_handler.py (you can ask Cursor for help or make the change yourself):
 
 ```python
+from coding_agent import CodingAgent
+
 # Initialize agent instance
 coding_agent = CodingAgent(agent=agent)
 
 def on_execution_request(execution_task: AgentExecution) -> AgentExecutionResult:
-    agent.init_task(execution=execution_task.model_dump())
+    # Replace the placeholder with actual agent execution
+    
     execution_status = coding_agent._agent_loop()
     
     return AgentExecutionResult(
@@ -258,13 +284,21 @@ def on_execution_request(execution_task: AgentExecution) -> AgentExecutionResult
     )
 ```
 
-After making this change, you will see the following result:
+Stop the current process and restart it with `python xpander_handler.py`.
 
-<Frame>![](/images/screenshots/2025-04-29-10-09-32.png)</Frame>
+After making this change, you should be able to send new messages in the Tester tab, and this time, the agent will respond properly!
 
-This setup creates a powerful hybrid system where your agent can be accessed through the cloud interface while all the processing happens securely on your local machine.
+<Frame caption="Agent responding from local machine through cloud UI" alt="Screenshot of agent interface showing successful communication">
+![](/images/screenshots/2025-04-29-10-09-32.png)
+</Frame>
+
+<Note>
+   You've built an agent capable of receiving events from anywhere (Slack, MCP, Teams, REST API, and even other Agents using A2A) with just a few lines of code! This allows you to focus your time on writing the business logic rather than integration code.
+</Note>
 
 ## 🚀 Deploy to the Cloud
+
+Now that we've confirmed the agent is performing its job and can receive events from the cloud, we can simply host it as a container in the xpander cloud and trigger it when needed!
 
 Deploy the agent to the cloud:
 
@@ -272,9 +306,42 @@ Deploy the agent to the cloud:
 xpander deploy
 ```
 
-## 🔑 Configure Cloud Environment Variables
+Example output:
+```
+❯ xpander deploy
+✨ Agent deployment
+────────────────────────────────────────────────────────────
+? Are you sure you want to deploy your AI Agent? Yes
+[+] Building 15.9s (9/10)                                                                                                          docker:desktop-linux
+[+] Building 17.9s (11/11) FINISHED                                                                                                docker:desktop-linux
+ => [internal] load build definition from Dockerfile                                                                                               0.0s
+ => => transferring dockerfile: 839B                                                                                                               0.0s
+ => [internal] load metadata for docker.io/library/python:3.12-alpine                                                                              1.7s
+ => [internal] load .dockerignore                                                                                                                  0.0s
+ => => transferring context: 92B                                                                                                                   0.0s
+ => [1/6] FROM docker.io/library/python:3.12-alpine@sha256:c08bfdbffc9184cdfd225497bac12b2c0dac1d24bbe13287cfb7d99f1116cf43                        0.0s
+ => => resolve docker.io/library/python:3.12-alpine@sha256:c08bfdbffc9184cdfd225497bac12b2c0dac1d24bbe13287cfb7d99f1116cf43                        0.0s
+ => [internal] load build context                                                                                                                  0.4s
+ => => transferring context: 59.91MB                                                                                                               0.4s
+ => CACHED [2/6] WORKDIR /usr/src/app                                                                                                              0.0s
+ => CACHED [3/6] RUN apk add --no-cache     curl     bash     gcc     g++     libffi-dev     musl-dev     openssl-dev     make     python3-dev     0.0s
+ => CACHED [4/6] RUN python3 -m venv /venv                                                                                                         0.0st
+ => [5/6] COPY . .                                                                                                                                 0.4s
+ => [6/6] RUN pip install --no-cache-dir --upgrade pip &&     pip install --no-cache-dir -r requirements.txt                                      14.1s
+ => exporting to image                                                                                                                             1.2s
+ => => exporting layers                                                                                                                            1.2s
+ => => exporting manifest sha256:0289aa66b12daf4645d1a1a2b2ad91bf7909c88d5186fde50140d836c577530e                                                  0.0s
+ => => exporting config sha256:2b9c7296215e889d6fb02d88a0bee9a70ce2b394c11f0b5c5aaaadc2fa2e4dd8                                                    0.0s
+ => => exporting attestation manifest sha256:ae45b33e81cce3fd5f40701243f5ba6bf39d2cb58878d2d19c6b1bbc21d3ca9a                                      0.0s
+ => => exporting manifest list sha256:e2fd5bbeb03bfd140e8ea3847f2ce8f6734aba155da858e5e471d1db97857b99                                             0.0s
+ => => naming to docker.io/library/95c6db28-7052-4054-8970-fa1f69f16de0:latest                                                                     0.0s
+✔ ✅ Upload complete
+✔ Agent dev-agent-1 deployed successfully
+```
 
 Congratulations on deploying your agent to the cloud! While the deployment is in progress, let's configure the necessary environment variables in the xpander vault to ensure your agent can run properly in the cloud environment.
+
+## 🔑 Configure Cloud Environment Variables
 
 1. Navigate to the xpander.ai platform and sign in
 2. Go to settings > Environment Secrets
@@ -294,10 +361,22 @@ These credentials will allow your cloud-deployed agent to access Amazon Bedrock 
 
 Once deployment is complete and environment variables are configured, your agent will be fully operational in the cloud, allowing others to interact with it through the web interface.
 
+Access your agent via the agent platform (https://app.xpander.ai/agents)
+
 <Tip>
   run `xpander logs` to stream logs from the remote server to your terminal
 </Tip>
 
+## ✅ Checkpoint
+
+By completing this module, you should now be able to:
+
+1. Create and configure a developer agent with xpander.ai
+2. Run the agent locally and interact with it via terminal
+3. Connect your local agent to the xpander.ai cloud platform
+4. Deploy your agent to the cloud for remote access
+5. Understand the core architecture of developer agents
+
 ## 🔄 Next Steps
 
-Now that you've built your first coding agent, you're ready to expand your agent fleet in the [next module](/workshops/a2a-mcp-bedrock-workshop/02-expand-agent-fleet). 
+Now that you've built your first developer agent, you're ready to expand your agent fleet in the [next module](/workshops/a2a-mcp-bedrock-workshop/02-expand-agent-fleet).

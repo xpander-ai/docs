@@ -151,9 +151,7 @@
                   "workshops/a2a-mcp-bedrock-workshop/01-first-coding-agent",
                   "workshops/a2a-mcp-bedrock-workshop/02-expand-agent-fleet",
                   "workshops/a2a-mcp-bedrock-workshop/03-serverless-manager-agent",
-                  "workshops/a2a-mcp-bedrock-workshop/04-pr-automation",
-                  "workshops/a2a-mcp-bedrock-workshop/05-launch-agent-fleet",
-                  "workshops/a2a-mcp-bedrock-workshop/06-submit-application"
+                  "workshops/a2a-mcp-bedrock-workshop/04-submit-application"
                 ]
               }
             ]
@@ -362,6 +360,18 @@
     {
       "source": "/workshops/01-a2a-mcp-bedrock-workshop",
       "destination": "/workshops/a2a-mcp-bedrock-workshop/index"
+    },
+    {
+      "source": "/workshops/a2a-mcp-bedrock-workshop/04-pr-automation",
+      "destination": "/workshops/a2a-mcp-bedrock-workshop/04-submit-application"
+    },
+    {
+      "source": "/workshops/a2a-mcp-bedrock-workshop/05-launch-agent-fleet",
+      "destination": "/workshops/a2a-mcp-bedrock-workshop/04-submit-application"
+    },
+    {
+      "source": "/workshops/a2a-mcp-bedrock-workshop/06-submit-application",
+      "destination": "/workshops/a2a-mcp-bedrock-workshop/04-submit-application"
     },
     {
       "source": "/docs",

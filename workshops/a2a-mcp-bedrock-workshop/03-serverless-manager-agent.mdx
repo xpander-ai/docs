@@ -1,10 +1,17 @@
 ---
 title: "Module 3: Build Your Manager Agent"
-description: "Create a manager agent that orchestrates your coding agent fleet using the xpander.ai platform"
+description: "Create a manager agent that orchestrates your developer agent fleet using the xpander.ai platform"
 icon: "sitemap"
 ---
 
-In this module, you'll create a manager agent using the xpander.ai platform. This agent will orchestrate your coding agents, bringing centralized control to your agent ecosystem.
+<Note>
+**Module Summary**
+* **Goal**: Create a manager agent to orchestrate your developer agents
+* **Estimated Time**: 10-20 minutes
+* **Prerequisites**: Two developer agents from Module 2, GitHub account
+</Note>
+
+In this module, you'll create a manager agent using the xpander.ai platform. This agent will orchestrate your developer agents, bringing centralized control to your agent ecosystem.
 
 🚀 You'll use the visual Agent Workbench to design your manager agent, configure it to coordinate your existing agents, test it in the platform, and connect it to your development workflow!
 
@@ -14,129 +21,119 @@ First, let's access the xpander.ai platform to create your manager agent:
 
 1. Go to [https://app.xpander.ai](https://app.xpander.ai) and sign in with your credentials
 2. In the left navigation menu, go to **AI Agents**
-3. Click the **New AI Agent** button to open the Workbench
+3. Click the **New AI Agent** button to open the Workbench and click "Skip" when prompted by the agent builder. This time we'll create the agent manually.
 
-## 🔄 Configure Agent Team Structure
+<Frame caption="Creating a new agent in the Workbench" alt="Screenshot of the xpander.ai Workbench interface">
+![](/images/screenshots/2025-04-30-10-02-31.png)
+</Frame>
 
-Next, you'll need to set up your agent team with the proper structure:
+Click on the plus icon on the right, and select the two agents you created from the menu.
 
-1. Click on the **Agent Teams** tab in the navigation bar
-2. Click the **Create AI Agents Team** button
-3. Name your team "Coding Fleet"
-4. Add both of your coding agents to the team:
-   - Click the "Add Agent" button
-   - Select dev-agent-1 and dev-agent-2 from the dropdown
-   - Click "Done"
-5. Configure the team layout:
-   - Click the "Builder" tab to access the visual canvas
-   - Change the layout type from "Router" to "Manager" in the Delegation settings
-   - Select your new manager agent as the manager
-   - Verify the connections between the manager and the coding agents
+<Frame caption="Adding your developer agents to the manager" alt="Screenshot showing the process of adding developer agents">
+![](/images/screenshots/2025-04-30-10-05-40.png)
+</Frame>
 
-<Frame>![](/images/screenshots/team-structure.png)</Frame>
+<Note>
+In just a few minutes, we've exposed two agents to the manager agent, allowing it to delegate tasks using the Agent-to-Agent (A2A) protocol. Behind the scenes, the xpander.ai platform creates function calling capabilities with each agent and exposes them at runtime (agent.get_tools() will now return agents as well as tools). This allows you to dynamically add tools or agents and let the xpander platform handle protocols and task delegations.
+</Note>
 
-## 📝 Customize Manager Instructions
+Now let's add tools to the manager:
 
-Your manager agent needs clear instructions on how to coordinate the team:
+1. Add the "GitHub Pull Requests" app by authenticating to GitHub
+2. Select two operations:
+   - Create New Pull Request in Repository
+   - List Pull Requests in Repository
 
-1. Return to the AI Agents section and select your manager agent
-2. Click on the "Instructions" tab
-3. Customize the instructions with the following:
+Your agent should now look like this:
+
+<Frame caption="Manager agent with GitHub operations" alt="Screenshot of manager agent with GitHub operations configured">
+![](/images/screenshots/2025-04-30-10-09-26.png)
+</Frame>
+
+## ⚙️ Configure the Manager Agent
+
+Now let's configure the manager agent:
+
+1. Navigate to the Settings tab
+2. Click on "Generate Details"
+3. Enter the following prompt:
+
+> An AI agent that manages two AI developers. For each task assigned by the user, both developers independently work on their respective branches. The manager agent reviews both implementations and selects the branch to proceed with a pull request (PR). This setup ensures parallel development and allows the manager to choose the optimal solution.
+
+<Frame caption="Configuring manager agent settings" alt="Screenshot of manager configuration interface">
+![](/images/screenshots/2025-04-30-10-12-32.png)
+</Frame>
+
+<Tip>
+Navigate to the Instructions tab to customize the agent's instructions according to your preferences!
+</Tip>
+
+Once you've finished configuring your agent, click "Save" and then "Deploy"!
+
+Your AI Manager is now ready to use:
+
+<Frame caption="Deployed manager agent ready for use" alt="Screenshot of successfully deployed manager agent">
+![](/images/screenshots/2025-04-30-10-14-36.png)
+</Frame>
+
+## 🧪 Testing Your Manager Agent
+
+Use the Tester tab to interact with your manager agent. Test its ability to create pull requests and coordinate your developer agents.
+
+## 🔌 Connecting to MCP
+
+Now that our AI team is set up, we can add Model Context Protocol (MCP) support and connect our IDE to the manager.
+
+1. Click on the plus icon and select "Sources" -> "MCP"
+2. Once added to the canvas, click "Deploy" to save the changes
+3. Click on the MCP icon to get a unique server address with your agents ready to receive tasks
+
+<Frame caption="Adding MCP to your manager agent" alt="Screenshot showing MCP configuration">
+![](/images/screenshots/2025-04-30-10-18-38.png)
+</Frame>
+
+<Warning>
+This URL contains API keys for your agents. Don't share this URL with anyone.
+</Warning>
+
+<Tip>
+You can add MCP to anything - tools, agents, multiple agents. Think of MCP as a REST API for the agent ecosystem. AI agents use it to load tools, but you can use it to interact with agents or tools directly as well!
+</Tip>
+
+Now, load this URL into Cursor by going to Cursor settings -> MCP or (`vi ~/.cursor/mcp.json`)
 
 ```json
 {
-  "role": "Development Team Coordinator",
-  "goal": "Coordinate coding agents by assigning tasks based on their specialties and aggregating their results to provide complete solutions",
-  "general": "You are a specialized manager agent responsible for coordinating a team of coding agents. Follow these guidelines:\n\n1. Task Analysis:\n   - Analyze incoming user requests to determine required coding tasks\n   - Break complex requests into smaller, manageable subtasks\n   - Identify which agent would be best suited for each subtask\n\n2. Agent Selection:\n   - dev-agent-1 (Claude): Specializes in precise, validated code development\n   - dev-agent-2 (Llama): Focuses on creative and experimental approaches\n\n3. Task Delegation:\n   - Assign tasks to appropriate agents based on their specialties\n   - Provide clear instructions and context for each subtask\n   - Include relevant details and requirements\n\n4. Result Aggregation:\n   - Collect outputs from all agents\n   - Combine results into a cohesive solution\n   - Ensure consistency across different agents' contributions\n   - Format the final response for clarity\n\n5. Conflict Resolution:\n   - If agents provide conflicting approaches, evaluate trade-offs\n   - Make final decisions based on user requirements\n   - Explain reasoning for chosen solutions\n\nPrioritize efficient coordination while ensuring high-quality outputs that leverage each agent's strengths."
+  "mcpServers":{
+	"ai_development_manager": {
+	  "command": "npx",
+	  "args": [
+		"xpander-mcp-remote",
+		"https://mcp.xpander.ai/<your-mcp>/"
+	  ]
+	}
+  }
 }
 ```
 
-## 🧪 Test Your Manager Agent
+You should be able to see the MCP auto-added to all your cursor chat
 
-Now it's time to test your manager agent's ability to coordinate your coding agents:
+<Frame caption="MCP enabled in Cursor IDE" alt="Screenshot showing MCP integration in Cursor">
+![](/images/screenshots/2025-04-30-10-56-39.png)
+</Frame>
 
-1. In the Workbench, use the Agent Tester (left pane) to test your manager agent
-2. Enter a test prompt that requires coordination, such as:
+Trigger your manager agent with `Can you ask the AI Manager if it's working today?`
 
-```
-Create a weather data visualization application. I need both a reliable backend API and an innovative frontend.
-```
+## ✅ Checkpoint
 
-3. Watch as your manager agent:
-   - Analyzes the task
-   - Breaks it down into subtasks
-   - Delegates to the appropriate coding agents
-   - Aggregates the results
+By completing this module, you should now be able to:
 
-<Frame>![](/images/screenshots/manager-test.png)</Frame>
+1. Create a manager agent using the xpander.ai Workbench
+2. Configure the manager to coordinate your developer agents
+3. Add GitHub Pull Request capabilities to your manager
+4. Connect your manager agent to Cursor IDE using MCP
+5. Test the manager's ability to delegate tasks to your developer agents
 
-## 🚀 Deploy Your Manager Agent
+## 🔄 Next Steps
 
-Deploy your manager agent to make it available for use:
-
-1. Click the **Deploy** button in the Workbench
-2. Once deployment is complete, your manager agent will be available via the API and other interfaces
-
-<Tip>
-  You can monitor your manager agent's activity in the Activity tab, where you'll see all interactions and delegations to your coding agents.
-</Tip>
-
-## 🔄 Connect to Your Development Workflow
-
-Your manager agent can now be used in your development workflow through multiple interfaces:
-
-### Chat Interface
-
-The simplest way to interact with your manager agent is through the built-in chat interface:
-
-1. From the AI Agents list, click on your manager agent
-2. Select the "Chat" tab
-3. Start sending requests that require coordination between your coding agents
-
-### SDK Integration
-
-For programmatic access, integrate your manager agent into your workflow using the xpander SDK:
-
-```python
-from xpander_sdk import XpanderClient
-import os
-
-# Initialize client
-xpander_client = XpanderClient(api_key=os.environ["XPANDER_API_KEY"])
-
-# Load your manager agent
-manager_agent = xpander_client.agents.get(agent_id="your-manager-agent-id")
-
-# Create a task for the manager
-manager_agent.add_task("""
-Create a user authentication system with a secure backend and an intuitive frontend.
-""")
-
-# Run the manager agent
-while not manager_agent.is_finished():
-    # The manager will automatically coordinate with your coding agents
-    # through the team configuration you set up
-    manager_agent.agent_loop_step()
-
-# Get the final aggregated result
-result = manager_agent.retrieve_execution_result()
-print(result.result)
-```
-
-## 🔍 Understanding Manager Delegation
-
-The manager agent follows a structured decision process when coordinating your coding agents:
-
-1. **Task Analysis**: The manager evaluates the incoming request to understand requirements
-2. **Task Decomposition**: Complex tasks are broken down into smaller, manageable subtasks
-3. **Agent Selection**: The manager determines which coding agent is best suited for each subtask
-4. **Delegation**: Tasks are assigned to appropriate agents with clear instructions
-5. **Result Collection**: The manager collects outputs from all agents
-6. **Result Aggregation**: The manager combines all outputs into a cohesive solution
-7. **Quality Assurance**: The manager reviews the combined solution for consistency and completeness
-
-This process happens automatically through the team configuration you've set up in the platform.
-
-## 🚀 Next Steps
-
-Now that you have a complete fleet with a manager agent coordinating your specialized coding agents, you're ready to tackle complex development tasks more efficiently! 
+Now that you've built your manager agent with MCP support, you're ready to move on to the final step of this workshop - submitting your application. In the [next module](/workshops/a2a-mcp-bedrock-workshop/04-submit-application), you'll finalize your project and prepare it for submission.

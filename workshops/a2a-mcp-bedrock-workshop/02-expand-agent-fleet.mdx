@@ -1,10 +1,17 @@
 ---
 title: "Module 2: Expand Your Agent Fleet"
-description: "Create a second coding agent with a different LLM model and custom instructions"
+description: "Create multiple coding agents with different LLM models and unique behaviors"
 icon: "users"
 ---
 
-In this module, you'll expand your agent fleet by creating a second coding agent that uses the Llama model rather than Claude. This will give you experience working with multiple agents and different LLM configurations.
+<Note>
+**Module Summary**
+* **Goal**: Create specialized developer agents with different LLM models and personalities
+* **Estimated Time**: 10-20 minutes
+* **Prerequisites**: Completion of Module 1, access to AWS Bedrock
+</Note>
+
+In this module, you'll expand your agent fleet by creating additional developer agents with different LLM models and specialized behaviors. This will allow you to leverage the unique strengths of different models and create a more robust AI development team.
 
 🚀 You'll duplicate your existing agent setup, customize it with new instructions, configure it to use Llama, and deploy it to the cloud. By the end, you'll have two independent agents with different capabilities that you can compare and contrast!
 
@@ -13,8 +20,8 @@ In this module, you'll expand your agent fleet by creating a second coding agent
 First, let's create a copy of your first agent to build upon:
 
 ```bash
-# Navigate back to your workshop directory if needed
-cd ~/workshop
+# Navigate back to your workshop directory
+cd ..
 
 # Create a new directory for your second agent
 mkdir dev-agent-2
@@ -25,19 +32,22 @@ cp -r dev-agent-1/agent_instructions.json dev-agent-1/coding_agent.py dev-agent-
 # Change to the new directory
 cd dev-agent-2
 
+# Open in Cursor
 cursor .
 ```
 
-Update the requirement.txt to the following
+Update the requirements.txt file to include only the necessary packages:
 
-```bash
+```
 xpander-sdk
 xpander-utils
 boto3
 python-dotenv
 ```
 
-# Create a fresh virtual environment and install dependencies
+Open the Cursor terminal and create a fresh virtual environment:
+
+```bash
 python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
 ```
 
@@ -47,7 +57,7 @@ python3 -m venv .venv && source .venv/bin/activate && pip install -r requirement
 
 ## ✏️ Create Different Agent Instructions
 
-Edit the `agent_instructions.json` file to give your new agent a different personality and focus (or ask cursor):
+Edit the `agent_instructions.json` file to give your new agent a different personality and focus (you can also ask Cursor to help with this):
 
 ```json
 {
@@ -68,6 +78,8 @@ xpander agent new
 You'll see the agent creation wizard:
 
 ```bash
+❯ xpander agent new
+
 ✨ Agent Creation Wizard ✨
 ──────────────────────────────────────────────────
 Create a powerful AI agent for your organization
@@ -78,10 +90,11 @@ Create a powerful AI agent for your organization
 ⠋ Creating agent "dev-agent-2"...Creating agent in organization: 8d185373-8b24-47a7-8607-3e9036b968bb...
 ✔ Agent "dev-agent-2" created successfully!
 
+
 🚀 Your Agent is Ready!
 ──────────────────────────────────────────────────
 Name:     dev-agent-2
-ID:       24fcf4ff-de9a-4a5e-94e0-fdd1b5a05428
+ID:       b08b12d9-59de-4b44-9fa4-23716fec9df3
 Icon:     🚀
 Model:    openai/gpt-4o
 ──────────────────────────────────────────────────
@@ -93,16 +106,19 @@ Model:    openai/gpt-4o
 ✨ Initializing agent
 ────────────────────────────────────────────────────────────
 ℹ Agent dev-agent-2 retrieved successfully
-? The current directory is not empty. Proceeding will override 'requirements.txt' and add or update xpander-related files (xpander_config.json, 
-agent_instructions.json, etc). Yes
+? The current directory is not empty. Proceeding will override 'requirements.txt' and add or update 
+xpander-related files (xpander_config.json, agent_instructions.json, etc). Yes
+
 ✔ Agent initialized successfully
 ```
 
-Next, you need to edit the `coding_agent.py`
+Next, you need to edit the `coding_agent.py` file to use the Llama model.
 
-Replace the model to the meta llama 4 model
+Find and replace the model ID with the Llama 4 model:
 
-MODEL_ID = "meta.llama4-maverick-17b-instruct-v1:0"
+```python
+MODEL_ID = "us.meta.llama4-maverick-17b-instruct-v1:0"
+```
 
 ## 🧪 Test Your Second Agent Locally
 
@@ -116,6 +132,24 @@ python main.py
   The Llama model has different strengths compared to Claude. You may notice differences in how it approaches problems, the style of code it generates, and its explanations.
 </Note>
 
+Now update the xpander_handler.py file with the correct agent implementation:
+
+```python
+from coding_agent import CodingAgent
+
+# Initialize agent instance
+coding_agent = CodingAgent(agent=agent)
+
+def on_execution_request(execution_task: AgentExecution) -> AgentExecutionResult:
+    # Replace the placeholder with actual agent execution
+    
+    execution_status = coding_agent._agent_loop()
+    
+    return AgentExecutionResult(
+        result=execution_status.result,
+        is_success=True if execution_status.status == ExecutionStatus.COMPLETED else False,
+    )
+```
 
 Verify that the handler is working correctly by running `python xpander_handler.py` and sending a message from the UI. 
 
@@ -129,9 +163,6 @@ Deploy your second agent to the cloud:
 xpander deploy
 ```
 
-<Tip>
-  run `xpander logs` to stream logs from the remote server to your terminal
-</Tip>
-
-
 Now that you have two agents ready for your commands, the next step is to build a manager for them!
+
+Let's move forward to the next module where we'll create a manager agent to coordinate your agent fleet.
