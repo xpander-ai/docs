@@ -350,8 +350,17 @@ Congratulations on deploying your agent to the cloud! While the deployment is in
 ```
 AWS_ACCESS_KEY_ID=your_aws_access_key
 AWS_SECRET_ACCESS_KEY=your_aws_secret_key
-AWS_SESSION_TOKEN=your_aws_session_token  # if using temporary credentials
+AWS_SESSION_TOKEN=your_aws_session_token  # only needed if using temporary credentials
+AWS_REGION="us-east-2"
+GIT_TOKEN=your-git-token # Get it from (https://github.com/settings/tokens/new)
+GIT_USERNAME=your-git-username 
 ```
+
+<Note>
+  Make sure to create a Personal Access Token (classic) with repository action permissions
+  
+  <Frame>![](/images/screenshots/2025-04-30-12-33-02.png)</Frame>
+</Note>
 
 These credentials will allow your cloud-deployed agent to access Amazon Bedrock services securely without storing sensitive information in your code.
 
