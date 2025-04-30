@@ -228,6 +228,7 @@
               "apps/zendesk",
               "apps/jira",
               "apps/confluence",
+              "apps/pagerduty",
               "apps/recallai",
               "apps/statuspage",
               "apps/asana",
