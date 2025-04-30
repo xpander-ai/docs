@@ -225,6 +225,7 @@
               "apps/google-gmail",
               "apps/google-bigquery",
               "apps/google-calendar",
+              "apps/zendesk",
               "apps/jira",
               "apps/confluence",
               "apps/statuspage",
