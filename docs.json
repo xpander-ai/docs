@@ -191,6 +191,7 @@
               "apps/google-bigquery",
               "apps/google-calendar",
               "apps/zendesk",
+              "apps/supabase",
               "apps/jira",
               "apps/confluence",
               "apps/pagerduty",
