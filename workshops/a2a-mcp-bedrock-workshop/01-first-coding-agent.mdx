@@ -239,12 +239,25 @@ Start the event handler to listen for cloud events:
 python xpander_handler.py
 ```
 
+```bash Example output
+❯ python xpander_handler.py
+Sandbox base directory: /Users/david/Developer/workshop/dev-agent-1/sandboxes
+2025-04-30 13:16:57.677 | INFO     | xpander_utils.events.listener:register:287 - Starting events listener
+2025-04-30 13:17:02.118 | INFO     | xpander_utils.events.listener:_register_agent_worker:238 - Worker registered - 1f588e29-fb15-4d53-b87b-5d037e108374
+2025-04-30 13:17:02.118 | INFO     | xpander_utils.events.listener:_register_agent_worker:244 - Agent Name: dev-agent-1
+ Chat URL: https://chocolate-jaguar.agents.xpander.ai
+```
+
+This url is the frontend of your agent, and it's already configured with threads and memory. Try chatting and watch the events coming to your local machine.
+
+You can also see the agent in the Tester Tab 
+
 1. Navigate to the URL displayed in the terminal output (e.g., `https://app.xpander.ai/agents/your-agent-id`) or to https://app.xpander.ai and search for dev-agent-1
 2. You'll see your agent in the xpander.ai web interface
 3. Try sending a message like "Hi" to your agent
 4. Watch as the request is processed by your local machine and the response appears in the web UI
 
-You should be able to send new messages in the Tester tab, and this time, the agent will respond properly!
+You can now send new messages in the Tester tab, and this time the agent will respond directly from your local machine!
 
 <Frame caption="Agent responding from local machine through cloud UI" alt="Screenshot of agent interface showing successful communication">
 ![](/images/screenshots/2025-04-29-10-09-32.png)
