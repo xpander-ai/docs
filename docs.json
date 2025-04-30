@@ -337,68 +337,6 @@
         "apiKey": "a217b67ed9af1f3663abbdb97c358d86"
     }
   },
-  "redirects": [
-    {
-      "source": "/api-reference/07-sdk",
-      "destination": "/api-reference/07-sdk/index"
-    },
-    {
-      "source": "/api-reference/07-sdk/",
-      "destination": "/api-reference/07-sdk/index"
-    },
-    {
-      "source": "/tutorials",
-      "destination": "/tutorials/index"
-    },
-    {
-      "source": "/tutorials/",
-      "destination": "/tutorials/index"
-    },
-    {
-      "source": "/workshops",
-      "destination": "/workshops/index"
-    },
-    {
-      "source": "/workshops/",
-      "destination": "/workshops/index"
-    },
-    {
-      "source": "/workshops/01-a2a-mcp-bedrock-workshop",
-      "destination": "/workshops/a2a-mcp-bedrock-workshop/index"
-    },
-    {
-      "source": "/workshops/a2a-mcp-bedrock-workshop/04-pr-automation",
-      "destination": "/workshops/a2a-mcp-bedrock-workshop/04-submit-application"
-    },
-    {
-      "source": "/workshops/a2a-mcp-bedrock-workshop/05-launch-agent-fleet",
-      "destination": "/workshops/a2a-mcp-bedrock-workshop/04-submit-application"
-    },
-    {
-      "source": "/workshops/a2a-mcp-bedrock-workshop/06-submit-application",
-      "destination": "/workshops/a2a-mcp-bedrock-workshop/04-submit-application"
-    },
-    {
-      "source": "/docs",
-      "destination": "/docs/01-get-started/01-index"
-    },
-    {
-      "source": "/docs/",
-      "destination": "/docs/01-get-started/01-index"
-    },
-    {
-      "source": "/changelog",
-      "destination": "/changelog/product-updates"
-    },
-    {
-      "source": "/changelog/",
-      "destination": "/changelog/product-updates"
-    },
-    {
-      "source": "/apps",
-      "destination": "/apps/index"
-    }
-  ],
   "footer": {
     "socials": {
       "x": "https://x.com/xpander_ai",
