@@ -192,6 +192,7 @@
               "apps/google-calendar",
               "apps/zendesk",
               "apps/supabase",
+              "apps/supabase-db",
               "apps/jira",
               "apps/confluence",
               "apps/pagerduty",

@@ -1,0 +1,63 @@
+---
+title: SupaBase Database
+description: Learn how to build AI agents with SupaBase access using xpander.ai.
+icon: supabase-db
+---
+
+Learn how to build AI agents with Supabase access using xpander.ai. This integration enables intelligent document-aware AI assistants that can read from, write to, and query your SupaBase database, allowing seamless automation, analysis, and organization of project data automatically.
+
+## Authentication Options
+
+<Tabs>
+  <Tab title="API Access">
+    <Frame caption="SupaBase API access configuration">
+      ![SupaBase API Access](/images/placeholders/supabase-api.png)
+    </Frame>
+
+    For programmatic access and automation:
+
+    1. Sign in to your [SupaBase Account](https://supabase.com/dashboard/sign-in).
+    2. Click on the [API URL and Keys](https://supabase.com/dashboard/project/_/settings/api), then select your project.
+    3. Click **Copy to clipboard** and store it somewhere secure:
+<Frame>
+    ![](/images/screenshots/supabase_2025-04-30-10-45-40.png)
+</Frame>
+
+    <Warning>
+    The API gives you powerful capabilities in order to enhance your SupaBase experience. 
+    </Warning>
+
+    4. Go to your General Project Settings, and copy your Project ID.
+
+    ### Let's create the Xpander.ai Supabase interface!
+    1. Write your interface name.
+    2. Select the interface access you'd like.
+    3. Select the **API key** authentication method.
+    4. Select the **Integration user** authentication scope.
+    5. Select **Custom** as the Auth type and **Authorization** as the Custom header name.
+    6. Paste the token copied earlier in the API Key field using this template: `[YOUR_API_KEY]`
+
+      **Note:** Make sure to replace `[YOUR_API_KEY]` with your actual SupaBase API key.
+
+    7. Under the `Interface Specific Settings`, paste your Supabase Project ID copied earlier instead of the placeholder, like so:
+
+<Frame>
+    ![](/images/screenshots/supabase_2025-04-30-11-38-42.png)
+</Frame>
+
+
+    Then save the interface.
+
+<Info>
+    For more information about the SupaBase Database product, [click here](https://supabase.com/docs/guides/database/overview).
+</Info>
+<Info>
+    For more information about the SupaBase API, [click here](https://supabase.com/docs/reference/api/).
+</Info>
+<Info>
+    For more information about the API framework used by Supabase, [click here](https://docs.postgrest.org/en/v12/).
+</Info>
+
+
+  </Tab>
+</Tabs>
