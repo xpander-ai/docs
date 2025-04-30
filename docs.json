@@ -349,6 +349,14 @@
     {
       "source": "/workshops/a2a-mcp-bedrock-workshop/06-submit-application",
       "destination": "/workshops/a2a-mcp-bedrock-workshop/04-submit-application"
+    },
+    {
+      "source": "/workshops/a2a-mcp-bedrock-workshop/",
+      "destination": "/workshops/a2a-mcp-bedrock-workshop/index"
+    },
+    {
+      "source": "/workshops/a2a-mcp-bedrock-workshop",
+      "destination": "/workshops/a2a-mcp-bedrock-workshop/index"
     }
   ],
   "footer": {
