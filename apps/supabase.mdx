@@ -1,0 +1,51 @@
+---
+title: SupaBase
+description: Learn how to build AI agents with SupaBase access using xpander.ai.
+icon: supabase
+---
+
+Learn how to build AI agents with Supabase access using xpander.ai. This integration enables intelligent document-aware AI assistants that can read from, write to, and query your SupaBase database, allowing seamless automation, analysis, and organization of project data in real time.
+
+## Authentication Options
+
+<Tabs>
+  <Tab title="API Access">
+    <Frame caption="SupaBase API access configuration">
+      ![SupaBase API Access](/images/placeholders/supabase-api.png)
+    </Frame>
+
+    For programmatic access and automation:
+
+    1. Sign in to your [SupaBase Account](https://supabase.com/dashboard/sign-in).
+    2. Click on the settings avater on the left, and then click on API:
+
+		<Frame>
+			![](/images/screenshots/supabase_2025-04-30-10-01-42.png)
+		</Frame>
+
+    3. Click **Copy to clipboard** and store it somewhere secure.
+
+    <Warning>
+    The API gives you powerful capabilities in order to enhance your SupaBase experience. It's very important to keep your API token secure.
+    </Warning>
+
+    ### Let's create the Xpander.ai SupaBase interface!
+    1. Write your interface name.
+    2. Select the interface access you'd like
+    3. Select the API key authentication method
+    4. Select the Integration user authentication scope
+    5. Select **Custom** as the Auth type and **Authorization** as the Custom header name.
+    6. Paste the token copied earlier in the API Key field using this template: `[YOUR_API_KEY]`
+
+      **Note:** Make sure to replace `[YOUR_API_KEY]` with your actual SupaBase API key.
+
+		<Frame>
+			![](/images/screenshots/supabase_2025-04-30-10-15-14.png)
+		</Frame>
+
+    Then save the interface.
+
+    For more information about the SupaBase API, [click here](https://developer.supabase.io/).
+
+  </Tab>
+</Tabs>
