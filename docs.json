@@ -223,6 +223,8 @@
               "apps/google-gmail",
               "apps/google-bigquery",
               "apps/google-calendar",
+              "apps/clickup",
+              "apps/github",
               "apps/zendesk",
               "apps/supabase",
               "apps/supabase-db",
