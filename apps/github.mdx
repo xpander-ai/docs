@@ -1,0 +1,63 @@
+---
+title: GitHub
+description: Learn how to build AI agents with GitHub access using xpander.ai.
+icon: GitHub
+---
+
+Learn how to build AI agents with GitHub access using xpander.ai. This integration enables intelligent document-aware AI assistants that can read, manage, and analyze repositories, issues, pull requests, and workflows to streamline development processes and improve project collaboration.
+
+## Authentication Options
+
+<Tabs>
+    <Tab title="API Access">
+        <Frame caption="GitHub API access configuration">
+            ![GitHub API Access](/images/placeholders/github-api.png)
+        </Frame>
+
+        For programmatic access and automation:
+
+
+        1. Sign in at [github.com](https://github.com/)
+        2. Verify your email address, if it hasn't been verified yet.
+        3. In the upper-right corner of any page on GitHub, click your profile photo, then click  Settings.
+        4. In the left sidebar, click  Developer settings.
+        5. In the left sidebar, under  Personal access tokens, click Tokens (classic).
+        6. Select Generate new token, then click Generate new token (classic):
+        <Frame>
+			![](/images/screenshots/github_2025-05-02-09-25-29.png)
+		</Frame>
+        7. In the "Note" field, give your token a descriptive name.
+        8. Select Expiration, then choose a default option or click Custom to enter a date.
+        9. Select the scopes you'd like to grant this token and Xpander's agents. 
+        <Info>
+        To read more about the scopes, [click here](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps).
+        </Info>
+        10. Click Generate token.
+
+        **Note:** After you close this window the token value cannot be retrieved. Save it right away—preferably in a
+        password manager.
+
+### Let's create the Xpander.ai GitHub interface!
+<Info>
+    Regardless of the specific interface sub-domain (`Search Manager`, `Actions Manager`, `Issues`, or `Pull Requests`), the creation process is the same and described in the following section.
+</Info>
+        1. Write your interface name.
+        2. Select the interface access you'd like.
+        3. Select the **API key** authentication method.
+        4. Select the **Integration user** authentication scope.
+        5. Select **Bearer** as the Auth type.
+        6. Paste the token copied earlier in the API Key field using this template: `[YOUR_API_KEY]`, like so:
+        <Frame>
+			![](/images/screenshots/github_2025-05-02-10-08-42.png)
+		</Frame>
+        
+
+        Then save the interface.
+
+        For more information about the GitHub API, [click here](https://developer.github.com/docs/authentication),
+        and to get more details about how to create your GitHub API tokens, [click
+        here](https://support.github.com/main/docs/api-access-keys#section-generating-a-general-access-rest-api-key).
+
+
+    </Tab>
+</Tabs>
