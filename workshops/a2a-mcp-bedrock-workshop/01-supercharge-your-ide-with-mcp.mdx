@@ -379,8 +379,21 @@ def xpander_run_action(repo_full_name: str, file_path: str, ref: str = "main"):
 4. Name it **GitHub Code Reader** and click **Save**
 5. Return to your agent in the **AI Agents** section
 6. Click the **+** button
-7. Select **Custom Cloud Functions**
+7. Select **Custom Action**
 8. Add the **GitHub Code Reader** function to your agent canvas
+9. Click Save -> Deploy. 
+
+Run the following prompt
+
+```txt Example Prompt
+How can I increase throughput using cross-region inference with Amazon Bedrock and boto3? Download and provide the real python code snippet from AWS repos, not a link
+```
+
+<Frame>![](/images/screenshots/2025-05-04-01-29-12.png)</Frame>
+
+<Note>
+   The screenshot is from the agent’s WebUI. You can access yours by clicking the ‘Chat’ button on the canvas — the WebUI URL will appear
+</Note>
 
 ## 🌎 Enhancing Your Agent with Web Search
 
