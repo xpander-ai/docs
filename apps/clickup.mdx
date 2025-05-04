@@ -1,0 +1,61 @@
+---
+title: ClickUp
+description: Learn how to build AI agents with ClickUp access using xpander.ai. 
+icon: clickup
+---
+
+Learn how to build AI agents with ClickUp access using xpander.ai. This integration enables intelligent task-aware AI assistants that can manage, update, and analyze projects, tasks, and workflows across teams automatically.
+
+## Authentication Options
+
+<Tabs>
+    <Tab title="API Access">
+        <Frame caption="ClickUp API access configuration">
+            ![ClickUp API Access](/images/placeholders/clickup-api.png)
+        </Frame>
+
+        For programmatic access and automation:
+
+        1. Log in to [ClickUp.com](https://clickup.com/)
+        2. In the upper-right corner, click your avatar.
+        3. Select Settings.
+        4. In the sidebar, click Apps. [You can also click here directly](https://app.clickup.com/settings/apps).
+        5. Under **API Token**, click **Generate** or **Regenerate**:
+		<Frame>
+			![](/images/screenshots/clickup_2025-05-02-11-26-33.png)
+		</Frame>
+        6. Click Copy to copy the personal token to your clipboard..
+        
+<Warning>
+    **Personal tokens never expire** - so if you'd like to remove the token from Xpander, you should delete the interface and ReGenerate one.
+</Warning>
+
+### Let's create the Xpander.ai ClickUp interface!
+        1. Write your interface name.
+        2. Select the interface access you'd like.
+        3. Select the **API key** authentication method.
+        4. Select the **Integration user** authentication scope.
+        5. Select **Custom** as the Auth type and **Authorization** as the Custom header name.
+        6. Paste the token copied earlier in the API Key field using this template: `[YOUR_API_KEY]`, like so:
+
+		<Frame>
+			![](/images/screenshots/clickup_2025-05-02-11-31-06.png)
+		</Frame>
+        
+      **Note:** Make sure to replace `[YOUR_API_KEY]` with your actual ClickUp API key.
+
+       Then save the interface.
+
+        <Info>
+            For more information about the ClickUp API, [click here](https://developer.clickup.com/docs/index),
+            and to get more details about how to create your ClickUp API tokens, [click
+            here](https://developer.clickup.com/docs/authentication).
+        </Info>
+        
+        <Info>
+            To try the API on your browser via the ClickUp API Reference, [click here](https://developer.clickup.com/reference),             
+            and to read more about the usage of the ClickUp API Reference, [click here](https://developer.clickup.com/docs/trytheapi)
+        </Info>
+
+    </Tab>
+</Tabs>
