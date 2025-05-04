@@ -148,10 +148,11 @@
                 },
                 "pages": [
                   "workshops/a2a-mcp-bedrock-workshop/index",
-                  "workshops/a2a-mcp-bedrock-workshop/01-first-coding-agent",
-                  "workshops/a2a-mcp-bedrock-workshop/02-expand-agent-fleet",
-                  "workshops/a2a-mcp-bedrock-workshop/03-serverless-manager-agent",
-                  "workshops/a2a-mcp-bedrock-workshop/04-submit-application"
+                  "workshops/a2a-mcp-bedrock-workshop/01-supercharge-your-ide-with-mcp",
+                  "workshops/a2a-mcp-bedrock-workshop/02-first-coding-agent",
+                  "workshops/a2a-mcp-bedrock-workshop/03-expand-agent-fleet",
+                  "workshops/a2a-mcp-bedrock-workshop/04-serverless-manager-agent",
+                  "workshops/a2a-mcp-bedrock-workshop/05-submit-application"
                 ]
               }
             ]
@@ -343,16 +344,32 @@
   },
   "redirects": [
     {
+      "source": "/workshops/a2a-mcp-bedrock-workshop/01-first-coding-agent",
+      "destination": "/workshops/a2a-mcp-bedrock-workshop/02-first-coding-agent"
+    },
+    {
+      "source": "/workshops/a2a-mcp-bedrock-workshop/02-expand-agent-fleet",
+      "destination": "/workshops/a2a-mcp-bedrock-workshop/03-expand-agent-fleet"
+    },
+    {
+      "source": "/workshops/a2a-mcp-bedrock-workshop/03-serverless-manager-agent",
+      "destination": "/workshops/a2a-mcp-bedrock-workshop/04-serverless-manager-agent"
+    },
+    {
+      "source": "/workshops/a2a-mcp-bedrock-workshop/04-submit-application",
+      "destination": "/workshops/a2a-mcp-bedrock-workshop/05-submit-application"
+    },
+    {
       "source": "/workshops/a2a-mcp-bedrock-workshop/04-pr-automation",
-      "destination": "/workshops/a2a-mcp-bedrock-workshop/04-submit-application"
+      "destination": "/workshops/a2a-mcp-bedrock-workshop/05-submit-application"
     },
     {
       "source": "/workshops/a2a-mcp-bedrock-workshop/05-launch-agent-fleet",
-      "destination": "/workshops/a2a-mcp-bedrock-workshop/04-submit-application"
+      "destination": "/workshops/a2a-mcp-bedrock-workshop/05-submit-application"
     },
     {
       "source": "/workshops/a2a-mcp-bedrock-workshop/06-submit-application",
-      "destination": "/workshops/a2a-mcp-bedrock-workshop/04-submit-application"
+      "destination": "/workshops/a2a-mcp-bedrock-workshop/05-submit-application"
     },
     {
       "source": "/workshops/a2a-mcp-bedrock-workshop/",
