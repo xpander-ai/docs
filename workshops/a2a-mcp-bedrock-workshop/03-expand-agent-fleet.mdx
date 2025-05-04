@@ -11,7 +11,7 @@ icon: "users"
 * **Prerequisites**: Completion of Module 2, access to AWS Bedrock
 </Note>
 
-🚀  In this module, you'll duplicate your existing agent setup, customize it with new instructions, configure it to use Llama, and deploy it to the cloud. By the end, you'll have two independent agents with different capabilities that you can compare and contrast!
+🚀  In this module, you'll duplicate your existing agent setup, customize it with new instructions, configure it to use Llama 4, and deploy it to the cloud. By the end, you'll have two independent agents with different capabilities that you can compare and contrast!
 
 ## 🔄 Duplicate Your Agent Setup
 
@@ -120,25 +120,6 @@ python main.py
 <Note>
   The Llama model has different strengths compared to Claude. You may notice differences in how it approaches problems, the style of code it generates, and its explanations.
 </Note>
-
-Now update the xpander_handler.py file with the correct agent implementation:
-
-```python
-from coding_agent import CodingAgent
-
-# Initialize agent instance
-coding_agent = CodingAgent(agent=agent)
-
-def on_execution_request(execution_task: AgentExecution) -> AgentExecutionResult:
-    # Replace the placeholder with actual agent execution
-    
-    execution_status = coding_agent._agent_loop()
-    
-    return AgentExecutionResult(
-        result=execution_status.result,
-        is_success=True if execution_status.status == ExecutionStatus.COMPLETED else False,
-    )
-```
 
 Verify that the handler is working correctly by running `python xpander_handler.py` and sending a message from the UI. 
 
