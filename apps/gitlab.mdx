@@ -1,0 +1,85 @@
+---
+title: GitLab
+description: Learn how to build AI agents with GitLab access using xpander.ai. 
+icon: gitlab
+---
+
+Learn how to build AI agents with GitLab access using xpander.ai. This integration enables intelligent code-aware AI assistants that can read, manage, and analyze repositories, issues, merge requests, and CI/CD pipelines to streamline development workflows automatically.
+
+## Authentication Options
+
+<Tabs>
+    <Tab title="API Access">
+        <Frame caption="GitLab API access configuration">
+            ![GitLab API Access](/images/placeholders/gitlab-api.png)
+        </Frame>
+
+        For programmatic access and automation:
+
+        1. Log in to [GitLab.com](https://gitlab.com/users/sign_in)
+        2. On the left sidebar, select **your avatar**, then select **Edit profile**.
+        3. On the left sidebar, select **Access tokens**, then select **Add new token**.
+        4. Add Token name, [desired scopes](https://docs.gitlab.com/user/profile/personal_access_tokens/#personal-access-token-scopes), and an expiration date:
+        
+        <Frame>
+			![](/images/screenshots/gitlab_2025-05-02-12-17-08.png)
+		</Frame>
+
+        5. Click **Create personal access token**, and copy your token:
+        <Frame>
+			![](/images/screenshots/gitlab_2025-05-02-12-18-24.png)
+		</Frame>
+        
+**Note:** After you close this window the token value cannot be retrieved. Save it right away—preferably in a password manager.
+
+### Let's create the Xpander.ai GitLab interface!
+        1. Write your interface name.
+        2. Select the interface access you'd like.
+        3. Select the **API key** authentication method.
+        4. Select the **Integration user** authentication scope.
+#### You have three options here: Custom, In-URL or Bearer:
+    
+    
+    **1. Custom:**
+
+        5. Select **Custom** as the Auth type and **PRIVATE-TOKEN** as the Custom header name.
+        6. Paste the token copied earlier in the API Key field using this template: `[YOUR_API_KEY]`, like so:
+
+        <Frame>
+			![](/images/screenshots/gitlab_2025-05-02-12-42-28.png)
+		</Frame>
+
+    **2. In-URL:**
+
+        5. Select **In-URL** as the Auth type and **private_token** as the Custom header name.
+        6. Paste the token copied earlier in the API Key field using this template: `[YOUR_API_KEY]`, like so:
+		
+        <Frame>
+			![](/images/screenshots/gitlab_2025-05-02-12-43-33.png)
+		</Frame>
+
+    **3. Bearer:**
+
+        5. Select **Bearer** as the Auth type.
+        6. Paste the token copied earlier in the API Key field using this template: `[YOUR_API_KEY]`, like so:
+
+		<Frame>
+			![](/images/screenshots/gitlab_2025-05-02-12-44-20.png)
+		</Frame>
+
+
+
+      **Note:** Make sure to replace `[YOUR_API_KEY]` with your actual GitLab API key.
+
+       Then save the interface.
+
+        <Info>
+            For general information about GitLab, [click here - GitLab Documentation](https://docs.gitlab.com/),
+
+            for information about the GitLab REST API Authentication methods, [click here](https://docs.gitlab.com/api/rest/authentication/),
+            
+            and to get more details about how to create your GitLab Personal Access Tokens, [click
+            here](https://docs.gitlab.com/user/profile/personal_access_tokens/).
+        </Info>
+    </Tab>
+</Tabs>

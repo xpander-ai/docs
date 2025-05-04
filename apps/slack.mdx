@@ -1,0 +1,71 @@
+---
+title: Slack
+description: Learn how to build AI agents with Slack access using xpander.ai. 
+icon: slack
+---
+
+Learn how to build AI agents with Slack access using xpander.ai. This integration enables intelligent communication-aware AI assistants that can read, send, organize, and analyze messages, channels, and workflows to enhance team collaboration automatically.
+
+## Authentication Options
+
+<Tabs>
+  <Tab title="Built-in xpander.ai Auth">
+  The simplest way to connect Slack is using xpander.ai’s built-in authentication:
+  1. Go to the Apps section in xpander.ai dashboard
+  2. Select Slack from available integrations.
+  3. Click Sign in with Slack
+  4. Select your Slack workspace, and then log in to your Slack user.
+  5. Select on which channel you'd like the Xpander app to operate.
+  6. Your connection is immediately active and ready to use.
+  </Tab>
+
+  <Tab title="API Access">
+  <Frame caption="Slack API access configuration">
+    ![Slack API Access](/images/placeholders/slack-api.png)
+  </Frame>
+
+  For programmatic access and automation you will need a Slack Application.
+
+  If you don't have a Slack Application, start from step 1.  
+  If you have a Slack Application, but haven't asked for scopes for the app, skip to step 6.
+  If you have a Slack Application, and asked for scopes for the app, skip to step 8.
+
+  1. Go to [Your Apps](https://api.slack.com/apps) and select **Create New App**.
+  2. Select From scratch.
+  3. Enter your App Name. For this example, enter "Grocery Reminders".
+  4. Select the Workspace where you'll be developing your app. For example, "xpandercommunity". 
+      You'll be able to [distribute your app](https://api.slack.com/distribution) to other workspaces later if you choose.
+  5. Select **Create App**.
+  
+  6. Under **OAuth & Permissions**, go to the **Scopes** Section, provide the relevant scopes to the **Bot Token Scopes** which you'd like to add to your app.
+  If more info is needed, please continue the scopes creation process via the instructions in [Slack's quickguide](https://api.slack.com/quickstart#scopes).
+
+  7. Under **OAuth Tokens**, click **Install to `<WORKSPACE>`**, and follow the installation process.
+
+  8. Once you have finished installing the app to your workspace, go back to the **OAuth Tokens** section, and copy the **Bot User OAuth Token**:
+    <Frame>
+        ![](/images/screenshots/slack_2025-05-02-15-10-29.png)
+    </Frame>
+
+
+  ### Let's create the Xpander.ai Slack interface!
+        1. Write your interface name.
+        2. Select the interface access you'd like.
+        3. Select the **API key** authentication method.
+        4. Select the **Integration user** authentication scope.
+        5. Select **Bearer** as the Auth type.
+        6. Paste the token copied earlier in the API Key field using this template: `[YOUR_API_KEY]`, like so:
+
+  <Frame>
+    ![](/images/screenshots/slack_2025-05-02-15-13-54.png)
+  </Frame>
+        
+      **Note:** Make sure to replace `[YOUR_API_KEY]` with your actual Slack API key.
+
+       Then save the interface.
+
+  <Info>
+        For more information about the Slack API, [click here](https://api.slack.com/quickstart).
+  </Info>
+  </Tab>
+</Tabs>
