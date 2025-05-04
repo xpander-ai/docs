@@ -1,71 +1,65 @@
 ---
-title: "AI Agent Fleet Development Workshop"
-description: "Learn to build, deploy, and orchestrate collaborative AI agents using xpander.ai with Amazon Bedrock"
+title: "Welcome"
+description: "Build custom Bedrock and serverless AI agents that collaborate to streamline development tasks and assist with coding"
 icon: "rocket"
 ---
 
-In this workshop, you'll learn how to build an effective AI agent system using xpander.ai's Agent-to-Agent (A2A) framework, Model Context Protocol (MCP), and Amazon Bedrock. You'll develop a fleet of specialized AI agents that work together to automate software development tasks.
+# A2A-MCP Agents Workshop
 
-<Frame>
+In this workshop, you'll build AI agents with xpander.ai and Amazon Bedrock. You'll create agents that work together to help with coding and development tasks.
 
-![A2A Workshop Banner](/images/workshops/Github.png)
+When finished, you'll have a GitHub agent in your IDE, two coding agents, and a manager agent that coordinates them. You'll use these agents to build and submit a sample application.
 
-</Frame>
+## The xpander.ai Agentic Platform
 
-## Workshop Objectives
-
-This workshop will guide you through creating a complete AI agent ecosystem that can:
-
-- Perform collaborative development with specialized developer agents
-- Improve development efficiency through agent coordination
-- Generate functional code from natural language instructions
-- Automate code review and pull request processes
-- Deploy agent-built applications
+xpander.ai is open-source multi-framework infrastructure for autonomous agents. It provides:
+- Unified state management (memory object) to make agents stateful, with thread support across frameworks
+- Out-of-the-box Agent-to-Agent protocol with orchestration rules between agents.
+- Tool access for AI models (Model Context Protocol (MCP) compatible)
+- Agentic RAG to optimize API responses.
+- Reliable execution engine for tool use and AI calls.
+- Dedicated AI workers for hosting custom agents of any framework or AI Model.
+- Human interfaces out-of-the-box - REST API, Web UI, MCP, and webhook support included.
+- Vault for keys.
 
 ## Workshop Modules
 
+1. **GitHub Agent** - Build a GitHub search agent and connect it to your IDE through MCP.
+
+2. **First Coding Agent** - Create a developer agent with Amazon Bedrock that manages repos and writes code.
+
+3. **Second Coding Agent** - Add another developer agent with different capabilities and behavior.
+
+4. **Manager Agent** - Build a coordinator that assigns tasks and manages GitHub pull requests.
+
+5. **Final Project** - Use your agents to build and submit an application.
+
+## What You'll Learn
+
+This workshop teaches you:
+- When to use A2A for agent communication vs. MCP for tool access
+- How to use Agentic RAG to handle large API responses
+- Converting agents from different frameworks to work together
+- Adding tools to agents and setting up specific behaviors
+- Monitoring agent systems during operation
+
+## Modules
+
 <CardGroup cols={2}>
-  <Card
-    title="1. Build Your First Coding Agent"
-    icon="code"
-    href="/workshops/a2a-mcp-bedrock-workshop/01-first-coding-agent"
-    color="#4A2C99"
-  >
-    Create your first AI developer agent powered by Amazon Bedrock. You'll set up a local environment, configure agent instructions, connect it to the cloud, and implement repository management capabilities including cloning repositories and file creation.
-  </Card>
-  <Card
-    title="2. Expand Your Agent Fleet"
-    icon="users"
-    href="/workshops/a2a-mcp-bedrock-workshop/02-expand-agent-fleet"
-    color="#753CFF"
-  >
-    Develop specialized developer agents with different capabilities using various LLM models. You'll create agents with distinct roles and expertise, establishing the foundation for parallel development that leverages the strengths of different AI models.
-  </Card>
-  <Card
-    title="3. Build a Manager Agent"
-    icon="sitemap"
-    href="/workshops/a2a-mcp-bedrock-workshop/03-serverless-manager-agent" 
-    color="#9B70FF"
-  >
-    Create a manager agent to orchestrate your developer agents. Using xpander.ai's Workbench, you'll develop a central coordinator that delegates tasks to your developer agents, manages GitHub operations, and connects to your Cursor IDE through MCP.
-  </Card>
-  <Card
-    title="4. Build & Submit Your Application"
-    icon="rocket"
-    href="/workshops/a2a-mcp-bedrock-workshop/04-submit-application"
-    color="#4A2C99"
-  >
-    Apply your agent fleet to build a functional application from a simple prompt. Your manager agent will coordinate the developer agents to implement your requirements, then submit the completed project to the xpander.ai repository for demonstration.
-  </Card>
+  <Card title="1. Supercharge Your IDE with MCP" icon="bolt" href="/workshops/a2a-mcp-bedrock-workshop/01-supercharge-your-ide-with-mcp" color="#4A2C99">Build a GitHub agent that connects to your IDE.</Card>
+  <Card title="2. Build Your First Coding Agent" icon="code" href="/workshops/a2a-mcp-bedrock-workshop/02-first-coding-agent" color="#4A2C99">Create a Bedrock agent that handles code tasks.</Card>
+  <Card title="3. Expand Your Agent Fleet" icon="users" href="/workshops/a2a-mcp-bedrock-workshop/03-expand-agent-fleet" color="#753CFF">Add a second agent with different capabilities.</Card>
+  <Card title="4. Build a Manager Agent" icon="sitemap" href="/workshops/a2a-mcp-bedrock-workshop/04-serverless-manager-agent" color="#9B70FF">Create an agent that coordinates your other agents.</Card>
+  <Card title="5. Build & Submit Your Application" icon="rocket" href="/workshops/a2a-mcp-bedrock-workshop/05-submit-application" color="#4A2C99">Build and submit a project with your agents.</Card>
 </CardGroup>
 
 ## Prerequisites
 
+You need:
 - AWS account with Amazon Bedrock access
-- xpander.ai account (available during the workshop)
+- xpander.ai account (provided at the workshop)
 - Cursor IDE with MCP support
-- Basic understanding of Python
+- Basic Python knowledge
+- GitHub account
 
-## Get Started
-
-Begin with [Module 1: Build Your First Coding Agent](/workshops/a2a-mcp-bedrock-workshop/01-first-coding-agent) to start building your AI development system. 
+Start with [Module 1](/workshops/a2a-mcp-bedrock-workshop/01-supercharge-your-ide-with-mcp). 
