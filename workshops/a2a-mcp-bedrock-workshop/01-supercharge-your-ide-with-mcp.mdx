@@ -28,10 +28,36 @@ icon: "bolt"
 4. Click the **New AI Agent** button to open the Workbench
 5. When prompted by the agent builder, click **Skip** (we'll create the agent manually)
 
-### Step 2: Configure Agent Settings
+### Step 2: Add GitHub Search Tools
+
+1. Click on the **+** (plus) button in your agent canvas
+2. Select **Apps** from the menu 
+3. Select **GitHub Search Manager**
+4. Click **Sign in with GitHub Search Manager**
+
+   <Frame>![GitHub Search Manager Sign-in](/images/screenshots/2025-05-03-23-50-36.png)</Frame>
+
+5. Give the interface a name (like "github-search-your-name" or just "github-search")
+6. Click **Save**
+
+<Tip>
+You should now see the GitHub Search tools available as Agentic Actions in your agent's canvas.
+</Tip>
+
+### Step 3: Add GitHub Operations
+
+Add the following GitHub operations to your agent:
+- **Find Code Snippets by Query Terms** - `GET /search/code`
+- **Find Repositories by Criteria** - `GET /search/repositories` 
+- **Search Topics by Criteria** - `GET /search/topics`
+- **Find Users by Criteria** - `GET /search/users`
+- **Search Commits by Criteria** - `GET /search/commits`
+
+<Frame>![GitHub Operations](/images/screenshots/2025-05-03-23-53-27.png)</Frame>
+
+### Step 4: Configure Agent Settings
 
 1. In the Builder Workbench, click on the Gear Icon in the top-right corner
-   <Frame>![Agent Settings](/images/screenshots/2025-05-03-23-47-01.png)</Frame>
 
 2. In the Agent Builder Settings panel, click on **Generate Details**
 3. Enter the following prompt to generate your agent description:
@@ -40,7 +66,7 @@ icon: "bolt"
    You are GitHub-Search-Agent, an expert at searching and analyzing GitHub repositories, code, users, and topics. You have deep knowledge of GitHub's API and can provide concise, accurate information about code patterns, repository structures, and developer activities.
    ```
 
-4. Now define your agent's role, goal, and instructions:
+4. Go to **Instructions** and define your agent's role, goal, and instructions:
 
    ```txt Role
    You are GitHub-Search-Agent, an expert at searching and analyzing GitHub repositories, code, users, and topics. You have deep knowledge of GitHub's API and can provide concise, accurate information about code patterns, repository structures, and developer activities.
@@ -61,32 +87,7 @@ icon: "bolt"
 
 5. Click **Save Changes** and close the panel
 
-### Step 3: Add GitHub Search Tools
 
-1. Click on the **+** (plus) button in your agent canvas
-2. Select **Apps** from the menu 
-3. Select **GitHub Search Manager**
-4. Click **Sign in with GitHub Search Manager**
-
-   <Frame>![GitHub Search Manager Sign-in](/images/screenshots/2025-05-03-23-50-36.png)</Frame>
-
-5. Give the interface a name (like "github-search-your-name" or just "github-search")
-6. Click **Save**
-
-<Tip>
-You should now see the GitHub Search tools available as Agentic Actions in your agent's canvas.
-</Tip>
-
-### Step 4: Add GitHub Operations
-
-Add the following GitHub operations to your agent:
-- **Find Code Snippets by Query Terms** - `GET /search/code`
-- **Find Repositories by Criteria** - `GET /search/repositories` 
-- **Search Topics by Criteria** - `GET /search/topics`
-- **Find Users by Criteria** - `GET /search/users`
-- **Search Commits by Criteria** - `GET /search/commits`
-
-<Frame>![GitHub Operations](/images/screenshots/2025-05-03-23-53-27.png)</Frame>
 
 Your completed agent should look similar to this:
 
@@ -96,7 +97,7 @@ Your completed agent should look similar to this:
 
 Let's test your newly created GitHub search agent:
 
-1. Click on the **Tester** tab in the xpander.ai interface
+1. In the left pane of the builder interface, you'll find the testing area
 2. Type the following query to search for topics:
    ```txt Prompt
    Search for topics in GitHub related to A2A and MCP
@@ -140,25 +141,9 @@ Let's test your newly created GitHub search agent:
    }
    ```
 
-4. Now try a repositories search:
+4. Now try a repositories search in the testing area:
    ```txt Prompt
    Find cool repositories related to Agent 2 Agent and MCP
-   ```
-
-   ```json AI Generated payload
-   {
-      "bodyParams": {},
-      "queryParams": {
-         "q": "Agent 2 Agent MCP",
-         "sort": "stars",
-         "order": "desc",
-         "per-page": 5,
-         "page": 1,
-         "xp_rag_query": "Agent 2 Agent MCP",
-         "xp_rag_top_k": 5
-      },
-      "pathParams": {}
-   }
    ```
 
 <Warning>
@@ -232,7 +217,7 @@ Next, let's optimize the user search operation:
    ```
 
 6. Save your changes
-7. In the **Tester** tab, run:
+7. In the testing area on the left pane, run:
    ```txt Prompt
    Find GitHub users related to MCP and Agent 2 Agent protocol
    ```
@@ -269,7 +254,7 @@ Now, let's configure commit search operations:
    ```
 
 6. Save your changes
-7. In the **Tester** tab, try a follow-up question:
+7. In the testing area of the left pane, try a follow-up question:
    ```txt Follow-up Prompt
    Summarize their recent commits
    ```
@@ -304,7 +289,7 @@ Finally, let's optimize the code snippet operation:
    ```
 
 6. Save your changes
-7. In the **Tester** tab, run:
+7. In the testing area of the left pane, run:
    ```txt Prompt
    Can you find the implementation of A2A code snippet?
    ```
@@ -392,7 +377,7 @@ How can I increase throughput using cross-region inference with Amazon Bedrock a
 <Frame>![](/images/screenshots/2025-05-04-01-29-12.png)</Frame>
 
 <Note>
-   The screenshot is from the agent’s WebUI. You can access yours by clicking the ‘Chat’ button on the canvas — the WebUI URL will appear
+   The screenshot is from the agent's WebUI. You can access yours by clicking the 'Chat' button on the canvas — the WebUI URL will appear
 </Note>
 
 ## 🌎 Enhancing Your Agent with Web Search
@@ -432,7 +417,7 @@ This reveals a fascinating design challenge in AI systems: How can we create tru
 
 In production, to ensure your agent follows the right search strategy, we should always create a dependency graph that deterministically enforces specific business logic behavior:
 
-1. In your agent canvas, click on the **Graph View** button
+1. In your agent canvas, connect your nodes to create the dependency graph
 2. Set up a workflow that requires an internet search before accessing GitHub operations:
    - Connect the Tavily AI Insights node as a prerequisite to the GitHub operations
    - Ensure the flow follows a logical progression
