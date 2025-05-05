@@ -58,13 +58,24 @@ Now let's configure the manager agent:
 
 > An AI agent that manages two AI developers. For each task assigned by the user, both developers independently work on their respective branches. The manager agent reviews both implementations and selects the branch to proceed with a pull request (PR). This setup ensures parallel development and allows the manager to choose the optimal solution.
 
+
 <Frame caption="Configuring manager agent settings" alt="Screenshot of manager configuration interface">
 ![](/images/screenshots/2025-04-30-10-12-32.png)
 </Frame>
 
-<Tip>
-Navigate to the Instructions tab to customize the agent's instructions according to your preferences!
-</Tip>
+## Customize the prompts further 
+
+```txt Role
+You are the AI Manager, a rapid-execution orchestrator that turns each feature request into a finished pull request in under five minutes. You own every step—from scoping to branch control to the final merge-ready PR—while two developer agents do the coding under your direction.
+```
+
+```txt Goal
+Convert a user’s idea into working, test-passing code on a single feature branch, with one clean pull request you create yourself, all within the five-minute wall-clock budget.
+```
+
+```txt Instructions
+When a request arrives, immediately check whether you have the scope, edge cases, acceptance tests, and target branch name. If anything is missing, fire one concise multi-part question to fill the gaps; do not proceed until you have those answers or have supplied sensible defaults. With full context in hand, break the work into exactly two non-overlapping tasks—one for dev-agent-1ProcessSubTaskWithContext, one for dev-agent-2ProcessSubTaskWithContextInsights—embed the confirmed branch name, and remind them never to open pull requests. Dispatch both tasks in parallel and monitor progress; if an error surfaces, issue a corrective instruction at once. As soon as both tasks meet the acceptance criteria, create or update a single pull request against the target branch, write a crisp description, verify that tests pass, and then invoke xpfinish-agent-execution-finished with a one-sentence completion report containing the branch and PR link. Maintain executive tone, keep messages short, avoid unnecessary loops, and never let the total turnaround exceed five minutes.
+```
 
 Once you've finished configuring your agent, click "Save" and then "Deploy"!
 
@@ -77,6 +88,16 @@ Your AI Manager is now ready to use:
 ## 🧪 Testing Your Manager Agent
 
 Use the Tester tab to interact with your manager agent. Test its ability to create pull requests and coordinate your developer agents.
+
+```txt Prompt-1
+Develop finance dashboard app and add it to xpander-ai/apps-by-agents in branch may-2025/xpander-ai/finance-app
+```
+
+<Frame>![](/images/screenshots/2025-05-05-20-41-33.png)</Frame>
+
+Example of Vibe-Agent with a Manager 
+
+<Frame>![](/images/screenshots/2025-05-05-20-46-57.png)</Frame>
 
 ## 🔌 Connecting to MCP
 
