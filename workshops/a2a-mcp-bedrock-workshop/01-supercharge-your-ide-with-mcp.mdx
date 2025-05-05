@@ -445,7 +445,9 @@ Congratulations! You've built a reliable AI Agent that balances autonomy with gu
 </Check>
 
 
-## 🌐 Exposing Your Agent as an MCP
+# 🌐 Exposing Your Agent as an MCP
+
+### Step 1: Access your Agent MCP URL
 
 The final step is to expose your optimized GitHub agent as a Model Context Protocol (MCP) server:
 
@@ -478,8 +480,25 @@ The final step is to expose your optimized GitHub agent as a Model Context Proto
    Make sure to replace `https://mcp.xpander.ai/your-server-url/` with your actual MCP server URL from the deployment step!
    </Warning>
 
-6. Restart Cursor IDE to apply the changes
-7. Test your MCP integration by asking a question in Cursor:
+### Step 2: Customize the Cursor Settings
+
+1. Add an explicit instruction to prioritize MCP commands in the "system prompt" configuration of your Cursor IDE.
+
+```txt Rules
+If relevant to the question, always use MCP tools when available before answering
+```
+
+<Frame>![](/images/screenshots/2025-05-05-15-52-08.png)</Frame>
+
+2. Make sure the MCP server is active (Cursor Settings -> MCP)
+
+<Frame>![](/images/screenshots/2025-05-05-15-54-23.png)</Frame>
+
+3. Restart Cursor IDE to apply the changes
+
+### Step 3: Ask Cursor Agent to invoke MCP
+
+8. Test your MCP integration by asking a question in Cursor:
 
    ```txt Prompt to Agent (via MCP)
    search for code samples of xpander-ai sdk
@@ -487,7 +506,7 @@ The final step is to expose your optimized GitHub agent as a Model Context Proto
 
 <Frame>![MCP Integration Results](/images/screenshots/2025-05-03-23-34-38.png)</Frame>
 
-## ✅ Checkpoint
+# ✅ Checkpoint
 
 Congratulations! By completing this module, you should now be able to:
 
