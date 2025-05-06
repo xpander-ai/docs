@@ -5,10 +5,11 @@ icon: "bolt"
 ---
 
 <Note>
-**Module Summary**
-* **Goal**: Create a custom GitHub MCP Server with Agentic RAG optimization
-* **Estimated Time**: 15-20 minutes
-* **Prerequisites**: GitHub account, Cursor IDE, xpander.ai account
+  **Module Summary**
+
+  - **Goal**: Create a custom GitHub MCP Server with Agentic RAG optimization
+  - **Estimated Time**: 15-20 minutes
+  - **Prerequisites**: GitHub account, Cursor IDE, xpander.ai account
 </Note>
 
 🚀 In this module, you'll learn how to build a powerful GitHub search agent with optimized Agentic RAG capabilities and expose it as a Model Context Protocol (MCP) Server to supercharge your Cursor IDE experience. By building this agent, you'll understand how to create practical AI tools that integrate seamlessly with your development workflow, improving coding efficiency and access to real-time code examples.
@@ -18,54 +19,56 @@ icon: "bolt"
 ### Step 1: Set up xpander.ai
 
 1. Navigate to the xpander.ai platform:
+
    ```bash Terminal Command
    # Open in your browser
    open https://app.xpander.ai
    ```
-
 2. Sign in with your credentials
-3. In the left navigation menu, go to **AI Agents**
-4. Click the **New AI Agent** button to open the Workbench
+3. In the left navigation menu, go to **Agents**
+4. Click the **\+** **New Agent** button to open the Workbench
 5. When prompted by the agent builder, click **Skip** (we'll create the agent manually)
 
 ### Step 2: Add GitHub Search Tools
 
-1. Click on the **+** (plus) button in your agent canvas
-2. Select **Apps** from the menu 
+1. Click on the **\+** (plus) button in your agent canvas
+2. Select **Apps** from the menu
 3. Select **GitHub Search Manager**
 4. Click **Sign in with GitHub Search Manager**
 
-   <Frame>![GitHub Search Manager Sign-in](/images/screenshots/2025-05-03-23-50-36.png)</Frame>
-
+   <Frame>
+     ![GitHub Search Manager Sign-in](/images/screenshots/2025-05-03-23-50-36.png)
+   </Frame>
 5. Give the interface a name (like "github-search-your-name" or just "github-search")
 6. Click **Save**
 
 <Tip>
-You should now see the GitHub Search tools available as Agentic Actions in your agent's canvas.
+  You should now see the GitHub Search tools available as Agentic Actions in your agent's canvas.
 </Tip>
 
 ### Step 3: Add GitHub Operations
 
 Add the following GitHub operations to your agent:
+
 - **Find Code Snippets by Query Terms** - `GET /search/code`
-- **Find Repositories by Criteria** - `GET /search/repositories` 
+- **Find Repositories by Criteria** - `GET /search/repositories`
 - **Search Topics by Criteria** - `GET /search/topics`
 - **Find Users by Criteria** - `GET /search/users`
 - **Search Commits by Criteria** - `GET /search/commits`
 
-<Frame>![GitHub Operations](/images/screenshots/2025-05-03-23-53-27.png)</Frame>
+<Frame>
+  ![GitHub Operations](/images/screenshots/2025-05-03-23-53-27.png)
+</Frame>
 
 ### Step 4: Configure Agent Settings
 
 1. In the Builder Workbench, click on the Gear Icon in the top-right corner
-
 2. In the Agent Builder Settings panel, click on **Generate Details**
 3. Enter the following prompt to generate your agent description:
 
    ```txt Prompt for generating agent
    You are GitHub-Search-Agent, an expert at searching and analyzing GitHub repositories, code, users, and topics. You have deep knowledge of GitHub's API and can provide concise, accurate information about code patterns, repository structures, and developer activities.
    ```
-
 4. Go to **Instructions** and define your agent's role, goal, and instructions:
 
    ```txt Role
@@ -84,14 +87,13 @@ Add the following GitHub operations to your agent:
    5. For any search query, first try to understand what the user is looking for before running the search
    6. Always provide contextual information about why a result is relevant
    ```
-
 5. Click **Save Changes** and close the panel
-
-
 
 Your completed agent should look similar to this:
 
-<Frame>![Completed Agent](/images/screenshots/2025-05-03-23-42-23.png)</Frame>
+<Frame>
+  ![Completed Agent](/images/screenshots/2025-05-03-23-42-23.png)
+</Frame>
 
 ## 🧪 Testing Your Agent with Raw API Responses
 
@@ -99,11 +101,12 @@ Let's test your newly created GitHub search agent:
 
 1. In the left pane of the builder interface, you'll find the testing area
 2. Type the following query to search for topics:
+
    ```txt Prompt
    Search for topics in GitHub related to A2A and MCP
    ```
-
 3. Look at the generated payload by clicking on it. You'll see something like:
+
    ```json Example AI Generated Payload
    {
       "bodyParams": {},
@@ -140,14 +143,14 @@ Let's test your newly created GitHub search agent:
     ]
    }
    ```
-
 4. Now try a repositories search in the testing area:
+
    ```txt Prompt
    Find cool repositories related to Agent 2 Agent and MCP
    ```
 
 <Warning>
-Notice that the API response is huge and not optimal for AI consumption! This is where Agentic RAG comes in to help filter and optimize these responses.
+  Notice that the API response is huge and not optimal for AI consumption\! This is where Agentic RAG comes in to help filter and optimize these responses.
 </Warning>
 
 ## 🧠 Optimizing Responses with Agentic RAG
@@ -162,6 +165,7 @@ Let's improve the repository search results using Agentic RAG:
 4. Configure the search and return fields:
 
    Searchable Fields (fields the AI can search against):
+
    ```json Searchable Fields Configuration
    [
      "items[].full_name",
@@ -171,6 +175,7 @@ Let's improve the repository search results using Agentic RAG:
    ```
 
    Returnable Fields (data the AI will receive):
+
    ```json Returnable Fields Configuration
    [
      "items[].html_url",
@@ -179,16 +184,18 @@ Let's improve the repository search results using Agentic RAG:
    ]
    ```
 
-   <Frame>![Agentic RAG Configuration](/images/screenshots/2025-05-03-22-48-39.png)</Frame>
+   <Frame>
+     ![Agentic RAG Configuration](/images/screenshots/2025-05-03-22-48-39.png)
+   </Frame>
+5. Save your changes
+6. Return to the **Tester** tab and run the repositories query again:
 
-6. Save your changes
-7. Return to the **Tester** tab and run the repositories query again:
    ```txt Prompt
    Find 2-3 cool repositories related to Agent 2 Agent and MCP
    ```
 
 <Tip>
-Notice how much cleaner and more focused the response is now! Instead of overwhelming JSON data, you get just the meaningful content that matters to your query.
+  Notice how much cleaner and more focused the response is now\! Instead of overwhelming JSON data, you get just the meaningful content that matters to your query.
 </Tip>
 
 ### Optimizing User Search
@@ -201,6 +208,7 @@ Next, let's optimize the user search operation:
 4. Configure the fields:
 
    Searchable Fields:
+
    ```json User Search Configuration
    [
      "items[].login"
@@ -208,6 +216,7 @@ Next, let's optimize the user search operation:
    ```
 
    Returnable Fields:
+
    ```json User Return Configuration
    [
      "items[].html_url",
@@ -215,6 +224,8 @@ Next, let's optimize the user search operation:
      "items[].avatar_url"
    ]
    ```
+5. Save your changes
+6. In the testing area on the left pane, run:
 
 6. Save your changes, and deploy the agent
 
@@ -227,6 +238,7 @@ To continue testing your agent:
 </Note>
 
 7. In the WebUI area on the left pane, run:
+
    ```txt Prompt
    Find 2-3 GitHub users related to MCP and Agent 2 Agent protocol
    ```
@@ -241,6 +253,7 @@ Now, let's configure commit search operations:
 4. Configure the fields:
 
    Searchable Fields:
+
    ```json Commit Search Configuration
    [
      "items[].commit.message",
@@ -251,6 +264,7 @@ Now, let's configure commit search operations:
    ```
 
    Returnable Fields:
+
    ```json Commit Return Configuration
    [
      "items[].html_url",
@@ -261,9 +275,9 @@ Now, let's configure commit search operations:
      "items[].repository.html_url"
    ]
    ```
+5. Save your changes
+6. In the testing area of the left pane, try a follow-up question:
 
-6. Save your changes
-7. In the testing area of the left pane, try a follow-up question:
    ```txt Follow-up Prompt
    Summarize their recent commits
    ```
@@ -278,6 +292,7 @@ Finally, let's optimize the code snippet operation:
 4. Configure the fields:
 
    Searchable Fields:
+
    ```json Searchable Fields Configuration
    [
      "items[].name",
@@ -288,6 +303,7 @@ Finally, let's optimize the code snippet operation:
    ```
 
    Returnable Fields:
+
    ```json Returnable Fields Configuration
    [
      "items[].html_url",
@@ -296,9 +312,9 @@ Finally, let's optimize the code snippet operation:
      "items[].repository.full_name"
    ]
    ```
+5. Save your changes
+6. In the testing area of the left pane, run:
 
-6. Save your changes
-7. In the testing area of the left pane, run:
    ```txt Prompt
    Can you find the implementation of A2A code snippet?
    ```
@@ -372,10 +388,10 @@ def xpander_run_action(repo_full_name: str, file_path: str, ref: str = "main"):
 
 4. Name it **GitHub Code Reader** and click **Save**
 5. Return to your agent in the **AI Agents** section
-6. Click the **+** button
+6. Click the **\+** button
 7. Select **Custom Action**
 8. Add the **GitHub Code Reader** function to your agent canvas
-9. Click Save -> Deploy. 
+9. Click Save -\> Deploy.
 
 Run the following prompt
 
@@ -383,10 +399,12 @@ Run the following prompt
 How can I increase throughput using cross-region inference with Amazon Bedrock and boto3? Download and provide the real python code snippet from AWS repos, not a link
 ```
 
-<Frame>![](/images/screenshots/2025-05-04-01-29-12.png)</Frame>
+<Frame>
+  ![](/images/screenshots/2025-05-04-01-29-12.png)
+</Frame>
 
 <Note>
-   The screenshot is from the agent's WebUI. You can access yours by clicking the 'Chat' button on the canvas — the WebUI URL will appear
+  The screenshot is from the agent's WebUI. You can access yours by clicking the 'Chat' button on the canvas — the WebUI URL will appear
 </Note>
 
 ## 🌎 Enhancing Your Agent with Web Search
@@ -394,7 +412,7 @@ How can I increase throughput using cross-region inference with Amazon Bedrock a
 Your GitHub search agent currently can only access information available on GitHub. Let's add web search capabilities to make it more versatile:
 
 1. Return to your agent canvas
-2. Click the **+** button
+2. Click the **\+** button
 3. Select **Built-in Actions**
 4. Add **Fetch Tavily AI Insights** (for comprehensive web searching)
 5. Click on the gear icon in your agent canvas to edit the agent settings
@@ -405,21 +423,23 @@ Your GitHub search agent currently can only access information available on GitH
    8. After using Tavily, ALWAYS follow up with relevant GitHub searches to find concrete code examples and repositories
    9. For every user query, you must provide both web-based context AND GitHub-specific examples
    ```
-
 7. Save your changes
 8. In the **Tester** tab, try a query that requires recent information:
+
    ```txt Test Prompt
    What are the latest changes to the A2A protocol specification? Show me example implementations.
    ```
 
 Your agent should now provide more comprehensive answers by combining web search results with GitHub code examples:
 
-<Frame>![](/images/screenshots/2025-05-04-00-18-30.png)</Frame>
+<Frame>
+  ![](/images/screenshots/2025-05-04-00-18-30.png)
+</Frame>
 
 <Warning>
-Sometimes, our autonomous agent might choose to use GitHub before Tavily, despite our explicit instructions. This happens because the AI model sees all available tools at once and makes decisions based on its understanding of the prompt and tool descriptions.
+  Sometimes, our autonomous agent might choose to use GitHub before Tavily, despite our explicit instructions. This happens because the AI model sees all available tools at once and makes decisions based on its understanding of the prompt and tool descriptions.
 
-This reveals a fascinating design challenge in AI systems: How can we create truly autonomous agents capable of making intelligent decisions while ensuring they reliably follow critical business logic when needed? 🤔
+  This reveals a fascinating design challenge in AI systems: How can we create truly autonomous agents capable of making intelligent decisions while ensuring they reliably follow critical business logic when needed? 🤔
 </Warning>
 
 ## 🔄 Creating the Agent Dependency Graph
@@ -431,7 +451,9 @@ In production, to ensure your agent follows the right search strategy, we should
    - Connect the Tavily AI Insights node as a prerequisite to the GitHub operations
    - Ensure the flow follows a logical progression
 
-<Frame>![Agent Dependency Graph](/images/screenshots/2025-05-03-22-42-07.png)</Frame>
+<Frame>
+  ![Agent Dependency Graph](/images/screenshots/2025-05-03-22-42-07.png)
+</Frame>
 
 3. Repeat the query with explict request to not start with Tavily
 
@@ -447,12 +469,13 @@ Using only Google's A2A protocol implementation, create an agent that responds w
 
 5. Verify that the AI follows the correct workflow - first searching for information before accessing GitHub operations:
 
-<Frame>![Query Results](/images/screenshots/2025-05-03-22-41-39.png)</Frame>
+<Frame>
+  ![Query Results](/images/screenshots/2025-05-03-22-41-39.png)
+</Frame>
 
 <Check>
-Congratulations! You've built a reliable AI Agent that balances autonomy with guardrails. By creating this structured workflow, you've effectively addressed both the API overflow challenge and solved the autonomous multi-step challenges
+  Congratulations\! You've built a reliable AI Agent that balances autonomy with guardrails. By creating this structured workflow, you've effectively addressed both the API overflow challenge and solved the autonomous multi-step challenges
 </Check>
-
 
 # 🌐 Exposing Your Agent as an MCP
 
@@ -460,15 +483,17 @@ Congratulations! You've built a reliable AI Agent that balances autonomy with gu
 
 The final step is to expose your optimized GitHub agent as a Model Context Protocol (MCP) server:
 
-1. In your agent canvas, click the **+** button
+1. In your agent canvas, click the **\+** button
 2. Select **Source** → **MCP**
 3. Click **Deploy**
 
-<Frame>![MCP Deployment](/images/screenshots/2025-05-03-23-04-13.png)</Frame>
+<Frame>
+  ![MCP Deployment](/images/screenshots/2025-05-03-23-04-13.png)
+</Frame>
 
 4. After deployment, you'll receive a unique URL for your MCP server
 5. Configure this endpoint in your Cursor IDE by editing the settings file:
-   
+
    Create or edit `~/.cursor/mcp.json`:
 
    ```json mcp.json
@@ -486,7 +511,7 @@ The final step is to expose your optimized GitHub agent as a Model Context Proto
    ```
 
    <Warning>
-   Make sure to replace `https://mcp.xpander.ai/your-server-url/` with your actual MCP server URL from the deployment step!
+     Make sure to replace `https://mcp.xpander.ai/your-server-url/` with your actual MCP server URL from the deployment step\!
    </Warning>
 
 ### Step 2: Customize the Cursor Settings
@@ -497,11 +522,15 @@ The final step is to expose your optimized GitHub agent as a Model Context Proto
 If relevant to the question, always use MCP tools when available before answering
 ```
 
-<Frame>![](/images/screenshots/2025-05-05-15-52-08.png)</Frame>
+<Frame>
+  ![](/images/screenshots/2025-05-05-15-52-08.png)
+</Frame>
 
-2. Make sure the MCP server is active (Cursor Settings -> MCP)
+2. Make sure the MCP server is active (Cursor Settings -\> MCP)
 
-<Frame>![](/images/screenshots/2025-05-05-15-54-23.png)</Frame>
+<Frame>
+  ![](/images/screenshots/2025-05-05-15-54-23.png)
+</Frame>
 
 3. Restart Cursor IDE to apply the changes
 
@@ -513,11 +542,13 @@ If relevant to the question, always use MCP tools when available before answerin
    search for code samples of xpander-ai sdk
    ```
 
-<Frame>![MCP Integration Results](/images/screenshots/2025-05-03-23-34-38.png)</Frame>
+<Frame>
+  ![MCP Integration Results](/images/screenshots/2025-05-03-23-34-38.png)
+</Frame>
 
 # ✅ Checkpoint
 
-Congratulations! By completing this module, you should now be able to:
+Congratulations\! By completing this module, you should now be able to:
 
 1. Create and configure a GitHub search agent with optimized Agentic RAG
 2. Customize searchable and returnable fields for each API operation
