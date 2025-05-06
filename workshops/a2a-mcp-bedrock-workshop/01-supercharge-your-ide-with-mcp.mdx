@@ -159,10 +159,9 @@ Let's test your newly created GitHub search agent:
 
 Let's improve the repository search results using Agentic RAG:
 
-1. Return to the **Builder** tab
-2. Click on the gear icon next to the **Find Repositories by Criteria** operation
-3. Click on **Advanced** and then switch to **Raw Editor** (this allows the AI to send natural language queries, and the server will perform semantic search on the API response)
-4. Configure the search and return fields:
+1. You can configure specific tool calls. Click on the gear icon next to the **Find Repositories by Criteria** operation in the graph.
+2. Click on **Advanced** and then switch to **Raw Editor** (this allows the AI to send natural language queries, and the server will perform semantic search on the API response)
+3. Configure the search and return fields:
 
    Searchable Fields (fields the AI can search against):
 
@@ -187,8 +186,8 @@ Let's improve the repository search results using Agentic RAG:
    <Frame>
      ![Agentic RAG Configuration](/images/screenshots/2025-05-03-22-48-39.png)
    </Frame>
-5. Save your changes
-6. Return to the **Tester** tab and run the repositories query again:
+4. Save and deploy your changes
+5. Now run the repositories query again:
 
    ```txt Prompt
    Find 2-3 cool repositories related to Agent 2 Agent and MCP
