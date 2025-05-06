@@ -52,8 +52,30 @@ Inside the Cursor terminal, set up your Python environment and install dependenc
 python3 -m venv .venv && \
 source .venv/bin/activate && \
 pip install -r requirements.txt --no-cache-dir
+```
+
+```bash
 npm install -g xpander-cli
 ```
+
+<Note>
+  If you encounter issues with Node.js dependencies when installing xpander-cli, use the following commands to resolve them:
+  
+  ```bash
+  # Clean previous xpander-cli if needed
+  rm -rf /usr/lib/node_modules/xpander-cli
+
+  # Clean NPM Cache
+  rm -rf ~/.npm/_npx
+  rm -rf ~/.npm/_cacache
+  hash -r
+
+  # Make sure to use Node 22+
+  nvm install 22
+  nvm use 22
+  nvm alias default 22
+  ```
+</Note>
 
 ## 🔑 Authenticate to xpander.ai
 ```bash
