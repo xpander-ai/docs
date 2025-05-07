@@ -491,27 +491,31 @@ The final step is to expose your optimized GitHub agent as a Model Context Proto
 </Frame>
 
 4. After the short deployment phase completes, you'll receive a unique URL for your MCP server when you click on the MCP source node on the canvas.
-5. Configure this endpoint in your Cursor IDE by editing the settings file:
 
-   Create or edit `~/.cursor/mcp.json`:
+5. Configure this endpoint in your Cursor IDE
 
-   ```json mcp.json
-   {
-     "mcpServers":{
-       "xpander-github-mcp": {
-         "command": "npx",
-         "args": [
-           "xpander-mcp-remote",
-           "https://mcp.xpander.ai/your-server-url/"
-         ]
-       }
-     }
-   }
-   ```
+Go to Cursor -> Settings -> Cursor Settings and click on "+ add new global MCP Server" or edit directly the `~/.cursor/mcp.json`:
 
-   <Warning>
-     Make sure to replace `https://mcp.xpander.ai/your-server-url/` with your actual MCP server URL from the deployment step\!
-   </Warning>
+<Frame>![](/images/screenshots/2025-05-07-23-01-57.png)</Frame>
+
+
+```json mcp.json
+{
+  "mcpServers":{
+    "xpander-github-mcp": {
+      "command": "npx",
+      "args": [
+        "xpander-mcp-remote",
+        "https://mcp.xpander.ai/your-server-url/"
+      ]
+    }
+  }
+}
+```
+
+<Warning>
+  Make sure to replace `https://mcp.xpander.ai/your-server-url/` with your actual MCP server URL from the deployment step!
+</Warning>
 
 ### Step 2: Customize the Cursor Settings
 
@@ -561,4 +565,4 @@ Congratulations\! By completing this module, you should now be able to:
 
 ## 🔄 Next Steps
 
-Now that you've supercharged your IDE with an optimized GitHub MCP Server, you're ready to build your first coding agent in the [next module](/workshops/a2a-mcp-bedrock-workshop/02-first-coding-agent).
+Now that you've supercharged your IDE with an optimized GitHub MCP Server, you're ready to build your first coding agent in the [next module](/workshops/a2a-mcp-workshop/02-first-coding-agent).
