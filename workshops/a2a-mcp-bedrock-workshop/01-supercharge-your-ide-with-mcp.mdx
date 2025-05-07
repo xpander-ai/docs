@@ -62,7 +62,7 @@ Add the following GitHub operations to your agent:
 
 ### Step 4: Configure Agent Settings
 
-1. In the Builder Workbench, click on the Gear Icon in the top-right corner
+1. In the AI Workbench, click on the Gear Icon in the top-right corner
 2. In the Agent Builder Settings panel, click on **Generate Details**
 3. Enter the following prompt to generate your agent description:
 
@@ -201,10 +201,9 @@ Let's improve the repository search results using Agentic RAG:
 
 Next, let's optimize the user search operation:
 
-1. Return to the **Builder** tab
-2. Click on the gear icon next to the **Find Users by Criteria** operation
-3. Go to **Advanced** → **Raw Editor**
-4. Configure the fields:
+1. Click on the gear icon next to the **Find Users by Criteria** operation
+2. Go to **Advanced** → **Raw Editor**
+3. Configure the fields:
 
    Searchable Fields:
 
@@ -223,15 +222,15 @@ Next, let's optimize the user search operation:
      "items[].avatar_url"
    ]
    ```
-5. Save your changes
-6. In the testing area on the left pane, run:
-7. Save your changes, and deploy the agent
+4. Save your changes
+5. In the testing area on the left pane, run:
+6. Save your changes, and deploy the agent
 
 <Note>
   To continue testing your agent:
 
-  1. Keep the Agent Builder tab open
-  2. Open the web interface by clicking the Chat URL in your agent canvas
+  1. Keep the AI Workbench tab open
+  2. Open the web chat interface by clicking the Chat trigger node (at the top of the canvas) and clicking the URL.
   3. Select the same conversation thread from your chat history to maintain context
 </Note>
 
@@ -245,10 +244,9 @@ Next, let's optimize the user search operation:
 
 Now, let's configure commit search operations:
 
-1. Return to the **Builder** tab
-2. Click on the gear icon next to the **Search Commits by Criteria** operation
-3. Go to **Advanced** → **Raw Editor**
-4. Configure the fields:
+1. Click on the gear icon next to the **Search Commits by Criteria** operation
+2. Go to **Advanced** → **Raw Editor**
+3. Configure the fields:
 
    Searchable Fields:
 
@@ -273,8 +271,8 @@ Now, let's configure commit search operations:
      "items[].repository.html_url"
    ]
    ```
-5. Save your changes
-6. In the testing area of the left pane, try a follow-up question:
+4. Save your changes
+5. In the testing area of the left pane, try a follow-up question:
 
    ```txt Follow-up Prompt
    Summarize their recent commits
@@ -284,10 +282,9 @@ Now, let's configure commit search operations:
 
 Finally, let's optimize the code snippet operation:
 
-1. Return to the **Builder** tab
-2. Click on the gear icon next to the **Find Code Snippets by Query Terms** operation
-3. Go to **Advanced** → **Raw Editor**
-4. Configure the fields:
+1. Click on the gear icon next to the **Find Code Snippets by Query Terms** operation
+2. Go to **Advanced** → **Raw Editor**
+3. Configure the fields:
 
    Searchable Fields:
 
@@ -310,8 +307,8 @@ Finally, let's optimize the code snippet operation:
      "items[].repository.full_name"
    ]
    ```
-5. Save your changes
-6. In the testing area of the left pane, run:
+4. Save your changes
+5. In the testing area of the left pane, run:
 
    ```txt Prompt
    Can you find the implementation of A2A code snippet?
@@ -407,10 +404,10 @@ How can I increase throughput using cross-region inference with Amazon Bedrock a
 
 ## 🌎 Enhancing Your Agent with Web Search
 
-Your GitHub search agent currently can only access information available on GitHub. Let's add web search capabilities to make it more versatile:
+Your GitHub search agent can currently only access information available on GitHub. Let's add web search capabilities to make it more versatile:
 
-1. Return to your agent canvas
-2. Click the **\+** button
+1. Return to your AI Agent workbench
+2. Click the **\+** button to add components to the AI Agent
 3. Select **Built-in Actions**
 4. Add **Fetch Tavily AI Insights** (for comprehensive web searching)
 5. Click on the gear icon in your agent canvas to edit the agent settings
@@ -444,7 +441,7 @@ Your agent should now provide more comprehensive answers by combining web search
 
 In production, to ensure your agent follows the right search strategy, we should always create a dependency graph that deterministically enforces specific business logic behavior:
 
-1. In your agent canvas, connect your nodes to create the dependency graph
+1. In your agent canvas, by attachling lines between operations, you can connect your nodes to create the dependency graph
 2. Set up a workflow that requires an internet search before accessing GitHub operations:
    - Connect the Tavily AI Insights node as a prerequisite to the GitHub operations
    - Ensure the flow follows a logical progression
@@ -489,7 +486,7 @@ The final step is to expose your optimized GitHub agent as a Model Context Proto
   ![MCP Deployment](/images/screenshots/2025-05-03-23-04-13.png)
 </Frame>
 
-4. After deployment, you'll receive a unique URL for your MCP server
+4. After the short deployment phase completes,, you'll receive a unique URL for your MCP server when you click on the MCP source node on the canvas.
 5. Configure this endpoint in your Cursor IDE by editing the settings file:
 
    Create or edit `~/.cursor/mcp.json`:
