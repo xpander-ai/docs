@@ -5,33 +5,37 @@ icon: "rocket"
 ---
 
 <Note>
-**Module Summary**
-* **Goal**: Learn how to work with your manager agent to build and submit an application using the web UI and CLI tools
-* **Estimated Time**: 10-20 minutes
-* **Prerequisites**: Manager agent with MCP and GitHub PR capabilities
+  **Module Summary**
+
+  - **Goal**: Learn how to work with your manager agent to build and submit an application using the web UI and CLI tools
+  - **Estimated Time**: 10-20 minutes
+  - **Prerequisites**: Manager agent with MCP and GitHub PR capabilities
 </Note>
 
-🚀 In this final module, you'll activate your agent fleet by working directly with your **manager agent**. You'll use the web UI to instruct your manager agent, monitor its orchestration of developer agents, and submit your finished application to the xpander.ai repository. This is where your preparation in the previous modules comes together!
+🚀 In this final module, you'll activate your agent fleet by working directly with your **manager agent**. You'll use the web UI to instruct your manager agent, monitor its orchestration of developer agents, and submit your finished application to the xpander.ai repository. This is where your preparation in the previous modules comes together\!
 
 ## 🕹️ Working with Your Manager Agent via the Web UI
 
 The manager agent is your main point of contact for building applications with your agent fleet. You'll interact with it through the xpander.ai web UI:
 
-1. Go to [https://app.xpander.ai](https://app.xpander.ai) and open your manager agent's chat interface.
-2. Enter a prompt describing the application you want to build and instruct the manager agent to submit it when ready. For example:
+1. Go to https://app.xpander.ai and go to your manager AI Agent (AI Development Manager)
+2. In the canvas, click the "Chat" source node and click the URL to open the Chat UI.
+3. Enter a prompt describing the application you want to build and instruct the manager agent to submit it when ready. For example:
 
 ```bash example prompt
 Build a minimal “QuickTodo” single-page app using vanilla HTML, CSS, and JavaScript. Users must be able to add, edit, and delete tasks; data should persist in localStorage so tasks remain after reload. Acceptance criteria: adding shows the new task immediately, editing updates it in place, deleting removes it, and a page reload restores all tasks. Code must pass ESLint. Target branch: may-2025/my-github-username/quick-todo
 ```
 
-Change the may-2025/my-github-username/quick-todo to your user-name!
-
+<Note>
+Change the <my-github-username> part to your GitHub username
+</Note>
+  
 The manager agent will interpret your request, coordinate the developer agents, and handle the submission process for you.
 
-Feel free to get creative! The manager agent will break down your request and assign tasks to the developer agents.
+Feel free to get creative\! The manager agent will break down your request and assign tasks to the developer agents.
 
 <Note>
-Your manager agent will coordinate the work between your developer agents, review their code, and select the best implementation. This all happens automatically thanks to the Agent-to-Agent (A2A) capabilities you configured.
+  Your manager agent will coordinate the work between your developer agents, review their code, and select the best implementation. This all happens automatically thanks to the Agent-to-Agent (A2A) capabilities you configured.
 </Note>
 
 ## ✅ Confirm Agent Activity
@@ -74,7 +78,7 @@ running tool xpfinish-agent-execution-finished on agent e62daf10-b8fd-45c8-8862-
 
 After a few minutes, the manager agent will update the thread in the web UI with the results and next steps. You can follow along and interact as needed.
 
-## 🏆 See What Everyone Built!
+## 🏆 See What Everyone Built\!
 
 At the end of the workshop, we'll showcase all the applications created by participants and their agent fleets. This is a great opportunity to:
 
@@ -94,7 +98,7 @@ By completing this module, you should now be able to:
 
 ## 🎓 Workshop Completion
 
-Congratulations! By completing all five modules, you've:
+Congratulations\! By completing all five modules, you've:
 
 1. Set up a GitHub MCP Server to enhance your Cursor IDE
 2. Built your first developer agent
@@ -109,4 +113,4 @@ You now have a powerful understanding of how to build and deploy AI agent system
 - [xpander.ai Documentation](https://docs.xpander.ai)
 - [GitHub Repository](https://github.com/xpander-ai)
 - [Community Discord](https://discord.gg/CUcp4WWh5g)
-- [Join our Slack](https://join.slack.com/t/xpandercommunity/shared_invite/zt-2mt2xkxkz-omM7f~_h2jcuzFudrYtZQQ) 
+- [Join our Slack](https://join.slack.com/t/xpandercommunity/shared_invite/zt-2mt2xkxkz-omM7f~_h2jcuzFudrYtZQQ)
