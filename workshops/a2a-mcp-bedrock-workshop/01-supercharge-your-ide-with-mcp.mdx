@@ -456,6 +456,11 @@ In production, to ensure your agent follows the right search strategy, we should
 What are the latest changes to the A2A protocol specification? Show me example implementations. Use GitHub without Tavily
 ```
 
+<Note>
+You should see that the AI Agent has failed to follow the prompt, because it tried to invoke the wrong tool call against the dependency graph
+Error: The tool 'GitHubRepoDiscoveryFindRepositoriesByCriteria' was selected incorrectly and cannot be executed at this stage.
+</Note>
+
 4. Validate additonal queries:
 
 ```txt Test Prompt
