@@ -5,65 +5,68 @@ icon: "sitemap"
 ---
 
 <Note>
-**Module Summary**
-* **Goal**: Create a manager agent to orchestrate your developer agents
-* **Estimated Time**: 10-20 minutes
-* **Prerequisites**: Two developer agents from Module 3, GitHub account
+  **Module Summary**
+
+  - **Goal**: Create a manager agent to orchestrate your developer agents
+  - **Estimated Time**: 10-20 minutes
+  - **Prerequisites**: Two developer agents from Module 3, GitHub account
 </Note>
 
-🚀 In this module, you'll use the visual Agent Workbench to design your manager agent, configure it to coordinate your existing agents, test it in the platform, and connect it to your development workflow!
+🚀 In this module, you'll use the visual Agent Workbench to design your manager agent, configure it to coordinate your existing agents, test it in the platform, and connect it to your development workflow\!
 
 ## 🔧 Access the xpander.ai Workbench
 
 First, let's access the xpander.ai platform to create your manager agent:
 
-1. Go to [https://app.xpander.ai](https://app.xpander.ai) and sign in with your credentials
-2. In the left navigation menu, go to **AI Agents**
+1. Go to https://app.xpander.ai and sign in with your credentials
+2. In the left navigation menu, go to **Agents**
 3. Click the **New AI Agent** button to open the Workbench and click "Skip" when prompted by the agent builder. This time we'll create the agent manually.
 
-<Frame caption="Creating a new agent in the Workbench" alt="Screenshot of the xpander.ai Workbench interface">
-![](/images/screenshots/2025-04-30-10-02-31.png)
+<Frame caption="Creating a new agent in the Workbench">
+  ![](/images/screenshots/2025-04-30-10-02-31.png)
 </Frame>
 
-Click on the plus icon on the right, and select the two agents you created from the menu.
+Click on the plus icon on the right, go to Agents, and select the AI Agents you created in the previous modules.
 
-<Frame caption="Adding your developer agents to the manager" alt="Screenshot showing the process of adding developer agents">
-![](/images/screenshots/2025-04-30-10-05-40.png)
+<Frame caption="Adding your developer agents to the manager">
+  ![](/images/screenshots/2025-04-30-10-05-40.png)
 </Frame>
 
 <Note>
-In just a few minutes, we've exposed two agents to the manager agent, allowing it to delegate tasks using the Agent-to-Agent (A2A) protocol. Behind the scenes, the xpander.ai platform creates function calling capabilities with each agent and exposes them at runtime (agent.get_tools() will now return agents as well as tools). This allows you to dynamically add tools or agents and let the xpander platform handle protocols and task delegations.
+  In just a few minutes, we've exposed two agents to the manager agent, allowing it to delegate tasks using the Agent-to-Agent (A2A) protocol. Behind the scenes, the xpander.ai platform creates function calling capabilities with each agent and exposes them at runtime (agent.get_tools() will now return agents as well as tools). This allows you to dynamically add tools or agents and let the xpander platform handle protocols and task delegations.
 </Note>
 
-Now let's add tools to the manager:
+Now let's add tools to the manager AI Agent:
 
-1. Add the "GitHub Pull Requests" app by authenticating to GitHub
-2. Select two operations:
+1. Click the \+ button on the right, and go to Apps -\> "GitHub Pull Requests". 
+2. In the popup window, Authenticate to the app and give it a name.
+3. Select two operations and add them to the AI Agent:
    - Create New Pull Request in Repository
    - List Pull Requests in Repository
 
 Your agent should now look like this:
 
-<Frame caption="Manager agent with GitHub operations" alt="Screenshot of manager agent with GitHub operations configured">
-![](/images/screenshots/2025-04-30-10-09-26.png)
+<Frame caption="Manager agent with GitHub operations">
+  ![](/images/screenshots/2025-04-30-10-09-26.png)
 </Frame>
 
 ## ⚙️ Configure the Manager Agent
 
 Now let's configure the manager agent:
 
-1. Navigate to the Settings tab
-2. Click on "Generate Details"
-3. Enter the following prompt:
+1. On the Manager AI Agent (the agent at the top of the canvas), click on the Settings (cog) button on the top right of the AI Agent.
+2. In the popup window, Click on the  "Generate Details" button.
+3. Enter the following prompt and click Generate.
 
 > An AI agent that manages two AI developers. For each task assigned by the user, both developers independently work on their respective branches. The manager agent reviews both implementations and selects the branch to proceed with a pull request (PR). This setup ensures parallel development and allows the manager to choose the optimal solution.
 
-
-<Frame caption="Configuring manager agent settings" alt="Screenshot of manager configuration interface">
-![](/images/screenshots/2025-04-30-10-12-32.png)
+<Frame caption="Configuring manager agent settings">
+  ![](/images/screenshots/2025-04-30-10-12-32.png)
 </Frame>
 
-## Customize the prompts further 
+## Customize the prompts further
+
+The name and instructions for the manager AI Agent were automatically generated. Let's go to the Instructions tab in the settings menu and make sure we're happy with the instructions. You can copy/paste the following:
 
 ```txt Role
 You are the **AI Development Manager**.
@@ -88,53 +91,59 @@ Ship working, test‑passing code on the **specified feature branch** in the **e
 Finish fast, keep CI green, and **never leave without your PR**.
 ```
 
-Once you've finished configuring your agent, click "Save" and then "Deploy"!
+Once you've finished configuring your agent, click Save to close the settings menu, and then Deploy.
 
 Your AI Manager is now ready to use:
 
-<Frame caption="Deployed manager agent ready for use" alt="Screenshot of successfully deployed manager agent">
-![](/images/screenshots/2025-04-30-10-14-36.png)
+<Frame caption="Deployed manager agent ready for use">
+  ![](/images/screenshots/2025-04-30-10-14-36.png)
 </Frame>
 
 ## 🧪 Testing Your Manager Agent
 
-Use the Tester tab to interact with your manager agent. Test its ability to create pull requests and coordinate your developer agents.
+Use the Tester tab to interact with your manager agent. Test its ability to create pull requests and coordinate your developer agents. 
 
 ```txt Prompt-1
 Develop finance dashboard app and add it to xpander-ai/apps-by-agents in branch may-2025/xpander-ai/finance-app
 ```
 
-<Frame>![](/images/screenshots/2025-05-05-20-41-33.png)</Frame>
+<Frame>
+  ![](/images/screenshots/2025-05-05-20-41-33.png)
+</Frame>
 
-Example of Vibe-Agent with a Manager 
+Example of Vibe-Agent with a Manager
 
-<Frame>![](/images/screenshots/2025-05-05-20-46-57.png)</Frame>
+<Frame>
+  ![](/images/screenshots/2025-05-05-20-46-57.png)
+</Frame>
 
 Example of vibe-coding-prompt to the developer agent from the AI Manager
 
-<Frame>![](/images/screenshots/2025-05-06-08-13-59.png)</Frame>
+<Frame>
+  ![](/images/screenshots/2025-05-06-08-13-59.png)
+</Frame>
 
 ## 🔌 Connecting to MCP
 
 Now that our AI team is set up, we can add Model Context Protocol (MCP) support and connect our IDE to the manager.
 
-1. Click on the plus icon and select "Sources" -> "MCP"
+1. Click on the plus icon and select "Sources" -\> "MCP"
 2. Once added to the canvas, click "Deploy" to save the changes
 3. Click on the MCP icon to get a unique server address with your agents ready to receive tasks
 
-<Frame caption="Adding MCP to your manager agent" alt="Screenshot showing MCP configuration">
-![](/images/screenshots/2025-04-30-10-18-38.png)
+<Frame caption="Adding MCP to your manager agent">
+  ![](/images/screenshots/2025-04-30-10-18-38.png)
 </Frame>
 
 <Warning>
-This URL contains API keys for your agents. Don't share this URL with anyone.
+  This URL contains API keys for your agents. Don't share this URL with anyone.
 </Warning>
 
 <Tip>
-You can add MCP to anything - tools, agents, multiple agents. Think of MCP as a REST API for the agent ecosystem. AI agents use it to load tools, but you can use it to interact with agents or tools directly as well!
+  You can add MCP to anything - tools, agents, multiple agents. Think of MCP as a REST API for the agent ecosystem. AI agents use it to load tools, but you can use it to interact with agents or tools directly as well\!
 </Tip>
 
-Now, load this URL into Cursor by going to Cursor settings -> MCP or (`vi ~/.cursor/mcp.json`)
+Now, load this URL into Cursor by going to Cursor settings -\> MCP or (`vi ~/.cursor/mcp.json`)
 
 ```json
 {
@@ -152,8 +161,8 @@ Now, load this URL into Cursor by going to Cursor settings -> MCP or (`vi ~/.cur
 
 You should be able to see the MCP auto-added to all your cursor chat
 
-<Frame caption="MCP enabled in Cursor IDE" alt="Screenshot showing MCP integration in Cursor">
-![](/images/screenshots/2025-04-30-10-56-39.png)
+<Frame caption="MCP enabled in Cursor IDE">
+  ![](/images/screenshots/2025-04-30-10-56-39.png)
 </Frame>
 
 Trigger your manager agent with `Can you ask the AI Manager if it's working today?`
