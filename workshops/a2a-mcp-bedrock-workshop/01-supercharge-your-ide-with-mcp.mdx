@@ -349,7 +349,7 @@ Let's enhance our agent by adding the ability to read code directly from GitHub 
 
 1. In the left navigation menu, go to **Cloud Functions**
 2. Click the **New** button
-3. Add the following code:
+3. Replace the example code with the following snippet:
 
 ```python GitHub Code Reader Function
 # === GitHub Code Reader ===
@@ -549,9 +549,11 @@ Test your MCP integration by providing this prompt in the Cursor AI Agent sectio
 ```txt Prompt to Agent (via MCP)
 search for code samples of xpander-ai sdk
 ```
+
 <Tip>
-If you don't want to manually approve each MCP tool call, you can go to cursor settings and enable auto-run mode -- "Allow Agent to run tools without asking for confirmation, such as executing commands and writing to files"
+  If you don't want to manually approve each MCP tool call, you can go to cursor settings and enable auto-run mode -- "Allow Agent to run tools without asking for confirmation, such as executing commands and writing to files"
 </Tip>
+
 <Frame>
   ![MCP Integration Results](/images/screenshots/2025-05-03-23-34-38.png)
 </Frame>
