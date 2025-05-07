@@ -204,11 +204,15 @@ To continue testing your agent:
 1. Keep the AI Workbench tab open
 2. Open the web chat interface by clicking the Chat trigger node (at the top of the canvas) and clicking the URL.
 
-<Frame>![](/images/screenshots/2025-05-07-11-14-05.png)</Frame>
+<Frame>
+  ![](/images/screenshots/2025-05-07-11-14-05.png)
+</Frame>
 
 3. Select the same conversation thread from your chat history to maintain context
 
-<Frame>![](/images/screenshots/2025-05-07-11-15-16.png)</Frame>
+<Frame>
+  ![](/images/screenshots/2025-05-07-11-15-16.png)
+</Frame>
 
 ### Optimizing User Search
 
@@ -238,7 +242,6 @@ Next, let's optimize the user search operation:
 4. Save your changes
 5. In the testing area on the left pane, run:
 6. Save your changes, and deploy the agent
-
 7. In the WebUI area on the left pane, run:
 
    ```txt Prompt
@@ -541,12 +544,14 @@ If relevant to the question, always use MCP tools when available before answerin
 
 ### Step 3: Ask Cursor Agent to invoke MCP
 
-8. Test your MCP integration by asking a question in Cursor:
+Test your MCP integration by providing this prompt in the Cursor AI Agent section:
 
-   ```txt Prompt to Agent (via MCP)
-   search for code samples of xpander-ai sdk
-   ```
-
+```txt Prompt to Agent (via MCP)
+search for code samples of xpander-ai sdk
+```
+<Tip>
+If you don't want to manually approve each MCP tool call, you can go to cursor settings and enable auto-run mode -- "Allow Agent to run tools without asking for confirmation, such as executing commands and writing to files"
+</Tip>
 <Frame>
   ![MCP Integration Results](/images/screenshots/2025-05-03-23-34-38.png)
 </Frame>
