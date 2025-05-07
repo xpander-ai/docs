@@ -8,10 +8,10 @@ icon: "code"
 **Module Summary**
 * **Goal**: Create and deploy your first AI developer agent
 * **Estimated Time**: 20-30 minutes
-* **Prerequisites**: AWS credentials, Python 3.12+, Cursor IDE
+* **Prerequisites**: Open AI credentials, Python 3.12+, Cursor IDE
 </Note>
 
-🚀 In this module, you'll set up a complete AI coding assistant powered by xpander.ai and Amazon Bedrock. You'll create a local development environment, configure your agent with custom instructions, test it with repository management tasks, and connect it to the cloud for remote access. By the end, you'll have a powerful AI developer agent that can clone repositories, read and write code, and help automate your development workflow!
+🚀 In this module, you'll set up a complete AI coding assistant powered by xpander.ai and Open AI GPT 4.1. You'll create a local development environment, configure your agent with custom instructions, test it with repository management tasks, and connect it to the cloud for remote access. By the end, you'll have a powerful AI developer agent that can clone repositories, read and write code, and help automate your development workflow!
 
 ## 🔧 Setup Your Development Environment
 
@@ -41,8 +41,7 @@ cursor .
   ```
   
   If you need to upgrade, use the following methods:
-  - **macOS**: `brew uninstall python --ignore-dependencies && \
-                brew install python3 && python3 --version` 
+  - **macOS**: `brew install python3 && python3 --version` 
   - **Windows (WSL/Git Bash)**: Download the latest installer from [python.org](https://www.python.org/downloads/)
 </Note>
 
@@ -52,9 +51,6 @@ Inside the Cursor terminal, set up your Python environment and install dependenc
 python3 -m venv .venv && \
 source .venv/bin/activate && \
 pip install -r requirements.txt --no-cache-dir
-```
-
-```bash
 npm install -g xpander-cli
 ```
 
@@ -62,14 +58,6 @@ npm install -g xpander-cli
   If you encounter issues with Node.js dependencies when installing xpander-cli, use the following commands to resolve them:
   
   ```bash
-  # Clean previous xpander-cli if needed
-  rm -rf /usr/lib/node_modules/xpander-cli
-
-  # Clean NPM Cache
-  rm -rf ~/.npm/_npx
-  rm -rf ~/.npm/_cacache
-  hash -r
-
   # Make sure to use Node 22+
   nvm install 22
   nvm use 22
@@ -95,20 +83,17 @@ I've created default profile configured in ~/.xpander
 
 Create a `.env` file in the root directory with the following credentials:
 
-```
-AWS_ACCESS_KEY_ID=your_aws_access_key
-AWS_SECRET_ACCESS_KEY=your_aws_secret_key
-AWS_SESSION_TOKEN=your_aws_session_token  # if using temporary credentials
-AWS_PROFILE=your_profile # if using AWS Profile without keys
-AWS_REGION=us-west-2
+```txt .env file
 XPANDER_API_KEY=your_xpander_api_key ## From the output above
+
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_MODEL_ID=gpt-4.1
+
 MAXIMUM_STEPS_SOFT_LIMIT=40
 MAXIMUM_STEPS_HARD_LIMIT=60
-MODEL_ID = "us.anthropic.claude-3-7-sonnet-20250219-v1:0"
 ```
 
 <Tip>
-  Make sure you have your AWS credentials set up with Amazon Bedrock access and an xpander.ai API key ready for this step.
   If you are running this workshop in person, ask the xpander.ai team to provide you access.
 </Tip>
 
@@ -153,10 +138,6 @@ agent_instructions.json, etc). Yes
 ✔ Agent initialized successfully
 ```
 
-<Tip>
-  If you skipped the init command, you can always run `xpander agent init` and select the agent you just created.
-</Tip>
-
 ## 🚀 Run Your Agent Locally
 
 Now it's time to run your agent and ask it to introduce itself and its architecture!
@@ -176,80 +157,98 @@ Here's what you might see in the terminal as your agent runs:
 ```
 ❯ python main.py
 Sandbox base directory: /Users/david/Developer/workshop/dev-agent-1/sandboxes
-loading agent 9002f816-1926-4556-a275-6e6fcc8bb86a
-🧠 Adding task to a new thread
-🪄 Starting Agent Loop
-🧠 Thread id: 81b08c86-ca55-4b3e-a14d-af690f07846e
---------------------------------------------------------------------------------
-🔍 Step 1
-running tool git_clone on agent 9002f816-1926-4556-a275-6e6fcc8bb86a with execution 1da0e645-068b-4fdf-8d71-762a5c880241
-🔦 Executing local tool: git_clone with generated payload: {'repo_url': 'https://github.com/xpander-ai/coding-agent'}
-✅ git_clone
-🧠 Thread id: 81b08c86-ca55-4b3e-a14d-af690f07846e
---------------------------------------------------------------------------------
-🔍 Step 2
-running tool describe_folders_and_files on agent 9002f816-1926-4556-a275-6e6fcc8bb86a with execution 1da0e645-068b-4fdf-8d71-762a5c880241
-🔦 Executing local tool: describe_folders_and_files with generated payload: {}
-✅ describe_folders_and_files
-🧠 Thread id: 81b08c86-ca55-4b3e-a14d-af690f07846e
---------------------------------------------------------------------------------
-🔍 Step 3
-running tool read_file on agent 9002f816-1926-4556-a275-6e6fcc8bb86a with execution 1da0e645-068b-4fdf-8d71-762a5c880241
-🔦 Executing local tool: read_file with generated payload: {'file_path': 'coding-agent/README.md'}
-✅ read_file
-🧠 Thread id: 81b08c86-ca55-4b3e-a14d-af690f07846e
---------------------------------------------------------------------------------
-🔍 Step 4
-running tool read_file on agent 9002f816-1926-4556-a275-6e6fcc8bb86a with execution 1da0e645-068b-4fdf-8d71-762a5c880241
-🔦 Executing local tool: read_file with generated payload: {'file_path': 'coding-agent/coding_agent.py'}
-✅ read_file
-🧠 Thread id: 81b08c86-ca55-4b3e-a14d-af690f07846e
---------------------------------------------------------------------------------
-🔍 Step 5
-running tool read_file on agent 9002f816-1926-4556-a275-6e6fcc8bb86a with execution 1da0e645-068b-4fdf-8d71-762a5c880241
-🔦 Executing local tool: read_file with generated payload: {'file_path': 'coding-agent/main.py'}
-✅ read_file
-🧠 Thread id: 81b08c86-ca55-4b3e-a14d-af690f07846e
---------------------------------------------------------------------------------
-🔍 Step 6
-running tool read_file on agent 9002f816-1926-4556-a275-6e6fcc8bb86a with execution 1da0e645-068b-4fdf-8d71-762a5c880241
-🔦 Executing local tool: read_file with generated payload: {'file_path': 'coding-agent/local_tools.py'}
-✅ read_file
-🧠 Thread id: 81b08c86-ca55-4b3e-a14d-af690f07846e
---------------------------------------------------------------------------------
-🔍 Step 7
-running tool new_file on agent 9002f816-1926-4556-a275-6e6fcc8bb86a with execution 1da0e645-068b-4fdf-8d71-762a5c880241
-🔦 Executing local tool: new_file with generated payload: {'file_path': 'coding-agent-intro.md', 'content': '# 🤖 Autonomous Coding Agent\n\n## Introduction\n\nI am an autonomous Coding Agent built with the xpander-ai/coding-agent framework. As a self-driven software engineer, I can generate, execute, and manage code through structured function-calling and a smart agent loop. I operate independently to help you build, test, and deploy software with minimal human intervention.\n\n## Modular Architecture\n\nMy architecture is designed with modularity at its core:\n\n```\n┌───────────────┐         ┌──────────────┐         ┌────────────────────┐\n│ Any other     │         │ coding_agent ├─Native─►│  Any LLM provider  │\n│ Agent         ├─--A2A──►│              │         └────────────────────┘\n└───────────────┘         └──────────────┘\n                                 │\n                                 │ function‑calls (MCP)\n                                 ▼\n                          ┌─────────────────────────┐\n                          │  xpander.ai connectors  │───▶ Any Rest API\n                          └─────────────────────────┘\n                                 │\n                                 ▼\n                          ┌─────────────────────────┐\n                          │  Secure sandbox (FS)    │\n                          └─────────────────────────┘\n```\n\n### Key Components:\n\n1. **LLM-Agnostic Core**: I can work with any LLM provider (OpenAI, Anthropic, Bedrock, etc.) without modification.\n2. **Secure Sandbox**: All file operations occur in an isolated environment to prevent security risks.\n3. **Function-Call Interface**: I interact with systems through a standardized function-calling mechanism.\n4. **Agent-to-Agent Communication**: I can collaborate with other specialized agents in a coordinated workflow.\n\n## Schema-Driven Actions\n\nI operate using well-defined schemas for all actions:\n\n- **Tool Declarations**: Each function I can call is precisely defined with parameter types and requirements\n- **Model Context Protocol (MCP)**: I follow standardized protocols for interacting with external systems\n- **Validation Layers**: All inputs and outputs are validated against schemas to ensure correctness\n\nThis schema-driven approach ensures that my actions are predictable, secure, and compatible with various systems.\n\n## Multi-Step Planning\n\nI break down complex tasks into manageable steps:\n\n1. **Task Analysis**: I analyze the requirements to determine necessary actions\n2. **Dependency Mapping**: I identify dependencies between subtasks\n3. **Sequential Execution**: I execute steps in the optimal order\n4. **Error Handling**: I detect failures and adapt my approach accordingly\n\nThis planning capability allows me to tackle complex software engineering tasks that require multiple coordinated actions.\n\n## Context-Aware Memory\n\nMy memory system maintains state across interactions:\n\n- **Thread-Based Memory**: Each conversation maintains its own persistent state\n- **Contextual Awareness**: I remember previous actions and their outcomes\n- **File System Awareness**: I track changes to the codebase over time\n- **Execution History**: I maintain a record of all tool calls and their results\n\nThis memory system enables me to work on long-running tasks and maintain context across multiple interactions.\n\n## Connector-Based System Integration\n\nI integrate with external systems through a flexible connector architecture:\n\n- **Git Operations**: Clone repositories, commit changes, and push to branches\n- **File System Operations**: Create, read, update, and delete files securely\n- **API Integrations**: Connect to any REST or gRPC endpoint\n- **Testing Frameworks**: Execute and interpret test results\n\nThese connectors allow me to interact with real-world systems while maintaining security and reliability.\n\n## The Agent Loop: Reliable, Auditable, Deterministic Automation\n\nAt the heart of my operation is the agent loop, which enables reliable, auditable, and deterministic automation:\n\n1. **Input Processing**: I receive and interpret user instructions\n2. **Planning**: I determine the sequence of actions needed\n3. **Tool Selection**: I choose the appropriate tools for each step\n4. **Execution**: I call functions with validated parameters\n5. **Result Analysis**: I interpret the results of each action\n6. **Adaptation**: I adjust my approach based on outcomes\n7. **Communication**: I provide clear updates on progress and results\n\nThis structured loop ensures that my actions are:\n\n- **Reliable**: I follow consistent patterns and handle errors gracefully\n- **Auditable**: Every action is logged and can be reviewed\n- **Deterministic**: Given the same inputs, I produce consistent outputs\n\nBy combining these capabilities, I can autonomously handle complex software engineering tasks while maintaining the high standards expected in professional development environments.'}
-✅ new_file
-🧠 Thread id: 81b08c86-ca55-4b3e-a14d-af690f07846e
---------------------------------------------------------------------------------
-🔍 Step 8
-running tool xpfinish-agent-execution-finished on agent 9002f816-1926-4556-a275-6e6fcc8bb86a with execution 1da0e645-068b-4fdf-8d71-762a5c880241
-✅ xpfinish-agent-execution-finished
-📝 Last message: {'toolResult': {'toolUseId': 'tooluse_20vLMJVATIOaHWVJmx477Q', 'content': [{'text': '"I\'ve successfully cloned the xpander-ai/coding-agent repository and created a comprehensive introduction file called \'coding-agent-intro.md\'. This file introduces the Autonomous Coding Agent as a self-driven software engineer capable of generating, executing, and managing code through structured function-calling and a smart agent loop.\\n\\nThe introduction covers:\\n\\n1. The agent\'s modular architecture that works with any LLM provider\\n2. Schema-driven actions that ensure predictable and secure operations\\n3. Multi-step planning capabilities for complex tasks\\n4. Context-aware memory system that maintains state across interactions\\n5. Connector-based system integration for working with external systems\\n6. The agent loop that enables reliable, auditable, and deterministic automation\\n\\nThe file is ready for review in the repository. As requested, I did not commit any changes."'}]}}
+b'{"stdout":"bG9hZGluZyBhZ2VudCA3Mzc2MmYyNi04MDMzLTRkODEtYWVlOC02NjViOWI0NGQ5Y2YK"}\n'
+2025-05-07 22:12:53.344 | INFO     | coding_agent:chat:82 - 🧠 Adding task to a new thread
+2025-05-07 22:12:54.254 | INFO     | coding_agent:_agent_loop:116 - 🪄 Starting Agent Loop
+2025-05-07 22:12:56.546 | INFO     | coding_agent:_agent_loop:127 - --------------------------------------------------------------------------------
+2025-05-07 22:12:56.546 | INFO     | coding_agent:_agent_loop:128 - 🔍 Step 1
+2025-05-07 22:12:58.438 | INFO     | llm_providers.openai:invoke_model:107 - 🔄 Model response received in 1.51 s
+2025-05-07 22:13:00.507 | INFO     | coding_agent:_agent_loop:177 - ✅ xpfinish-agent-execution-finished
+2025-05-07 22:13:00.508 | INFO     | coding_agent:_agent_loop:179 - 🔢 Step 1 tokens used: 1527 (output: 67, input: 1460)
+2025-05-07 22:13:01.677 | INFO     | coding_agent:_agent_loop:185 - ✨ Execution duration: 7.42 s
+2025-05-07 22:13:01.679 | INFO     | coding_agent:_agent_loop:188 - 🔢 Total tokens used: 1527 (output: 67, input: 1460)
+2025-05-07 22:13:02.051 | INFO     | coding_agent:chat:86 - --------------------------------------------------------------------------------
+2025-05-07 22:13:02.051 | INFO     | coding_agent:chat:87 - 🤖 Agent response: Hello! How can I assist you with your coding or project needs today? If you have a specific task or question, please let me know!
+```
+
+### Ask the agent to introduce itself and explain how it works
+
+In the same console, paste the following prompt
+
+```txt Prompt
+You are an autonomous Coding Agent built with the xpander-ai/coding-agent source-code. Clone the repo, then introduce yourself as a self-driven software engineer capable of generating, executing, and managing code through structured function-calling and a smart agent loop. Briefly explain your modular architecture, support for schema-driven actions, multi-step planning, context-aware memory, and connector-based system integration. Conclude with a clear summary of how your agent loop enables reliable, auditable, and deterministic automation—then write it all to a file named coding-agent-intro.md for the developer. Don't commit anything yet.
 ```
 
 After completing various tasks (like creating a markdown introduction file), you'll see the final agent response:
 
 ```
-🧠 AI Agent response: I've successfully cloned the xpander-ai/coding-agent repository and created a comprehensive introduction file called 'coding-agent-intro.md'. This file introduces the Autonomous Coding Agent as a self-driven software engineer capable of generating, executing, and managing code through structured function-calling and a smart agent loop.
+2025-05-07 22:17:32.228 | INFO     | coding_agent:chat:79 - 🧠 Adding task to existing thread: aeea28ff-a49b-4a20-b5b3-5c49fbbeef29
+2025-05-07 22:17:34.202 | INFO     | coding_agent:_agent_loop:116 - 🪄 Starting Agent Loop
+2025-05-07 22:17:35.273 | INFO     | coding_agent:_agent_loop:127 - --------------------------------------------------------------------------------
+2025-05-07 22:17:35.273 | INFO     | coding_agent:_agent_loop:128 - 🔍 Step 1
+2025-05-07 22:17:36.941 | INFO     | llm_providers.openai:invoke_model:107 - 🔄 Model response received in 1.25 s
+2025-05-07 22:17:39.798 | INFO     | coding_agent:_execute_local_tool:229 - 🔦 LLM Requesting local tool: git_clone with generated payload: {'repo_url': 'https://github.com/xpander-ai/coding-agent'}
+2025-05-07 22:17:41.273 | INFO     | coding_agent:_execute_local_tool:279 - 🔧 Tool git_clone completed in 1.48 s
+2025-05-07 22:17:41.667 | INFO     | coding_agent:_agent_loop:177 - ✅ git_clone
+2025-05-07 22:17:41.669 | INFO     | coding_agent:_agent_loop:179 - 🔢 Step 1 tokens used: 1614 (output: 29, input: 1585)
+2025-05-07 22:17:42.475 | INFO     | coding_agent:_agent_loop:127 - --------------------------------------------------------------------------------
+2025-05-07 22:17:42.475 | INFO     | coding_agent:_agent_loop:128 - 🔍 Step 2
+2025-05-07 22:17:49.063 | INFO     | llm_providers.openai:invoke_model:107 - 🔄 Model response received in 6.17 s
+2025-05-07 22:17:51.932 | INFO     | coding_agent:_execute_local_tool:229 - 🔦 LLM Requesting local tool: new_file with generated payload: {'file_path': 'coding-agent-intro.md', 'content': '# Coding Agent Introduction\n\nHello! I am an autonomous Coding Agent, built with the [xpander-ai/coding-agent](https://github.com/xpander-ai/coding-agent) source code. As a self-driven software engineer, I am capable of generating, executing, and managing code through structured function-calling and a smart agent loop.\n\n## Modular Architecture\nMy architecture is modular, allowing for flexible extension and integration. Each component is designed to handle specific responsibilities, such as code generation, file management, version control, and external system interaction. This modularity ensures maintainability and scalability.\n\n## Schema-Driven Actions\nI support schema-driven actions, which means all my operations are defined and validated against explicit schemas. This guarantees that every action I perform is predictable, type-safe, and easy to audit.\n\n## Multi-Step Planning\nI am capable of multi-step planning, breaking down complex tasks into smaller, manageable subtasks. This enables me to tackle sophisticated development workflows while ensuring each step is executed reliably and in the correct order.\n\n## Context-Aware Memory\nMy context-aware memory allows me to retain and utilize relevant information throughout a session. I can reference previous actions, user instructions, and project state to make informed decisions and maintain continuity across tasks.\n\n## Connector-Based System Integration\nI integrate with external systems through a connector-based approach. This enables seamless interaction with tools such as Git, file systems, and APIs, making me adaptable to a wide range of development environments and workflows.\n\n## Reliable, Auditable, and Deterministic Automation\nMy agent loop orchestrates all actions in a reliable, auditable, and deterministic manner. Each step is logged, validated, and executed according to plan, ensuring transparency and reproducibility. This makes me a trustworthy assistant for automating software engineering tasks.\n\n---\n\nThis file provides an overview of my capabilities and architecture for developers working with or extending the Coding Agent.'}
+2025-05-07 22:17:51.935 | INFO     | coding_agent:_execute_local_tool:279 - 🔧 Tool new_file completed in 0.00 s
+2025-05-07 22:17:52.319 | INFO     | coding_agent:_agent_loop:177 - ✅ new_file
+2025-05-07 22:17:52.320 | INFO     | coding_agent:_agent_loop:179 - 🔢 Step 2 tokens used: 2108 (output: 424, input: 1684)
+2025-05-07 22:17:53.082 | INFO     | coding_agent:_agent_loop:127 - --------------------------------------------------------------------------------
+2025-05-07 22:17:53.082 | INFO     | coding_agent:_agent_loop:128 - 🔍 Step 3
+2025-05-07 22:17:54.696 | INFO     | llm_providers.openai:invoke_model:107 - 🔄 Model response received in 1.24 s
+2025-05-07 22:17:56.644 | INFO     | coding_agent:_execute_local_tool:229 - 🔦 LLM Requesting local tool: read_file with generated payload: {'file_path': 'coding-agent-intro.md'}
+2025-05-07 22:17:56.646 | INFO     | coding_agent:_execute_local_tool:279 - 🔧 Tool read_file completed in 0.00 s
+2025-05-07 22:17:57.047 | INFO     | coding_agent:_agent_loop:177 - ✅ read_file
+2025-05-07 22:17:57.049 | INFO     | coding_agent:_agent_loop:179 - 🔢 Step 3 tokens used: 2165 (output: 23, input: 2142)
+2025-05-07 22:17:57.822 | INFO     | coding_agent:_agent_loop:127 - --------------------------------------------------------------------------------
+2025-05-07 22:17:57.822 | INFO     | coding_agent:_agent_loop:128 - 🔍 Step 4
+2025-05-07 22:18:01.627 | INFO     | llm_providers.openai:invoke_model:107 - 🔄 Model response received in 3.43 s
+2025-05-07 22:18:04.100 | INFO     | coding_agent:_agent_loop:177 - ✅ xpfinish-agent-execution-finished
+2025-05-07 22:18:04.101 | INFO     | coding_agent:_agent_loop:179 - 🔢 Step 4 tokens used: 3068 (output: 474, input: 2594)
+2025-05-07 22:18:05.220 | INFO     | coding_agent:_agent_loop:185 - ✨ Execution duration: 31.02 s
+2025-05-07 22:18:05.224 | INFO     | coding_agent:_agent_loop:188 - 🔢 Total tokens used: 8955 (output: 950, input: 8005)
+2025-05-07 22:18:06.494 | INFO     | coding_agent:chat:86 - --------------------------------------------------------------------------------
+2025-05-07 22:18:06.495 | INFO     | coding_agent:chat:87 - 🤖 Agent response: Repository cloned and introduction file created as requested.
 
-The introduction covers:
+---
 
-1. The agent's modular architecture that works with any LLM provider
-2. Schema-driven actions that ensure predictable and secure operations
-3. Multi-step planning capabilities for complex tasks
-4. Context-aware memory system that maintains state across interactions
-5. Connector-based system integration for working with external systems
-6. The agent loop that enables reliable, auditable, and deterministic automation
+# Coding Agent Introduction
 
-The file is ready for review in the repository. As requested, I did not commit any changes.
+Hello! I am an autonomous Coding Agent, built with the [xpander-ai/coding-agent](https://github.com/xpander-ai/coding-agent) source code. As a self-driven software engineer, I am capable of generating, executing, and managing code through structured function-calling and a smart agent loop.
+
+## Modular Architecture
+My architecture is modular, allowing for flexible extension and integration. Each component is designed to handle specific responsibilities, such as code generation, file management, version control, and external system interaction. This modularity ensures maintainability and scalability.
+
+## Schema-Driven Actions
+I support schema-driven actions, which means all my operations are defined and validated against explicit schemas. This guarantees that every action I perform is predictable, type-safe, and easy to audit.
+
+## Multi-Step Planning
+I am capable of multi-step planning, breaking down complex tasks into smaller, manageable subtasks. This enables me to tackle sophisticated development workflows while ensuring each step is executed reliably and in the correct order.
+
+## Context-Aware Memory
+My context-aware memory allows me to retain and utilize relevant information throughout a session. I can reference previous actions, user instructions, and project state to make informed decisions and maintain continuity across tasks.
+
+## Connector-Based System Integration
+I integrate with external systems through a connector-based approach. This enables seamless interaction with tools such as Git, file systems, and APIs, making me adaptable to a wide range of development environments and workflows.
+
+## Reliable, Auditable, and Deterministic Automation
+My agent loop orchestrates all actions in a reliable, auditable, and deterministic manner. Each step is logged, validated, and executed according to plan, ensuring transparency and reproducibility. This makes me a trustworthy assistant for automating software engineering tasks.
+
+---
+
+This file provides an overview of my capabilities and architecture for developers working with or extending the Coding Agent.
+
+No commits have been made yet. Let me know if you want to proceed with version control or further actions.
 ```
 
-You can now interact with your agent through the terminal by typing messages and questions!
 
 <Note>
-  Ask your agent follow-up questions about how function calling works and how it succeeded in performing the git clone operation. Also ask it to explain what the agent loop is.
+  Notice how the AI performed local functions and was able to read files, clone the GitHub repo, and summarize its answer for you. You can now ask your agent follow-up questions about how function calling works and how it succeeded in performing the git clone operation, or continue with the workshop.
 </Note>
 
 ## 🌐 Stream Events from the Cloud to Your Local Agent
@@ -395,4 +394,4 @@ By completing this module, you should now be able to:
 
 ## 🔄 Next Steps
 
-Now that you've built your first developer agent, you're ready to expand your agent fleet in the [next module](/workshops/a2a-mcp-bedrock-workshop/03-expand-agent-fleet).
+Now that you've built your first developer agent, you're ready to expand your agent fleet in the [next module](/workshops/a2a-mcp-workshop/03-expand-agent-fleet).

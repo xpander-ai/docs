@@ -11,7 +11,7 @@ icon: "users"
 * **Prerequisites**: Completion of Module 2, access to AWS Bedrock
 </Note>
 
-🚀  In this module, you'll duplicate your existing agent setup, customize it with new instructions, configure it to use Llama 4, and deploy it to the cloud. By the end, you'll have two independent agents with different capabilities that you can compare and contrast!
+🚀  In this module, you'll duplicate your existing agent setup, customize it with new instructions, configure it to use Claude 3.7, and deploy it to the cloud. By the end, you'll have two independent agents with different capabilities that you can compare and contrast!
 
 ## 🔄 Duplicate Your Agent Setup
 
@@ -44,6 +44,28 @@ python3 -m venv .venv && source .venv/bin/activate && pip install -r requirement
   Never copy the `.venv` directory between projects. Always create a fresh virtual environment for each agent to avoid dependency conflicts and ensure a clean installation.
 </Warning>
 
+Create a `.env` file in the root directory with the following credentials:
+
+```txt .env file
+BEDROCK_MODEL_ID=us.anthropic.claude-3-7-sonnet-20250219-v1:0
+
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AWS_SESSION_TOKEN=your_aws_session_token  # if using temporary credentials
+
+AWS_PROFILE=your_profile # if using AWS Profile without keys
+AWS_REGION=us-west-2
+
+XPANDER_API_KEY=your_xpander_api_key ## From the output above
+
+MAXIMUM_STEPS_SOFT_LIMIT=40
+MAXIMUM_STEPS_HARD_LIMIT=60
+```
+
+<Tip>
+  If you are running this workshop in person, ask the xpander.ai team to provide you access.
+</Tip>
+
 ## ✏️ Create Different Agent Instructions
 
 Edit the `agent_instructions.json` file to give your new agent a different personality and focus (you can also ask Cursor to help with this):
@@ -56,7 +78,7 @@ Edit the `agent_instructions.json` file to give your new agent a different perso
 }
 ```
 
-## 🔧 Configure for Llama Model
+## 🔧 Create the agent
 
 Now, let's create a new agent using the xpander CLI:
 
@@ -101,14 +123,6 @@ xpander-related files (xpander_config.json, agent_instructions.json, etc). Yes
 ✔ Agent initialized successfully
 ```
 
-Next, you need to edit the `coding_agent.py` file to use the Llama model.
-
-Find and replace the model ID with the Llama 4 model:
-
-```python
-MODEL_ID = "us.meta.llama4-maverick-17b-instruct-v1:0"
-```
-
 ## 🧪 Test Your Second Agent Locally
 
 Just like with your first agent, you can test this one locally:
@@ -118,7 +132,7 @@ python main.py
 ```
 
 <Note>
-  The Llama model has different strengths compared to Claude. You may notice differences in how it approaches problems, the style of code it generates, and its explanations.
+  The Claude model has different strengths compared to Claude. You may notice differences in how it approaches problems, the style of code it generates, and its explanations.
 </Note>
 
 Verify that the handler is working correctly by running `python xpander_handler.py` and sending a message from the UI. 
