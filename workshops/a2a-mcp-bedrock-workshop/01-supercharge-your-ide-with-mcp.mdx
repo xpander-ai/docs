@@ -69,7 +69,10 @@ Add the following GitHub operations to your agent:
    ```txt Prompt for generating agent
    You are GitHub-Search-Agent, an expert at searching and analyzing GitHub repositories, code, users, and topics. You have deep knowledge of GitHub's API and can provide concise, accurate information about code patterns, repository structures, and developer activities.
    ```
-4. Go to **Instructions** and define your agent's role, goal, and instructions:
+
+👉 The generated details created for us the agent settings. We still need to optimize the System Prompt of AI Agent to exactly match our use case.
+
+4. Go to the "**Instructions**" and define your agent's role, goal, and instructions:
 
    ```txt Role
    You are GitHub-Search-Agent, an expert at searching and analyzing GitHub repositories, code, users, and topics. You have deep knowledge of GitHub's API and can provide concise, accurate information about code patterns, repository structures, and developer activities.
@@ -87,6 +90,7 @@ Add the following GitHub operations to your agent:
    5. For any search query, first try to understand what the user is looking for before running the search
    6. Always provide contextual information about why a result is relevant
    ```
+
 5. Click **Save Changes** and close the panel
 
 Your completed agent should look similar to this:
@@ -197,6 +201,108 @@ Let's improve the repository search results using Agentic RAG:
   Notice how much cleaner and more focused the response is now\! Instead of overwhelming JSON data, you get just the meaningful content that matters to your query.
 </Tip>
 
+### Configure Agentic RAG for the other operations as well
+
+<Tabs>
+  <Tab title="Step 1: Optimizing User Search">
+    To optimize the user search operation:
+
+    1. Click on the gear icon next to the **Find Users by Criteria** operation
+    2. Go to **Advanced** → **Raw Editor**
+    3. Configure the fields:
+
+      Searchable Fields:
+
+      ```json User Search Configuration
+      [
+        "items[].login"
+      ]
+      ```
+
+      Returnable Fields:
+
+      ```json User Return Configuration
+      [
+        "items[].html_url",
+        "items[].login", 
+        "items[].avatar_url"
+      ]
+      ```
+    4. Save your changes
+    5. In the testing area on the left pane, run:
+    6. Save your changes, and deploy the agent
+    7. In the WebUI area on the left pane, run:
+  </Tab>
+  <Tab title="Step 2: Optimizing Commit Searches">
+    To optimize the commit search operation:
+
+    1. Click on the gear icon next to the **Search Commits by Criteria** operation
+    2. Go to **Advanced** → **Raw Editor**
+    3. Configure the fields:
+
+      Searchable Fields:
+
+      ```json Commit Search Configuration
+      [
+        "items[].commit.message",
+        "items[].author.login",
+        "items[].commit.author.name",
+        "items[].repository.full_name"
+      ]
+      ```
+
+      Returnable Fields:
+
+      ```json Commit Return Configuration
+      [
+        "items[].html_url",
+        "items[].sha",
+        "items[].commit.message",
+        "items[].commit.author.date",
+        "items[].author.login", 
+        "items[].repository.html_url"
+      ]
+      ```
+    4. Save your changes
+    5. In the testing area of the left pane, try a follow-up question:
+  </Tab>
+  <Tab title="Step 3: Optimizing Code Snippets Search">
+    Optimize the code snippet operation:
+
+    1. Click on the gear icon next to the **Find Code Snippets by Query Terms** operation
+    2. Go to **Advanced** → **Raw Editor**
+    3. Configure the fields:
+
+      Searchable Fields:
+
+      ```json Searchable Fields Configuration
+      [
+        "items[].name",
+        "items[].path",
+        "items[].repository.full_name",
+        "items[].repository.description"
+      ]
+      ```
+
+      Returnable Fields:
+
+      ```json Returnable Fields Configuration
+      [
+        "items[].html_url",
+        "items[].path",
+        "items[].repository.html_url",
+        "items[].repository.full_name"
+      ]
+      ```
+    4. Save your changes
+    5. In the testing area of the left pane, run:
+  </Tab>
+</Tabs>
+
+<Success>
+  You configured Agentic RAG for four operations (Code-Snippets, Commit search, User search, Topics Search)
+</Success>
+
 ### Continue from the workshop from the WebUI
 
 To continue testing your agent:
@@ -208,139 +314,24 @@ To continue testing your agent:
   ![](/images/screenshots/2025-05-07-11-14-05.png)
 </Frame>
 
-3. Select the same conversation thread from your chat history to maintain context
+3. Select the last conversation thread you started before configuring the agentic RAG from your chat history to maintain context
 
 <Frame>
   ![](/images/screenshots/2025-05-07-11-15-16.png)
 </Frame>
 
-### Optimizing User Search
+Now test your agent and check the generated payload for each and the response of the Agent. Here are few Prompt optimized to ask the Agent to select specific operation. You want to see if the data returned is optimized or not. You can use the same thread or create new one.
 
-Next, let's optimize the user search operation:
+```txt Prompt User Search
+Find few GitHub users related to MCP and Agent 2 Agent protocol
+```
 
-1. Click on the gear icon next to the **Find Users by Criteria** operation
-2. Go to **Advanced** → **Raw Editor**
-3. Configure the fields:
+```txt Prompt for Commit Searches 
+Summarize the recent commits of users related to MCP repositories
+```
 
-   Searchable Fields:
-
-   ```json User Search Configuration
-   [
-     "items[].login"
-   ]
-   ```
-
-   Returnable Fields:
-
-   ```json User Return Configuration
-   [
-     "items[].html_url",
-     "items[].login", 
-     "items[].avatar_url"
-   ]
-   ```
-4. Save your changes
-5. In the testing area on the left pane, run:
-6. Save your changes, and deploy the agent
-7. In the WebUI area on the left pane, run:
-
-   ```txt Prompt
-   Find 2-3 GitHub users related to MCP and Agent 2 Agent protocol
-   ```
-
-### Optimizing Commit Searches
-
-Now, let's configure commit search operations:
-
-1. Click on the gear icon next to the **Search Commits by Criteria** operation
-2. Go to **Advanced** → **Raw Editor**
-3. Configure the fields:
-
-   Searchable Fields:
-
-   ```json Commit Search Configuration
-   [
-     "items[].commit.message",
-     "items[].author.login",
-     "items[].commit.author.name",
-     "items[].repository.full_name"
-   ]
-   ```
-
-   Returnable Fields:
-
-   ```json Commit Return Configuration
-   [
-     "items[].html_url",
-     "items[].sha",
-     "items[].commit.message",
-     "items[].commit.author.date",
-     "items[].author.login", 
-     "items[].repository.html_url"
-   ]
-   ```
-4. Save your changes
-5. In the testing area of the left pane, try a follow-up question:
-
-   ```txt Follow-up Prompt
-   Summarize their recent commits
-   ```
-
-### Optimizing Code Snippets Search
-
-Finally, let's optimize the code snippet operation:
-
-1. Click on the gear icon next to the **Find Code Snippets by Query Terms** operation
-2. Go to **Advanced** → **Raw Editor**
-3. Configure the fields:
-
-   Searchable Fields:
-
-   ```json Searchable Fields Configuration
-   [
-     "items[].name",
-     "items[].path",
-     "items[].repository.full_name",
-     "items[].repository.description"
-   ]
-   ```
-
-   Returnable Fields:
-
-   ```json Returnable Fields Configuration
-   [
-     "items[].html_url",
-     "items[].path",
-     "items[].repository.html_url",
-     "items[].repository.full_name"
-   ]
-   ```
-4. Save your changes
-5. In the testing area of the left pane, run:
-
-   ```txt Prompt
-   Can you find the implementation of A2A code snippet?
-   ```
-
-The optimized results should look similar to this:
-
-```markdown Example Output
-Here are some code snippets related to "A2A" found on GitHub:
-
-1. **Repository:** [hyunjun/bookmarks](https://github.com/hyunjun/bookmarks)
-   - **File:** [c.md](https://github.com/hyunjun/bookmarks/blob/b0dce61583620ed1bff22408dfae28563e3cf28f/c.md)
-
-2. **Repository:** [mwherman2000/did-uri-spec](https://github.com/mwherman2000/did-uri-spec)
-   - **File:** [FAQ.md](https://github.com/mwherman2000/did-uri-spec/blob/deff7e273046574ec3703313b1bb833a4d060cbc/FAQ.md)
-
-3. **Repository:** [zeromake/library](https://github.com/zeromake/library)
-   - **File:** [TOC.md](https://github.com/zeromake/library/blob/6073134ad593c54897efcb3339f4a0662bc7a7b1/TOC.md)
-
-4. **Repository:** [tansuotv/IPTVindex](https://github.com/tansuotv/IPTVindex)
-   - **File:** [tv.txt](https://github.com/tansuotv/IPTVindex/blob/869d6d43ae2316cc4b0628affc9b87650a783c5a/tv.txt)
-
-5. **Repository:** [kitnil/notes](https://github.com/kitnil/notes)
-   - **File:** [s3.org](https://github.com/kitnil/notes/blob/da3da9c30cbebee0075fb92f58f8fc3dac7e7e0f/s3.org)
+```txt Prompt for code Snippet search
+Find the implementation of A2A and return the code snippet
 ```
 
 ## 📄 Adding Code Reading Capabilities
@@ -407,7 +398,7 @@ How can I increase throughput using cross-region inference with Amazon Bedrock a
 </Frame>
 
 <Note>
-  The screenshot is from the agent's WebUI. You can access yours by clicking the 'Chat' button on the canvas — the WebUI URL will appear
+  The screenshot is from the agent's WebUI. You can access yours by clicking the 'Chat' button on the canvas — the WebUI URL will appear.
 </Note>
 
 ## 🌎 Enhancing Your Agent with Web Search
@@ -449,7 +440,7 @@ Your agent should now provide more comprehensive answers by combining web search
 
 In production, to ensure your agent follows the right search strategy, we should always create a dependency graph that deterministically enforces specific business logic behavior:
 
-1. In your agent canvas, by attachling lines between operations, you can connect your nodes to create the dependency graph
+1. In your agent canvas, by attaching lines between operations, you can connect your nodes to create the dependency graph
 2. Set up a workflow that requires an internet search before accessing GitHub operations:
    - Connect the Tavily AI Insights node as a prerequisite to the GitHub operations
    - Ensure the flow follows a logical progression
