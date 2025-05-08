@@ -60,7 +60,7 @@
                 ]
               }
             ]
-          },  
+          },
           {
             "group": "AI Agent Workbench",
             "icon": {
@@ -172,9 +172,7 @@
               "name": "book-open",
               "style": "regular"
             },
-            "pages": [
-              "api-reference/07-sdk/index"
-            ]
+            "pages": ["api-reference/07-sdk/index"]
           },
           {
             "group": "xpander-sdk",
@@ -207,9 +205,7 @@
               "name": "book-open",
               "style": "regular"
             },
-            "pages": [
-              "apps/index"
-            ]
+            "pages": ["apps/index"]
           },
           {
             "group": "Productivity",
@@ -341,47 +337,10 @@
   },
   "integrations": {
     "amplitude": {
-        "apiKey": "a217b67ed9af1f3663abbdb97c358d86"
+      "apiKey": "a217b67ed9af1f3663abbdb97c358d86"
     }
   },
-  "redirects": [
-    {
-      "source": "/workshops/a2a-mcp-bedrock-workshop/01-first-coding-agent",
-      "destination": "/workshops/a2a-mcp-workshop/02-first-coding-agent"
-    },
-    {
-      "source": "/workshops/a2a-mcp-bedrock-workshop/02-expand-agent-fleet",
-      "destination": "/workshops/a2a-mcp-workshop/03-expand-agent-fleet"
-    },
-    {
-      "source": "/workshops/a2a-mcp-bedrock-workshop/03-serverless-manager-agent",
-      "destination": "/workshops/a2a-mcp-workshop/04-serverless-manager-agent"
-    },
-    {
-      "source": "/workshops/a2a-mcp-bedrock-workshop/04-submit-application",
-      "destination": "/workshops/a2a-mcp-workshop/05-submit-application"
-    },
-    {
-      "source": "/workshops/a2a-mcp-bedrock-workshop/04-pr-automation",
-      "destination": "/workshops/a2a-mcp-workshop/05-submit-application"
-    },
-    {
-      "source": "/workshops/a2a-mcp-bedrock-workshop/05-launch-agent-fleet",
-      "destination": "/workshops/a2a-mcp-workshop/05-submit-application"
-    },
-    {
-      "source": "/workshops/a2a-mcp-bedrock-workshop/06-submit-application",
-      "destination": "/workshops/a2a-mcp-workshop/05-submit-application"
-    },
-    {
-      "source": "/workshops/a2a-mcp-bedrock-workshop/",
-      "destination": "/workshops/a2a-mcp-workshop/index"
-    },
-    {
-      "source": "/workshops/a2a-mcp-bedrock-workshop",
-      "destination": "/workshops/a2a-mcp-workshop/index"
-    }
-  ],
+  "redirects": [],
   "footer": {
     "socials": {
       "x": "https://x.com/xpander_ai",
