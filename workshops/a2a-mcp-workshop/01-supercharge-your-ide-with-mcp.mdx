@@ -321,7 +321,7 @@ To continue testing your agent:
 Now test your agent and check the generated payload for each and the response of the Agent. Here are few Prompt optimized to ask the Agent to select specific operation. You want to see if the data returned is optimized or not. You can use the same thread or create new one.
 
 ```txt Prompt User Search
-Find a few  GitHub users related to MCP
+Find a few GitHub users related to MCP
 ```
 
 ```txt Prompt for Commit Searches
@@ -379,11 +379,11 @@ def xpander_run_action(repo_full_name: str, file_path: str, ref: str = "main"):
 ```
 
 4. Name it **GitHub Code Reader** and click **Save**
-5. Return to your agent in the **AI Agents** section
+5. Return to your agent in the **Agents** section
 6. Click the **\+** button
 7. Select **Custom Action**
-8. Add the **GitHub Code Reader** function to your agent canvas
-9. Click Save -\> Deploy.
+8. Add the **GitHub Code Reader** function to your agent canvas. It could take a minute for the Action to appear in the menu as it gets validated. Refresh the Agent page if you don't see it.
+9. Click Deploy
 
 Run the following prompt
 
