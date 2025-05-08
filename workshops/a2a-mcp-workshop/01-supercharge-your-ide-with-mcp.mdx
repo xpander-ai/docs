@@ -206,6 +206,7 @@ Let's improve the repository search results using Agentic RAG:
 </Tip>
 
 ### Configure Agentic RAG for the other operations as well
+
 Go through the three tabs in this section to configure the correct Searchable and Returnable fields for the agent's tools, in order to use Agentic RAG to optimize the tool calls.
 
 <Tabs>
@@ -264,7 +265,6 @@ Go through the three tabs in this section to configure the correct Searchable an
       "items[].repository.html_url"
     ]
     ```
-
   </Tab>
   <Tab title="Step 3: Optimizing Code Snippets Search">
     Optimize the code snippet operation:
@@ -294,14 +294,12 @@ Go through the three tabs in this section to configure the correct Searchable an
       "items[].repository.full_name"
     ]
     ```
-
   </Tab>
 </Tabs>
 
-
-<Success>
-You configured Agentic RAG for four operations (Code-Snippets, Commit search, User search, Topics Search)
-</Success>
+<Check>
+  You configured Agentic RAG for four operations (Code-Snippets, Commit search, User search, Topics Search)
+</Check>
 
 ### Continue from the workshop from the WebUI
 
@@ -323,7 +321,7 @@ To continue testing your agent:
 Now test your agent and check the generated payload for each and the response of the Agent. Here are few Prompt optimized to ask the Agent to select specific operation. You want to see if the data returned is optimized or not. You can use the same thread or create new one.
 
 ```txt Prompt User Search
-Find few GitHub users related to MCP and Agent 2 Agent protocol
+Find a few  GitHub users related to MCP
 ```
 
 ```txt Prompt for Commit Searches
