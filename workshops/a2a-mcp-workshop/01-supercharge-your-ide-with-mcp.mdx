@@ -429,9 +429,11 @@ Your agent should now provide more comprehensive answers by combining web search
 </Frame>
 
 <Warning>
-  Sometimes, our autonomous agent might choose to use GitHub before Tavily, despite our explicit instructions. This happens because the AI model sees all available tools at once and makes decisions based on its understanding of the prompt and tool descriptions.
+  Sometimes, our autonomous agent might choose to use GitHub before Tavily, despite the explicit instructions that are configured in the system prompt. This happens because the AI model sees all available tools at once and makes decisions based on its understanding of the prompt and tool descriptions.
 
   This reveals a fascinating design challenge in AI systems: How can we create truly autonomous agents capable of making intelligent decisions while ensuring they reliably follow critical business logic when needed? 🤔
+
+  Continue to the Dependency Graph section to find out 👉
 </Warning>
 
 ## 🔄 Creating the Agent Dependency Graph
@@ -440,7 +442,7 @@ In production, to ensure your agent follows the right search strategy, we should
 
 1. In your agent canvas, by attaching lines between operations, you can connect your nodes to create the dependency graph
 2. Set up a workflow that requires an internet search before accessing GitHub operations:
-   - Connect the Tavily AI Insights node as a prerequisite to the GitHub operations
+   - Connect the Tavily AI Insights node as a prerequisite to the GitHub operations - simply drag lines from the top of all the GitHub operations to the bottom of the Tavily operation.
    - Ensure the flow follows a logical progression
 
 <Frame>
