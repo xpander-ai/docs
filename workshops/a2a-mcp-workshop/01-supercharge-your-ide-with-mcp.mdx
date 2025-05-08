@@ -476,14 +476,14 @@ Using only Google's A2A protocol implementation, create an agent that responds w
   Congratulations\! You've built a reliable AI Agent that balances autonomy with guardrails. By creating this structured workflow, you've effectively addressed both the API overflow challenge and solved the autonomous multi-step challenges
 </Check>
 
-# 🌐 Exposing Your Agent as an MCP
+# 🌐 Exposing Your Agent as an MCP server
 
 ### Step 1: Access your Agent MCP URL
 
 The final step is to expose your optimized GitHub agent as a Model Context Protocol (MCP) server:
 
 1. In your agent canvas, click the **\+** button
-2. Select **Source** → **MCP**
+2. Select **Sources** → **MCP**
 3. Click **Deploy**
 
 <Frame>
@@ -493,7 +493,7 @@ The final step is to expose your optimized GitHub agent as a Model Context Proto
 4. After the short deployment phase completes, you'll receive a unique URL for your MCP server when you click on the MCP source node on the canvas.
 5. Configure this endpoint in your Cursor IDE
 
-Go to Cursor -\> Settings -\> Cursor Settings and click on "\+ add new global MCP Server" or edit directly the `~/.cursor/mcp.json`:
+Go to Cursor -\> Settings -\> MCP and click on "\+ add new global MCP Server" or edit directly the `~/.cursor/mcp.json`:
 
 <Frame>
   ![](/images/screenshots/2025-05-07-23-01-57.png)
@@ -558,11 +558,11 @@ search for code samples of xpander-ai sdk
 Congratulations\! By completing this module, you should now be able to:
 
 1. Create and configure a GitHub search agent with optimized Agentic RAG
-2. Customize searchable and returnable fields for each API operation
-3. Add custom code reading capabilities to your agent
+2. Customize searchable and returnable fields for each tool call
+3. Add custom code execution to your agent
 4. Structure agent workflows using dependency graphs
-5. Deploy your agent as an MCP endpoint for Cursor IDE
+5. Deploy your agent as an MCP server for Cursor IDE
 
 ## 🔄 Next Steps
 
-Now that you've supercharged your IDE with an optimized GitHub MCP Server, you're ready to build your first coding agent - proceed to the next module.
+Now that you've supercharged your IDE with an optimized GitHub MCP server, you're ready to build your first coding agent - proceed to the next module.
