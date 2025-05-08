@@ -90,7 +90,6 @@ Add the following GitHub operations to your agent:
    5. For any search query, first try to understand what the user is looking for before running the search
    6. Always provide contextual information about why a result is relevant
    ```
-
 5. Click **Save Changes** and close the panel
 
 Your completed agent should look similar to this:
@@ -211,23 +210,24 @@ Let's improve the repository search results using Agentic RAG:
     2. Go to **Advanced** → **Raw Editor**
     3. Configure the fields:
 
-      Searchable Fields:
+    Searchable Fields:
 
-      ```json User Search Configuration
-      [
-        "items[].login"
-      ]
-      ```
+    ```json User Search Configuration
+    [
+      "items[].login"
+    ]
+    ```
 
-      Returnable Fields:
+    Returnable Fields:
 
-      ```json User Return Configuration
-      [
-        "items[].html_url",
-        "items[].login", 
-        "items[].avatar_url"
-      ]
-      ```
+    ```json User Return Configuration
+    [
+      "items[].html_url",
+      "items[].login", 
+      "items[].avatar_url"
+    ]
+    ```
+
     4. Save your changes
     5. In the testing area on the left pane, run:
     6. Save your changes, and deploy the agent
@@ -240,29 +240,30 @@ Let's improve the repository search results using Agentic RAG:
     2. Go to **Advanced** → **Raw Editor**
     3. Configure the fields:
 
-      Searchable Fields:
+    Searchable Fields:
 
-      ```json Commit Search Configuration
-      [
-        "items[].commit.message",
-        "items[].author.login",
-        "items[].commit.author.name",
-        "items[].repository.full_name"
-      ]
-      ```
+    ```json Commit Search Configuration
+    [
+      "items[].commit.message",
+      "items[].author.login",
+      "items[].commit.author.name",
+      "items[].repository.full_name"
+    ]
+    ```
 
-      Returnable Fields:
+    Returnable Fields:
 
-      ```json Commit Return Configuration
-      [
-        "items[].html_url",
-        "items[].sha",
-        "items[].commit.message",
-        "items[].commit.author.date",
-        "items[].author.login", 
-        "items[].repository.html_url"
-      ]
-      ```
+    ```json Commit Return Configuration
+    [
+      "items[].html_url",
+      "items[].sha",
+      "items[].commit.message",
+      "items[].commit.author.date",
+      "items[].author.login", 
+      "items[].repository.html_url"
+    ]
+    ```
+
     4. Save your changes
     5. In the testing area of the left pane, try a follow-up question:
   </Tab>
@@ -273,27 +274,28 @@ Let's improve the repository search results using Agentic RAG:
     2. Go to **Advanced** → **Raw Editor**
     3. Configure the fields:
 
-      Searchable Fields:
+    Searchable Fields:
 
-      ```json Searchable Fields Configuration
-      [
-        "items[].name",
-        "items[].path",
-        "items[].repository.full_name",
-        "items[].repository.description"
-      ]
-      ```
+    ```json Searchable Fields Configuration
+    [
+      "items[].name",
+      "items[].path",
+      "items[].repository.full_name",
+      "items[].repository.description"
+    ]
+    ```
 
-      Returnable Fields:
+    Returnable Fields:
 
-      ```json Returnable Fields Configuration
-      [
-        "items[].html_url",
-        "items[].path",
-        "items[].repository.html_url",
-        "items[].repository.full_name"
-      ]
-      ```
+    ```json Returnable Fields Configuration
+    [
+      "items[].html_url",
+      "items[].path",
+      "items[].repository.html_url",
+      "items[].repository.full_name"
+    ]
+    ```
+
     4. Save your changes
     5. In the testing area of the left pane, run:
   </Tab>
@@ -326,7 +328,7 @@ Now test your agent and check the generated payload for each and the response of
 Find few GitHub users related to MCP and Agent 2 Agent protocol
 ```
 
-```txt Prompt for Commit Searches 
+```txt Prompt for Commit Searches
 Summarize the recent commits of users related to MCP repositories
 ```
 
@@ -491,13 +493,13 @@ The final step is to expose your optimized GitHub agent as a Model Context Proto
 </Frame>
 
 4. After the short deployment phase completes, you'll receive a unique URL for your MCP server when you click on the MCP source node on the canvas.
-
 5. Configure this endpoint in your Cursor IDE
 
-Go to Cursor -> Settings -> Cursor Settings and click on "+ add new global MCP Server" or edit directly the `~/.cursor/mcp.json`:
+Go to Cursor -\> Settings -\> Cursor Settings and click on "\+ add new global MCP Server" or edit directly the `~/.cursor/mcp.json`:
 
-<Frame>![](/images/screenshots/2025-05-07-23-01-57.png)</Frame>
-
+<Frame>
+  ![](/images/screenshots/2025-05-07-23-01-57.png)
+</Frame>
 
 ```json mcp.json
 {
@@ -514,7 +516,7 @@ Go to Cursor -> Settings -> Cursor Settings and click on "+ add new global MCP S
 ```
 
 <Warning>
-  Make sure to replace `https://mcp.xpander.ai/your-server-url/` with your actual MCP server URL from the deployment step!
+  Make sure to replace `https://mcp.xpander.ai/your-server-url/` with your actual MCP server URL from the deployment step\!
 </Warning>
 
 ### Step 2: Customize the Cursor Settings
@@ -565,4 +567,4 @@ Congratulations\! By completing this module, you should now be able to:
 
 ## 🔄 Next Steps
 
-Now that you've supercharged your IDE with an optimized GitHub MCP Server, you're ready to build your first coding agent in the [next module](/workshops/a2a-mcp-workshop/02-first-coding-agent).
+Now that you've supercharged your IDE with an optimized GitHub MCP Server, you're ready to build your first coding agent - proceed to the next module.
