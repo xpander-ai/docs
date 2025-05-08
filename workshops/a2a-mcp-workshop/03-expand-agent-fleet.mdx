@@ -25,7 +25,7 @@ cd ..
 mkdir dev-agent-2
 
 # Copy the agent files, excluding the virtual environment
-cp -r dev-agent-1/agent_instructions.json dev-agent-1/coding_agent.py dev-agent-1/main.py dev-agent-1/local_tools.py dev-agent-1/bedrock.py dev-agent-1/requirements.txt dev-agent-1/xpander_handler.py dev-agent-1/sandbox.py dev-agent-1/.env dev-agent-2/ 
+rsync -av --progress dev-agent-1/ dev-agent-2 --exclude '.venv'
 
 # Change to the new directory
 cd dev-agent-2
