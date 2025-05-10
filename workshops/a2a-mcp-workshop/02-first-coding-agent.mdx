@@ -291,35 +291,71 @@ You can now send new messages in the Tester tab, and this time the agent will re
 
 ## 🔑 Configure Cloud Environment Variables
 
-1. Navigate to the xpander.ai platform and sign in
-2. Go to settings > Environment Secrets
-3. Add the following keys with their respective values:
+To securely deploy your agent using the xpander.ai platform, you need to configure environment secrets for your cloud environment.
 
+### 1. Automatically Sync Environment Variables (Recommended)
+
+You can use the CLI to push environment variables from your local `.env` file to the xpander.ai platform vault:
+
+```bash
+xpander secrets-sync
 ```
+
+This will:
+
+* Read the environment variables from your local `.env` file.
+* Sync them with your organization’s secrets on the xpander.ai platform.
+
+<Tip>
+Make sure your `.env` file includes **all required secrets**, including the often-forgotten `GIT_TOKEN`.
+</Tip>
+
+<Checklist>
+- [ ] Add all required environment variables to your `.env` file (see below).
+- [ ] Run `xpander secrets-sync`.
+- [ ] Go to **Settings > Environment Secrets** in the platform UI to verify all values were created successfully.
+</Checklist>
+
+### Required Keys in `.env`
+
+```env
 AWS_ACCESS_KEY_ID=your_aws_access_key
 AWS_SECRET_ACCESS_KEY=your_aws_secret_key
 AWS_SESSION_TOKEN=your_aws_session_token  # only needed if using temporary credentials
 AWS_REGION="us-east-2"
-GIT_TOKEN=your-git-token # Get it from (https://github.com/settings/tokens/new)
-GIT_USERNAME=your-git-username 
+
+GIT_TOKEN=your-git-token                  # Generate at https://github.com/settings/tokens/new
+GIT_USERNAME=your-git-username
+
 MAXIMUM_STEPS_SOFT_LIMIT=40
 MAXIMUM_STEPS_HARD_LIMIT=60
-MODEL_ID = "us.anthropic.claude-3-7-sonnet-20250219-v1:0"
+
+MODEL_ID="us.anthropic.claude-3-7-sonnet-20250219-v1:0"
 ```
+
+---
+
+### 2. Manually Configure via the UI (Alternative)
+
+If you prefer, you can manually enter the secrets:
+
+* Sign in to [xpander.ai](https://xpander.ai)
+* Go to **Settings > Environment Secrets**
+* Manually add each of the keys and their values from the list above
+
 <Tip>
-If you are running this workshop in person, ask the xpander.ai team for the credentials
+If you are running this workshop in person, ask the xpander.ai team for the credentials.
 </Tip>
+
 <Note>
-  Make sure to create a Personal Access Token (classic) with repository action permissions
-  
-  <Frame>![](/images/screenshots/2025-04-30-12-33-02.png)</Frame>
+Create a **Personal Access Token (classic)** on GitHub with **repository** access:
+
+<Frame>
+  ![](/images/screenshots/2025-04-30-12-33-02.png)
+</Frame>
 </Note>
 
-These credentials will allow your cloud-deployed agent to access Amazon Bedrock services securely without storing sensitive information in your code.
-
-<Tip>
-  Configuring these environment variables in the vault is crucial for cloud deployment. Your local .env file is not uploaded to the cloud for security reasons, so these values must be configured separately in the xpander platform.
-</Tip>
+These credentials allow your cloud-deployed agent to access Amazon Bedrock and GitHub securely, without hardcoding sensitive data into your codebase.
 
 ## 🚀 Deploy to the Cloud
 
