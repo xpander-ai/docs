@@ -126,6 +126,16 @@ xpander-related files (xpander_config.json, agent_instructions.json, etc). Yes
 ✔ Agent initialized successfully
 ```
 
+### 🔁 Change LLM Provider
+
+In `coding_agent.py`, update line 33 to switch from OpenAI to Claude 3.7 (via Amazon Bedrock):
+
+```python
+llm_provider = LLMProvider.AMAZON_BEDROCK
+```
+
+This agent will now use Claude 3.7 Sonnet instead of OpenAI.
+
 ## 🧪 Test Your Second Agent Locally
 
 Just like with your first agent, you can test this one locally:
