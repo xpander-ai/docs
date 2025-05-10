@@ -85,12 +85,20 @@ Create a `.env` file in the root directory with the following credentials:
 
 ```txt .env file
 XPANDER_API_KEY=your_xpander_api_key ## From the output above
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AWS_SESSION_TOKEN=your_aws_session_token  # only needed if using temporary credentials
+AWS_REGION="us-east-2"
+BEDROCK_MODEL_ID="us.anthropic.claude-3-7-sonnet-20250219-v1:0"
 
-OPENAI_API_KEY=your_openai_api_key
-OPENAI_MODEL_ID=gpt-4.1
+GIT_TOKEN=your-git-token                  # Generate at https://github.com/settings/tokens/new
+GIT_USERNAME=your-git-username
 
 MAXIMUM_STEPS_SOFT_LIMIT=40
 MAXIMUM_STEPS_HARD_LIMIT=60
+
+OPENAI_MODEL_ID=gpt-4.1
+OPENAI_API_KEY=your-open-ai-keys
 ```
 
 <Tip>
@@ -303,6 +311,7 @@ To securely deploy your agent using the xpander.ai platform, you need to configu
 Ensure your `.env` file (or manual input) includes the following keys:
 
 ```env
+XPANDER_API_KEY=your_xpander_api_key ## From the output above
 AWS_ACCESS_KEY_ID=your_aws_access_key
 AWS_SECRET_ACCESS_KEY=your_aws_secret_key
 AWS_SESSION_TOKEN=your_aws_session_token  # only needed if using temporary credentials
