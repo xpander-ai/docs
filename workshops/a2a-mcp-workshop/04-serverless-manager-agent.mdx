@@ -38,7 +38,7 @@ Click on the plus icon on the right, go to Agents, and select the AI Agents you 
 
 Now let's add tools to the manager AI Agent:
 
-1. Click the \+ button on the right, and go to Apps -\> "GitHub Pull Requests". 
+1. Click the \+ button on the right, and go to Apps -\> "GitHub Pull Requests".
 2. In the popup window, Authenticate to the app and give it a name.
 3. Select two operations and add them to the AI Agent:
    - Create New Pull Request in Repository
@@ -101,7 +101,7 @@ Your AI Manager is now ready to use:
 
 ## 🧪 Testing Your Manager Agent
 
-Use the Tester tab to interact with your manager agent. Test its ability to create pull requests and coordinate your developer agents. 
+Use the Tester tab to interact with your manager agent. Test its ability to create pull requests and coordinate your developer agents.
 
 ```txt Prompt-1
 Build a simple Todo list app (JS/HTML/CSS, no React);
@@ -167,6 +167,19 @@ You should be able to see the MCP auto-added to all your cursor chat
 </Frame>
 
 Trigger your manager agent with `Can you ask the AI Manager if it's working today?`
+
+## 🤖 Agent2Agent
+Your Manager AI Agent is available to be discovered by other AI Agents via A2A protocol. Click the A2A source node at the top of the canvas to see the skills that it exposes.
+
+<Frame caption="a2a card">
+  ![](/images/screenshots/a2a-card.png)
+</Frame>
+
+<Tip>
+The manager AI Agent exposes its own available operations (from the GitHub pull request connector) as skills, but also its ability to trigger the dev-agents.
+
+You can also check the agent card in your agent's A2A URL by adding /.well-known/agent.json in the end of the URL.
+</Tip>
 
 ## ✅ Checkpoint
 
