@@ -48,7 +48,7 @@ icon: "bolt"
 
 ### Step 3: Add GitHub Operations
 
-Add the following GitHub operations to your agent:
+Add the following GitHub operations to your agent - select and confirm by clicking "Add to agent" at the bottom of the right selection menu.
 
 - **Find Code Snippets by Query Terms** - `GET /search/code`
 - **Find Repositories by Criteria** - `GET /search/repositories`
@@ -168,9 +168,11 @@ Let's test your newly created GitHub search agent:
 Let's improve the repository search results using Agentic RAG:
 
 1. You can configure specific tool calls. Click on the gear icon next to the **Find Repositories by Criteria** operation in the graph.
+
 <Frame>
-     ![Agentic RAG Configuration](/images/workshops/operation-card.png)
+  ![Agentic RAG Configuration](/images/workshops/operation-card.png)
 </Frame>
+
 2. Click on **Advanced** and then switch to **Raw Editor** (this allows the AI to send natural language queries, and the server will perform semantic search on the API response)
 3. Configure the search and return fields:
 
