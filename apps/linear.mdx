@@ -1,0 +1,112 @@
+---
+title: "Linear"
+description: "Learn how to integrate AI agents with Linear using xpander.ai. Create automated workflows that can triage issues, assign tasks based on workload, update statuses in real-time, and generate progress summaries—streamlining your entire development pipeline."
+icon: "people-roof"
+---
+
+## About Linear
+
+Linear is a modern, purpose-built project management and issue tracking tool designed specifically for software development teams. It streamlines workflows by integrating tasks, sprints, roadmaps, and documentation into a unified, fast, and intuitive interface.
+
+
+Linear key features:
+
+- **Issues & Tasks**: Track bugs, features, and tasks with customizable fields, dependencies, and comments. Issues can be organized into projects or linked to sprints (called “Cycles”) for agile planning. 
+
+- **Projects & Milestones**: Group related issues into projects, define milestones, and monitor progress with visual tools like project graphs and status updates. 
+
+- **Cycles (Sprints)**: Plan and execute time-boxed iterations to keep teams focused and aligned. 
+
+
+- **Roadmaps**: Visualize long-term plans and align the team around strategic goals. 
+
+
+- **Real-Time Collaboration**: Comment on issues, tag teammates, and co-edit documents with real-time syncing across devices. 
+
+
+- **Integrations**: Connect with tools like GitHub, Slack, Figma, and more to automate workflows and enhance productivity. 
+
+## Authentication Options
+
+Below are possible authentication options you can choose:
+
+<Tabs>
+
+  <Tab title="API Access">
+
+    ### Generate a Linear API Key
+
+    1. Log in to your [Linear app](https://linear.app/).  
+    2. Click on your avatar and select **Settings** from the dropdown menu.  
+    3. In the sidebar, click **Security & access**.  
+    4. In the **Personal API keys** section, click **New API key**.  
+    ![Img 1](/images/apps/linear/img_1.png)
+
+    5. Enter a name for the key, assign the appropriate permissions, and click **Create**.  
+    6. Save the API key.
+
+    ### Integrate Linear into xpander.ai
+
+    1. Go to the **Interfaces** section in the sidebar of your xpander.ai dashboard.  
+    2. Select **Linear** from the available integrations.  
+    3. Click **Enable**.  
+    4. Enter an **Interface name**, e.g., "xpander-linear".  
+    5. Select **API Key** as the authentication mode.  
+    6. Select **Integration User** as the authentication scope.  
+    7. Paste the Linear API key into the provided field.  
+    8. Choose **Custom** as the **Auth Type**.  
+    9. In the **Custom header name** field, enter `Authorization`.  
+    10. Save the configuration.
+
+    ![Img 2](/images/apps/linear/img_2.png)
+
+  </Tab>
+
+</Tabs>
+
+## Integration of Linear into AI Agent
+
+Once you've configured your Linear account with the authentication option(s) described above, you can integrate it into your AI agent with xpander.ai:
+
+1. Go to the **+** sign located in the top right of the graph visualization of your xpander.ai agent.  
+2. Select **Apps**.  
+3. Choose **Linear** with the same **Interface name** you configured in the previous section (e.g., xpander-linear).  
+4. Select the available Linear operations that suit your use case.  
+
+![Img 3](/images/apps/linear/img_3.png)
+
+## Expose Linear as MCP Server
+
+Alternatively, you can also expose your Linear account as an MCP server. To do so:
+
+1. Go to the **Interfaces** section in the sidebar of your xpander.ai dashboard.  
+2. Select **Linear** with the same **Interface name** you configured in the previous section (e.g., xpander-linear).  
+3. Click **MCP Configuration**.  
+4. Enter the MCP configuration into the appropriate settings of the client app you want to use (e.g., Cursor, Windsurf, Claude Desktop, etc.).
+
+![Img 4](/images/apps/linear/img_4.png)
+
+## AI Agent Linear Prompt Library
+
+Below are possible prompts or use cases you can try after integrating Linear into your xpander AI agent:
+
+```
+Could you add a comment to issue #{issue_number} with feedback from the {team_name} team?
+```
+
+````
+Could you create a new bug ticket for the login page crash we just discovered?
+````
+
+```
+Can you update the priority of issue #{issue_number} to urgent?
+```
+
+```
+Can you create a new project named '{project_name}' for our Q4 initiatives?
+```
+
+## Related Resources
+
+- [Understanding Model Context Protocol (MCP)](/docs/05-human-interfaces/04-mcp)
+- [Linear API Documentation](https://linear.app/developers)
