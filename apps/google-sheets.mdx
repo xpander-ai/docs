@@ -1,94 +1,134 @@
 ---
 title: "Google Sheets"
-description: “Learn how to build AI agents with Google Sheets access using xpander.ai. Create intelligent spreadsheet-aware AI assistants that can read, write, update, and analyze structured data automatically.”
-icon: "google-sheets"
+description: "Learn how to integrate AI agents with Google Sheets using xpander.ai. Create intelligent workflows that automate data analysis, trigger actions based on cell values, and enable natural language interaction with your spreadsheets."
+icon: "google"
 ---
 
-Learn how to build AI agents with Google Sheets access using xpander.ai. Create intelligent spreadsheet-aware AI assistants that can read, write, update, and analyze structured data automatically.
+## About Google Sheets
 
-<Frame>
-![](/images/apps/google-sheets.png)
-</Frame>
+Google Sheets is a free, cloud-based spreadsheet application developed by Google. It enables users to create, edit, and collaborate on spreadsheets in real-time across various devices, including web browsers and mobile apps for Android and iOS.
+
+Key features include:
+
+- **Real-Time Collaboration**: Multiple users can work on the same spreadsheet simultaneously. 
+
+- **Comprehensive Functionality**: supports a wide array of functions and formulas for data manipulation, including mathematical, statistical, logical, and text functions. Users can create pivot tables, apply conditional formatting, and use data validation to ensure data integrity .
+
+- **Data Visualization**: Users can generate various types of charts and graphs to visualize data effectively. The "Explore" feature leverages machine learning to provide insights, suggest charts, and answer questions about the data .
+
+- **Offline Access**: With offline mode enabled, users can continue working on their spreadsheets without an internet connection. Changes made offline are synchronized automatically once connectivity is restored .
+
+- **Integration and Compatibility**: Google Sheets is compatible with various file formats, including Microsoft Excel (.xls, .xlsx), CSV, and PDF. It also integrates with other Google services and supports add-ons to extend its functionality .
+
+- **Automation with Google Apps Script**: Users can automate tasks and create custom functions using Google Apps Script, a JavaScript-based language. This allows for the development of macros and integration with external APIs .
 
 
 ## Authentication Options
 
-Choose the authentication method that best fits your needs:
+Below are possible authentication options you can choose:
 
 <Tabs>
-  <Tab title="API Access">
-    <Frame caption="Google Sheets API access configuration">
-      ![Google Sheets API Access](/images/placeholders/google-sheets-api.png)
-    </Frame>
 
-    
-    For programmatic access and automation:
-
-    1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-    2. Create a new project or select an existing one
-    3. Enable the **Google Sheets API** in Library
-    4. Go to **Credentials** and create an **API Key**
-    5. Restrict the API key to Google Sheets API only
-    6. Copy the API key to xpander.ai's Google Sheets connection settings
-    7. Set appropriate API access restrictions in Google Cloud Console
-
-    <Warning>
-        API keys provide limited functionality and are best for read-only operations on public files. For full access, use OAuth methods.
-    </Warning>
-    
-  ### Let's create the Xpander.ai Google Sheets interface!
-
-    This app is using basic authentication.
-
-    To configure it in xpander.ai, follow the following screenshot: 
-    <Frame>
-      ![](/images/screenshots/g_sheets_2025-04-27-16-32-54.png)
-    </Frame>
-
-    Then save the interface.
-
-    For more information about the Google API enablement, [click here](https://support.google.com/googleapi/answer/6158841?hl=en).
-
-  </Tab>
   <Tab title="Built-in xpander.ai Auth">
-    <Frame caption="Sign in with Google using xpander.ai's built-in authentication">
-      ![Sign in with Google](/images/placeholders/sign-in-with-google.png)
-    </Frame>
 
-    For programmatic access and automation:
+    The simplest way to connect Google Sheets is by using xpander.ai's built-in authentication:
 
-    1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-    2. Create a new project or select an existing one
-    3. Enable the **Google Sheets API** in Library
-
-    The simplest way to connect Google Sheets is using xpander.ai's built-in authentication:
-
-    1. Go to the **Apps** section in xpander.ai dashboard
-    2. Select **Google Sheets** from available integrations, and now you have two options:
-    
-        2.1 Click **Sign in with Google Sheets**:
-
-        <Frame>
-            ![](/images/screenshots/g_sheets_2025-04-24-15-27-39.png)
-        </Frame>
-
-        Select your Google account and grant permissions.
-
-        2.2 Click **other auth options**, and fill in your Interface name, interface access, Set `Authentication mode` as `OAuth2`.
-        
-        Now click **Sign in with Google Sheets**:
-    
-        <Frame>
-            ![](/images/screenshots/g_sheets_2025-04-24-15-25-01.png)
-        </Frame>
-
-        Select your Authentication scope, and save the interface.
-    
-    3. Your connection is immediately active and ready to use.
+    1. Go to the **Apps** section in the sidebar of your xpander.ai dashboard.  
+    2. Select **Google Sheets** from the available integrations.  
+    3. Click **Sign in with Google Sheets**.  
+    4. Grant xpander.ai permission to access your account.  
+    5. Your Google Sheets integration is now ready to use.
 
     <Note>
     This method is recommended for most users. xpander.ai securely manages your OAuth tokens without exposing any credentials.
     </Note>
 
   </Tab>
+
+  <Tab title="API Access">
+
+    ### Generate a Google Sheets API Key
+
+    1. Log in to your [Google Cloud Console](https://console.cloud.google.com/).  
+    2. Create a new project or select an existing one.  
+       ![Img 1](/images/apps/google-sheets/img_1.png)
+
+    3. Go to the [Google Cloud API Library](https://console.cloud.google.com/apis/library).  
+       ![Img 2](/images/apps/google-sheets/img_2.png)
+
+    4. Search for and select **Google Sheets API**, then click **Enable**.  
+    5. In the sidebar, go to **Credentials**.  
+    6. Click **Create credentials**, and select **API key**.  
+       ![Img 3](/images/apps/google-sheets/img_3.png)
+
+    7. Restrict the API key to Google Sheets API only (optional but recommended).  
+       ![Img 4](/images/apps/google-sheets/img_4.png)
+
+    ### Integrate Google Sheets into xpander.ai
+
+    1. Go to the **Apps** section in the sidebar of your xpander.ai dashboard.  
+    2. Select **Google Sheets** from the available integrations.  
+    3. Click **Other auth options**.  
+    4. Enter an **Interface name**, e.g., "xpander-google-sheets".  
+    5. Select **API Key** as the authentication mode.  
+    6. Select **Integration User** as the authentication scope.  
+    7. Paste the Google Sheets API key into the provided field.  
+    8. Choose **Basic** as the **Auth Type**.  
+    9. Save the configuration.  
+
+       ![Img 5](/images/apps/google-sheets/img_5.png)
+   
+   <Warning>
+    API keys provide limited functionality and are best for read-only operations on public files. For full access, use OAuth methods.
+   </Warning>
+
+  </Tab>
+
 </Tabs>
+
+## Integration of Google Sheets into AI Agent
+
+Once you've configured your Google Sheets account with the authentication option(s) described above, you can integrate it into your AI agent with xpander.ai:
+
+1. Go to the **+** sign located in the top right of the graph visualization of your xpander.ai agent.  
+2. Select **Apps**.  
+3. Choose **Google Sheets** with the same **Interface name** you configured in the previous section (e.g., xpander-google-sheets).  
+4. Select the available Google Sheets operations that suit your use case.  
+
+![Img 6](/images/apps/google-sheets/img_6.png)
+
+## Expose Google Sheets as MCP Server
+
+Alternatively, you can also expose your Google Sheets account as an MCP server. To do so:
+
+1. Go to the **Apps** section in the sidebar of your xpander.ai dashboard.  
+2. Select **Google Sheets** with the same **Interface name** you configured in the previous section (e.g., xpander-google-sheets).  
+3. Click **MCP Configuration**.  
+4. Enter the MCP configuration into the appropriate settings of the client app you want to use (e.g., Cursor, Windsurf, Claude Desktop, etc.).
+
+![Img 7](/images/apps/google-sheets/img_7.png)
+
+## AI Agent Google Sheets Prompt Library
+
+Below are possible prompts or use cases you can try after integrating Google Sheets into your xpander AI agent:
+
+```
+Can you create a new spreadsheet titled {my_title} with a data source schedule for {my_refresh_scope}?
+```
+
+````
+Can you retrieve the values in range {my_cell_range} from spreadsheet {my_spreadsheet}?
+````
+
+```
+Can you copy the sheet {my_sheet} from spreadsheet {my_source_spreadsheet} to {my_destination_spreadsheet}?
+```
+
+```
+Can you get the metadata {my_metadata} from spreadsheet {my_spreadsheet}?
+```
+
+## Related Resources
+
+- [Understanding Model Context Protocol (MCP)](/docs/05-human-interfaces/04-mcp)
+- [Google Sheets API Documentation](https://developers.google.com/workspace/sheets/api/guides/concepts)

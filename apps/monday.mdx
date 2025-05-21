@@ -1,42 +1,106 @@
 ---
-title: Monday
-description: Learn how to build AI agents with Monday access using xpander.ai.
-icon: monday
+title: "Monday"
+description: "Learn how to integrate AI agents with Monday using xpander.ai. Create intelligent workflows that automatically assign tasks, prioritize requests, and resolve issues by embedding AI-driven decision-making directly into your Monday boards."
+icon: "diagram-project"
 ---
 
-Learn how to build AI agents with Monday access using xpander.ai. This integration enables intelligent document-aware AI assistants that can read, write, organize, and analyze data of different projects automatically.
+## About Monday
+
+Monday.com is a cloud-based work operating system (Work OS) that enables teams to build, manage, and customize workflows for projects, tasks, and everyday operations. It offers a visual and flexible platform designed to enhance collaboration, automate processes, and integrate with various tools, catering to a wide range of industries and team sizes.
+
+Monday key features:
+
+- **Customizable Workflows**: Users can tailor boards to fit specific project needs, using a variety of column types and views (such as Kanban, Gantt, and calendar) to visualize work.
+
+- **Automation**: The platform supports automation of repetitive tasks, such as status updates and notifications, reducing manual work.
+
+- **Integrations**: Monday.com integrates with numerous third-party applications, including Slack, Microsoft Teams, Google Workspace, and Adobe Creative Cloud, allowing for seamless workflow across tools.
+
+- **Collaboration Tools**: Features like real-time updates, file sharing, and comment threads facilitate team communication and collaboration within the platform.
+
+- **No-Code/Low-Code Development**: With its open API and app framework, users can develop custom applications and extensions without extensive coding knowledge.
+
 
 ## Authentication Options
 
+Below are possible authentication options you can choose:
+
 <Tabs>
+
   <Tab title="API Access">
-    <Frame caption="Monday API access configuration">
-      ![Monday API Access](/images/placeholders/monday-api.png)
-    </Frame>
 
-    For programmatic access and automation:
+    ### Generate a Monday API Key
 
-    1. Sign in to your [monday.com](https://monday.com) account.
-    2. Click on your profile picture located in the top-right corner.
-    3. Select Developers. This will open the Developer Center in a new tab.
-    4. Click My Access Tokens > Show.
-    5. Copy your personal token. Keep in mind that regenerating a new token will deactivate any existing ones.
+    1. Log in to your [Monday account](https://monday.com).  
+    2. Click your profile icon in the top-right corner, then select **Developers**.
 
-    <Warning>
-    The API gives you powerful capabilities in order to enhance your monday.com experience. It's very important to keep your API token secure.
-    </Warning>
-        
-    ### Let's create the Xpander.ai Monday interface!
-    1. Write your interface name, select the interface access you'd like, Select the `API key` authentication method, select `Custom` as the Auth type, paste the token copied earlier in the API Key field, and insert `Authorization` in the Custom header name, like so:
+    ![Img 1](/images/apps/monday/img_1.png)
 
-    <Frame>
-		![](/images/screenshots/monday_2025-04-27-10-57-27.png)
-	</Frame>
+    3. In the sidebar, under the **My access tokens** section, you’ll find your API key.
 
-    Then save the interface.
+    ![Img 2](/images/apps/monday/img_2.png)
+		
+    ### Integrate Monday into xpander.ai
 
+    1. In your xpander.ai dashboard, go to the **Apps** section in the sidebar.  
+    2. Select **Monday** from the available integrations.  
+    3. Click **Enable**.  
+    4. Enter an **Interface name**, e.g., "xpander-monday".  
+    5. Choose **API Key** as the authentication mode.  
+    6. Select **Integration User** for the authentication scope.  
+    7. Paste your Monday API key into the provided field.  
+    8. Set the **Auth Type** to **Basic**.  
+    9. Save the configuration.  
 
-    For more information about the Monday API Tokens, [click here](https://developer.monday.com/api-reference/docs/authentication#accessing-api-tokens).
+    ![Img 3](/images/apps/monday/img_3.png)
 
   </Tab>
 </Tabs>
+
+
+## Integration of Monday into AI Agent
+
+Once you've configured your Monday account with the authentication option(s) described above, you can integrate it into your AI agent with xpander.ai:
+
+1. Go to the **+** sign located in the top right of the graph visualization of your xpander.ai agent.  
+2. Select **Apps**.  
+3. Choose **Monday** with the same **Interface name** you configured in the previous section (e.g., xpander-moday).  
+4. Select the available Monday operations that suit your use case.  
+
+![Img 4](/images/apps/monday/img_4.png)
+
+## Expose Monday as MCP Server
+
+Alternatively, you can also expose your Monday account as an MCP server. To do so:
+
+1. Go to the **Apps** section in the sidebar of your xpander.ai dashboard.  
+2. Select **Monday** with the same **Interface name** you configured in the previous section (e.g., xpander-monday).  
+3. Click **MCP Configuration**.  
+4. Enter the MCP configuration into the appropriate settings of the client app you want to use (e.g., Cursor, Windsurf, Claude Desktop, etc.).
+
+![Img 5](/images/apps/monday/img_5.png)
+
+## AI Agent Monday Prompt Library
+
+Below are possible prompts or use cases you can try after integrating Monday into your xpander AI agent:
+
+```
+Can you create a new {team_type} team called {team_name}?
+```
+
+````
+Can you retrieve all updates related to the {task_name} item?
+````
+
+```
+Could you create a new workspace for the {department_name} team with {workspace_type} access?
+```
+
+```
+Can you add our new team member {name} to the {project_name} board?
+```
+
+## Related Resources
+
+- [Understanding Model Context Protocol (MCP)](/docs/05-human-interfaces/04-mcp)
+- [Monday API Documentation](https://developer.monday.com/api-reference/)

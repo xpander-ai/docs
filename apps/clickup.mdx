@@ -1,61 +1,116 @@
 ---
-title: ClickUp
-description: Learn how to build AI agents with ClickUp access using xpander.ai. 
-icon: clickup
+title: "Clickup"
+description: "Learn how to integrate AI agents with ClickUp using xpander.ai. Create automated workflows that leverage AI to streamline task management, generate smart task summaries, and boost team productivity."
+icon: "bars-progress"
 ---
 
-Learn how to build AI agents with ClickUp access using xpander.ai. This integration enables intelligent task-aware AI assistants that can manage, update, and analyze projects, tasks, and workflows across teams automatically.
+## About ClickUp
+
+ClickUp is a comprehensive project management and productivity platform designed to centralize tasks, collaboration, documentation, and communication in a single interface.
+
+Key features include:
+
+- **Task Management**: Organize work using customizable tasks, subtasks, checklists, and over 35 ClickApps (e.g., time tracking, custom fields, sprint points).
+
+- **Multiple Views**: Choose from 15+ views, including List, Board, Calendar, Gantt, Timeline, Whiteboard, and Table, to visualize and manage projects from different perspectives.
+
+- **Automation**: Set up conditional workflows with if-then logic to automate repetitive tasks, such as status changes or task assignments.
+
+- **Collaboration Tools**: Utilize built-in chat, whiteboards, and real-time document editing to facilitate team communication and brainstorming.
+
+- **AI Integration**: ClickUp Brain, introduced in 2024, offers AI-powered features like task summarization, content generation, and intelligent search across tasks and documents.
+
 
 ## Authentication Options
 
+Below are possible authentication options you can choose:
+
 <Tabs>
-    <Tab title="API Access">
-        <Frame caption="ClickUp API access configuration">
-            ![ClickUp API Access](/images/placeholders/clickup-api.png)
-        </Frame>
 
-        For programmatic access and automation:
+  <Tab title="Built-in xpander.ai Auth">
 
-        1. Log in to [ClickUp.com](https://clickup.com/)
-        2. In the upper-right corner, click your avatar.
-        3. Select Settings.
-        4. In the sidebar, click Apps. [You can also click here directly](https://app.clickup.com/settings/apps).
-        5. Under **API Token**, click **Generate** or **Regenerate**:
-		<Frame>
-			![](/images/screenshots/clickup_2025-05-02-11-26-33.png)
-		</Frame>
-        6. Click Copy to copy the personal token to your clipboard..
-        
-<Warning>
-    **Personal tokens never expire** - so if you'd like to remove the token from Xpander, you should delete the interface and ReGenerate one.
-</Warning>
+    The simplest way to connect ClickUp is by using xpander.ai's built-in authentication:
 
-### Let's create the Xpander.ai ClickUp interface!
-        1. Write your interface name.
-        2. Select the interface access you'd like.
-        3. Select the **API key** authentication method.
-        4. Select the **Integration user** authentication scope.
-        5. Select **Custom** as the Auth type and **Authorization** as the Custom header name.
-        6. Paste the token copied earlier in the API Key field using this template: `[YOUR_API_KEY]`, like so:
+    1. Go to the **Apps** section in the sidebar of your xpander.ai dashboard.  
+    2. Select **ClickUp** from the available integrations.  
+    3. Click **Sign in with ClickUp**.  
+    4. Grant xpander.ai permission to access your ClickUp workspace.  
+    5. Your ClickUp integration is now ready to use.
 
-		<Frame>
-			![](/images/screenshots/clickup_2025-05-02-11-31-06.png)
-		</Frame>
-        
-      **Note:** Make sure to replace `[YOUR_API_KEY]` with your actual ClickUp API key.
+  </Tab>
 
-       Then save the interface.
+  <Tab title="API Access">
 
-        <Info>
-            For more information about the ClickUp API, [click here](https://developer.clickup.com/docs/index),
-            and to get more details about how to create your ClickUp API tokens, [click
-            here](https://developer.clickup.com/docs/authentication).
-        </Info>
-        
-        <Info>
-            To try the API on your browser via the ClickUp API Reference, [click here](https://developer.clickup.com/reference),             
-            and to read more about the usage of the ClickUp API Reference, [click here](https://developer.clickup.com/docs/trytheapi)
-        </Info>
+    ### Generate a ClickUp API Key
 
-    </Tab>
+    1. Log in to your [ClickUp account](https://app.clickup.com/).  
+    2. Click on your account icon in the top-right corner and select **Settings**.  
+       ![Img 1](/images/apps/clickup/img_1.png)
+    3. In the sidebar, go to **Apps** and click **Generate**.  
+       ![Img 2](/images/apps/clickup/img_2.png)
+    4. You'll now see your ClickUp API key—copy and store it safely.
+
+    ### Integrate ClickUp into xpander.ai
+
+    1. Go to the **Apps** section in the sidebar of your xpander.ai dashboard.  
+    2. Select **ClickUp** from the available integrations.  
+    3. Click **Enable**.  
+    4. Enter an **Interface name**, e.g., xpander-clickup.  
+    5. Select **API Key** as the authentication mode.  
+    6. Select **Integration User** as the authentication scope.  
+    7. Paste your ClickUp API key into the provided field.  
+    8. Choose **Custom** as the **Auth Type**.  
+    9. In the **Custom header name** field, enter: `Authorization`.  
+    10. Save the configuration.
+
+    ![Img 3](/images/apps/clickup/img_3.png)
+
+  </Tab>
 </Tabs>
+
+## Integration of ClickUp into AI Agent
+
+Once you've configured your ClickUp account with the authentication option(s) described above, you can integrate it into your AI agent with xpander.ai:
+
+1. Go to the **+** sign located in the top right of the graph visualization of your xpander.ai agent.  
+2. Select **Apps**.  
+3. Choose **ClickUp** with the same **Interface name** you configured in the previous section (e.g., xpander-clickup).  
+4. Select the available ClickUp operations that suit your use case.  
+
+![Img 4](/images/apps/clickup/img_4.png)
+
+## Expose ClickUp as MCP Server
+
+Alternatively, you can also expose your ClickUp account as an MCP server. To do so:
+
+1. Go to the **Apps** section in the sidebar of your xpander.ai dashboard.  
+2. Select **ClickUp** with the same **Interface name** you configured in the previous section (e.g., xpander-clickup).  
+3. Click **MCP Configuration**.  
+4. Enter the MCP configuration into the appropriate settings of the client app you want to use (e.g., Cursor, Windsurf, Claude Desktop, etc.).
+
+![Img 5](/images/apps/clickup/img_5.png)
+
+## AI Agent ClickUp Prompt Library
+
+Below are possible prompts or use cases you can try after integrating ClickUp into your xpander AI agent:
+
+```
+Can you add a comment to the task {task_name} saying '{comment_text}'?
+```
+
+````
+Can you schedule a reminder for the task {task_name} on {date}?
+````
+
+```
+Can you mark the task {task_name} as completed?
+```
+
+```
+Can you create a new folder named {folder_name} in the space {space_name}?
+```
+
+## Related Resources
+
+- [Understanding Model Context Protocol (MCP)](/docs/05-human-interfaces/04-mcp)
+- [ClickUp API Documentation](https://developer.clickup.com/reference/)

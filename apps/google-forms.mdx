@@ -1,76 +1,113 @@
 ---
 title: "Google Forms"
-description: "Learn how to build AI agents with Google Forms access using xpander.ai. Create intelligent document-aware AI assistants that can read, write, organize, and analyze files automatically."
-icon: "google-forms"
+description: "Learn how to integrate AI agents with Google Forms using xpander.ai. Create dynamic, intelligent forms that can automatically analyze responses, provide personalized follow-ups, and streamline data collection."
+icon: "google"
 ---
 
-Learn how to build AI agents with Google Forms access using xpander.ai. This integration enables intelligent document-aware AI assistants that can read, write, organize, and analyze forms automatically.
+## About Google Forms
 
-<Frame>
-  ![](/images/apps/google-forms.png)
-</Frame>
+Google Forms is a free, web-based application developed by Google that allows users to create and manage surveys, quizzes, and various types of online forms. 
+
+Key features include:
+
+- **Question Types**: Google Forms offers a variety of question formats, including multiple-choice, short answer, checkboxes, dropdowns, linear scales, file uploads, and more. 
+
+- **Conditional Logic**: You can set up forms to show or hide questions based on previous answers, allowing for dynamic and personalized surveys. 
+
+- **Templates**: The platform provides a range of pre-designed templates for different purposes, such as event registrations, feedback surveys, and quizzes.
+
+- **Customization**: Customize the look of your forms by adding images, videos, and adjusting the theme colors and fonts. 
+
+- **Real-Time Collaboration**: Multiple users can collaborate on the same form simultaneously, making it ideal for team projects. 
+
+- **Data Analysis**: Responses are automatically collected and can be viewed in summary charts or exported to Google Sheets for detailed analysis. 
 
 
 ## Authentication Options
 
-Choose the authentication method that best fits your needs:
+Below are possible authentication options you can choose:
 
 <Tabs>
+
   <Tab title="API Access">
-    <Frame caption="Google Forms API access configuration">
-      ![Google Forms API Access](/images/placeholders/google-forms-api.png)
-    </Frame>
 
-    
-    For programmatic access and automation:
+    ### Generate a Google Forms API Key
 
-    1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-    2. Create a new project or select an existing one
-    3. Enable the **Google Forms API** in Library
-    4. Go to **Credentials** and create an **API Key**
-    5. Restrict the API key to Google Forms API only
-    6. Copy the API key to xpander.ai's Google Forms connection settings
-    7. Set appropriate API access restrictions in Google Cloud Console
+    1. Log in to your [Google Cloud Console](https://console.cloud.google.com/).  
+    2. Create a new project or select an existing one.  
+       ![Img 1](/images/apps/google-forms/img_7.png)
 
-    <Warning>
-        API keys provide limited functionality and are best for read-only operations on public files. For full access and to keep your forms private, use OAuth methods.
-    </Warning>
-    
-  ### Let's create the Xpander.ai Google Forms interface!
+    3. Go to the [Google Cloud API Library](https://console.cloud.google.com/apis/library).  
+       ![Img 2](/images/apps/google-forms/img_1.png)
 
+    4. Search for and select **Google Forms API**, then click **Enable**.  
+    5. In the sidebar, go to **Credentials**.  
+    6. Click **Create credentials**, and select **API key**.  
+       ![Img 3](/images/apps/google-forms/img_2.png)
 
-    This app is using basic authentication.
+    7. Restrict the API key to Google Forms API only (optional but recommended).  
+       ![Img 4](/images/apps/google-forms/img_3.png)
 
-    To configure it in xpander.ai, follow the following screenshot: 
-    <Frame>
-      ![](/images/screenshots/g_forms_2025-04-27-15-51-03.png)
-    </Frame>
+    ### Integrate Google Forms into xpander.ai
 
-    Then save the interface.
-
-    For more information about the Google API enablement, [click here](https://support.google.com/googleapi/answer/6158841?hl=en).
-  </Tab>
-
-
-  <Tab title="Built-in xpander.ai Auth">
-    <Frame caption="Sign in with Google using xpander.ai's built-in authentication">
-      ![Sign in with Google](/images/placeholders/sign-in-with-google.png)
-    </Frame>
-
-    The simplest way to connect Google Forms is using xpander.ai's built-in authentication:
-
-    1. Go to the **Apps** section in xpander.ai dashboard
-    2. Select **Google Forms** from available integrations
-    3. Click **Sign in with Google**
-    4. Select your Google account and grant permissions
-    5. Your connection is immediately active and ready to use
-
-    <Note>
-    This method is recommended for most users. xpander.ai securely manages your OAuth tokens without exposing any credentials.
-    </Note>
-
-    ### Let's create the Xpander.ai Google Forms interface!
-
+    1. Go to the **Apps** section in the sidebar of your xpander.ai dashboard.  
+    2. Select **Google Forms** from the available integrations.  
+    3. Click **Enable**.  
+    4. Enter an **Interface name**, e.g., "xpander-google-forms".  
+    5. Select **API Key** as the authentication mode.  
+    6. Select **Integration User** as the authentication scope.  
+    7. Paste the Google Forms API key into the provided field.  
+    8. Choose **Basic** as the **Auth Type**.  
+    9. Save the configuration.  
+       ![Img 5](/images/apps/google-forms/img_4.png)
 
   </Tab>
+
 </Tabs>
+
+## Integration of Google Forms into AI Agent
+
+Once you've configured your Google Forms account with the authentication option(s) described above, you can integrate it into your AI agent with xpander.ai:
+
+1. Go to the **+** sign located in the top right of the graph visualization of your xpander.ai agent.  
+2. Select **Apps**.  
+3. Choose **Google Forms** with the same **Interface name** you configured in the previous section (e.g., xpander-google-forms).  
+4. Select the available Google Forms operations that suit your use case.  
+
+![Img 6](/images/apps/google-forms/img_5.png)
+
+## Expose Google Forms as MCP Server
+
+Alternatively, you can also expose your Google Forms account as an MCP server. To do so:
+
+1. Go to the **Apps** section in the sidebar of your xpander.ai dashboard.  
+2. Select **Google Forms** with the same **Interface name** you configured in the previous section (e.g., xpander-google-forms).  
+3. Click **MCP Configuration**.  
+4. Enter the MCP configuration into the appropriate settings of the client app you want to use (e.g., Cursor, Windsurf, Claude Desktop, etc.).
+
+![Img 7](/images/apps/google-forms/img_6.png)
+
+## AI Agent Google Forms Prompt Library
+
+Below are possible prompts or use cases you can try after integrating Google Forms into your xpander AI agent:
+
+```
+Can you create a new Google Form titled {form_title} for our upcoming event?
+```
+
+````
+Can you list all responses for the Google Form {form_name} for our data analysis?
+````
+
+```
+Can you list all notification watches for the Google Form {form_name} to ensure proper monitoring?
+```
+
+```
+Can you update the Google Form {form_name} to add a new question about {question_topic}?
+```
+
+## Related Resources
+
+- [Understanding Model Context Protocol (MCP)](/docs/05-human-interfaces/04-mcp)
+- [Google Forms API Documentation](https://developers.google.com/workspace/forms/api/reference/rest)
