@@ -1,48 +1,132 @@
 ---
 title: "Google BigQuery"
-description: "Learn how to build AI agents with Google BigQuery access using xpander.ai. Create powerful data-driven AI assistants that can query, analyze, and manage large-scale datasets in real time to automate insights, reporting, and decision-making."
-icon: "google-bigquery"
+description: "Learn how to integrate AI agents with Google BigQuery using xpander.ai. Create intelligent workflows that automatically query, analyze, and act on large-scale datasets."
+icon: "google"
 ---
 
-Learn how to build AI agents with Google BigQuery access using xpander.ai. Create powerful data-driven AI assistants that can query, analyze, and manage large-scale datasets in real time to automate insights, reporting, and decision-making.
+## About Google BigQuery
 
-<Frame>
-![](/images/apps/google-bigquery.png)
-</Frame>
+Google BigQuery is a fully managed, serverless data warehouse and analytics platform offered by Google Cloud. 
+
+Key features include:
+
+- **Serverless Architecture**: BigQuery eliminates the need for infrastructure management, allowing users to focus solely on data analysis. 
+
+- **Scalability**: It can process petabytes of data quickly, making it suitable for large-scale analytics. 
+
+- **Built-in Machine Learning**: With BigQuery ML, users can create and execute machine learning models directly within BigQuery using SQL, facilitating predictive analytics without extensive ML expertise. 
+
+- **Real-time Analytics**: BigQuery supports real-time data analysis, enabling timely insights for decision-making. 
+
+- **Integration with Google Cloud Ecosystem**: It seamlessly integrates with other Google Cloud services, such as Cloud Storage, Dataflow, and Looker Studio, enhancing data processing and visualization capabilities.
 
 
 ## Authentication Options
 
-Choose the authentication method that best fits your needs:
+Below are possible authentication options you can choose:
 
 <Tabs>
-  <Tab title="API Access">
-    <Frame caption="BigQuery API access configuration">
-      ![Google BigQuery API Access](/images/placeholders/google-bigquery-api.png)
-    </Frame>
 
-    For programmatic access and automation:
-    
-    1. You will need access to the Google Cloud CLI tool in order to get your token. If you have it installed, continue to step 5.
-    2. Download [Google Cloud's CLI tool](https://cloud.google.com/sdk/docs/install-sdk)
-    2. Run the installation script from the directiry where you downloaded and extracted the content of the SDK:
-        ```./google-cloud-sdk/install.sh```
-    3. After installing the SDK, update your `$PATH` to include the bin folder under the SDK (```export PATH="$PATH:$HOME/Downloads/google-cloud-sdk/bin"```).
-    4. To initialize the gcloud CLI, run gcloud init:
-        ```./google-cloud-sdk/bin/gcloud init```
+  <Tab title="Built-in xpander.ai Auth">
 
-    5. Run the following command, and copy the token it generates:
-        ```gcloud auth print-access-token```
-    
-    ### Let's create the Xpander.ai Google BigQuery interface!
+    The simplest way to connect to Google BigQuery is by using xpander.ai's built-in authentication:
 
-    Write your interface name, select the interface access you'd like, Select the API key authentication method, and then paste the token copied earlier in the API Key field, and select `Bearer` as the Auth type, like so:
-    <Frame>
-		![](/images/screenshots/bigqu4ry_2025-04-24-12-21-23.png)
-	</Frame>
-    Then save the interface.
-
-    For more information about the Google API enablement, [click here](https://support.google.com/googleapi/answer/6158841?hl=en).
+    1. Go to the **Apps** section in the sidebar of your xpander.ai dashboard.  
+    2. Select **BigQuery** from the available integrations.  
+    3. Click **Sign in with BigQuery**.  
+    4. Grant xpander.ai permission to access your account.  
+    5. Your Google BigQuery integration is now ready to use.
 
   </Tab>
+
+  <Tab title="API Access">
+
+    ### Generate a Google BigQuery API Token
+
+    1. You’ll need access to the Google Cloud CLI tool to obtain your token. If it’s already installed, skip to step 5.
+
+    2. Download the Google Cloud CLI tool.
+
+    3. In the directory where you downloaded and extracted the SDK, run the installation script:  
+    ````
+    ./google-cloud-sdk/install.sh
+    ````
+
+    4. After installation, add the SDK’s `bin` directory to your `$PATH`:  
+    ````
+    export PATH="$PATH:$HOME/Downloads/google-cloud-sdk/bin"
+    ````
+
+    5. Initialize the gcloud CLI:  
+    ````
+    ./google-cloud-sdk/bin/gcloud init
+    ````
+
+    6. Run the following command and copy the token it generates:  
+    ````
+    gcloud auth print-access-token
+    ````
+
+    ### Integrate Google BigQuery into xpander.ai
+
+    1. Go to the **Apps** section in the sidebar of your xpander.ai dashboard.  
+    2. Select **BigQuery** from the available integrations.  
+    3. Click **Other auth options**.  
+    4. Enter an **Interface name**, e.g., "xpander-bigquery".  
+    5. Select **API Key** as the authentication mode.  
+    6. Select **Integration User** as the authentication scope.  
+    7. Paste the Google BigQuery access token into the provided field.  
+    8. Choose **Bearer** as the **Auth Type**.  
+    9. Save the configuration.  
+       ![Img 1](/images/apps/google-bigquery/img_1.png)
+
+  </Tab>
+
 </Tabs>
+
+## Integration of Google BigQuery into AI Agent
+
+Once you've configured your Google BigQuery account with the authentication option(s) described above, you can integrate it into your AI agent with xpander.ai:
+
+1. Go to the **+** sign located in the top right of the graph visualization of your xpander.ai agent.  
+2. Select **Apps**.  
+3. Choose **BigQuery** with the same **Interface name** you configured in the previous section (e.g., xpander-bigquery).  
+4. Select the available Google BigQuery operations that suit your use case.  
+
+![Img 2](/images/apps/google-bigquery/img_2.png)
+
+## Expose Google BigQuery as MCP Server
+
+Alternatively, you can also expose your Google BigQuery account as an MCP server. To do so:
+
+1. Go to the **Apps** section in the sidebar of your xpander.ai dashboard.  
+2. Select **BigQuery** with the same **Interface name** you configured in the previous section (e.g., xpander-bigquery).  
+3. Click **MCP Configuration**.  
+4. Enter the MCP configuration into the appropriate settings of the client app you want to use (e.g., Cursor, Windsurf, Claude Desktop, etc.).
+
+![Img 3](/images/apps/google-bigquery/img_3.png)
+
+## AI Agent Google BigQuery Prompt Library
+
+Below are possible prompts or use cases you can try after integrating Google BigQuery into your xpander AI agent:
+
+```
+Could you show me all datasets within the {project_name} project?
+```
+
+````
+Can you create a new dataset called {dataset_name} in our {project_name} project with a 30-day expiration policy?
+````
+
+```
+I need detailed information about the {dataset_name} dataset in our {project_name} project. Can you retrieve that?
+```
+
+```
+Can you run this SQL query "{query_string}" on our {project_name} project using the {dataset_name}?
+```
+
+## Related Resources
+
+- [Understanding Model Context Protocol (MCP)](/docs/05-human-interfaces/04-mcp)
+- [BigQuery API Documentation](https://cloud.google.com/bigquery/docs/reference/rest)

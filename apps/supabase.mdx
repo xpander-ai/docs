@@ -1,54 +1,111 @@
 ---
-title: SupaBase
-description: Learn how to build AI agents with SupaBase access using xpander.ai.
-icon: supabase
+title: "Supabase"
+description: "Learn how to integrate AI agents with Supabase using xpander.ai. Create intelligent, data-driven applications that leverage Supabase’s real-time PostgreSQL database, authentication, and storage features."
+icon: "server"
 ---
 
-Learn how to build AI agents with Supabase access using xpander.ai. This integration enables intelligent document-aware AI assistants that can read from, write to, and query your SupaBase database, allowing seamless automation, analysis, and organization of project data in real time.
+## About Supabase
+
+Supabase is an open-source Backend-as-a-Service (BaaS) platform designed to simplify and accelerate application development by providing a suite of backend tools and services.
+
+Key features include:
+
+- **PostgreSQL Database**: Supabase provides a full PostgreSQL database with real-time capabilities, allowing developers to leverage SQL's robustness and familiarity .
+
+- **Authentication & Authorization**: Built-in user management with support for various authentication methods, including email, password, and third-party providers.
+
+- **Instant APIs**: Automatically generated RESTful and GraphQL APIs based on your database schema, facilitating rapid development.
+
+- **Edge Functions**: Serverless functions that run close to the user, enabling low-latency operations and custom backend logic.
+
+- **Realtime Subscriptions**: Listen to database changes in real-time, enabling dynamic and responsive applications.
+
+- **Storage**: Manage and serve large files, such as images and videos, with built-in storage solutions.
+
+- **Vector Embeddings**: Support for AI and machine learning workloads through vector embeddings, useful for applications like semantic search.
 
 ## Authentication Options
 
+Below are possible authentication options you can choose:
+
 <Tabs>
+
   <Tab title="API Access">
-    <Frame caption="SupaBase API access configuration">
-      ![SupaBase API Access](/images/placeholders/supabase-api.png)
-    </Frame>
 
-    For programmatic access and automation:
+    ### Generate a Supabase API Key
 
-    1. Sign in to your [SupaBase Account](https://supabase.com/dashboard/sign-in).
-    2. Click on the [Personal Access Token section in your account](https://supabase.com/dashboard/account/tokens):
-    3. Click **Generate new token**
-		<Frame>
-			![](/images/screenshots/supabase_2025-04-30-11-47-15.png)
-		</Frame>
-    4. Give it a proper name, copy the token and store it somewhere secure.
+    1. Log in to your [Supabase account](https://supabase.com).  
+    2. Click your profile icon at the top right of the dashboard, then select **Account preferences**.  
 
-    <Warning>
-    The API gives you powerful capabilities in order to enhance your SupaBase experience. It's very important to keep your API token secure.
-    </Warning>
+       ![Img 1](/images/apps/supabase/img_1.png)
 
-    ### Let's create the Xpander.ai Supabase interface!
-    1. Write your interface name.
-    2. Select the interface access you'd like.
-    3. Select the **API key** authentication method.
-    4. Select the **Integration user** authentication scope.
-    5. Select **Bearer** as the Auth type.
-    6. Paste the token copied earlier in the API Key field using this template: `[YOUR_API_KEY]`, like so:
+    3. In the sidebar, click **Access tokens**, then click **Generate new token**.  
 
-    <Frame>
-			![](/images/screenshots/supabase_2025-04-30-11-55-00.png)
-		</Frame>
+       ![Img 2](/images/apps/supabase/img_2.png)
 
-      **Note:** Make sure to replace `[YOUR_API_KEY]` with your actual SupaBase API key.
-    
-    Then save the interface.
+    4. Give the token a name and click **Generate token**.  
+    5. Your access token will be shown—copy it somewhere safe.  
 
+    ### Integrate Supabase into xpander.ai
 
+    1. Go to the **Apps** section in the sidebar of your xpander.ai dashboard.  
+    2. Select **Supabase** from the available integrations.  
+    3. Click **Enable**.  
+    4. Enter an **Interface name**, e.g., "xpander-supabase".  
+    5. Select **API Key** as the authentication mode.  
+    6. Choose **Integration User** as the authentication scope.  
+    7. Paste the Supabase access token into the provided field.  
+    8. Set the **Auth Type** to **Bearer**.  
+    9. Save the configuration.  
 
-  For more information about the SupaBase REST API, [click here](https://supabase.com/docs/reference/api/).
-
-  For the full Supabase OpenAPI Docs, [click here](https://api.supabase.com/api/v1).
+    ![Img 3](/images/apps/supabase/img_3.png)
 
   </Tab>
 </Tabs>
+
+## Integration of Supabase into AI Agent
+
+Once you've configured your Supabase account with the authentication option(s) described above, you can integrate it into your AI agent with xpander.ai:
+
+1. Go to the **+** sign located in the top right of the graph visualization of your xpander.ai agent.  
+2. Select **Apps**.  
+3. Choose **Supabase** with the same **Interface name** you configured in the previous section (e.g., xpander-supabase).  
+4. Select the available Supabase operations that suit your use case.  
+
+![Img 4](/images/apps/supabase/img_4.png)
+
+## Expose Supabase as MCP Server
+
+Alternatively, you can also expose your Supabase account as an MCP server. To do so:
+
+1. Go to the **Apps** section in the sidebar of your xpander.ai dashboard.  
+2. Select **Supabase** with the same **Interface name** you configured in the previous section (e.g., xpander-supabase).  
+3. Click **MCP Configuration**.  
+4. Enter the MCP configuration into the appropriate settings of the client app you want to use (e.g., Cursor, Windsurf, Claude Desktop, etc.).
+
+![Img 5](/images/apps/supabase/img_5.png)
+
+## AI Agent Supabase Prompt Library
+
+Below are possible prompts or use cases you can try after integrating Supabase into your xpander AI agent:
+
+```
+Could you create a new branch called {branch_name} for my {project_name} project?
+```
+
+````
+How do I delete the API key with ID {api_key_id} from my {project_name} project?
+````
+
+```
+How can I update the PostgreSQL configuration for my {project_name} to increase the maximum connections?
+```
+
+```
+Could you disable the read-only mode for my {project_name} project?
+```
+
+## Related Resources
+
+- [Understanding Model Context Protocol (MCP)](/docs/05-human-interfaces/04-mcp)
+- [Supabase API Documentation](https://supabase.com/docs/guides/api)

@@ -1,0 +1,104 @@
+---
+title: "Statuspage"
+description: "Learn how to integrate AI agents with StatusPage using xpander.ai. Create automated workflows that detect incidents, trigger real-time updates, and communicate seamlessly with users through your customized status page."
+icon: "radiation"
+---
+
+## About Statuspage
+
+Statuspage is a communication tool developed by Atlassian that enables organizations to provide real-time updates on the status of their services. It is designed to enhance transparency and trust by keeping users informed during incidents, outages, or scheduled maintenance.
+
+Statuspage key features:
+
+- **Incident Communication**: Allows teams to post timely updates about service disruptions, helping to reduce support inquiries and keep users informed.
+
+- **Customizable Status Pages**: Offers the ability to create public, private, or audience-specific status pages, ensuring that the right information reaches the appropriate audience.
+Atlassian Support
+
+- **Notifications**: Supports multiple notification channels, including email, SMS, Slack, and Microsoft Teams, to alert subscribers about incidents and updates.
+
+- **Third-Party Integrations**: Integrates with various monitoring and alerting tools such as DataDog, New Relic, Pingdom, Opsgenie, and PagerDuty, enabling automated status updates based on system metrics.
+
+## Authentication Options
+
+Below are possible authentication options you can choose:
+
+<Tabs>
+
+  <Tab title="API Access">
+
+    ### Generate a StatusPage API Key
+
+    1. Log in to your [StatusPage account](https://manage.statuspage.io/login).  
+    2. Click on your profile icon in the top-right corner, then select **API info**.
+
+    ![Img 1](/images/apps/statuspage/img_1.png)
+
+    3. Click **Create key**, give your key a name, and your API key will be displayed.
+
+    ![Img 2](/images/apps/statuspage/img_2.png)
+		
+    ### Integrate StatusPage into xpander.ai
+
+    1. In your xpander.ai dashboard, go to the **Apps** section in the sidebar.  
+    2. Select **StatusPage** from the available integrations.  
+    3. Click **Enable**.  
+    4. Enter an **Interface name**, e.g., "xpander-statuspage".  
+    5. Choose **API Key** as the authentication mode.  
+    6. Select **Integration User** for the authentication scope.  
+    7. Paste your StatusPage API key into the provided field.  
+    8. Set the **Auth Type** to **Basic**.  
+    9. Save the configuration.  
+
+    ![Img 3](/images/apps/statuspage/img_3.png)
+
+  </Tab>
+</Tabs>
+
+
+## Integration of Statuspage into AI Agent
+
+Once you've configured your Statuspage account with the authentication option(s) described above, you can integrate it into your AI agent with xpander.ai:
+
+1. Go to the **+** sign located in the top right of the graph visualization of your xpander.ai agent.  
+2. Select **Apps**.  
+3. Choose **Statuspage** with the same **Interface name** you configured in the previous section (e.g., xpander-statuspage).  
+4. Select the available Statuspage operations that suit your use case.  
+
+![Img 4](/images/apps/statuspage/img_4.png)
+
+## Expose Statuspage as MCP Server
+
+Alternatively, you can also expose your Statuspage account as an MCP server. To do so:
+
+1. Go to the **Apps** section in the sidebar of your xpander.ai dashboard.  
+2. Select **Statuspage** with the same **Interface name** you configured in the previous section (e.g., xpander-statuspage).  
+3. Click **MCP Configuration**.  
+4. Enter the MCP configuration into the appropriate settings of the client app you want to use (e.g., Cursor, Windsurf, Claude Desktop, etc.).
+
+![Img 5](/images/apps/statuspage/img_5.png)
+
+## AI Agent Statuspage Prompt Library
+
+Below are possible prompts or use cases you can try after integrating Statuspage into your xpander AI agent:
+
+```
+We need to add the latest performance metrics for our API gateway. Can you update that?
+```
+
+````
+Could you add {emailAddress} as a subscriber to the current network outage incident?
+````
+
+```
+We need to schedule maintenance for our database cluster on {date} at {time}. Can you set that up?
+```
+
+```
+Can you retrieve all current incidents affecting our services?
+```
+
+## Related Resources
+
+- [Understanding Model Context Protocol (MCP)](/docs/05-human-interfaces/04-mcp)
+- [Statuspage API Documentation](https://developer.statuspage.io/#operation/getPages)
