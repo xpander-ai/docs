@@ -262,7 +262,7 @@
         {
           "dropdown": "SDK Reference",
           "icon": {
-            "name": "code-simple",
+            "name": "code",
             "style": "regular"
           },
           "href": "https://docs.xpander.ai/api-reference/07-sdk/index"
@@ -321,7 +321,7 @@
           "anchor": "SDK Reference",
           "href": "https://docs.xpander.ai/api-reference/07-sdk/index",
           "icon": {
-            "name": "code-simple",
+            "name": "code",
             "style": "regular"
           }
         },
@@ -349,7 +349,12 @@
       "apiKey": "a217b67ed9af1f3663abbdb97c358d86"
     }
   },
-  "redirects": [],
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/docs/01-get-started/01-index"
+    }
+  ],
   "footer": {
     "socials": {
       "x": "https://x.com/xpander_ai",
