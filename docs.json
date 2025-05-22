@@ -91,6 +91,29 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "SDK Reference",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "api-reference/07-sdk/index"
+            ]
+          },
+          {
+            "group": "xpander-sdk",
+            "pages": [
+              "api-reference/07-sdk/xpander-sdk/XpanderClient",
+              "api-reference/07-sdk/xpander-sdk/agent",
+              "api-reference/07-sdk/xpander-sdk/Agent.Messages",
+              "api-reference/07-sdk/xpander-sdk/Agent.Tools",
+              "api-reference/07-sdk/xpander-sdk/Tasks",
+              "api-reference/07-sdk/xpander-sdk/Agent.Graph",
+              "api-reference/07-sdk/xpander-sdk/tool-models"
+            ]
+          }
+        ]
       }
     ]
   }
