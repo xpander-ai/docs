@@ -257,7 +257,7 @@
             "name": "book",
             "style": "regular"
           },
-          "href": "https://docs.xpander.ai/docs/01-get-started/01-index"
+          "href": "https://docs.xpander.ai/docs/01-get-started/02-getting-started-00"
         },
         {
           "dropdown": "SDK Reference",
@@ -349,12 +349,7 @@
       "apiKey": "a217b67ed9af1f3663abbdb97c358d86"
     }
   },
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "/docs/01-get-started/01-index"
-    }
-  ],
+  "redirects": [],
   "footer": {
     "socials": {
       "x": "https://x.com/xpander_ai",
