@@ -17,6 +17,14 @@
             "pages": [
               "docs/01-get-started/01-index"
             ]
+          },
+          {
+            "group": "Quickstart",
+            "pages": [
+              "docs/01-get-started/02-getting-started-00",
+              "docs/01-get-started/02-getting-started-01-workbench",
+              "docs/01-get-started/02-getting-started-02-cli"
+            ]
           }
         ]
       }
