@@ -47,18 +47,8 @@
                   "docs/01-get-started/02-getting-started-02-cli"
                 ]
               },
-              {
-                "group": "Use the SDK",
-                "icon": {
-                  "name": "code",
-                  "style": "regular"
-                },
-                "pages": [
-                  "docs/01-get-started/02-sdk-overview",
-                  "docs/01-get-started/03-llm-models",
-                  "docs/01-get-started/04-agent-frameworks"
-                ]
-              }
+              "docs/01-get-started/03-instrument-agents",
+              "docs/01-get-started/04-hello-world"
             ]
           },
           {
@@ -68,7 +58,7 @@
               "style": "regular"
             },
             "pages": [
-              "docs/02-agent-builder/01-add-tools-to-agents",
+              "docs/02-agent-builder/01-adding-tools-to-agents",
               "docs/02-agent-builder/02-agent-graph-system",
               "docs/02-agent-builder/03-activity-view",
               "docs/02-agent-builder/04-advanced-operation-settings",
