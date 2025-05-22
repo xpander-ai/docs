@@ -114,6 +114,62 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Apps",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "apps/index"
+            ]
+          },
+          {
+            "group": "Productivity",
+            "pages": [
+              "apps/asana",
+              "apps/calendly",
+              "apps/clickup",
+              "apps/confluence",
+              "apps/datadog",
+              "apps/dropbox",
+              "apps/fibery",
+              "apps/github-actions-manager",
+              "apps/github-issues-manager",
+              "apps/github-search-manager",
+              "apps/gitlab",
+              "apps/google-analytics",
+              "apps/google-bigquery",
+              "apps/google-calendar",
+              "apps/google-docs",
+              "apps/google-drive",
+              "apps/google-forms",
+              "apps/google-gmail",
+              "apps/google-sheets",
+              "apps/google-tasks",
+              "apps/hubspot-blogs",
+              "apps/hubspot-crm",
+              "apps/intercom",
+              "apps/jira",
+              "apps/linear",
+              "apps/meetgeek",
+              "apps/monday",
+              "apps/notion",
+              "apps/pagerduty",
+              "apps/recall-ai",
+              "apps/slack",
+              "apps/statuspage",
+              "apps/supabase-database",
+              "apps/supabase",
+              "apps/tomorrow-io",
+              "apps/twilio",
+              "apps/zapier",
+              "apps/zendesk",
+              "apps/zoho",
+              "apps/zoom"
+            ]
+          }
+        ]
       }
     ]
   }
