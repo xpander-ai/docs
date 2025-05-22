@@ -349,7 +349,28 @@
       "apiKey": "a217b67ed9af1f3663abbdb97c358d86"
     }
   },
-  "redirects": [],
+  "redirects": [
+    {
+      "source": "/workshops/a2a-mcp-bedrock-workshop/01-first-coding-agent",
+      "destination": "/workshops/a2a-mcp-bedrock-workshop/02-first-coding-agent"
+    },
+    {
+      "source": "/workshops/a2a-mcp-bedrock-workshop/02-expand-agent-fleet",
+      "destination": "/workshops/a2a-mcp-bedrock-workshop/03-expand-agent-fleet"
+    },
+    {
+      "source": "/workshops/a2a-mcp-bedrock-workshop/03-serverless-manager-agent",
+      "destination": "/workshops/a2a-mcp-bedrock-workshop/04-serverless-manager-agent"
+    },
+    {
+      "source": "/workshops/a2a-mcp-bedrock-workshop/04-submit-application",
+      "destination": "/workshops/a2a-mcp-bedrock-workshop/05-submit-application"
+    },
+    {
+      "source": "/workshops/a2a-mcp-bedrock-workshop/04-pr-automation",
+      "destination": "/workshops/a2a-mcp-bedrock-workshop/05-submit-application"
+    }
+  ],
   "footer": {
     "socials": {
       "x": "https://x.com/xpander_ai",
