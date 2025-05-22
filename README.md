@@ -17,7 +17,7 @@ This repository contains scripts to validate the xpander.ai SDK documentation ag
    # Edit .env with your actual API keys
    ```
 
-## Validation Scripts
+## Validation Scripts 
 
 ### 1. `validate_sdk_reference.py`
 
