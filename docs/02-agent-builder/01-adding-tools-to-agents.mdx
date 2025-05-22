@@ -213,54 +213,6 @@ You can add tools to your agents using the visual UI, the CLI, or programmatical
     </Accordion>
   </Tab>
   
-  <Tab title="Using the CLI">
-    The xpander CLI provides a quick way to create and manage agents from your terminal:
-    
-    <Steps>
-      <Step title="Install the xpander CLI">
-        ```bash
-        pip install -U xpander-cli
-        ```
-      </Step>
-      
-      <Step title="Initialize and authenticate">
-        ```bash
-        # Set up your xpander credentials
-        xpander login
-        ```
-      </Step>
-      
-      <Step title="Create a new agent">
-        ```bash
-        # Create a new agent
-        xpander agent new --name "LinkedIn Researcher"
-        ```
-        This will output your new agent ID which you'll need for future commands.
-      </Step>
-      
-      <Step title="Add operations to your agent">
-        ```bash
-        # List available interfaces
-        xpander interfaces list
-        
-        # Add operations from LinkedIn interface
-        xpander agent add-operations --agent-id <your-agent-id> --interface-id <linkedin-interface-id> --operations search-people get-profile-data-by-url
-        ```
-      </Step>
-      
-      <Step title="Run your agent">
-        ```bash
-        # Run a task on your agent
-        xpander agent run --agent-id <your-agent-id> --task "Find details about David Twizer the founder of xpander.ai"
-        ```
-      </Step>
-    </Steps>
-    
-    <Note>
-    The CLI provides a streamlined workflow for common agent operations. For more complex scenarios, you can combine CLI commands with SDK integration in your applications.
-    </Note>
-  </Tab>
-  
   <Tab title="Using the SDK">
     <Steps>
       <Step title="Discover Interfaces">
