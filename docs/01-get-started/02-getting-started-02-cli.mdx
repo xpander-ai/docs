@@ -4,157 +4,109 @@ description: "Get started with xpander.ai and build your first AI agent"
 icon: "terminal"
 ---
 
-## Using the xpander CLI
+## Installation and Configuration
 
-    <Steps>
-      <Step title="Install the CLI">
-        Install the xpander CLI globally:
+<Steps>
+  <Step title="Install the CLI">
+    Install the xpander CLI globally:
 
-        ```bash
-        npm install -g xpander-cli
-        ```
-      </Step>
+    ```bash
+    npm install -g xpander-cli
+    ```
+  </Step>
 
-      <Step title="Configure your credentials">
-        Set up your API key and organization:
+  <Step title="Configure your credentials">
+    Set up your API key and organization:
 
-        ```bash
-        xpander configure
-        ```
+    ```bash
+    xpander configure
+    ```
 
-        You'll see output similar to:
+    <Accordion title="Example configuration output">
+    ```
+    You need to configure your credentials to use the Xpander CLI.
+    ? Would you like to configure your credentials now? Yes
+    ? Enter your Xpander API key: IhPLk2Cu5BXw5BmVBhld3p31mTpAxC892pD6O5E3
+    API Key: IhPL...O5E3 (first and last 4 characters shown)
+    ✔ API key validation successful
+    API key saved to profile "default".
+    Organization ID will be auto-detected for you now...
+    ⠏ Detecting organization ID...Organization ID detected: 8d185373-8b24-47a7-8607-3e9036b968bb
+    Organization ID saved to profile "default".
+    ✔ Organization ID detected: 8d185373-8b24-47a7-8607-3e9036b968bb
+    Found 1 agent(s) in your organization.
+    Set "default" as the default profile.
+    Credentials stored at: /Users/david/.xpander/credentials
+    Profile: default
 
-        ```
-        You need to configure your credentials to use the Xpander CLI.
-        ? Would you like to configure your credentials now? Yes
-        ? Enter your Xpander API key: IhPLk2Cu5BXw5BmVBhld3p31mTpAxC892pD6O5E3
-        API Key: IhPL...O5E3 (first and last 4 characters shown)
-        ✔ API key validation successful
-        API key saved to profile "default".
-        Organization ID will be auto-detected for you now...
-        ⠏ Detecting organization ID...Organization ID detected: 8d185373-8b24-47a7-8607-3e9036b968bb
-        Organization ID saved to profile "default".
-        ✔ Organization ID detected: 8d185373-8b24-47a7-8607-3e9036b968bb
-        Found 1 agent(s) in your organization.
-        Set "default" as the default profile.
-        Credentials stored at: /Users/david/.xpander/credentials
-        Profile: default
+    Configuration successful.
+    ```
+    </Accordion>
+  </Step>
+</Steps>
 
-        Configuration successful.
-        ```
-      </Step>
+## Creating Your First Agent
 
-      <Step title="Create a new agent">
-        Create your agent using the CLI:
+<Steps>
+  <Step title="Create a new agent">
+    Create your agent using the CLI:
 
-        ```bash
-        xpander agent new
-        ```
+    ```bash
+    xpander agent new
+    ```
 
-        Follow the interactive prompts to define your agent's capabilities and behavior.
+    <Accordion title="Example agent creation output">
+    ```
+    ✨ Agent Creation Wizard ✨
+    ──────────────────────────────────────────────────
+    Create a powerful AI agent for your organization
+    ──────────────────────────────────────────────────
 
+    ? What name would you like for your agent? my-first-agent
+    ⠋ Creating agent "my-first-agent"...Creating agent in organization: 8d185373-8b24-47a7-8607-3e9036b968bb...
+    ✔ Agent "my-first-agent" created successfully!
 
-      </Step>
-            <Step title="Add tools to the AI Agent">
-      1. Open the AI Agent Workbench
-      2. Add the HackerNews top stories operations
-      3. Deploy the AI Agent.
+    🚀 Your Agent is Ready!
+    ──────────────────────────────────────────────────
+    Name:     my-first-agent
+    ID:       4fe1163d-bb00-4837-9e25-6f82aed8038c
+    Icon:     🚀
+    Model:    openai/gpt-4o
+    ──────────────────────────────────────────────────
 
-        </Step>
+    ✅ Agent creation complete!
 
-      <Step title="Connect to your agent programmatically">
-        The following steps show how to execute your agent created with the CLI:
-        
-        ```python
-        from xpander import XpanderClient
-        from openai import OpenAI
-
-        # Initialize clients
-        xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
-        openai_client = OpenAI(api_key=OPENAI_API_KEY)
-
-        # Get your agent
-        agent = xpander_client.agents.get(agent_id=XPANDER_AGENT_ID)
-        ```
-      </Step>
-      
-      <Step title="Execute your agent">
-        Use the same execution pattern as shown in the Workbench approach. For more details on working with different LLM models, refer to the [LLM SDKs documentation](/docs/01-get-started/03-llm-models).
-
-        ```python
-        # Create a task for the agent
-        task = agent.add_task("Your task description here")
-
-        # Run the agent until completion
-        while not agent.is_finished():
-            response = openai_client.chat.completions.create(
-                model="gpt-4o",
-                messages=agent.messages,
-                tools=agent.get_tools(),
-                tool_choice=agent.tool_choice,
-                temperature=0.0
-            )
-                    
-            agent.add_messages(response.model_dump())
-            
-            tool_calls = XpanderClient.extract_tool_calls(llm_response=response.model_dump())
-            agent.run_tools(tool_calls=tool_calls)
-
-        # Get results
-        execution_result = agent.retrieve_execution_result()
-        print("Status:", execution_result.status)
-        print("Result:", execution_result.result)
-        ```
-      </Step>
-
-      <Step>
-      
-## Example Output
-
-```markdown
-# execution_result.status
-Status: ExecutionStatus.COMPLETED
-
-# execution_result.result
-Result: Here are the top Hacker News stories from the last 24 hours:
-
-1. Show HN: Nash, I made a standalone note with a single HTML file
-   - Author: yevgenyhong
-   - Score: 204
-   - Comments: 47
-   - Summary: A user has created a standalone note application using a single HTML file. This tool does not require any membership or software installation and can be used both online and offline. It is suitable for sharing content through messengers like Telegram and can also be used for hosting and blogging.
-   - Link: [Read more](https://keepworking.github.io/nash/)
-
-2. Finding Signal in the Noise: Machine Learning and the Markets (Jane Street)
-   - Author: lewiscarson
-   - Score: 76
-   - Comments: 32
-   - Summary: An article discussing the application of machine learning in financial markets, focusing on how to find meaningful signals amidst the noise.
-   - Link: [Read more](https://signalsandthreads.com/finding-signal-in-the-noise/)
-
-3. Sign in as anyone: Bypassing SAML SSO authentication with parser differentials
-   - Author: campuscodi
-   - Score: 200
-   - Comments: 73
-   - Summary: A security blog post detailing a method to bypass SAML SSO authentication using parser differentials, highlighting a significant security vulnerability.
-   - Link: [Read more](https://github.blog/security/sign-in-as-anyone-bypassing-saml-sso-authentication-with-parser-differentials/)
-
-These stories highlight a range of topics from innovative tech projects to significant security insights.
-```
-      </Step>
-    </Steps>
+    ? Do you want to load this agent into your current workdir? Yes
 
 
+    ✨ Initializing agent
+    ────────────────────────────────────────────────────────────
+    ℹ Agent my-first-agent retrieved successfully
+    ? The current directory is not empty. Proceeding will override 'requirements.txt' and add or update xpander-related files (xpander_config.json, 
+    agent_instructions.json, etc). Yes
+    ✔ Agent initialized successfully
+    ```
+    </Accordion>
+  </Step>
 
-### Troubleshooting / FAQ
-<AccordionGroup>
+  <Step title="Configure environment variables">
+    Create a `.env` file in the root directory with the following credentials:
 
-  <Accordion title="How can I check logs for past interactions?">
-  In the AI Agent Workbench, switch to the Activity view
-  </Accordion>
-  <Accordion title="What if my code is not behaving like in the example?">
-    Check the API keys, did you enable the default API key for the AI Agent in the SDK source triggering configuration? 
-  </Accordion>
-  
-</AccordionGroup>
+    ```txt .env file
+    XPANDER_API_KEY=your_xpander_api_key  # From the xpander login output
+    OPENAI_API_KEY=your_openai_api_key
+    OPENAI_MODEL_ID=gpt-4o
+    ```
+  </Step>
+</Steps>
+
+## Working with Your Agent
+
+With your agent created, you can now work with it in several ways:
+
+1. **Using the SDK in your code**: Implement the agent loop and integrate with your application
+2. **Stream events from the cloud**: Set up a handler to receive events from xpander.ai
+3. **Deploy to the cloud**: Host your agent in the xpander.ai cloud
+
+For detailed code examples and step-by-step implementation instructions, see our dedicated [Instrument & Run AI Agents](/docs/01-get-started/03-instrument-agents) guide.
 

@@ -4,8 +4,6 @@ description: "Learn how to manage stateful conversations and agent messages"
 icon: "comments"
 ---
 
-# Thread & Messages Management
-
 xpander.ai's state management system enables agents to maintain continuity across multiple interactions and effectively manage messages. This guide explains how to implement stateful agents that remember previous conversations and maintain context over time.
 
 ## Thread Concepts
@@ -85,54 +83,6 @@ const threadId = result.memoryThreadId;
 // await database.saveThreadId({ userId: "user123", threadId });
 ```
 </CodeGroup>
-
-## Working with Message History
-
-You can directly access and modify the agent's messages within a thread:
-
-```python
-# Access the current messages
-current_messages = agent.messages
-
-# Print the last user message
-user_messages = [msg for msg in current_messages if msg.get("role") == "user"]
-if user_messages:
-    print(f"Last user message: {user_messages[-1].get('content')}")
-
-# Add a custom message
-agent.add_messages({
-    "role": "user",
-    "content": "Could you also include examples of machine learning applications?"
-})
-
-# Add a system message to provide additional context
-agent.add_messages({
-    "role": "system",
-    "content": "Focus on practical applications rather than theoretical concepts."
-})
-```
-
-## Searching and Analyzing Messages
-
-You can analyze the agent's messages to make decisions:
-
-```python
-# Check if certain information is already in messages
-has_ml_info = any("machine learning" in msg.get("content", "") 
-                   for msg in agent.messages)
-
-# Find all tools that have been used
-tool_messages = [msg for msg in agent.messages if msg.get("role") == "tool"]
-used_tool_ids = [msg.get("tool_call_id") for msg in tool_messages]
-print(f"Tools used so far: {used_tool_ids}")
-
-# Add context information based on messages analysis
-if not has_ml_info:
-    agent.add_messages({
-        "role": "system",
-        "content": "The user is looking for information about machine learning applications."
-    })
-```
 
 ## Agent Execution Loop with Thread Management
 
@@ -284,20 +234,3 @@ async function runConversation() {
 runConversation().catch(console.error);
 ```
 </CodeGroup>
-
-## Next Steps
-
-<CardGroup cols={2}>
-  <Card title="Agent Execution" icon="play" href="/api-reference/07-sdk/xpander-sdk/Tasks">
-    Learn how to manage agent execution flow
-  </Card>
-  <Card title="Agent.Messages" icon="code" href="/api-reference/07-sdk/xpander-sdk/Agent.Messages">
-    Detailed API reference for agent messages
-  </Card>
-  <Card title="Stateful Agents Guide" icon="brain" href="/docs/03-ai-state-management/01-agent-state-basics">
-    Create agents that maintain state
-  </Card>
-  <Card title="Debugging Guide" icon="bug" href="/docs/03-ai-state-management/01-agent-state-basics">
-    Debug agent execution issues
-  </Card>
-</CardGroup> 

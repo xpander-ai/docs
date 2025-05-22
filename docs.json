@@ -47,20 +47,10 @@
                   "docs/01-get-started/02-getting-started-02-cli"
                 ]
               },
-              {
-                "group": "Use the SDK",
-                "icon": {
-                  "name": "code",
-                  "style": "regular"
-                },
-                "pages": [
-                  "docs/01-get-started/02-sdk-overview",
-                  "docs/01-get-started/03-llm-models",
-                  "docs/01-get-started/04-agent-frameworks"
-                ]
-              }
+              "docs/01-get-started/03-instrument-agents",
+              "docs/01-get-started/04-hello-world"
             ]
-          },  
+          },
           {
             "group": "AI Agent Workbench",
             "icon": {
@@ -68,7 +58,7 @@
               "style": "regular"
             },
             "pages": [
-              "docs/02-agent-builder/01-add-tools-to-agents",
+              "docs/02-agent-builder/01-adding-tools-to-agents",
               "docs/02-agent-builder/02-agent-graph-system",
               "docs/02-agent-builder/03-activity-view",
               "docs/02-agent-builder/04-advanced-operation-settings",
@@ -345,6 +335,30 @@
     }
   },
   "redirects": [
+    {
+      "source": "/docs/01-get-started/05-adding-using-tools",
+      "destination": "/docs/backend-to-agents/03-tools-and-apis"
+    },
+    {
+      "source": "/docs/02-agent-builder/01-add-tools-to-agents",
+      "destination": "/docs/backend-to-agents/03-tools-and-apis"
+    },
+    {
+      "source": "/docs/01-get-started/02-sdk-overview",
+      "destination": "/docs/backend-to-agents/02-sdk-overview"
+    },
+    {
+      "source": "/docs/01-get-started/03-instrument-run-ai-agents",
+      "destination": "/docs/backend-to-agents/02-instrument-agents"
+    },
+    {
+      "source": "/docs/01-get-started/04-event-streams",
+      "destination": "/docs/backend-to-agents/04-event-streams"
+    },
+    {
+      "source": "/docs/01-get-started/06-managing-state",
+      "destination": "/docs/03-ai-state-management/01-agent-state-basics"
+    },
     {
       "source": "/workshops/a2a-mcp-bedrock-workshop/01-first-coding-agent",
       "destination": "/workshops/a2a-mcp-workshop/02-first-coding-agent"
