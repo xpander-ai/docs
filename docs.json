@@ -25,6 +25,34 @@
               "docs/01-get-started/02-getting-started-01-workbench",
               "docs/01-get-started/02-getting-started-02-cli"
             ]
+          },
+          {
+            "group": "AI Agent Workbench",
+            "pages": [
+              "docs/02-agent-builder/01-adding-tools-to-agents",
+              "docs/02-agent-builder/02-agent-graph-system",
+              "docs/02-agent-builder/03-activity-view",
+              "docs/02-agent-builder/04-advanced-operation-settings",
+              "docs/02-agent-builder/05-agent-settings",
+              "docs/02-agent-builder/06-multi-agent-teams",
+              "docs/02-agent-builder/07-sequential-agent-teams"
+            ]
+          },
+          {
+            "group": "AI State Management",
+            "pages": [
+              "docs/03-ai-state-management/01-agent-state-basics",
+              "docs/03-ai-state-management/02-thread-management"
+            ]
+          },
+          {
+            "group": "Human Interfaces",
+            "pages": [
+              "docs/05-human-interfaces/02-slack-bots",
+              "docs/05-human-interfaces/03-webui",
+              "docs/05-human-interfaces/04-mcp",
+              "docs/05-human-interfaces/05-webhooks"
+            ]
           }
         ]
       }
