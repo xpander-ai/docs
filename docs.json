@@ -7,6 +7,17 @@
     "light": "#9B70FF",
     "dark": "#4A2C99"
   },
+  "favicon": "/favicon.svg",
+  "logo": {
+    "light": "/logo/logo.png",
+    "dark": "/logo/logo-dark-mode.png"
+  },
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/xpander-ai/xpander-sdk"
+    }
+  },
   "navigation": {
     "tabs": [
       {
@@ -14,9 +25,7 @@
         "groups": [
           {
             "group": "Introduction",
-            "pages": [
-              "docs/01-get-started/01-index"
-            ]
+            "pages": ["docs/01-get-started/01-index"]
           },
           {
             "group": "Quickstart",
@@ -97,9 +106,7 @@
         "groups": [
           {
             "group": "Getting Started",
-            "pages": [
-              "api-reference/07-sdk/index"
-            ]
+            "pages": ["api-reference/07-sdk/index"]
           },
           {
             "group": "xpander-sdk",
@@ -120,9 +127,7 @@
         "groups": [
           {
             "group": "Overview",
-            "pages": [
-              "apps/index"
-            ]
+            "pages": ["apps/index"]
           },
           {
             "group": "Productivity",
@@ -171,6 +176,80 @@
           }
         ]
       }
-    ]
+    ],
+    "global": {
+      "dropdowns": [
+        {
+          "dropdown": "Documentation",
+          "icon": { "name": "book", "style": "regular" },
+          "href": "https://docs.xpander.ai/docs/01-get-started/02-getting-started-00"
+        },
+        {
+          "dropdown": "SDK Reference",
+          "icon": { "name": "code", "style": "regular" },
+          "href": "https://docs.xpander.ai/api-reference/07-sdk/index"
+        },
+        {
+          "dropdown": "Tutorials",
+          "icon": { "name": "graduation-cap", "style": "regular" },
+          "href": "https://docs.xpander.ai/tutorials/index"
+        },
+        {
+          "dropdown": "Workshops",
+          "icon": { "name": "school", "style": "regular" },
+          "href": "https://docs.xpander.ai/workshops/index"
+        },
+        {
+          "dropdown": "Apps",
+          "icon": { "name": "plug", "style": "regular" },
+          "href": "https://docs.xpander.ai/apps/index"
+        },
+        {
+          "dropdown": "Release notes",
+          "icon": { "name": "note", "style": "regular" },
+          "href": "https://docs.xpander.ai/changelog/product-updates"
+        }
+      ],
+      "anchors": [
+        {
+          "anchor": "xpander.ai Website",
+          "href": "https://xpander.ai",
+          "icon": { "name": "globe-pointer", "style": "regular" }
+        },
+        {
+          "anchor": "xpander.ai Console",
+          "href": "https://app.xpander.ai",
+          "icon": { "name": "code", "style": "regular" }
+        },
+        {
+          "anchor": "SDK Reference",
+          "href": "https://docs.xpander.ai/api-reference/07-sdk/index",
+          "icon": { "name": "code", "style": "regular" }
+        },
+        {
+          "anchor": "Community Slack",
+          "href": "https://join.slack.com/t/xpandercommunity/shared_invite/zt-2mt2xkxkz-omM7f~_h2jcuzFudrYtZQQ",
+          "icon": { "name": "slack", "style": "regular" }
+        },
+        {
+          "anchor": "Developer Discord",
+          "href": "https://discord.gg/CUcp4WWh5g",
+          "icon": { "name": "discord", "style": "regular" }
+        }
+      ]
+    }
+  },
+  "integrations": {
+    "amplitude": {
+      "apiKey": "a217b67ed9af1f3663abbdb97c358d86"
+    }
+  },
+  "redirects": [],
+  "footer": {
+    "socials": {
+      "x": "https://x.com/xpander_ai",
+      "github": "https://github.com/xpander-ai",
+      "linkedin": "https://www.linkedin.com/company/104346002"
+    }
   }
 }
