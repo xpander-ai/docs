@@ -1,0 +1,218 @@
+---
+title: "Instrument Your Agents"
+description: "Replace parts of your existing agent with xpander's backend capabilities"
+icon: "plug"
+---
+
+## What is Agent Instrumentation?
+
+Agent instrumentation is the process of enhancing your existing AI agent by integrating xpander's backend capabilities. Rather than rebuilding your agent from scratch, you selectively replace key components with xpander's services to gain advanced features like persistent memory, robust tool management, and multi-channel connectivity.
+
+
+## The Three Components to Instrument
+
+When instrumenting your agent, focus on replacing these three essential components:
+<CardGroup cols={3}>
+  <Card
+    title="Message Management"
+    icon="database"
+    subtitle="Memory System"
+  >
+    Replace your conversation memory with xpander's system: Thread-based chats, cross-session memory, and structured storage.
+  </Card>
+
+  <Card
+    title="Tools Management"
+    icon="code"
+    subtitle="Tool System"
+  >
+    Replace your tool system with xpander's: LLM provider conversion, built-in tools, and consistent patterns.
+  </Card>
+
+  <Card
+    title="Event Handling"
+    icon="bolt"
+    subtitle="Event System"
+  >
+    Replace your event handling with xpander's: Multi-channel support, structured events, and agent communication.
+  </Card>
+</CardGroup>
+
+
+## Benefits of Instrumentation
+
+By instrumenting your agent with xpander, you gain:
+
+1. **Persistent Memory**: Conversations are stored across sessions and accessible via API
+2. **Powerful Tools**: Access to xpander's tool library and execution framework
+3. **Multi-Interface Access**: Connect to Slack, Discord, MCP, and other channels
+4. **Execution Monitoring**: Track agent activity and performance
+5. **Agent Collaboration**: Enable agent-to-agent delegation and communication
+
+
+### Set Up Your Environment
+
+1. **Install the xpander CLI**:
+   ```bash
+   npm install -g xpander-cli
+   ```
+   
+<Note> 
+    The SDK using JSII which allows code in any language to naturally interact with JavaScript class. Please make sure to use Node version 22 and above.
+
+    ```bash
+    nvm install 22 && nvm use 22
+    ```
+</Note>
+
+2. **Install required Python packages**:
+   ```bash
+   # Create and activate virtual environment
+   python3 -m venv .venv
+   source .venv/bin/activate
+   
+   # Install dependencies
+   pip install xpander-sdk xpander-utils openai
+   ```
+
+3. **Authenticate with xpander**:
+   ```bash
+   xpander login
+   ```
+
+4. **Configure your environment**:
+   Create a `.env` file with:
+   ```
+   XPANDER_API_KEY=your_xpander_api_key
+   XPANDER_ORG_ID=your_organization_id
+   OPENAI_API_KEY=your_openai_api_key
+   OPENAI_MODEL_ID=gpt-4.1
+   ```
+
+### Create Your Agent Project
+
+Run the agent creation wizard:
+
+```bash
+xpander agent new 
+##  Or
+xpander agent init
+```
+
+This command will guide you through creating a new agent and loading it into your current directory. The CLI generates a complete project structure:
+
+```
+agent_instructions.json  # Agent system prompt
+Dockerfile               # Deployment configuration
+requirements.txt         # Python dependencies
+xpander_config.json      # Agent configuration
+xpander_handler.py       # Event handler scaffold
+```
+
+## Implementing Your Custom Agent
+
+After setting up your project, you need to customize two key files:
+
+### 1. Create Your Custom Agent Class
+
+Create a file (e.g., `myagent.py`) that implements your agent's core logic while leveraging xpander's backend services:
+
+```python myagent.py
+from xpander_sdk import Agent, XpanderClient
+from openai import OpenAI
+
+class MyAgent:
+    def __init__(self, backend: Agent) -> None:
+        self.model = OpenAI()
+        self.agent_backend = backend
+
+    def chat(self, user_input: str, thread_id: str = None) -> str:
+        # Let xpander handle thread/conversation management
+        self.agent_backend.add_task(input=user_input, thread_id=thread_id)
+
+        while not self.agent_backend.is_finished():
+            # Call your LLM with your preferred parameters
+            response = self.model.chat.completions.create(
+                model="gpt-4.1",
+                messages=self.agent_backend.messages,  # xpander provides context
+                temperature=0.0,
+                tools=self.agent_backend.get_tools(),  # xpander provides tools
+                tool_choice=self.agent_backend.tool_choice
+            )
+            
+            # Store conversation in xpander's persistent memory
+            self.agent_backend.add_messages(response.model_dump())
+            
+            # Let xpander handle tool execution
+            tool_calls = XpanderClient.extract_tool_calls(
+                llm_response=response.model_dump()
+            )
+            tool_results = self.agent_backend.run_tools(tool_calls=tool_calls)
+        
+        # Get the final result from xpander
+        final_result = self.agent_backend.retrieve_execution_result()
+        return final_result.result
+```
+
+<Note>
+For detailed information on tool execution patterns, see the [Tools and APIs guide](/docs/02-agent-builder/01-adding-tools-to-agents).
+</Note>
+
+### 2. Customize the Event Handler
+
+Edit the `xpander_handler.py` file generated by the CLI to integrate your custom agent:
+
+```python xpander_handler.py
+..
+from myagent import MyAgent  # Import your custom agent class
+#...
+
+@listener.register
+def on_execution_request(execution_task: AgentExecution) -> AgentExecutionResult:
+    # Get the xpander agent backend
+    agent_backend = xpander.agents.get(agent_id=xpander_config.get("agent_id"))
+    
+    # Initialize the agent with the execution context
+    agent_backend.init_task(execution=execution_task.model_dump()) 
+    
+    # Use your custom agent with xpander's backend
+    my_agent = MyAgent(agent_backend)
+    
+    # Process the request and get the result
+    result = my_agent.chat(user_input=execution_task.input.text)
+    
+    # Return the result to wherever the request originated
+    return AgentExecutionResult(result=result)
+#...
+```
+
+## Testing Your Instrumented Agent
+
+To test your agent:
+
+1. **Run locally**:
+   ```bash
+   python xpander_handler.py
+   ```
+
+2. **Access via web**:
+   Once running, your agent will be available at the URL displayed in the console.
+
+3. **Interact with your agent**:
+   - Send messages through the web interface
+   - Watch as they're processed locally with your custom logic
+   - Observe the real-time logs in your terminal
+
+## Cloud Deployment
+
+When you're ready to deploy your agent to the cloud:
+
+```bash
+xpander deploy
+```
+
+This command packages your agent as a container and deploys it to the xpander cloud platform, making it accessible through all configured channels. You can monitor your deployed agent with:
+
+```bash
+xpander logs
+```

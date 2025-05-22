@@ -1,0 +1,176 @@
+---
+title: "Hello World Example"
+description: "Get started with xpander.ai as a backend for your AI agents"
+icon: "rocket"
+---
+
+## Quick Start: Add a Backend to Your Agent
+
+<Note>
+This guide provides a simple Hello World example to get you started with xpander's backend services.
+
+**You'll learn:**
+- How to connect to xpander's backend services
+- Basic agent execution flow
+- How to process tool calls
+- How to manage conversation state
+- Core SDK architecture and components
+</Note>
+
+This Hello World guide shows you how to enhance any AI agent with xpander.ai's backend capabilities for memory, tools, and more.
+
+## 📦 Installation
+
+```bash
+# Python
+pip install xpander-sdk
+
+# Node.js
+npm install @xpander-ai/sdk
+
+# CLI (for agent creation)
+npm install -g xpander-cli
+```
+
+### Use xpander-cli to scaffold a new agent template
+
+```bash
+xpander login
+xpander agent new
+python xpander_handler.py  # Entry point for your agent's event handling
+```
+
+### Create Hello World Agent
+
+```python hello_world_agent.py
+# First, install the SDK if you haven't already
+# pip install xpander-sdk
+
+from xpander_sdk import XpanderClient, LLMProvider
+from openai import OpenAI
+import os
+
+# Initialize clients with your API keys
+# Set these environment variables before running
+xpander = XpanderClient(api_key=os.getenv("XPANDER_API_KEY"))
+openai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# Get your agent from xpander's backend
+# Create your agent first at https://app.xpander.ai
+agent = xpander.agents.get(agent_id=os.getenv("XPANDER_AGENT_ID"))
+
+# Select the LLM provider you want to use
+agent.select_llm_provider(LLMProvider.OPEN_AI)
+
+# Add a task for the agent to process
+agent.add_task("Hello world! Tell me what you can do.")
+
+# Run the agent with OpenAI
+while not agent.is_finished():
+    # Get LLM response from OpenAI
+    response = openai.chat.completions.create(
+        model="gpt-4o",
+        messages=agent.messages,
+        tools=agent.get_tools(),
+        tool_choice=agent.tool_choice,
+        temperature=0
+    )
+    
+    # Add response to agent memory
+    agent.add_messages(response.model_dump())
+    
+    # Extract and run any tools the agent wants to use
+    tool_calls = XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump()
+    )
+    if tool_calls:
+        agent.run_tools(tool_calls=tool_calls)
+
+# Get the final result
+result = agent.retrieve_execution_result()
+print(result.result)
+
+# Store the thread_id for future conversations (memory persistence)
+thread_id = result.memory_thread_id
+print(f"Thread ID: {thread_id}")
+```
+
+### Deploy agent to the cloud
+
+```bash
+xpander deploy  # Deploys the Docker container to the cloud and runs it via xpander_handler.py
+xpander logs    # Streams logs locally from your configured agent
+```
+
+
+## What This Does
+
+The example above:
+
+1. Connects to xpander.ai's backend services
+2. Loads an agent you've created in the [Builder](https://app.xpander.ai)
+3. Adds a task for the agent to process
+4. Runs the agent with the OpenAI API
+5. Executes any tools the agent needs
+6. Returns the result with a thread ID for continuity
+
+See the full Hello World application [here](https://github.com/xpander-ai/xpander.ai/tree/main/Getting-Started/hello-worlds).
+
+## Using Different LLM Providers
+
+The xpander.ai backend is model-agnostic. You can use any LLM provider:
+
+<Tabs>
+  <Tab title="OpenAI">
+    ```python
+    from openai import OpenAI
+
+    openai_client = OpenAI(api_key="OpenAI-APIkey")
+
+    # First, select the provider
+    agent.select_llm_provider(LLMProvider.OPEN_AI)
+    
+    # Then use the provider's client
+    response = openai_client.chat.completions.create(
+        model="gpt-4.1",
+        messages=agent.messages,
+        tools=agent.get_tools(),  # Tools automatically formatted for OpenAI
+        tool_choice=agent.tool_choice
+    )
+    
+    # Process the response
+    agent.add_messages(response.model_dump())
+    agent.run_tools(XpanderClient.extract_tool_calls(
+        llm_response=response.model_dump()
+    ))
+    ```
+  </Tab>
+  
+  <Tab title="AWS Bedrock">
+    ```python
+    import boto3
+    import json
+    
+    # Select the Bedrock provider
+    agent.select_llm_provider(LLMProvider.AMAZON_BEDROCK)
+    
+    # Use the Bedrock client
+    bedrock = boto3.client(service_name="bedrock-runtime")
+    
+    response = bedrock.invoke_model(
+        modelId="anthropic.claude-3-sonnet-20240229-v1:0",
+        body=json.dumps({
+            "messages": agent.messages,
+            "tools": agent.get_tools()  # Tools automatically formatted for Bedrock
+        })
+    )
+    
+    # Process the response
+    response_body = json.loads(response["body"].read().decode())
+    agent.add_messages(response_body)
+    agent.run_tools(XpanderClient.extract_tool_calls(
+        llm_response=response_body
+    ))
+    ```
+  </Tab>
+</Tabs>
