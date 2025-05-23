@@ -36,6 +36,13 @@
             ]
           },
           {
+            "group": "Backend for Agents",
+            "pages": [
+              "docs/01-get-started/03-instrument-agents",
+              "docs/01-get-started/04-hello-world"
+            ]
+          },
+          {
             "group": "AI Agent Workbench",
             "pages": [
               "docs/02-agent-builder/01-adding-tools-to-agents",
