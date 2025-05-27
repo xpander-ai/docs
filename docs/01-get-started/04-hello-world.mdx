@@ -78,6 +78,9 @@ while not agent.is_finished():
     
     # Add response to agent memory
     agent.add_messages(response.model_dump())
+
+    # Update messages if needed (e.g., modify content)
+    agent.update_messages(message_id="123", content="Updated content")
     
     # Extract and run any tools the agent wants to use
     tool_calls = XpanderClient.extract_tool_calls(
@@ -93,6 +96,11 @@ print(result.result)
 # Store the thread_id for future conversations (memory persistence)
 thread_id = result.memory_thread_id
 print(f"Thread ID: {thread_id}")
+```
+
+```typescript
+// Update messages if needed (e.g., modify content)
+await agent.updateMessages({ message_id: "123", content: "Updated content" });
 ```
 
 ### Deploy agent to the cloud
