@@ -142,6 +142,9 @@ class MyAgent:
             
             # Store conversation in xpander's persistent memory
             self.agent_backend.add_messages(response.model_dump())
+
+            # Update messages if needed (e.g., modify content)
+            self.agent_backend.update_messages(message_id="123", content="Updated content")
             
             # Let xpander handle tool execution
             tool_calls = XpanderClient.extract_tool_calls(
@@ -152,6 +155,11 @@ class MyAgent:
         # Get the final result from xpander
         final_result = self.agent_backend.retrieve_execution_result()
         return final_result.result
+```
+
+```typescript
+// Update messages if needed (e.g., modify content)
+await agentBackend.updateMessages({ message_id: "123", content: "Updated content" });
 ```
 
 <Note>
