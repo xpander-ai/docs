@@ -83,6 +83,42 @@ await agent.addMessages([
 
 Returns: `void`
 
+### update_messages() / updateMessages()
+
+Update one or more existing messages in the conversation history.
+
+<CodeGroup>
+```python Python
+# Update a single message
+agent.update_messages(message_id="123", content="Updated content")
+
+# Update multiple messages
+agent.update_messages([
+    {"message_id": "123", "content": "Updated content"},
+    {"message_id": "124", "content": "Another update"}
+])
+```
+
+```typescript TypeScript
+// Update a single message
+await agent.updateMessages({ message_id: "123", content: "Updated content" });
+
+// Update multiple messages
+await agent.updateMessages([
+    { message_id: "123", content: "Updated content" },
+    { message_id: "124", content: "Another update" }
+]);
+```
+</CodeGroup>
+
+| Parameter    | Type    | Required | Description                             |
+|--------------|---------|----------|-----------------------------------------|
+| `message_id` | string  | Yes      | ID of the message to update             |
+| `content`    | string  | Yes      | New content for the message             |
+| `metadata`   | object  | No       | Additional metadata to update on message|
+
+Returns: `void`
+
 ## Type Definitions
 
 ### Message
