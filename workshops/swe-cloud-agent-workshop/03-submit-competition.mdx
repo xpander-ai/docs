@@ -1,0 +1,488 @@
+---
+title: "Module 3: Competition Submission"
+description: "Package and submit your SWE agent system to competitions"
+icon: "trophy"
+---
+
+<Note>
+  **Module Summary**
+
+  - **Goal**: Package and submit your SWE agent system to the apps-by-agent competition
+  - **Estimated Time**: 15-20 minutes
+  - **Prerequisites**: Completed modules 1-3, working SWE agent system
+</Note>
+
+🏆 In this module, you'll prepare your SWE agent system for competition submission. You'll learn how to package your application, create the necessary documentation, and submit your work to the apps-by-agent competition platform.
+
+## 🎯 Competition Overview
+
+### Apps-by-Agent Competition
+
+The apps-by-agent competition evaluates AI agent applications based on:
+
+1. **Functionality** - How well your agent performs SWE tasks
+2. **User Experience** - Quality of the frontend interface
+3. **Innovation** - Novel approaches and creative solutions
+4. **Technical Excellence** - Code quality and architecture
+5. **Documentation** - Clear setup and usage instructions
+
+### Judging Criteria
+
+Your submission will be evaluated on:
+
+- **Task Completion Rate** (30%): Successfully completing coding tasks
+- **Code Quality** (25%): Generated code follows best practices
+- **System Reliability** (20%): Uptime and error handling
+- **User Interface** (15%): Frontend usability and design
+- **Innovation** (10%): Unique features and approaches
+
+## 📦 Packaging Your Application
+
+### Step 1: Create Deployment Package
+
+Structure your submission package:
+
+```bash Project Structure
+swe-cloud-agent-submission/
+├── README.md
+├── SETUP.md
+├── DEMO.md
+├── backend/
+│   ├── agent-config.json
+│   ├── deployment-instructions.md
+│   └── screenshots/
+├── frontend/
+│   ├── package.json
+│   ├── src/
+│   ├── build/
+│   └── deployment-guide.md
+├── documentation/
+│   ├── architecture.md
+│   ├── api-reference.md
+│   └── user-guide.md
+└── submission/
+    ├── demo-video.mp4
+    ├── presentation.pdf
+    └── competition-form.json
+```
+
+### Step 2: Create Main README
+
+Create a comprehensive README.md file for your submission:
+
+```markdown
+# SWE Cloud Agent - Competition Submission
+
+A cloud-based Software Engineering agent system that autonomously handles coding tasks using xpander.ai backend and OpenAI Codex CLI.
+
+## 🎯 Overview
+
+This submission demonstrates a complete SWE agent system featuring:
+
+- **Intelligent Task Management**: Queue-based task processing with priority handling
+- **Real-time Monitoring**: Live agent status, logs, and performance metrics
+- **Advanced Code Generation**: OpenAI Codex CLI integration for high-quality code
+- **GitHub Integration**: Full repository management and PR automation
+- **Modern UI**: React-based dashboard with Material-UI components
+
+## 🏗️ Architecture
+
+The system follows a cloud-first architecture with React frontend, xpander.ai backend, and OpenAI Codex CLI integration for code generation.
+
+## ⚡ Key Features
+
+### Backend Capabilities
+- Multi-step agent workflows with dependency management
+- Agentic RAG for optimized API responses
+- Stateful conversation management
+- Comprehensive error handling and recovery
+- Performance monitoring and metrics
+
+### Frontend Features
+- Intuitive task creation and management
+- Real-time agent monitoring dashboard
+- Code review and approval workflow
+- Repository browser and file explorer
+- Performance analytics and reporting
+
+## 🚀 Quick Start
+
+1. **Backend Setup**: Import agent configuration to xpander.ai
+2. **Frontend Setup**: Install dependencies and start development server
+3. **Configuration**: Set up environment variables and API keys
+
+## 📊 Performance Metrics
+
+Our system achieves:
+- **95% Task Completion Rate** for well-defined coding tasks
+- **<30 second Response Time** for simple code generation
+- **8.5/10 Code Quality Score** based on static analysis
+- **99.9% Uptime** with cloud deployment
+
+## 🏆 Competition Highlights
+
+### Innovation
+- First-of-its-kind integration of xpander.ai with OpenAI Codex CLI
+- Advanced dependency graph system for reliable workflows
+- Real-time collaborative debugging interface
+
+### Technical Excellence
+- Comprehensive test coverage (85%+)
+- Production-ready error handling
+- Scalable cloud architecture
+- Modern React/Material-UI frontend
+
+### User Experience
+- Intuitive drag-and-drop task creation
+- Real-time progress tracking
+- Interactive code review system
+- Mobile-responsive design
+
+## 📹 Demo
+
+Watch our demo video showcasing complete task workflows, real-time monitoring, and GitHub integration.
+
+## 🤝 Team
+
+- **Technical Lead**: [Your Name]
+- **Frontend Developer**: [Team Member]
+- **Backend Integration**: [Team Member]
+
+*Built with ❤️ using xpander.ai, OpenAI Codex CLI, and React*
+```
+
+### Step 3: Create Setup Guide
+
+```markdown SETUP.md
+# Setup Guide - SWE Cloud Agent
+
+Complete instructions for setting up and running the SWE Cloud Agent system.
+
+## Prerequisites
+
+- Node.js 16+ and npm
+- xpander.ai account with API access
+- OpenAI API key with Codex access
+- GitHub account with repository permissions
+
+## Backend Setup
+
+### 1. xpander.ai Configuration
+
+1. Login to [xpander.ai platform](https://app.xpander.ai)
+2. Import the agent configuration:
+   ```bash
+   # Upload backend/agent-config.json
+   # Or use the pre-configured template: "SWE Cloud Agent"
+   ```
+
+3. Configure API integrations:
+   ```bash
+   # OpenAI Integration
+   OPENAI_API_KEY=your_openai_key
+   OPENAI_MODEL=code-davinci-002
+   
+   # GitHub Integration
+   GITHUB_TOKEN=your_github_token
+   ```
+
+4. Test the backend:
+   ```bash
+   # Send test request through xpander.ai tester
+   curl -X POST "https://api.xpander.ai/agents/YOUR_AGENT_ID/tasks" \
+        -H "Authorization: Bearer YOUR_API_KEY" \
+        -d '{"title": "Test Task", "type": "code_generation"}'
+   ```
+
+### 2. Agent Deployment
+
+1. Deploy your agent:
+   ```bash
+   # Click "Deploy" in xpander.ai workbench
+   # Note the agent ID and API endpoint
+   ```
+
+2. Verify deployment:
+   ```bash
+   # Check agent status
+   curl "https://api.xpander.ai/agents/YOUR_AGENT_ID/status" \
+        -H "Authorization: Bearer YOUR_API_KEY"
+   ```
+
+## Frontend Setup
+
+### 1. Installation
+
+```bash
+cd frontend
+npm install
+```
+
+### 2. Environment Configuration
+
+Create `.env` file:
+```bash
+REACT_APP_XPANDER_API_URL=https://api.xpander.ai
+REACT_APP_XPANDER_WS_URL=wss://ws.xpander.ai
+REACT_APP_XPANDER_API_KEY=your_xpander_api_key
+REACT_APP_AGENT_ID=your_agent_id
+```
+
+### 3. Development Server
+
+```bash
+npm start
+# Opens http://localhost:3000
+```
+
+### 4. Production Build
+
+```bash
+npm run build
+# Creates optimized build in build/ directory
+```
+
+## Testing
+
+### Backend Testing
+
+```bash
+# Test agent functionality
+curl -X POST "https://api.xpander.ai/agents/YOUR_AGENT_ID/tasks" \
+     -H "Authorization: Bearer YOUR_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "title": "Create Python function",
+       "description": "Create a function to calculate fibonacci numbers",
+       "type": "code_generation",
+       "priority": "medium"
+     }'
+```
+
+### Frontend Testing
+
+```bash
+cd frontend
+npm test
+npm run test:coverage
+```
+
+### Integration Testing
+
+1. Create a test task through the UI
+2. Monitor execution in the agent monitor
+3. Verify code generation and review process
+4. Check GitHub integration (PR creation)
+
+## Troubleshooting
+
+### Common Issues
+
+1. **API Connection Failed**
+   ```bash
+   # Check API key and endpoint
+   curl -H "Authorization: Bearer YOUR_KEY" https://api.xpander.ai/health
+   ```
+
+2. **WebSocket Not Connecting**
+   ```bash
+   # Verify WebSocket URL and agent ID
+   # Check browser console for connection errors
+   ```
+
+3. **GitHub Integration Issues**
+   ```bash
+   # Verify GitHub token permissions
+   curl -H "Authorization: token YOUR_GITHUB_TOKEN" \
+        https://api.github.com/user
+   ```
+
+### Getting Help
+
+- Check logs in xpander.ai dashboard
+- Review browser console errors
+- Contact support: support@xpander.ai
+- Community: [Discord](https://discord.gg/xpander)
+
+## Performance Optimization
+
+### Backend Optimization
+
+1. Configure Agentic RAG for better response filtering
+2. Set appropriate memory limits and timeouts
+3. Enable caching for repository operations
+4. Monitor API usage and optimize calls
+
+### Frontend Optimization
+
+1. Use React.memo for expensive components
+2. Implement virtual scrolling for large lists
+3. Add proper loading states and error boundaries
+4. Optimize bundle size with code splitting
+
+## Security Considerations
+
+1. Store API keys securely (environment variables)
+2. Implement proper CORS configuration
+3. Validate all user inputs
+4. Use HTTPS for all API communications
+5. Regularly rotate API tokens
+
+---
+
+Need help? Contact us at support@your-domain.com
+```
+
+## 🎬 Creating Demo Materials
+
+### Step 4: Record Demo Video
+
+Create a comprehensive demo video (5-7 minutes) showing:
+
+1. **System Overview** (30 seconds)
+   - Brief introduction to your SWE agent
+   - Key features and capabilities
+
+2. **Task Creation** (60 seconds)
+   - Creating a new coding task
+   - Configuring task parameters
+   - Submitting to the agent queue
+
+3. **Agent Processing** (90 seconds)
+   - Real-time monitoring of agent activity
+   - Watching logs and status updates
+   - Observing code generation process
+
+4. **Code Review** (60 seconds)
+   - Reviewing generated code
+   - Making approval decisions
+   - Requesting modifications if needed
+
+5. **GitHub Integration** (60 seconds)
+   - Automatic PR creation
+   - Repository management
+   - Issue tracking integration
+
+6. **Performance Dashboard** (30 seconds)
+   - Metrics and analytics
+   - System health monitoring
+   - Performance optimization features
+
+### Step 5: Create Presentation Slides
+
+Create a presentation covering:
+
+- **Project Overview**: SWE Cloud Agent capabilities and architecture
+- **Technical Implementation**: xpander.ai backend and React frontend integration
+- **Innovation Highlights**: Unique approaches and competitive advantages
+- **Demo Walkthrough**: Live demonstration of key features
+- **Performance Metrics**: Benchmarks and success metrics
+- **Future Roadmap**: Planned enhancements and scaling strategies
+
+## 📋 Submission Checklist
+
+### Step 6: Complete Submission Requirements
+
+Before submitting, verify you have:
+
+- [ ] **Complete README.md** with project overview
+- [ ] **Setup documentation** with clear instructions
+- [ ] **Working demo** accessible via URL
+- [ ] **Demo video** (5-7 minutes) showcasing key features
+- [ ] **Presentation slides** (10-15 slides) covering all aspects
+- [ ] **Source code** (backend configuration + frontend code)
+- [ ] **Documentation** (architecture, API reference, user guide)
+- [ ] **Performance metrics** and benchmarking results
+- [ ] **Competition form** filled out completely
+- [ ] **Team information** and contact details
+
+### Step 7: Quality Assurance
+
+Run through this final QA checklist:
+
+1. **Functionality Testing**
+   - [ ] All features work as demonstrated
+   - [ ] Error handling is robust
+   - [ ] Performance meets stated metrics
+
+2. **Documentation Quality**
+   - [ ] Instructions are clear and complete
+   - [ ] Screenshots and examples are helpful
+   - [ ] Technical details are accurate
+
+3. **Code Quality**
+   - [ ] Code is well-structured and commented
+   - [ ] No security vulnerabilities
+   - [ ] Follows best practices
+
+4. **Presentation Quality**
+   - [ ] Demo video is clear and engaging
+   - [ ] Slides are professional and informative
+   - [ ] Key messages are communicated effectively
+
+## 🚀 Submission Process
+
+### Step 8: Submit Your Application
+
+1. **Package Everything**:
+   ```bash
+   # Create submission archive
+   tar -czf swe-cloud-agent-submission.tar.gz \
+       README.md SETUP.md DEMO.md \
+       backend/ frontend/ documentation/ submission/
+   ```
+
+2. **Upload to Competition Platform**:
+   - Go to the competition submission portal
+   - Upload your packaged application
+   - Fill out the competition form
+   - Submit demo video and presentation
+
+3. **Verify Submission**:
+   - Check that all files uploaded correctly
+   - Verify demo links work
+   - Confirm submission was received
+
+### Step 9: Post-Submission
+
+After submitting:
+
+1. **Monitor for Updates**:
+   - Check competition platform for notifications
+   - Respond to any judge questions promptly
+   - Provide additional information if requested
+
+2. **Prepare for Presentation**:
+   - Practice your demo presentation
+   - Prepare for Q&A sessions
+   - Test all demo scenarios
+
+3. **Engage with Community**:
+   - Share your submission on social media
+   - Participate in competition discussions
+   - Network with other participants
+
+## ✅ Module Checkpoint
+
+By completing this module, you should have:
+
+1. Packaged your complete SWE agent system for competition
+2. Created comprehensive documentation and setup guides
+3. Recorded a professional demo video
+4. Prepared presentation materials
+5. Successfully submitted to the apps-by-agent competition
+
+## 🏆 What's Next?
+
+Congratulations on submitting to the competition! While waiting for results:
+
+1. **Continue Development**: Keep improving your system
+2. **Community Engagement**: Share learnings and connect with others
+3. **Prepare for Judging**: Be ready for potential interviews or demos
+4. **Plan Next Steps**: Consider commercial applications or open-source release
+
+## 🔄 Optional: Module 5
+
+If you want to take your SWE agent to the next level, continue to Module 5 where you'll learn how to customize the agent loop locally and deploy to production cloud environments.
+
+Ready to level up? Let's go to Module 5! 

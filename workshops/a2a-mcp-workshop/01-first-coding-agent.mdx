@@ -1,0 +1,525 @@
+---
+title: "Module 1: Build Your First Coding Agent"
+description: "Create a custom developer agent with Amazon Bedrock that manages repos and writes code"
+icon: "code"
+---
+
+<Note>
+  **Module Summary**
+
+  - **Goal**: Create a custom coding agent using Amazon Bedrock with local functions
+  - **Estimated Time**: 25-30 minutes
+  - **Prerequisites**: AWS account with Bedrock access, xpander.ai account, GitHub account
+</Note>
+
+🚀 In this module, you'll create your first custom coding agent using xpander.ai and Amazon Bedrock. This agent will demonstrate key patterns for building domain-specific agents, including local function execution, custom logic, and tool integration. You'll learn how to design agents for specific use cases while building a practical coding assistant.
+
+## 🎯 Understanding Custom Agents
+
+### What Makes an Agent "Custom"?
+
+Custom agents are designed for specific domains and tasks, featuring:
+
+1. **Specialized Knowledge** - Domain-specific expertise and context
+2. **Custom Tools** - Purpose-built functions and integrations
+3. **Local Functions** - Execute code and operations locally
+4. **Tailored Behavior** - Logic optimized for specific use cases
+5. **Integration Patterns** - Connect with domain-specific systems
+
+### Coding Agent as an Example
+
+We'll build a coding agent to demonstrate these concepts, but the patterns apply to any domain:
+- **Content agents** for writing and editing
+- **Analysis agents** for data processing
+- **Support agents** for customer service
+- **Sales agents** for lead management
+
+## 🛠️ Setting Up Your Custom Coding Agent
+
+### Step 1: Create the Agent Foundation
+
+1. Navigate to the [xpander.ai platform](https://app.xpander.ai):
+
+   ```bash Terminal Command
+   # Open in your browser
+   open https://app.xpander.ai
+   ```
+
+2. Sign in to your xpander.ai account
+3. In the left navigation menu, go to **Agents**
+4. Click **\+ New Agent** to create a new agent
+5. When prompted by the agent builder, click **Skip** (we'll build the agent manually)
+
+### Step 2: Design Your Agent's Role and Behavior
+
+1. Click on the **Gear Icon** in the top-right corner to open agent settings
+2. Configure your agent's identity and purpose:
+
+   ```txt Agent Name
+   Senior Developer Agent
+   ```
+
+   ```txt Role
+   You are a Senior Developer Agent specialized in repository management, code analysis, and software development. You have deep expertise in multiple programming languages, best practices, and modern development workflows.
+   ```
+
+   ```txt Goal
+   Your goal is to assist with coding tasks including repository exploration, code analysis, feature implementation, bug fixes, and code reviews. You prioritize clean, maintainable code and follow software engineering best practices.
+   ```
+
+   ```txt Instructions
+   1. Always start by understanding the repository structure and existing codebase
+   2. Ask clarifying questions when requirements are ambiguous
+   3. Follow the existing code style and patterns in the repository
+   4. Write clean, well-documented, and testable code
+   5. Consider edge cases and error handling in your implementations
+   6. Suggest improvements and optimizations when appropriate
+   7. Use local functions for file operations and repository management
+   8. Validate your work before presenting solutions
+   ```
+
+3. Save your agent configuration
+
+### Step 3: Add Repository Management Tools
+
+Add GitHub tools for repository operations:
+
+1. Click the **\+** button in your agent canvas
+2. Select **Apps** from the menu
+3. Add **GitHub Search Manager** for repository discovery
+4. Add **GitHub Issues Manager** for issue tracking
+5. Configure each integration by clicking **Sign in** and authorizing access
+
+<Frame>
+  ![GitHub Tools Integration](/images/screenshots/2025-05-03-23-53-27.png)
+</Frame>
+
+## 🔧 Implementing Local Functions
+
+### Step 4: Create Custom File Operations
+
+Local functions allow your agent to execute custom code. Let's create functions for repository management:
+
+1. In the left navigation, go to **Cloud Functions**
+2. Click **New** to create a new function
+3. Replace the example code with this repository analyzer:
+
+```python Repository Analyzer Function
+# === Repository Analyzer ===
+# Contract-name: xpander_run_action
+# Purpose: Analyze repository structure and provide insights
+
+import os
+import subprocess
+import json
+from pathlib import Path
+
+def xpander_run_action(repo_url: str, analysis_type: str = "structure"):
+    """
+    Analyze a repository for structure, dependencies, or code quality
+    
+    Args:
+        repo_url: URL of the repository to analyze
+        analysis_type: Type of analysis ("structure", "dependencies", "quality")
+    
+    Returns:
+        dict: Analysis results with repository insights
+    """
+    
+    try:
+        # Extract repo name from URL
+        repo_name = repo_url.split('/')[-1].replace('.git', '')
+        temp_dir = f"/tmp/{repo_name}"
+        
+        # Clone repository if it doesn't exist
+        if not os.path.exists(temp_dir):
+            result = subprocess.run(
+                ['git', 'clone', '--depth', '1', repo_url, temp_dir],
+                capture_output=True,
+                text=True,
+                timeout=60
+            )
+            if result.returncode != 0:
+                return {"error": f"Failed to clone repository: {result.stderr}"}
+        
+        # Perform analysis based on type
+        if analysis_type == "structure":
+            return analyze_structure(temp_dir)
+        elif analysis_type == "dependencies":
+            return analyze_dependencies(temp_dir)
+        elif analysis_type == "quality":
+            return analyze_quality(temp_dir)
+        else:
+            return {"error": f"Unknown analysis type: {analysis_type}"}
+            
+    except Exception as e:
+        return {"error": f"Analysis failed: {str(e)}"}
+
+def analyze_structure(repo_path):
+    """Analyze repository structure"""
+    structure = {"directories": [], "files_by_type": {}, "total_files": 0}
+    
+    for root, dirs, files in os.walk(repo_path):
+        # Skip hidden directories and common build/cache directories
+        dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ['node_modules', '__pycache__', 'dist', 'build']]
+        
+        rel_root = os.path.relpath(root, repo_path)
+        if rel_root != '.':
+            structure["directories"].append(rel_root)
+        
+        for file in files:
+            if not file.startswith('.'):
+                ext = Path(file).suffix.lower()
+                if ext:
+                    structure["files_by_type"][ext] = structure["files_by_type"].get(ext, 0) + 1
+                structure["total_files"] += 1
+    
+    # Identify primary language
+    if structure["files_by_type"]:
+        primary_lang = max(structure["files_by_type"], key=structure["files_by_type"].get)
+        structure["primary_language"] = primary_lang
+    
+    return structure
+
+def analyze_dependencies(repo_path):
+    """Analyze project dependencies"""
+    dependencies = {"package_files": [], "dependencies": {}}
+    
+    # Common dependency files
+    dep_files = {
+        "package.json": "npm",
+        "requirements.txt": "pip", 
+        "Pipfile": "pipenv",
+        "pom.xml": "maven",
+        "build.gradle": "gradle",
+        "Cargo.toml": "cargo"
+    }
+    
+    for file_name, manager in dep_files.items():
+        file_path = os.path.join(repo_path, file_name)
+        if os.path.exists(file_path):
+            dependencies["package_files"].append({"file": file_name, "manager": manager})
+            
+            # Parse specific file types
+            if file_name == "package.json":
+                try:
+                    with open(file_path, 'r') as f:
+                        package_data = json.load(f)
+                        deps = package_data.get("dependencies", {})
+                        dev_deps = package_data.get("devDependencies", {})
+                        dependencies["dependencies"][manager] = {
+                            "dependencies": deps,
+                            "devDependencies": dev_deps
+                        }
+                except json.JSONDecodeError:
+                    dependencies["dependencies"][manager] = {"error": "Invalid JSON"}
+            
+            elif file_name == "requirements.txt":
+                try:
+                    with open(file_path, 'r') as f:
+                        reqs = [line.strip() for line in f if line.strip() and not line.startswith('#')]
+                        dependencies["dependencies"][manager] = {"requirements": reqs}
+                except Exception:
+                    dependencies["dependencies"][manager] = {"error": "Failed to parse requirements"}
+    
+    return dependencies
+
+def analyze_quality(repo_path):
+    """Basic code quality analysis"""
+    quality = {"metrics": {}, "issues": []}
+    
+    # Count lines of code
+    total_lines = 0
+    code_files = 0
+    
+    code_extensions = {'.py', '.js', '.ts', '.java', '.cpp', '.c', '.go', '.rs', '.rb'}
+    
+    for root, dirs, files in os.walk(repo_path):
+        dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ['node_modules', '__pycache__']]
+        
+        for file in files:
+            if Path(file).suffix.lower() in code_extensions:
+                file_path = os.path.join(root, file)
+                try:
+                    with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                        lines = len(f.readlines())
+                        total_lines += lines
+                        code_files += 1
+                except Exception:
+                    continue
+    
+    quality["metrics"]["total_lines"] = total_lines
+    quality["metrics"]["code_files"] = code_files
+    quality["metrics"]["avg_lines_per_file"] = total_lines // max(code_files, 1)
+    
+    # Check for common quality indicators
+    readme_exists = any(os.path.exists(os.path.join(repo_path, f)) for f in ['README.md', 'README.rst', 'README.txt'])
+    quality["metrics"]["has_readme"] = readme_exists
+    
+    tests_exist = any('test' in d.lower() for d in os.listdir(repo_path) if os.path.isdir(os.path.join(repo_path, d)))
+    quality["metrics"]["has_tests"] = tests_exist
+    
+    if not readme_exists:
+        quality["issues"].append("No README file found")
+    if not tests_exist:
+        quality["issues"].append("No test directory found")
+    
+    return quality
+```
+
+4. Name this function **Repository Analyzer** and save it
+5. Add it to your agent by clicking **\+** → **Custom Action** → **Repository Analyzer**
+
+### Step 5: Create Code Generation Function
+
+Create another local function for code generation:
+
+```python Code Generator Function
+# === Code Generator ===
+# Contract-name: xpander_run_action
+# Purpose: Generate code files based on specifications
+
+import os
+import tempfile
+from pathlib import Path
+
+def xpander_run_action(file_path: str, code_content: str, language: str = "python"):
+    """
+    Generate and validate code files
+    
+    Args:
+        file_path: Target file path for the generated code
+        code_content: The code content to write
+        language: Programming language for syntax validation
+        
+    Returns:
+        dict: Generation results with validation info
+    """
+    
+    try:
+        # Create directory if it doesn't exist
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        
+        # Write code to file
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(code_content)
+        
+        # Basic validation
+        validation_result = validate_code(code_content, language)
+        
+        # Get file info
+        file_info = {
+            "path": file_path,
+            "size": len(code_content),
+            "lines": len(code_content.split('\n')),
+            "language": language
+        }
+        
+        return {
+            "success": True,
+            "file_info": file_info,
+            "validation": validation_result,
+            "message": f"Code generated successfully at {file_path}"
+        }
+        
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "message": "Code generation failed"
+        }
+
+def validate_code(code_content: str, language: str):
+    """Basic code validation"""
+    validation = {"syntax_ok": True, "issues": [], "score": 100}
+    
+    # Basic checks for different languages
+    if language.lower() == "python":
+        # Check for basic Python syntax
+        try:
+            compile(code_content, '<string>', 'exec')
+        except SyntaxError as e:
+            validation["syntax_ok"] = False
+            validation["issues"].append(f"Syntax error: {e}")
+            validation["score"] -= 50
+        
+        # Check for basic quality indicators
+        if 'def ' not in code_content and 'class ' not in code_content:
+            validation["issues"].append("No functions or classes defined")
+            validation["score"] -= 20
+            
+        if '"""' not in code_content and "'''" not in code_content:
+            validation["issues"].append("No docstrings found")
+            validation["score"] -= 10
+    
+    elif language.lower() in ["javascript", "typescript"]:
+        # Basic JavaScript/TypeScript checks
+        if 'function' not in code_content and '=>' not in code_content:
+            validation["issues"].append("No functions defined")
+            validation["score"] -= 20
+            
+        if code_content.count('{') != code_content.count('}'):
+            validation["issues"].append("Mismatched braces")
+            validation["score"] -= 30
+    
+    # General quality checks
+    lines = code_content.split('\n')
+    empty_lines = sum(1 for line in lines if not line.strip())
+    if len(lines) > 10 and empty_lines / len(lines) < 0.1:
+        validation["issues"].append("Code could benefit from more whitespace")
+        validation["score"] -= 5
+    
+    return validation
+```
+
+6. Name this function **Code Generator** and save it
+7. Add it to your agent canvas
+
+## 🤖 Configuring Amazon Bedrock Integration
+
+### Step 6: Set Up Bedrock Agent Integration
+
+1. Click **\+** in your agent canvas
+2. Select **Apps** → **Amazon Bedrock**
+3. Configure your AWS credentials in the integration settings:
+
+   ```bash AWS Configuration
+   AWS_ACCESS_KEY_ID=your_access_key
+   AWS_SECRET_ACCESS_KEY=your_secret_key
+   AWS_DEFAULT_REGION=us-east-1
+   ```
+
+4. Select the Bedrock agent operations you want to include:
+   - **Create Agent** - For dynamic agent creation
+   - **Invoke Agent** - For agent-to-agent communication (we'll use this in later modules)
+   - **Get Agent** - For agent status and information
+
+### Step 7: Test Your Custom Agent
+
+Let's test your coding agent with a comprehensive scenario:
+
+1. In the **Tester** tab of your agent, try this prompt:
+
+   ```txt Test Prompt
+   Analyze the repository structure of https://github.com/octocat/Hello-World and then generate a Python function that reads a file and counts the number of lines, words, and characters. Save the function to a file called text_analyzer.py
+   ```
+
+2. Observe how your agent:
+   - Uses the Repository Analyzer function to understand the repo
+   - Applies the insights to generate appropriate code
+   - Uses the Code Generator function to create and validate the file
+   - Provides feedback on the generated code quality
+
+<Frame>
+  ![Agent Testing Results](/images/screenshots/2025-05-04-01-29-12.png)
+</Frame>
+
+## 🔄 Understanding the Custom Agent Pattern
+
+### What You've Built
+
+Your coding agent demonstrates key custom agent patterns:
+
+1. **Domain Specialization** - Focused on coding and development tasks
+2. **Local Functions** - Execute file operations and code analysis locally
+3. **Tool Integration** - Combine multiple tools (GitHub, Bedrock, local functions)
+4. **Custom Logic** - Repository analysis and code validation
+5. **Extensible Design** - Easy to add new capabilities
+
+### How This Applies to Other Domains
+
+The same patterns work for any custom agent:
+
+```txt Content Agent Example
+- Domain: Content creation and editing
+- Local Functions: File operations, text processing, SEO analysis
+- Tools: Content APIs, grammar checkers, publishing platforms
+- Custom Logic: Brand voice validation, content scoring
+```
+
+```txt Sales Agent Example
+- Domain: Lead generation and nurturing
+- Local Functions: CRM operations, email automation, data analysis
+- Tools: Sales platforms, communication APIs, analytics tools
+- Custom Logic: Lead scoring, pipeline management
+```
+
+## 📊 Performance and Optimization
+
+### Step 8: Optimize Your Agent
+
+Add performance monitoring to your agent:
+
+1. Go to agent settings and enable detailed logging
+2. Configure these optimization settings:
+
+   ```json Agent Configuration
+   {
+     "max_context_length": 4000,
+     "response_timeout": 30,
+     "function_timeout": 15,
+     "retry_attempts": 2,
+     "quality_threshold": 0.8
+   }
+   ```
+
+3. Set up Agentic RAG for your GitHub tools to optimize API responses
+4. Test performance with various repository sizes and complexity
+
+### Step 9: Add Error Handling
+
+Enhance your agent with robust error handling:
+
+```python Enhanced Error Handling
+def xpander_run_action(repo_url: str, analysis_type: str = "structure"):
+    """Repository analyzer with enhanced error handling"""
+    
+    # Input validation
+    if not repo_url or not repo_url.startswith(('http://', 'https://')):
+        return {"error": "Invalid repository URL provided"}
+    
+    if analysis_type not in ["structure", "dependencies", "quality"]:
+        return {"error": f"Invalid analysis type: {analysis_type}. Must be one of: structure, dependencies, quality"}
+    
+    try:
+        # Implementation with proper error handling
+        # ... existing code ...
+        
+    except subprocess.TimeoutExpired:
+        return {"error": "Repository clone timeout - repository may be too large"}
+    except subprocess.CalledProcessError as e:
+        return {"error": f"Git operation failed: {e.stderr}"}
+    except PermissionError:
+        return {"error": "Permission denied accessing repository"}
+    except Exception as e:
+        return {"error": f"Unexpected error: {str(e)}"}
+```
+
+## ✅ Module Checkpoint
+
+By completing this module, you should have:
+
+1. **Created a Custom Coding Agent** with specialized role and behavior
+2. **Implemented Local Functions** for repository analysis and code generation
+3. **Integrated Multiple Tools** including GitHub and Amazon Bedrock
+4. **Tested Agent Functionality** with real repository analysis
+5. **Applied Optimization Patterns** for performance and reliability
+
+### Key Concepts Learned
+
+- **Custom Agent Design** - How to create domain-specific agents
+- **Local Function Execution** - Running custom code within agents
+- **Tool Integration Patterns** - Combining multiple capabilities
+- **Error Handling** - Building robust agent operations
+- **Performance Optimization** - Making agents efficient and reliable
+
+## 🔄 Next Steps
+
+Your first custom coding agent is now ready! In the next module, you'll:
+
+- Create a second coding agent with different capabilities
+- Learn about agent specialization and role differentiation
+- Explore how multiple agents can complement each other
+- Set up the foundation for Agent-to-Agent communication
+
+Ready to expand your agent fleet? Let's continue to Module 2! 

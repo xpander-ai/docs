@@ -1,0 +1,68 @@
+---
+title: "Module 2: Frontend Build & Testing"
+description: "Build React dashboard and test complete system integration"
+icon: "desktop"
+---
+
+<Note>
+  **Module Summary**
+
+  - **Goal**: Build Codex GPT-like frontend and test end-to-end integration
+  - **Estimated Time**: 15-20 minutes
+  - **Prerequisites**: React knowledge, backend from Module 1
+</Note>
+
+## Quick Frontend Setup
+
+### 1. Create React App
+```bash
+npx create-react-app swe-agent-frontend
+cd swe-agent-frontend
+npm install @mui/material axios react-syntax-highlighter
+npm start
+```
+
+### 2. Essential Code Changes (5 lines)
+
+**Add API client:**
+```javascript
+// src/api.js
+const API_BASE = 'https://api.xpander.ai';
+export const executeTask = (input) => fetch(`${API_BASE}/agents/YOUR_AGENT_ID/execute`, {
+  method: 'POST', headers: { 'Authorization': 'Bearer YOUR_API_KEY', 'Content-Type': 'application/json' }, body: JSON.stringify({ input })
+}).then(r => r.json());
+```
+
+**Update App.js:**
+```jsx
+// src/App.js - Add these 5 lines to default React app
+import { useState } from 'react';
+import { executeTask } from './api';
+
+// Add inside App component:
+const [task, setTask] = useState(''); const [result, setResult] = useState('');
+const handleSubmit = async () => { const res = await executeTask(task); setResult(res); };
+
+// Add to JSX:
+<input value={task} onChange={(e) => setTask(e.target.value)} placeholder="Describe coding task..." />
+<button onClick={handleSubmit}>Execute</button> <pre>{JSON.stringify(result, null, 2)}</pre>
+```
+
+## Testing
+
+### 1. Basic Test
+- Enter: "Create a Python hello world function"
+- Click Execute
+- Verify: JSON response with generated code
+
+### 2. Integration Test
+```bash
+# Test backend connectivity
+curl -X POST "https://api.xpander.ai/agents/YOUR_AGENT_ID/execute" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{"input": "Create a Python function"}'
+```
+
+## Next Steps
+
+Frontend connected → Competition submission (Module 3) → Optional: Advanced customization (Module 4) 
