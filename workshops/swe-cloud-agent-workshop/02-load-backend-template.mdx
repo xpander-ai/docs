@@ -1,68 +1,150 @@
 ---
 title: "Module 2: Frontend Build & Testing"
-description: "Build React dashboard and test complete system integration"
+description: "Use a lightweight Codex-style UI to interact with xpander.ai as a Backend-as-a-Service"
 icon: "desktop"
 ---
 
 <Note>
-  **Module Summary**
 
-  - **Goal**: Build Codex GPT-like frontend and test end-to-end integration
-  - **Estimated Time**: 15-20 minutes
-  - **Prerequisites**: React knowledge, backend from Module 1
+### **Module Summary**
+
+- **Goal**: Clone a minimal Codex-style frontend and connect it to **xpander.ai as your backend service**
+- **Estimated Time**: 15–20 minutes  
+- **Prerequisites**: React knowledge, completed backend setup from Module 1
+
 </Note>
 
-## Quick Frontend Setup
+---
 
-### 1. Create React App
+## 🧠 Architecture Reminder
+
+In this module, you're using **xpander.ai purely as a Backend-as-a-Service (BaaS)**.
+
+The frontend you'll run is **not part of xpander** — it’s a standalone React app that mimics the OpenAI Codex playground UI and uses the **xpander.ai SDK** to communicate with your configured agent.
+
+---
+
+## 🧱 Step 1: Clone the Frontend Example App
+
+We’ll start by cloning and running the prebuilt UI:
+
 ```bash
-npx create-react-app swe-agent-frontend
-cd swe-agent-frontend
-npm install @mui/material axios react-syntax-highlighter
-npm start
-```
+git clone https://github.com/xpander-ai/coding-agent-frontend-example-app.git
+cd coding-agent-frontend-example-app
+npm install
+````
 
-### 2. Essential Code Changes (5 lines)
+![Step 1 - Clone and Install](/images/workshops/git-clone.png)
 
-**Add API client:**
-```javascript
-// src/api.js
-const API_BASE = 'https://api.xpander.ai';
-export const executeTask = (input) => fetch(`${API_BASE}/agents/YOUR_AGENT_ID/execute`, {
-  method: 'POST', headers: { 'Authorization': 'Bearer YOUR_API_KEY', 'Content-Type': 'application/json' }, body: JSON.stringify({ input })
-}).then(r => r.json());
-```
+---
 
-**Update App.js:**
-```jsx
-// src/App.js - Add these 5 lines to default React app
-import { useState } from 'react';
-import { executeTask } from './api';
+## 🔐 Step 2: Configure Environment
 
-// Add inside App component:
-const [task, setTask] = useState(''); const [result, setResult] = useState('');
-const handleSubmit = async () => { const res = await executeTask(task); setResult(res); };
+Copy the example environment file and populate it with your credentials from [xpander.ai Cloud](https://app.xpander.ai):
 
-// Add to JSX:
-<input value={task} onChange={(e) => setTask(e.target.value)} placeholder="Describe coding task..." />
-<button onClick={handleSubmit}>Execute</button> <pre>{JSON.stringify(result, null, 2)}</pre>
-```
-
-## Testing
-
-### 1. Basic Test
-- Enter: "Create a Python hello world function"
-- Click Execute
-- Verify: JSON response with generated code
-
-### 2. Integration Test
 ```bash
-# Test backend connectivity
-curl -X POST "https://api.xpander.ai/agents/YOUR_AGENT_ID/execute" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -d '{"input": "Create a Python function"}'
+mv .env.example .env
 ```
 
-## Next Steps
+Fill in the following:
 
-Frontend connected → Competition submission (Module 3) → Optional: Advanced customization (Module 4) 
+```env
+VITE_APP_API_KEY=your_api_key_here
+VITE_APP_AGENT_ID=your_agent_id_here
+VITE_APP_ORGANIZATION_ID=your_organization_id_here
+```
+
+These values are available under your account settings in the xpander.ai platform.
+
+<Frame>
+  <video
+    autoPlay
+    muted
+    loop
+    playsInline
+    className="w-full aspect-video"
+    src="https://assets.xpanderai.io/workshops/videos/settings-api-keys.mp4"
+  ></video>
+</Frame>
+
+---
+
+## ⚙️ Step 3: Start the App
+
+Launch the frontend locally:
+
+```bash
+npm run dev
+```
+![Step 3 - npm run dev](/images/workshops/swe-npm-run-dev.png)
+
+Then navigate to:
+
+```
+http://localhost:3000
+```
+
+![Step 3 - Open Browser](/images/workshops/swe-blank-tasks-manager.png)
+
+---
+
+## ✍️ Step 4: Send Your First Coding Task
+
+From the input field, send a prompt like:
+
+```text
+Add a simple, cool and beautiful todo list app (HTML, CSS, JS) to xpander-ai/apps-by-agents. do it in one-shot!
+```
+
+<Frame>
+  <video
+    autoPlay
+    muted
+    loop
+    playsInline
+    className="w-full aspect-video"
+    src="https://assets.xpanderai.io/workshops/videos/swe-send-task.mp4"
+  ></video>
+</Frame>
+
+---
+
+## 🔍 Step 5: Track Task Execution
+
+Click **View** to view real-time execution details.
+
+<Frame>
+  <video
+    autoPlay
+    muted
+    loop
+    playsInline
+    className="w-full aspect-video"
+    src="https://assets.xpanderai.io/workshops/videos/swe-track-result.mp4"
+  ></video>
+</Frame>
+
+### You’ll see:
+
+* **Top**: The original prompt or task
+* **Popup**: Logs and generated output from the agent
+* **Result**: Execution result
+* **Logs & Messages Buttons**: Execution messages logs & codex execution logs
+
+---
+
+<Tip>
+
+The agent runs **OpenAI Codex** in a **secure, isolated sandbox** powered by **xpander.ai**.
+GitHub access is automatically inherited through the agentic interface you connected during the import process — no tokens needed.
+
+</Tip>
+
+---
+
+## ✅ What's Next?
+
+Your frontend is now live and connected to the xpander.ai BaaS. and generated its first coding task :)
+
+→ Proceed to [Module 3: Competition Submission](#)<br/>
+→ Optional: Try customizing the UI or agent behavior in Module 4

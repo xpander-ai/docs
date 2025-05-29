@@ -18,7 +18,7 @@ icon: "server"
 - **Frontend**: React dashboard (Codex GPT replica)
 - **Backend**: xpander.ai Backend-as-a-Service
 - **LLM**: OpenAI Codex CLI for code generation
-- **Tools**: GitHub operations, local functions
+- **Tools**: GitHub operations
 - **State**: Distributed multi-user state management
 
 ### Architecture Diagram
@@ -48,104 +48,64 @@ graph TB
 ## Quick Setup
 
 ### 1. Template Import
-```bash
-# Option A: Use pre-built template
-xpander template import swe-cloud-agent
+[![Import your coding agent](/images/workshops/import-coding-agent-button.png)](https://app.xpander.ai/templates/14c5e651-a207-4a60-8dd6-143e147df890)
 
-# Option B: Start from scratch
-xpander agent new --type swe
+<Frame>
+  <video
+    autoPlay
+    muted
+    loop
+    playsInline
+    className="w-full aspect-video"
+    src="https://assets.xpanderai.io/workshops/videos/import-process.mp4"
+  ></video>
+</Frame>
+
+<Tip>
+**xpander.ai** provides built-in templates for AI agents across popular use cases like coding, meeting recording, document summarization, Notion integration, and more.  
+You can **easily import** these templates to kickstart your agents without building from scratch.
+</Tip>
+
+### 2. 🧠 Your Coding Agent
+
+Your agent is now ready and can code & interact with GitHub—listing, creating, updating, and commenting on pull requests.
+
+![Serverless coding agent](/images/workshops/serverless-coding-agent.png)
+
+<Tip>
+
+Powered by an enhanced **Codex CLI**, the agent integrates natively with GitHub via xpander’s interfaces. One-click auth. Instant coding.
+
+</Tip>
+
+
+### 3. 🚗 Test Drive Your Agent
+
+Let’s walk through a real GitHub workflow using your agent. We'll use the `xpander-ai/apps-by-agents` repository and test out some core capabilities.
+
+---
+
+#### 🪄 Step 1: List Pull Requests
+
+Ask your agent:
+
+```text
+List all pull requests (open or closed) in "xpander-ai/apps-by-agents"
 ```
 
-### 2. Backend Configuration
-```python
-# xpander_handler.py
-from xpander_sdk import XpanderClient, Agent
+![Step 1 PR List](/images/workshops/list-prs.png)
 
-def on_execution_request(execution_task: AgentExecution) -> AgentExecutionResult:
-    # Your custom agent loop here
-    result = your_swe_agent.process(execution_task.input.text)
-    return AgentExecutionResult(
-        result=result,
-        is_success=True
-    )
+---
+
+#### 🧠 Step 2: Summarize the Latest PR
+
+Then ask:
+
+```text
+Explain the most recent pull request and what the code changes do.
 ```
 
-### 3. Agent Instrumentation
-```python
-xpander_client = XpanderClient(api_key="YOUR_API_KEY")
-agent: Agent = xpander_client.agents.get("YOUR_AGENT_ID")
-
-# Auto-loaded state and tools
-response = openai_client.chat.completions.create(
-    model="gpt-4o",
-    messages=agent.messages,  # Current conversation state
-    tools=agent.get_tools(),  # Cloud-managed tool schemas
-    tool_choice=agent.tool_choice
-)
-
-# State persistence and tool execution
-agent.add_messages(response.model_dump())
-tool_calls = XpanderClient.extract_tool_calls(response.model_dump())
-agent.run_tools(tool_calls=tool_calls)
-```
-
-## Key Capabilities
-
-### Custom Agent Loops
-- **LLM Flexibility**: Switch between OpenAI, Anthropic, local models
-- **Local Functions**: Execute custom code within agent context
-- **Framework Agnostic**: Use with any agent framework or raw LLM APIs
-
-### Tool Integration
-- **MCP Compatible**: Access comprehensive tools library
-- **GitHub Operations**: Repository management, PR creation, issue tracking
-- **Code Analysis**: Static analysis, quality metrics, security scanning
-
-### Production Features
-- **State Persistence**: Conversation memory across sessions
-- **Real-time Monitoring**: Task status, logs, performance metrics
-- **A2A Communication**: Agent-to-agent messaging and coordination
-- **API Guardrails**: Dependency management for tool chains
-
-## Deployment Options
-
-### Serverless (Default)
-```bash
-xpander deploy  # Managed infrastructure
-xpander logs    # Stream logs locally
-```
-
-### Self-hosted Migration
-```python
-# Keep same codebase, deploy anywhere
-docker build -t my-swe-agent .
-kubectl apply -f k8s-deployment.yaml
-```
-
-## Testing Backend
-
-### 1. Basic Functionality
-```bash
-curl -X POST "https://api.xpander.ai/agents/YOUR_AGENT_ID/execute" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -d '{"input": "Analyze repository structure of github.com/user/repo"}'
-```
-
-### 2. Tool Verification
-```python
-# Test tool availability
-tools = agent.get_tools()
-github_tools = [t for t in tools if 'github' in t['function']['name']]
-print(f"Available GitHub tools: {len(github_tools)}")
-```
-
-### 3. State Management
-```python
-# Verify state persistence
-agent.add_task("Remember: I'm working on feature X")
-# ... later session ...
-messages = agent.messages  # Previous context automatically loaded
-```
+![Step 2 PR Summary](/images/workshops/pr-summary.png)
 
 ## Competition Metrics
 
@@ -157,4 +117,4 @@ Production SWE agents are evaluated on:
 
 ## Next Steps
 
-Backend configured → Build frontend dashboard (Module 2) 
+Coding agent configured → Build frontend management app (Module 2) 

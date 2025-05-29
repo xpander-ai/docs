@@ -1,262 +1,234 @@
 ---
-title: "Module 4: Advanced Customization (Optional)"
-description: "Run your own agent loop and customize the agent further"
+title: "Module 4: Advanced Customization"
+description: "Run your own agent loop, add tools and optionally deploy with Xpander CLI"
 icon: "gear"
 ---
 
 <Note>
-  **Module Summary**
 
-  - **Goal**: Customize agent loops and run advanced local implementations
-  - **Estimated Time**: 45-60 minutes
-  - **Prerequisites**: Python knowledge, completed Modules 1-3
+### **Module Summary**
+
+- **Goal**: Customize agent loops, add Python tools, and run the agent locally or via cloud event hook
+- **Estimated Time**: 45–60 minutes  
+- **Prerequisites**: Python 3.12.7, Node.js v22, completed Modules 1–3
+
 </Note>
 
-## Custom Agent Loop
+---
 
-### 1. Local Agent Development
+## ⚠️ Environment Setup
+
+Your system must match these versions exactly:
+
+| Tool        | Version     |
+|-------------|-------------|
+| **Python**  | `3.12.7`    |
+| **Node.js** | `v22`       |
+
+Use `pyenv` and `nvm` if needed.
+
 ```bash
-# Clone xpander agent template
-git clone https://github.com/xpander-ai/agent-template
-cd agent-template
-pip install -r requirements.txt
+python3 --version     # 3.12.7
+node --version        # v22.x
+````
+
+---
+
+## 🧱 Step 1: Clone the Template
+
+```bash
+git clone https://github.com/xpander-ai/xpander.ai.git
+cd xpander.ai/Getting-Started/hello-world
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
-### 2. Custom Loop Implementation
-```python
-# custom_swe_agent.py
-from xpander_sdk import XpanderClient, Agent
-import openai
+---
 
-class CustomSWEAgent:
-    def __init__(self, config):
-        self.xpander = XpanderClient(api_key=config['xpander_api_key'])
-        self.agent = self.xpander.agents.get(config['agent_id'])
-        self.openai = openai.OpenAI(api_key=config['openai_api_key'])
-        
-    def custom_loop(self, user_input: str):
-        # 1. Add custom preprocessing
-        processed_input = self.preprocess_input(user_input)
-        
-        # 2. Custom LLM interaction
-        response = self.openai.chat.completions.create(
-            model="gpt-4",  # Switch models here
-            messages=self.agent.messages + [{"role": "user", "content": processed_input}],
-            tools=self.agent.get_tools(),
-            temperature=0.1  # Custom parameters
-        )
-        
-        # 3. Custom tool execution logic
-        if response.choices[0].message.tool_calls:
-            results = self.custom_tool_execution(response.choices[0].message.tool_calls)
-            
-        # 4. Custom postprocessing
-        return self.postprocess_output(response, results)
-    
-    def preprocess_input(self, input_text):
-        # Add custom logic: validation, context injection, etc.
-        return f"[SWE Task] {input_text}\nPlease provide production-ready code with tests."
-    
-    def custom_tool_execution(self, tool_calls):
-        # Custom tool selection and execution logic
-        results = []
-        for call in tool_calls:
-            if call.function.name.startswith('github'):
-                # Custom GitHub handling
-                result = self.agent.run_tools([call])
-                results.append(self.enhance_github_result(result))
-            else:
-                # Standard execution
-                result = self.agent.run_tools([call])
-                results.append(result)
-        return results
-    
-    def postprocess_output(self, response, tool_results):
-        # Custom output formatting, validation, etc.
-        return {
-            "code": response.choices[0].message.content,
-            "tool_results": tool_results,
-            "custom_metadata": self.generate_metadata(response)
-        }
+## 🔐 Step 2: CLI Login & Agent Init
+
+```bash
+npm i -g xpander-cli
+xpander login
+xpander agent init
 ```
 
-### 3. LLM Model Switching
-```python
-# Switch between different models
-MODELS = {
-    "coding": "gpt-4",
-    "analysis": "gpt-3.5-turbo",
-    "review": "claude-3-sonnet",
-    "local": "llama2:7b"  # Ollama local model
-}
+> Choose your agent ID when prompted. The CLI generates `xpander_config.json`, `agent_instructions.json`, and updates `requirements.txt`.
 
-def get_model_for_task(task_type):
-    return MODELS.get(task_type, "gpt-4")
+---
 
-# Usage in custom loop
-model = get_model_for_task("coding")
-response = self.openai.chat.completions.create(model=model, ...)
+## 📦 Step 3: Install Requirements
+
+Install dependencies **after** `agent init`:
+
+```bash
+pip3 install -r requirements.txt
 ```
 
-## Advanced Customizations
+---
 
-### 1. Custom Tool Creation
+## 💬 Step 4: Run the Agent
+
+### A. CLI Mode
+
+```bash
+python app.py
+```
+
+Use prompt:
+
+```text
+Add a simple, cool and beautiful shazam like app (HTML, CSS, JS) to xpander-ai/apps-by-agents
+```
+
+<Frame>
+  <video
+    autoPlay
+    muted
+    loop
+    playsInline
+    className="w-full aspect-video"
+    src="https://assets.xpanderai.io/workshops/videos/local-agent-run.mp4"
+  ></video>
+</Frame>
+
+---
+
+### B. Event-Driven Mode
+
+Connect to your frontend (Module 2):
+
+```bash
+python xpander_handler.py
+```
+
+<Frame>
+  <video
+    autoPlay
+    muted
+    loop
+    playsInline
+    className="w-full aspect-video"
+    src="https://assets.xpanderai.io/workshops/videos/xpander-handler.mp4"
+  ></video>
+</Frame>
+
+---
+
+## 🔧 Step 5: Add Local Tools
+
+### 1. Define Tool (`tools/local_tools.py`)
+
 ```python
-# custom_tools.py
-def create_custom_code_analyzer():
-    return {
-        "type": "function",
-        "function": {
-            "name": "analyze_code_complexity",
-            "description": "Analyze code complexity and suggest optimizations",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "code": {"type": "string"},
-                    "language": {"type": "string"}
+def say_hello(name: str) -> dict:
+    return {"message": f"Hello {name}, welcome to the workshop!"}
+
+local_tools = [
+    {
+        "declaration": {
+            "type": "function",
+            "function": {
+                "name": "say_hello",
+                "description": "Greets the user",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string", "description": "User's name"}
+                    },
+                    "required": ["name"]
                 }
             }
-        }
+        },
+        "fn": say_hello
     }
+]
 
-def execute_custom_tool(tool_name, parameters):
-    if tool_name == "analyze_code_complexity":
-        # Custom implementation
-        return analyze_complexity(parameters["code"], parameters["language"])
+local_tools_list = [tool["declaration"] for tool in local_tools]
+local_tools_by_name = {tool["declaration"]["function"]["name"]: tool["fn"] for tool in local_tools}
 ```
 
-### 2. Agent Workflow Customization
+### 2. Register in `my_agent.py`
+
 ```python
-# Custom multi-step workflow
-class WorkflowOrchestrator:
-    def __init__(self, agents):
-        self.agents = agents
-        
-    def execute_swe_workflow(self, task):
-        # Step 1: Analysis
-        analysis = self.agents['analyzer'].process(task)
-        
-        # Step 2: Implementation (custom logic)
-        if analysis['complexity'] > 0.7:
-            impl = self.agents['senior_dev'].process(task)
-        else:
-            impl = self.agents['junior_dev'].process(task)
-            
-        # Step 3: Review
-        review = self.agents['reviewer'].process(impl)
-        
-        # Step 4: Final output
-        return self.combine_results(analysis, impl, review)
+self.agent.add_local_tools(local_tools_list)
 ```
 
-### 3. Local Model Integration
+---
+
+## 🧠 Step 6: Customize the Loop
+
+Your agent logic is fully customizable via:
+
 ```python
-# Integrate local models (Ollama, etc.)
-import requests
-
-class LocalModelClient:
-    def __init__(self, base_url="http://localhost:11434"):
-        self.base_url = base_url
-        
-    def generate(self, prompt, model="codellama:7b"):
-        response = requests.post(f"{self.base_url}/api/generate", json={
-            "model": model,
-            "prompt": prompt,
-            "stream": False
-        })
-        return response.json()['response']
-
-# Use in custom agent
-local_model = LocalModelClient()
-code = local_model.generate(f"Write a Python function for: {task}")
+async def _agent_loop(self):
+    ...
 ```
 
-## Deployment Options
+<Frame>
+  <img src="/images/workshops/swe-agent-loop.png" alt="Custom Agent Loop" className="rounded-xl border" />
+</Frame>
 
-### 1. Local Development Server
-```python
-# local_server.py
-from flask import Flask, request, jsonify
-from custom_swe_agent import CustomSWEAgent
+This loop lets you change:
 
-app = Flask(__name__)
-agent = CustomSWEAgent(config)
+* Tool execution order
+* Token accounting
+* Result processing
+* Prompt rewrites
+* Metrics tracking
 
-@app.route('/execute', methods=['POST'])
-def execute_task():
-    task = request.json['input']
-    result = agent.custom_loop(task)
-    return jsonify(result)
+---
 
-if __name__ == '__main__':
-    app.run(debug=True, port=8000)
-```
+## 🚀 Step 7: Deploy to Cloud
 
-### 2. Docker Deployment
-```dockerfile
-# Dockerfile
-FROM python:3.9-slim
-
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-COPY . .
-EXPOSE 8000
-
-CMD ["python", "local_server.py"]
-```
-
-### 3. Production Scaling
-```yaml
-# docker-compose.yml
-version: '3.8'
-services:
-  swe-agent:
-    build: .
-    ports:
-      - "8000:8000"
-    environment:
-      - XPANDER_API_KEY=${XPANDER_API_KEY}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-    volumes:
-      - ./custom_configs:/app/configs
-```
-
-## Testing Custom Implementations
-
-### 1. Unit Testing
-```python
-# test_custom_agent.py
-import pytest
-from custom_swe_agent import CustomSWEAgent
-
-def test_custom_preprocessing():
-    agent = CustomSWEAgent(test_config)
-    result = agent.preprocess_input("Create a function")
-    assert "[SWE Task]" in result
-
-def test_custom_tool_execution():
-    # Test custom tool logic
-    pass
-```
-
-### 2. Integration Testing
 ```bash
-# Test custom agent endpoint
-curl -X POST http://localhost:8000/execute \
-  -H "Content-Type: application/json" \
-  -d '{"input": "Create a Python data validator"}'
+xpander deploy
 ```
 
-## Key Benefits of Customization
+<Frame>
+  <video
+    autoPlay
+    muted
+    loop
+    playsInline
+    className="w-full aspect-video"
+    src="https://assets.xpanderai.io/workshops/videos/xpander-deploy.mp4"
+  ></video>
+</Frame>
 
-- 🔧 **Full Control**: Custom logic, model selection, and workflows
-- 🚀 **Performance**: Optimize for your specific use cases
-- 💰 **Cost Control**: Use local models, custom routing
-- 🎯 **Domain Expertise**: Add specialized knowledge and tools
-- 📈 **Scalability**: Deploy and scale according to your needs
+View logs:
 
-## Next Steps
+```bash
+xpander logs
+```
 
-Custom implementation complete → Deploy to production or continue with competition submission 
+---
+
+## 🧯 Troubleshooting
+
+| Issue                   | Fix                                                                     |
+| ----------------------- | ----------------------------------------------------------------------- |
+| `Failed to sync agent`  | Check `.env`, `xpander_config.json`, and try `xpander agent init` again |
+| `add_graph_item` errors | Ensure agent ID is valid and tool graph is clean                        |
+| BrokenPipe (JSII)       | Restart shell / rebuild `.venv`                                         |
+| Nothing happens         | Only use `xpander_handler.py` after frontend sends events               |
+
+---
+
+## ✅ Summary
+
+| Benefit            | Description                                |
+| ------------------ | ------------------------------------------ |
+| 🧠 Custom Logic    | Full control via `_agent_loop()`           |
+| 🛠 Add Tools       | Custom Python functions as callable tools  |
+| 🧲 Cloud + Local   | Hybrid tool orchestration                  |
+| 📦 One-Line Deploy | `xpander deploy` ready                     |
+| 🔍 Metrics         | Built-in observability and token reporting |
+
+---
+
+## ➕ Continue
+
+→ Submit your app in [Module 3](../03-submit-competition)
+→ Or explore chaining agents and tool networks via **MCP**!
+
+---
