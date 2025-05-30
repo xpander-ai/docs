@@ -81,7 +81,8 @@
               "tutorials/index",
               "tutorials/01-structured-output-agent",
               "tutorials/02-hello-world-agent",
-              "tutorials/03-outage-manager-agent"
+              "tutorials/03-outage-manager-agent",
+              "tutorials/04-supercharge-your-ide-with-mcp"
             ]
           }
         ]
@@ -94,14 +95,22 @@
             "pages": [
               "workshops/index",
               {
-                "group": "Build AI Agents with A2A, MCP",
+                "group": "A2A Custom Agents",
                 "pages": [
                   "workshops/a2a-mcp-workshop/index",
-                  "workshops/a2a-mcp-workshop/01-supercharge-your-ide-with-mcp",
-                  "workshops/a2a-mcp-workshop/02-first-coding-agent",
-                  "workshops/a2a-mcp-workshop/03-expand-agent-fleet",
-                  "workshops/a2a-mcp-workshop/04-serverless-manager-agent",
-                  "workshops/a2a-mcp-workshop/05-submit-application"
+                  "workshops/a2a-mcp-workshop/01-first-coding-agent",
+                  "workshops/a2a-mcp-workshop/02-expand-agent-fleet",
+                  "workshops/a2a-mcp-workshop/03-serverless-manager-agent"
+                ]
+              },
+              {
+                "group": "SWE Cloud Agent",
+                "pages": [
+                  "workshops/swe-cloud-agent-workshop/index",
+                  "workshops/swe-cloud-agent-workshop/01-intro-cloud-swe-agents",
+                  "workshops/swe-cloud-agent-workshop/02-load-backend-template",
+                  "workshops/swe-cloud-agent-workshop/03-submit-competition",
+                  "workshops/swe-cloud-agent-workshop/04-advanced-customization"
                 ]
               }
             ]

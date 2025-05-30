@@ -1,0 +1,204 @@
+---
+title: "Module 4: Advanced Customization"
+description: "Run your own agent loop, add tools and optionally deploy with Xpander CLI"
+icon: "gear"
+---
+
+<Note>
+
+### **Module Summary**
+
+- **Goal**: Customize agent loops, add Python tools, and run the agent locally or via cloud event hook
+- **Estimated Time**: 45–60 minutes  
+- **Prerequisites**: Python 3.12.7, Node.js v22, completed Modules 1–3
+
+</Note>
+
+---
+
+## ⚠️ Environment Setup
+
+Your system must match these versions exactly:
+
+| Tool        | Version     |
+|-------------|-------------|
+| **Python**  | `3.12.7`    |
+| **Node.js** | `v22`       |
+
+Use `pyenv` and `nvm` if needed.
+
+```bash
+python3 --version     # 3.12.7
+node --version        # v22.x
+````
+
+---
+
+## 🧱 Step 1: Clone the Template
+
+```bash
+git clone https://github.com/xpander-ai/xpander.ai.git
+cd xpander.ai/Getting-Started/hello-world
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+---
+
+## 🔐 Step 2: CLI Login & Agent Init
+
+```bash
+npm i -g xpander-cli
+xpander login
+xpander agent init
+```
+
+> Choose your agent ID when prompted. The CLI generates `xpander_config.json`, `agent_instructions.json`, and updates `requirements.txt`.
+
+---
+
+## 📦 Step 3: Install Requirements
+
+Install dependencies **after** `agent init`:
+
+```bash
+pip3 install -r requirements.txt
+```
+
+---
+
+## 💬 Step 4: Run the Agent
+
+### A. CLI Mode
+
+```bash
+python app.py
+```
+
+Use prompt:
+
+```text
+Add a simple, cool and beautiful shazam like app (HTML, CSS, JS) to xpander-ai/apps-by-agents. do it in one-shot
+```
+
+![Chat Shazam App](/images/workshops/chat-shazam-app.png)
+![Chat Shazam App PR](/images/workshops/chat-shazam-app-pr.png)
+
+---
+
+### B. Event-Driven Mode
+
+Connect to your frontend (Module 2):
+
+```bash
+python xpander_handler.py
+```
+
+![Events handler](/images/workshops/events-handler.png)
+
+---
+
+## 🔧 Step 5: Add Local Tools
+
+### 1. Define Tool (`tools/local_tools.py`)
+
+```python
+def say_hello(name: str) -> dict:
+    return {"message": f"Hello {name}, welcome to the workshop!"}
+
+local_tools = [
+    {
+        "declaration": {
+            "type": "function",
+            "function": {
+                "name": "say_hello",
+                "description": "Greets the user",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string", "description": "User's name"}
+                    },
+                    "required": ["name"]
+                }
+            }
+        },
+        "fn": say_hello
+    }
+]
+
+local_tools_list = [tool["declaration"] for tool in local_tools]
+local_tools_by_name = {tool["declaration"]["function"]["name"]: tool["fn"] for tool in local_tools}
+```
+
+### 2. Register in `my_agent.py`
+
+```python
+self.agent.add_local_tools(local_tools_list)
+```
+
+---
+
+## 🧠 Step 6: Customize the Loop
+
+Your agent logic is fully customizable via:
+
+```python
+async def _agent_loop(self):
+    ...
+```
+
+This loop lets you change:
+
+* Tool execution order
+* Token accounting
+* Result processing
+* Prompt rewrites
+* Metrics tracking
+
+---
+
+## 🚀 Step 7: Deploy to Cloud
+
+```bash
+xpander deploy
+```
+
+![xpander deploy](/images/workshops/xpander-deploy.png)
+
+View logs:
+
+```bash
+xpander logs
+```
+
+---
+
+## 🧯 Troubleshooting
+
+| Issue                   | Fix                                                                     |
+| ----------------------- | ----------------------------------------------------------------------- |
+| `Failed to sync agent`  | Check `.env`, `xpander_config.json`, and try `xpander agent init` again |
+| `add_graph_item` errors | Ensure agent ID is valid and tool graph is clean                        |
+| BrokenPipe (JSII)       | Restart shell / rebuild `.venv`                                         |
+| Nothing happens         | Only use `xpander_handler.py` after frontend sends events               |
+
+---
+
+## ✅ Summary
+
+| Benefit            | Description                                |
+| ------------------ | ------------------------------------------ |
+| 🧠 Custom Logic    | Full control via `_agent_loop()`           |
+| 🛠 Add Tools       | Custom Python functions as callable tools  |
+| 🧲 Cloud + Local   | Hybrid tool orchestration                  |
+| 📦 One-Line Deploy | `xpander deploy` ready                     |
+| 🔍 Metrics         | Built-in observability and token reporting |
+
+---
+
+## ➕ Continue
+
+→ Submit your app in [Module 3](../03-submit-competition)
+→ Or explore chaining agents and tool networks via **MCP**!
+
+---
