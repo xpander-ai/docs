@@ -15,10 +15,11 @@ icon: "server"
 ## SWE Agent Architecture
 
 ### Core Stack
-- **Frontend**: React dashboard (Codex GPT replica)
+
+- **Frontend**: React dashboard (Similar to ChatGPT-Codex)
 - **Backend**: xpander.ai Backend-as-a-Service
-- **LLM**: OpenAI Codex CLI for code generation
-- **Tools**: GitHub operations
+- **LLM / coding agent**: OpenAI Codex CLI for code generation
+- **Agent tools**: Various GitHub operations
 - **State**: Distributed multi-user state management
 
 ### Architecture Diagram
@@ -36,34 +37,26 @@ graph TB
 
 ## Backend-as-a-Service Benefits
 
-| Component | Traditional Setup | xpander.ai BaaS |
-|-----------|-------------------|-----------------|
-| **Infrastructure** | Manual server setup | Managed, auto-scaling |
-| **State Management** | Custom implementation | Built-in distributed state |
-| **Tool Integration** | Manual API wrappers | MCP-compatible library |
-| **Real-time Events** | WebSocket implementation | Event streaming included |
-| **Multi-user Support** | Complex auth & isolation | Built-in multi-tenancy |
-| **Deployment** | DevOps overhead | One-command deployment |
+| Component              | Traditional Setup        | xpander.ai BaaS            |
+| ---------------------- | ------------------------ | -------------------------- |
+| **Infrastructure**     | Manual server setup      | Managed, auto-scaling      |
+| **State Management**   | Custom implementation    | Built-in distributed state |
+| **Tool Integration**   | Manual API wrappers      | MCP-compatible library     |
+| **Real-time Events**   | WebSocket implementation | Event streaming included   |
+| **Multi-user Support** | Complex auth & isolation | Built-in multi-tenancy     |
+| **Deployment**         | DevOps overhead          | One-command deployment     |
 
 ## Quick Setup
 
 ### 1. Template Import
-[![Import your coding agent](/images/workshops/import-coding-agent-button.png)](https://app.xpander.ai/templates/14c5e651-a207-4a60-8dd6-143e147df890)
 
 <Frame>
-  <video
-    autoPlay
-    muted
-    loop
-    playsInline
-    className="w-full aspect-video"
-    src="https://assets.xpanderai.io/workshops/videos/import-process.mp4"
-  ></video>
+  <video autoPlay muted loop playsInline className="w-full aspect-video" src="https://assets.xpanderai.io/workshops/videos/import-process.mp4" />
 </Frame>
 
 <Tip>
-**xpander.ai** provides built-in templates for AI agents across popular use cases like coding, meeting recording, document summarization, Notion integration, and more.  
-You can **easily import** these templates to kickstart your agents without building from scratch.
+  **xpander.ai** provides built-in templates for AI agents across popular use cases like coding, meeting recording, document summarization, Notion integration, and more.\
+  You can **easily import** these templates to kickstart your agents without building from scratch.
 </Tip>
 
 ### 2. 🧠 Your Coding Agent
@@ -73,11 +66,8 @@ Your agent is now ready and can code & interact with GitHub—listing, creating,
 ![Serverless coding agent](/images/workshops/serverless-coding-agent.png)
 
 <Tip>
-
-Powered by an enhanced **Codex CLI**, the agent integrates natively with GitHub via xpander’s interfaces. One-click auth. Instant coding.
-
+  Powered by an enhanced **Codex CLI**, the agent integrates natively with GitHub via xpander’s interfaces. One-click auth. Instant coding.
 </Tip>
-
 
 ### 3. 🚗 Test Drive Your Agent
 
@@ -110,11 +100,12 @@ Explain the most recent pull request and what the code changes do.
 ## Competition Metrics
 
 Production SWE agents are evaluated on:
+
 - **Task Completion**: 85-95% success rate
 - **Response Time**: less than 30s for simple tasks
-- **Code Quality**: Static analysis scores >8/10
+- **Code Quality**: Static analysis scores \>8/10
 - **System Reliability**: 99.9% uptime
 
 ## Next Steps
 
-Coding agent configured → Build frontend management app (Module 2) 
+Coding agent configured → Build frontend management app (Module 2)
