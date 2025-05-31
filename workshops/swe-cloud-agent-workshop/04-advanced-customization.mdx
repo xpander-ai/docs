@@ -53,15 +53,16 @@ Install the CLI and initialize your agent:
 ```bash
 npm i -g xpander-cli
 xpander login
-xpander agent init
+xpander initialize
 ```
 
-The CLI will prompt you to select your agent and generate:
+The CLI will prompt you to enter your agent id and will auto-generate:
 
 * `xpander_config.json`
 * `agent_instructions.json`
 * `requirements.txt`
 
+![CLI Login and initialize](/images/workshops/swe-cli-login-and-init.png)
 ---
 
 ## 📦 Step 3: Install Agent Dependencies
@@ -75,6 +76,23 @@ pip install -r requirements.txt
 ---
 
 ## 💬 Step 4: Run the Agent
+
+### Before running the agent we need to set our environment variables
+```bash
+mv .env.example .env
+```
+
+Fill in the following:
+
+```env
+# Environment variables for AI Agent using OpenAI provider
+
+# The model ID used by OpenAI, such as gpt-3.5-turbo, gpt-4, gpt-4.1, etc.
+OPENAI_MODEL_ID=gpt-4.1
+
+# Your OpenAI API key
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
 
 ### Option A: Notebook Mode (Recommended for Exploration)
 

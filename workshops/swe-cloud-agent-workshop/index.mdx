@@ -16,6 +16,7 @@ Build a complete cloud-based Software Engineering agent system: a Codex GPT-like
 
 ```mermaid
 graph TB
+    X[xpander.ai Frontend] --> B[xpander.ai Backend]
     A[Custom Frontend] --> B[xpander.ai Backend]
     B --> C[OpenAI Codex CLI]
     B --> D[GitHub Tools]
@@ -37,8 +38,21 @@ graph TB
 - Local function execution
 - Serverless → self-hosted deployment path
 
-## What You'll Build
+## xpander.ai Backend-as-a-Service Benefits
 
+| Component              | Traditional Setup        | xpander.ai BaaS            |
+| ---------------------- | ------------------------ | -------------------------- |
+| **Infrastructure**     | Manual server setup      | Managed, auto-scaling      |
+| **State Management**   | Custom implementation    | Built-in distributed state |
+| **Tool Integration**   | Manual API wrappers      | MCP-compatible library     |
+| **Real-time Events**   | WebSocket implementation | Event streaming included   |
+| **Multi-user Support** | Complex auth & isolation | Built-in multi-tenancy     |
+| **Deployment**         | DevOps overhead          | One-command deployment     |
+
+
+## What You'll do during this workshop
+
+- **Use xpander.ai built-in frontend**: Chat interface to to talk with you agent
 - **Task Management Frontend**: React dashboard for SWE agent operations
 - **Agent Backend**: Customizable loops with OpenAI Codex integration
 - **Cloud Deployment**: Production-ready system with monitoring
@@ -79,7 +93,7 @@ Framework-agnostic infrastructure for autonomous agents:
 
 ## Prerequisites
 
-- **Development**: Node.js, React experience
+- **Development**: Python 3.12, Node.js v22, React experience
 - **Backend**: xpander.ai account, OpenAI API access
 - **Integration**: GitHub account with repository permissions
 
