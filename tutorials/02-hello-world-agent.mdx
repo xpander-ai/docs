@@ -82,6 +82,9 @@ def agent_loop(agent: Agent, local_tools_by_name=None):
         )
         
         agent.add_messages(response.model_dump())
+
+        # Update messages if needed (e.g., modify content)
+        agent.update_messages(message_id="123", content="Updated content")  # updateMessages in TS
         
         tool_calls = XpanderClient.extract_tool_calls(
             llm_response=response.model_dump(),

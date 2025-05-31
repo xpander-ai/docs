@@ -297,6 +297,9 @@ while not agent.is_finished():
     # Process LLM response
     agent.add_messages(response.model_dump())
 
+    # Update messages if needed (e.g., modify content)
+    agent.update_messages(message_id="123", content="Updated content")  # updateMessages in TS
+
     # Extract and run tool calls
     tool_calls = XpanderClient.extract_tool_calls(llm_response=response.model_dump())
     tool_result = agent.run_tools(tool_calls=tool_calls)

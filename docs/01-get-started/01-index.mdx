@@ -80,6 +80,12 @@ xpander.ai provides a comprehensive set of technical components to power your AI
         # Auto-enforce API Rules and dependencies
         agent.run_tools(tool_calls=tool_calls)
 
+        # Add LLM response to messages
+        agent.add_messages(response.model_dump())
+
+        # Update messages if needed (e.g., modify content)
+        agent.update_messages(message_id="123", content="Updated content")  # updateMessages in TS
+
     # Asynchronously load the agent result for long-running multi-step tasks
     task_result = agent.retrieve_execution_result()
     ```
