@@ -1,26 +1,24 @@
 ---
 title: "Module 2: Frontend Build & Testing"
-description: "Use a lightweight Codex-style UI to interact with xpander.ai as a Backend-as-a-Service"
+description: "Use a lightweight ChatGPT-Codex style UI to interact with your coding agent"
 icon: "desktop"
 ---
 
 <Note>
+  ### **Module Summary**
 
-### **Module Summary**
-
-- **Goal**: Clone a minimal Codex-style frontend and connect it to **xpander.ai as your backend service**
-- **Estimated Time**: 15–20 minutes  
-- **Prerequisites**: React knowledge, completed backend setup from Module 1
-
+  - **Goal**: Clone a minimal ChatGPT-Codex style frontend and connect it to **xpander.ai as your backend service**
+  - **Estimated Time**: 15–20 minutes
+  - **Prerequisites**: React knowledge, completed backend setup from Module 1
 </Note>
 
 ---
 
 ## 🧠 Architecture Reminder
 
-In this module, you're using **xpander.ai purely as a Backend-as-a-Service (BaaS)**.
+In this module, you're using xpander.ai **purely as a Backend-as-a-Service (BaaS) platform** .
 
-The frontend you'll run is **not part of xpander** — it’s a standalone React app that mimics the OpenAI Codex playground UI and uses the **xpander.ai SDK** to communicate with your configured agent.
+The frontend you'll run is not part of the xpander.ai platform — it’s a standalone React app that mimics the ChatGPT-Codex UI and uses the **xpander.ai SDK** to communicate with your configured agent.
 
 ---
 
@@ -32,7 +30,7 @@ We’ll start by cloning and running the prebuilt UI:
 git clone https://github.com/xpander-ai/coding-agent-frontend-example-app.git
 cd coding-agent-frontend-example-app
 npm install
-````
+```
 
 ![Step 1 - Clone and Install](/images/workshops/git-clone.png)
 
@@ -57,14 +55,7 @@ VITE_APP_ORGANIZATION_ID=your_organization_id_here
 These values are available under your account settings in the xpander.ai platform.
 
 <Frame>
-  <video
-    autoPlay
-    muted
-    loop
-    playsInline
-    className="w-full aspect-video"
-    src="https://assets.xpanderai.io/workshops/videos/settings-api-keys.mp4"
-  ></video>
+  <video autoPlay muted loop playsInline className="w-full aspect-video" src="https://assets.xpanderai.io/workshops/videos/settings-api-keys.mp4" />
 </Frame>
 
 ---
@@ -76,6 +67,7 @@ Launch the frontend locally:
 ```bash
 npm run dev
 ```
+
 ![Step 3 - npm run dev](/images/workshops/swe-npm-run-dev.png)
 
 Then navigate to:
@@ -97,14 +89,7 @@ Add a simple, cool and beautiful todo list app (HTML, CSS, JS) to xpander-ai/app
 ```
 
 <Frame>
-  <video
-    autoPlay
-    muted
-    loop
-    playsInline
-    className="w-full aspect-video"
-    src="https://assets.xpanderai.io/workshops/videos/swe-send-task.mp4"
-  ></video>
+  <video autoPlay muted loop playsInline className="w-full aspect-video" src="https://assets.xpanderai.io/workshops/videos/swe-send-task.mp4" />
 </Frame>
 
 ---
@@ -114,30 +99,21 @@ Add a simple, cool and beautiful todo list app (HTML, CSS, JS) to xpander-ai/app
 Click **View** to view real-time execution details.
 
 <Frame>
-  <video
-    autoPlay
-    muted
-    loop
-    playsInline
-    className="w-full aspect-video"
-    src="https://assets.xpanderai.io/workshops/videos/swe-track-result.mp4"
-  ></video>
+  <video autoPlay muted loop playsInline className="w-full aspect-video" src="https://assets.xpanderai.io/workshops/videos/swe-track-result.mp4" />
 </Frame>
 
 ### You’ll see:
 
-* **Top**: The original prompt or task
-* **Popup**: Logs and generated output from the agent
-* **Result**: Execution result
-* **Logs & Messages Buttons**: Execution messages logs & codex execution logs
+- **Top**: The original prompt or task
+- **Popup**: Logs and generated output from the agent
+- **Result**: Execution result
+- **Logs & Messages Buttons**: Execution messages logs & codex execution logs
 
 ---
 
 <Tip>
-
-The agent runs **OpenAI Codex** in a **secure, isolated sandbox** powered by **xpander.ai**.
-GitHub access is automatically inherited through the agentic interface you connected during the import process — no tokens needed.
-
+  The agent runs **OpenAI Codex** in a **secure, isolated sandbox** powered by **xpander.ai**.
+  GitHub access is automatically inherited through the agentic interface you connected during the import process — no tokens needed.
 </Tip>
 
 ---
@@ -146,5 +122,6 @@ GitHub access is automatically inherited through the agentic interface you conne
 
 Your frontend is now live and connected to the xpander.ai BaaS. and generated its first coding task :)
 
-→ Proceed to [Module 3: Competition Submission](#)<br/>
+→ Proceed to [Module 3: Competition Submission](#)\
+
 → Optional: Try customizing the UI or agent behavior in Module 4
