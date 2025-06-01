@@ -21,12 +21,7 @@ client = XpanderClient(api_key="your-xpander-api-key")
 ```typescript TypeScript
 import { XpanderClient } from '@xpander-ai/sdk';
 
-const client = new XpanderClient({ 
-    apiKey: "your-xpander-api-key",
-    baseUrl: "https://inbound.xpander.ai",  // Optional, defaults to production
-    organizationId: "your-org-id",  // Optional, needed for multi-organization and local run
-    shouldResetCache: false  // Optional
-});
+const client = new XpanderClient("your-xpander-api-key");
 
 // For running Xpander locally:
 // const client = new XpanderClient(apiKey: "my-agent-controller-api-key");
