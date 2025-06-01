@@ -16,6 +16,23 @@ icon: "gear"
 
 ---
 
+## 🧭 What You'll Do in This Module
+
+In this module, you’ll gain **full control** over your agent’s behavior.
+
+You’ll learn how to:
+
+- Run your agent locally via **Notebook**, **CLI**, or **event handler**
+- Customize the **agent loop**, allowing advanced logic or prompt shaping
+- Add **your own Python tools** to expand what the agent can do
+- Optionally deploy the agent using the **xpander.ai CLI** for cloud-based execution
+
+By the end, you’ll be able to create and extend fully working agents tailored to your needs — whether you want to explore behavior in a notebook or power up a frontend integration.
+
+Let’s get started.
+
+---
+
 ## ⚙️ Environment Setup
 
 This setup is required for **all run modes** (Notebook, CLI, Event-driven):
@@ -30,7 +47,7 @@ Use `pyenv` and `nvm` to manage these versions if needed:
 ```bash
 python3 --version     # 3.12.7
 node --version        # v22.x
-```
+````
 
 ---
 
@@ -55,38 +72,28 @@ xpander login
 xpander initialize
 ```
 
-The CLI will prompt you to enter your agent id and will auto-generate:
+This creates the following files:
 
 * `xpander_config.json`
 * `agent_instructions.json`
 * `requirements.txt`
 
-![CLI Login and initialize](/images/workshops/swe-cli-login-and-init.png)
+![swe cli init](/images/workshops/swe-cli-login-and-init.png)
+
 ---
 
 ## 📦 Step 3: Install Agent Dependencies
 
-After initializing the agent:
-
 ```bash
 pip install -r requirements.txt
-```
-
-### Setup required environment variables
-```bash
 mv .env.example .env
 ```
 
-Fill in the following:
+Fill in the required values in `.env`:
 
 ```env
-# Environment variables for AI Agent using OpenAI provider
-
-# The model ID used by OpenAI, such as gpt-3.5-turbo, gpt-4, gpt-4.1, etc.
 OPENAI_MODEL_ID=gpt-4.1
-
-# Your OpenAI API key
-OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 ---
@@ -95,24 +102,17 @@ OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 ### Option A: Notebook Mode (Recommended for Exploration)
 
-#### About the Notebook
+This mode is ideal for stepping through the agent lifecycle.
 
-This notebook allows you to:
+#### ▶️ 1. Open the Notebook
 
-* Load credentials and agent config
-* Initialize and wrap your agent with `MyAgent`
-* List available tools
-* Start conversations and track execution
+Open `my_agent.ipynb` in VSCode, Jupyter Lab, or any notebook viewer.
 
-#### Opening the Notebook
+![swe notebook](/images/workshops/swe-notebook.png)
 
-Open `my_agent.ipynb` in your favorite IDE or notebook viewer (e.g., VSCode or Jupyter).
+#### 🧪 2. Import Libraries
 
-![Open the notebook](/images/workshops/swe-notebook.png)
-
-#### Run Initial Cells
-
-1. **Import Libraries**
+Run this cell first:
 
 ```python
 from xpander_sdk import XpanderClient, Agent
@@ -121,49 +121,40 @@ from dotenv import load_dotenv
 import json
 ```
 
-2. **Load Configuration**
+#### 🔧 3. Load Configuration
 
 ```python
 load_dotenv()
+
 with open('xpander_config.json', 'r') as config_file:
     xpander_config = json.load(config_file)
 ```
 
-3. **Initialize Agent**
+#### 🧠 4. Initialize and Wrap the Agent
 
 ```python
 xpander_client = XpanderClient(api_key=xpander_config.get("api_key"))
 xpander_agent = xpander_client.agents.get(agent_id=xpander_config.get("agent_id"))
-```
-
-4. **Wrap with Custom Handler**
-
-```python
 agent = MyAgent(xpander_agent)
 ```
 
-5. **Modify the first Chat cell**
+#### 💬 5. Send a Task to the Agent
 
 ```python
-thread = await agent.chat("Add a simple, cool and beautiful shazam like app (HTML, CSS, JS) to xpander-ai/apps-by-agents.")
+thread = await agent.chat("Add a simple, beautiful Shazam-style app (HTML, CSS, JS) to xpander-ai/apps-by-agents.")
 ```
-![notebook coding task](/images/workshops/swe-coding-task.png)
 
-6. **Retrieve and Display Results**
+#### 📊 6. Retrieve and Display Result
 
 ```python
 execution_result = xpander_agent.retrieve_execution_result()
 print("status:", execution_result.status.value)
 print("result:", execution_result.result)
 ```
-#### The execution result:
-![notebook coding task result](/images/workshops/swe-coding-task-result.png)
-#### The created Pull Request:
-![notebook coding task pr](/images/workshops/swe-coding-task-pr.png)
-#### The generated app:
-![notebook coding task app result](/images/workshops/swe-coding-agent-shazam.png)
 
-7. **Visualize Message History**
+![swe task result](/images/workshops/swe-coding-task-result.png)
+
+#### 🧾 7. Visualize Message History (Optional)
 
 ```python
 from tabulate import tabulate
@@ -173,43 +164,43 @@ for msg in messages:
     print(msg["role"], ":", msg["content"][:100])
 ```
 
-![notebook coding task messages](/images/workshops/swe-coding-task-messages.png)
+![swe task messages](/images/workshops/swe-coding-task-messages.png)
+
 ---
 
 ### Option B: CLI Mode
 
-Run the app directly with:
+Run the agent directly via:
 
 ```bash
 python app.py
 ```
 
-Send a coding task:
+Then send a prompt like:
 
 ```text
-Add a simple, cool and beautiful AI Agents registry & discovery app (HTML, CSS, JS) with mock agents to xpander-ai/apps-by-agents.
+Create a responsive Agents Directory app (HTML, CSS, JS) with mock agents and PR to xpander-ai/apps-by-agents.
 ```
 
-![cli coding task first message](/images/workshops/swe-coding-cli.png)
+![swe cli](/images/workshops/swe-coding-cli.png)
+
 ---
 
 ### Option C: Event-Driven Mode
 
-For real-time integration with your frontend:
+Run the event handler script for live frontend integration:
 
 ```bash
 python xpander_handler.py
 ```
 
-![handler coding agent](/images/workshops/swe-coding-handler.png)
+![swe coding handler](/images/workshops/swe-coding-handler.png)
 
 ---
 
 ## 🔧 Step 5: Add Local Tools
 
-### Define Your Tool
-
-`tools/local_tools.py`
+Define a custom tool in `tools/local_tools.py`:
 
 ```python
 def say_hello(name: str) -> dict:
@@ -236,7 +227,7 @@ local_tools = [
 ]
 ```
 
-### Register in `my_agent.py`
+Register in `my_agent.py`:
 
 ```python
 self.agent.add_local_tools([tool["declaration"] for tool in local_tools])
@@ -246,35 +237,33 @@ self.agent.add_local_tools([tool["declaration"] for tool in local_tools])
 
 ## 🧠 Step 6: Customize the Agent Loop
 
-Open `my_agent.py` and locate:
+Modify the main loop in `my_agent.py`:
 
 ```python
 async def _agent_loop(self):
-    # Custom logic here
+    # Customize execution, prompt shaping, logging, etc.
 ```
 
-You can modify:
+Customize:
 
-* Execution steps
-* Prompt rewrites
-* Token usage accounting
-* Metrics logging
+* Prompt rewriting
+* Token usage tracking
+* Advanced condition handling
+* Custom logging or retry mechanisms
 
 ---
 
 ## 🚀 Step 7: Deploy to Cloud
 
-Use the Xpander CLI to deploy:
+Use Xpander CLI to deploy your agent:
 
 ```bash
 xpander deploy
 ```
 
-<Frame>
-  <Image src="/images/workshops/xpander-deploy.png" alt="xpander deploy" />
-</Frame>
+![swe xpander deploy](/images/workshops/xpander-deploy.png)
 
-View logs:
+View live logs:
 
 ```bash
 xpander logs
@@ -284,12 +273,12 @@ xpander logs
 
 ## 🧯 Troubleshooting
 
-| Issue                    | Fix                                                            |
-| ------------------------ | -------------------------------------------------------------- |
-| `Failed to sync agent`   | Check `.env` and `xpander_config.json` and re-run `agent init` |
-| `add_graph_item` errors  | Verify valid agent ID and clean tool graph                     |
-| BrokenPipe / JSII issues | Restart shell or rebuild `.venv`                               |
-| No event triggers        | Only use `xpander_handler.py` after frontend sends events      |
+| Issue                    | Fix                                                          |
+| ------------------------ | ------------------------------------------------------------ |
+| `Failed to sync agent`   | Re-check `.env` and `xpander_config.json` and re-run init    |
+| `add_graph_item` errors  | Confirm a clean tool graph and valid agent ID                |
+| BrokenPipe / JSII issues | Restart shell or rebuild `.venv`                             |
+| No event triggers        | Only run `xpander_handler.py` after triggering from frontend |
 
 ---
 
@@ -302,10 +291,3 @@ xpander logs
 | 🧲 Hybrid Mode     | Local + Cloud support                  |
 | 📦 One-Line Deploy | `xpander deploy` ready                 |
 | 🔍 Insights        | Built-in metrics and logs              |
-
----
-
-## ➕ Continue
-
-→ [Back to Module 3](../03-submit-competition)
-→ Try chaining tools and agents with **MCP** in the advanced tracks!

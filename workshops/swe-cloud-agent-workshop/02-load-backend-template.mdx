@@ -164,7 +164,8 @@ Create a memory card matching game (HTML, CSS, JS) and drop it into xpander-ai/a
 
 ## 🔍 Step 5: Track Task Execution
 
-Click **View** to view real-time execution details.
+Click **View** to view real-time execution details.  
+> ⏳ **Note**: Task execution may take a few minutes — sit back, relax, and watch the agent work its magic.
 
 <Frame>
   <video autoPlay muted loop playsInline className="w-full aspect-video" src="https://assets.xpanderai.io/workshops/videos/swe-track-result.mp4" />
@@ -178,16 +179,31 @@ Click **View** to view real-time execution details.
 - **Logs & Messages Buttons**: Execution messages logs & codex execution logs
 
 
-<Tip>
-  The agent runs **OpenAI Codex** in a **secure, isolated sandbox** powered by **xpander.ai**.
-  GitHub access is automatically inherited through the App connector you enabled during the import process.
-</Tip>
+<Info>
+  When you submit a task, the app uses the **xpander.ai SDK** (via a **Web Worker**) to create and run the task in the cloud — fully serverless.
+
+  The worker handles:
+  - Creating tasks → [`createTask()` in `workers/xpanderWorker.ts`](https://github.com/xpander-ai/coding-agent-frontend-example-app/blob/main/src/workers/xpanderWorker.ts#L79)
+  - Fetching task details and logs → [`useTask()` and `useLogs()` in `hooks/`](https://github.com/xpander-ai/coding-agent-frontend-example-app/tree/main/src/hooks)
+
+  The UI polls task status and updates in real time using **React Query**.  
+  You can see this in action inside:
+  - [`Dashboard`](https://github.com/xpander-ai/coding-agent-frontend-example-app/blob/main/src/pages/Dashboard.tsx): task list and creation
+  - [`TaskDetails`](https://github.com/xpander-ai/coding-agent-frontend-example-app/blob/main/src/pages/TaskDetails.tsx): real-time updates, logs, messages
+
+  The **Codex tool** streams logs to a centralized **Logstash** tied to your **account**.  
+  Logs are stored for a limited period and made available via the `logs.xpander.ai` micro-service.
+
+  The frontend fetches these logs through polling (every 2s) using the SDK inside a Web Worker.
+
+  💡 A task can include multiple threads — each representing a conversation or execution chain tied to your agent.
+</Info>
+
+
 
 
 ## ✅ What's Next?
 
 Your frontend is now live and connected to the xpander.ai BaaS. You prompted the agent to generated its first coding task :)
 
-→ Proceed to [Module 3: Competition Submission](#)\
-
-→ Optional: Try customizing the UI or agent behavior in Module 4
+→ Proceed to [Module 3: Competition Submission](./03-submit-competition)
