@@ -18,7 +18,7 @@ icon: "desktop"
 
 In this module, you're using xpander.ai **purely as a Backend-as-a-Service (BaaS) platform** .
 
-The frontend you'll run is not part of the xpander.ai platform — it’s a standalone React app that mimics the ChatGPT-Codex UI and uses the **xpander.ai SDK** to communicate with your configured agent.
+The frontend you'll run is not part of the xpander.ai platform - it’s a standalone React app that mimics the ChatGPT-Codex UI and uses the **xpander.ai SDK** to communicate with your configured agent.
 
 ---
 
@@ -165,7 +165,7 @@ Create a memory card matching game (HTML, CSS, JS) and drop it into xpander-ai/a
 ## 🔍 Step 5: Track Task Execution
 
 Click **View** to view real-time execution details.  
-> ⏳ **Note**: Task execution may take a few minutes — sit back, relax, and watch the agent work its magic.
+> ⏳ **Note**: Task execution may take a few minutes - sit back, relax, and watch the agent work its magic.
 
 <Frame>
   <video autoPlay muted loop playsInline className="w-full aspect-video" src="https://assets.xpanderai.io/workshops/videos/swe-track-result.mp4" />
@@ -180,7 +180,7 @@ Click **View** to view real-time execution details.
 
 
 <Info>
-  When you submit a task, the app uses the **xpander.ai SDK** (via a **Web Worker**) to create and run the task in the cloud — fully serverless.
+  When you submit a task, the app uses the **xpander.ai SDK** (via a **Web Worker**) to create and run the task in the cloud - fully serverless.
 
   The worker handles:
   - Creating tasks → [`createTask()` in `workers/xpanderWorker.ts`](https://github.com/xpander-ai/coding-agent-frontend-example-app/blob/main/src/workers/xpanderWorker.ts#L79)
@@ -196,7 +196,7 @@ Click **View** to view real-time execution details.
 
   The frontend fetches these logs through polling (every 2s) using the SDK inside a Web Worker.
 
-  💡 A task can include multiple threads — each representing a conversation or execution chain tied to your agent.
+  💡 A task can include multiple threads - each representing a conversation or execution chain tied to your agent.
 </Info>
 
 
