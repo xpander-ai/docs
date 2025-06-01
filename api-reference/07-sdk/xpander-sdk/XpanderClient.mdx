@@ -12,19 +12,10 @@ The `XpanderClient` is the main entry point for the xpander SDK. It provides met
 ```python Python
 from xpander_sdk import XpanderClient
 
-client = XpanderClient(
-    api_key="your-xpander-api-key",
-    base_url="https://inbound.xpander.ai",  # Optional, defaults to production
-    organization_id="your-org-id",  # Optional, needed for multi-organization and local run
-    should_reset_cache=False  # Optional
-)
+client = XpanderClient(api_key="your-xpander-api-key")
 
 # For running Xpander locally:
-# client = XpanderClient(
-#     api_key="my-agent-controller-api-key", 
-#     base_url="http://localhost:9991", 
-#     organization_id="your-org-id"
-# )
+# client = XpanderClient(api_key="my-agent-controller-api-key")
 ```
 
 ```typescript TypeScript
@@ -38,11 +29,7 @@ const client = new XpanderClient({
 });
 
 // For running Xpander locally:
-// const client = new XpanderClient({ 
-//     apiKey: "my-agent-controller-api-key", 
-//     baseUrl: "http://localhost:9991", 
-//     organizationId: "your-org-id"
-// });
+// const client = new XpanderClient(apiKey: "my-agent-controller-api-key");
 ```
 </CodeGroup>
 
@@ -51,8 +38,6 @@ const client = new XpanderClient({
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `api_key` / `apiKey` | string | Yes | Your xpander API key |
-| `base_url` / `baseUrl` | string | No | API endpoint URL, defaults to production URL (https://inbound.xpander.ai). Set to http://localhost:9991 for local runs |
-| `organization_id` / `organizationId` | string | No | Organization ID, needed for multi-organization and local run |
 | `should_reset_cache` / `shouldResetCache` | boolean | No | Whether to reset the cache when creating the client |
 
 ## Properties
