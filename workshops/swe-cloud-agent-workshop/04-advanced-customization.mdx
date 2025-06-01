@@ -72,11 +72,7 @@ After initializing the agent:
 pip install -r requirements.txt
 ```
 
----
-
-## 💬 Step 4: Run the Agent
-
-### Before running the agent we need to set our environment variables
+### Setup required environment variables
 ```bash
 mv .env.example .env
 ```
@@ -92,6 +88,10 @@ OPENAI_MODEL_ID=gpt-4.1
 # Your OpenAI API key
 OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
+
+---
+
+## 💬 Step 4: Run the Agent
 
 ### Option A: Notebook Mode (Recommended for Exploration)
 
@@ -145,7 +145,7 @@ agent = MyAgent(xpander_agent)
 5. **Modify the first Chat cell**
 
 ```python
-thread = await agent.chat("Add a simple, cool and beautiful shazam like app (HTML, CSS, JS) to xpander-ai/apps-by-agents. do it in one-shot")
+thread = await agent.chat("Add a simple, cool and beautiful shazam like app (HTML, CSS, JS) to xpander-ai/apps-by-agents.")
 ```
 ![notebook coding task](/images/workshops/swe-coding-task.png)
 
@@ -187,7 +187,7 @@ python app.py
 Send a coding task:
 
 ```text
-Add a simple, cool and beautiful AI Agents registry & discovery app (HTML, CSS, JS) with mock agents to xpander-ai/apps-by-agents. do it in one-shot
+Add a simple, cool and beautiful AI Agents registry & discovery app (HTML, CSS, JS) with mock agents to xpander-ai/apps-by-agents.
 ```
 
 ![cli coding task first message](/images/workshops/swe-coding-cli.png)
