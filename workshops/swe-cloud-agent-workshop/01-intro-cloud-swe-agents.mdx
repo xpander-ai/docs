@@ -1,20 +1,23 @@
 ---
-title: "Module 1: Architecture & Backend Setup"
-description: "Backend template setup and agent configuration with xpander.ai"
+title: "Module 1: Deploy and test your SWE agent"
 icon: "server"
 ---
 
 <Note>
-  **Module Summary**
+  In this module, we'll test the **SWE (Software Engineering) Agent** using **GPT-4.1 & Codex**, exploring its ability to reason, interact with GitHub, and execute code-related tasks in a real environment.
 
-  - **Goal**: Set up xpander.ai access and import coding agent template
+  - **Goal**: Set up xpander.ai access and deploy the coding agent template
   - **Estimated Time**: 10-15 minutes
   - **Prerequisites**: xpander.ai account, basic agent concepts
 </Note>
 
 ## Quick Setup
 
-### 1. Template Import
+### Template Import
+To avoid manual configuration work around adding tools, setting instructions, etc. A SWE agent template is ready to be deployed on the platform.
+After clicking the Template import button, you will register or login to xpander.ai, and be redirected to the template deployment screen.
+
+
 <a 
   href="https://app.xpander.ai/templates/14c5e651-a207-4a60-8dd6-143e147df890?utm=swe-workshop-sf" 
   target="_blank" 
@@ -36,29 +39,20 @@ icon: "server"
 <br />
 <br />
 
+Follow the import steps as seen in the video:
+1. In the agent import wizard, select "New Github Pull Requests interface"
+2. Select your newly deployed agent from the agents screen
+3. The excalamation mark (⚠️) on the Github tools indicates that the Connector for Github has not been authorized yet. Click on one of them to see the connector settings.
+4. In the popup window, connect to Github with Oauth2.
+
 <Frame>
   <video autoPlay muted loop playsInline className="w-full aspect-video" src="https://assets.xpanderai.io/workshops/videos/import-process.mp4" />
 </Frame>
 
-<Info>
-  The **Coding Agent** runs on **GPT-4.1** and handles high-level reasoning, task planning, and decision-making.  
-  It uses tools to complete actions - one of them being the **Codex tool**.
 
-  The **Codex tool** is a containerized, sandboxed version of the **Codex CLI**, running with the agent’s own **Git credentials**.  
-  It's powered by the **codex-mini-latest** model, optimized for fast, focused code generation.
-
-  The agent sends coding tasks to this tool - for example, “add tests for this function” - and the Codex tool writes or modifies the code.  
-  Combined with the **GitHub integration**, the agent can autonomously list, create, update, and comment on pull requests.
-</Info>
-
-### 2. 🧠 Your Coding Agent
+### Your coding agent
 
 You are now seeing the AI Workbench - a user interface used to design, deploy, test and observe agents. 
-
-<Info>
-  The **AI Workbench** is designed to help you quickly test and iterate on AI agents using different LLM models and toolchains.  
-  In this module, we'll test the **SWE (Software Engineering) Agent** using **GPT-4.1 & Codex**, exploring its ability to reason, interact with GitHub, and execute code-related tasks in a real environment.
-</Info>
 
 <Tip>
   The left side of the AI Workbench can be used to easily intract with your agent and see how it behaves in real time - we will do that in a minute.
@@ -70,27 +64,40 @@ Check out the available tools your agent has. It can interact with GitHub - list
 
 ![Serverless coding agent](/images/workshops/serverless-coding-agent.png)
 
-<Info>The Github tools on the graph are displaying a red exclemation mark, becuase you still need to authorize the Github connector. Click on the exclamation mark and go through the Auth process with Oauth2</Info>
+<Accordion title="Red exclamation mark on Github tools?">
 
-### 🔐 Authorize GitHub Access
 
-Click the exclamation mark on any GitHub-related node in your agent’s graph.  
-A popup will appear prompting you to authorize GitHub via OAuth - this allows the agent to interact with your repositories.
+<Warning>If the Github tools on the graph are displaying a red exclamation mark, it's becuase you still need to authorize the Github connector. Click on the exclamation mark and go through the Auth process with Oauth2</Warning>
 
 
 <Frame>
   <video autoPlay muted loop playsInline className="w-full aspect-video" src="https://assets.xpanderai.io/workshops/videos/swe-authorize-github.mp4" />
 </Frame>
 
-### 3. 🚗 Test Drive Your Agent
+</Accordion>
+
+
+<Accordion title="Codex CLI built into the agent?">
+
+  The **Coding Agent** runs on **GPT-4.1** and handles high-level reasoning, task planning, and decision-making.  
+  It uses tools to complete actions - one of them being the **Codex tool**.
+
+  The **Codex tool** is a containerized, sandboxed version of the **Codex CLI**, running with the agent’s own **Git credentials**.  
+  It's powered by the **codex-mini-latest** model, optimized for fast, focused code generation.
+
+  The agent sends coding tasks to this tool - for example, “add tests for this function” - and the Codex tool writes or modifies the code.  
+  Combined with the **GitHub integration**, the agent can autonomously list, create, update, and comment on pull requests.
+
+</Accordion>
+
+### Test your agent using the visual AI Workbench
 
 Let’s walk through a real GitHub workflow using your agent. We'll use the `xpander-ai/apps-by-agents` repository and test out some core capabilities.
 
 ---
+#### Test 1: List Pull Requests
 
-#### 🪄 Step 1: List Pull Requests
-
-Ask your agent:
+In the left tab of the AI Workbench (Tester tab), submit this prompt:
 
 ```text
 List all pull requests (open or closed) in "xpander-ai/apps-by-agents"
@@ -98,11 +105,17 @@ List all pull requests (open or closed) in "xpander-ai/apps-by-agents"
 
 ![Step 1 PR List](/images/workshops/list-prs.png)
 
+<Tip>
+What's with the purple pulsing dot? 🟣
+
+You are seeing one of most useful parts of the AI Workbench - a visual indication of the AI Agent's path traversal - through other agents (in multi-agent setups) and through tools.
+
+Basically, the purple pulsing dot indicates the current state of the agent on the state machine.
+</Tip>
+
 ---
 
-#### 🧠 Step 2: Summarize the Latest PR
-
-Then ask:
+#### Test 2: Summarize the Latest PR
 
 ```text
 Explain the most recent pull request and what the code changes do.
@@ -110,8 +123,8 @@ Explain the most recent pull request and what the code changes do.
 
 ![Step 2 PR Summary](/images/workshops/pr-summary.png)
 
-## ✅ What's Next?
+##  What's Next?
 
-Your Coding Agent is now live and connected - it can reason with GPT-4.1, generate code with Codex, and interact with GitHub.
+Your Coding Agent is now live and connected - it can generate code with Codex and interact with GitHub.
 
-→ Proceed to [Module 2: Frontend Build & Testing](./02-load-backend-template) to connect a minimal OpenAI Codex-style UI and interact with your agent in real time.
+→ Proceed to [Module 2: Frontend Build & Testing](./02-load-backend-template) to connect a minimal OpenAI Codex-style UI to interact with your agent, track its tasks, etc.
