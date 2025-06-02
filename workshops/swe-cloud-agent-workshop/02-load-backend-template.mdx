@@ -1,30 +1,24 @@
 ---
-title: "Module 2: Frontend Build & Testing"
-description: "Use a lightweight ChatGPT-Codex style UI to interact with your coding agent"
+title: "Module 2: SWE task management UI"
+description: "Use a lightweight ChatGPT-Codex style UI to submit a coding task to your SWE agent"
 icon: "desktop"
 ---
 
 <Note>
-  ### **Module Summary**
+In this module, we deploy a custom UI that is similar to the capabilities you get with ChatGPT-Codex. Then, we submit a coding task to the SWE agent.
 
-  - **Goal**: Clone a minimal ChatGPT-Codex style frontend and connect it to **xpander.ai as your backend service**
+  - **Goal**: Clone a minimal ChatGPT-Codex style frontend and connect it to to the agent your deployed in the previous module.
   - **Estimated Time**: 15–20 minutes
-  - **Prerequisites**: React knowledge, completed backend setup from Module 1
 </Note>
 
----
+## Use-case
 
-## 🧠 Architecture Reminder
+Many times, AI Agents running on a Backend-as-a-Service platform are a part of a wider application. In this case, our AI agent is already available, and we'd like to hook it up to a task management system. The task management system in this module is not a part of the xpander.ai platform, and it's simply used for demonstration purposes.
 
-In this module, you're using xpander.ai **purely as a Backend-as-a-Service (BaaS) platform** .
 
-The frontend you'll run is not part of the xpander.ai platform - it’s a standalone React app that mimics the ChatGPT-Codex UI and uses the **xpander.ai SDK** to communicate with your configured agent.
+## Clone the frontend example app
 
----
-
-## 🧱 Step 1: Clone the Frontend Example App
-
-We’ll start by cloning and running the prebuilt UI:
+We’ll start by cloning and installing the prebuilt UI:
 
 ```bash
 git clone https://github.com/xpander-ai/coding-agent-frontend-example-app.git
@@ -34,11 +28,9 @@ npm install
 
 ![Step 1 - Clone and Install](/images/workshops/git-clone.png)
 
----
+## Configure environment variables
 
-## 🔐 Step 2: Configure Environment
-
-Copy the example environment file and populate it with your credentials from [xpander.ai Cloud](https://app.xpander.ai):
+Copy the example .env file and populate it
 
 ```bash
 mv .env.example .env
@@ -52,7 +44,7 @@ VITE_APP_AGENT_ID=your_agent_id_here # Available in xpander.ai UI from the Workb
 VITE_APP_ORGANIZATION_ID=your_organization_id_here # Available in xpander.ai UI from Settings -> API keys
 ```
 
-### Get Your Organization ID & API Key
+<Accordion title="Videos: getting the required variables">
 <Frame>
   <video autoPlay muted loop playsInline className="w-full aspect-video" src="https://assets.xpanderai.io/workshops/videos/settings-api-keys.mp4" />
 </Frame>
@@ -61,11 +53,12 @@ VITE_APP_ORGANIZATION_ID=your_organization_id_here # Available in xpander.ai UI 
 <Frame>
   <video autoPlay muted loop playsInline className="w-full aspect-video" src="https://assets.xpanderai.io/workshops/videos/swe-copy-agent-id.mp4" />
 </Frame>
----
+</Accordion>
 
-## ⚙️ Step 3: Start the App
 
-Launch the frontend locally:
+## Start the App
+
+Launch the demo app locally:
 
 ```bash
 npm run dev
@@ -78,16 +71,19 @@ Then navigate to:
 ```
 http://localhost:3000
 ```
-
+Your AI Agent's task management demo app:
 ![Step 3 - Open Browser](/images/workshops/swe-blank-tasks-manager.png)
 
----
+## Send your first coding task
+Your local task management demo app is now connected to the SWE agent you deployed in the last module. Let's start using it.
 
-## ✍️ Step 4: Send Your First Coding Task
+In the input field, submit one of the example prompts below
 
-From the input field, send one of the example prompts below:
+<Accordion title="Prompt Examples for apps-by-agents">
 
-<Accordion title="🧠 Prompt Examples for apps-by-agents">
+<Note>
+We are pushing the results of the coding task to a repo called xpander-ai/apps-by-agents - this repo is used in the workshop to host apps that are developed by SWE agents.
+</Note>
 
 ### ✅ Todo List App
 ```text
@@ -162,7 +158,7 @@ Create a memory card matching game (HTML, CSS, JS) and drop it into xpander-ai/a
 
 ---
 
-## 🔍 Step 5: Track Task Execution
+## Track task execution
 
 Click **View** to view real-time execution details.  
 > ⏳ **Note**: Task execution may take a few minutes - sit back, relax, and watch the agent work its magic.
@@ -178,8 +174,8 @@ Click **View** to view real-time execution details.
 - **Result**: Execution result
 - **Logs & Messages Buttons**: Execution messages logs & codex execution logs
 
+<Accordion title="How does this work?">
 
-<Info>
   When you submit a task, the app uses the **xpander.ai SDK** (via a **Web Worker**) to create and run the task in the cloud - fully serverless.
 
   The worker handles:
@@ -197,13 +193,13 @@ Click **View** to view real-time execution details.
   The frontend fetches these logs through polling (every 2s) using the SDK inside a Web Worker.
 
   💡 A task can include multiple threads - each representing a conversation or execution chain tied to your agent.
-</Info>
+</Accordion>
 
 
+## Summary and next steps
+
+Your SWE task management UI is now live and connected to the SWE agent hosted on xpander.ai.
+Through the UI, you instructed the agent to build an application and push it to the apps-by-agents repo.
 
 
-## ✅ What's Next?
-
-Your frontend is now live and connected to the xpander.ai BaaS. You prompted the agent to generated its first coding task :)
-
-→ Proceed to [Module 3: Competition Submission](./03-submit-competition)
+→ Proceed to [Module 3: Advanced customization](./03-advanced-customization) 
