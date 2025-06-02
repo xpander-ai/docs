@@ -1,525 +1,470 @@
 ---
 title: "Module 1: Build Your First Coding Agent"
-description: "Create a custom developer agent with Amazon Bedrock that manages repos and writes code"
+description: "Set up a local developer agent and understand its core capabilities"
 icon: "code"
 ---
 
 <Note>
-  **Module Summary**
-
-  - **Goal**: Create a custom coding agent using Amazon Bedrock with local functions
-  - **Estimated Time**: 25-30 minutes
-  - **Prerequisites**: AWS account with Bedrock access, xpander.ai account, GitHub account
+**Module Summary**
+* **Goal**: Create and deploy your first AI developer agent
+* **Estimated Time**: 20-30 minutes
+* **Prerequisites**: Open AI credentials, Python 3.12+, Cursor IDE
 </Note>
 
-🚀 In this module, you'll create your first custom coding agent using xpander.ai and Amazon Bedrock. This agent will demonstrate key patterns for building domain-specific agents, including local function execution, custom logic, and tool integration. You'll learn how to design agents for specific use cases while building a practical coding assistant.
+🚀 In this module, you'll set up a complete AI coding assistant powered by xpander.ai and Open AI GPT 4.1. You'll create a local development environment, configure your agent with custom instructions, test it with repository management tasks, and connect it to the cloud for remote access. By the end, you'll have a powerful AI developer agent that can clone repositories, read and write code, and help automate your development workflow!
 
-## 🎯 Understanding Custom Agents
+## 🔧 Setup Your Development Environment
 
-### What Makes an Agent "Custom"?
+Let's start by creating a workspace directory and cloning the base agent repository:
 
-Custom agents are designed for specific domains and tasks, featuring:
+```bash
+mkdir workshop 
+cd workshop/
+git clone https://github.com/xpander-ai/coding-agent.git
+mv coding-agent dev-agent-1
+cd dev-agent-1
+```
 
-1. **Specialized Knowledge** - Domain-specific expertise and context
-2. **Custom Tools** - Purpose-built functions and integrations
-3. **Local Functions** - Execute code and operations locally
-4. **Tailored Behavior** - Logic optimized for specific use cases
-5. **Integration Patterns** - Connect with domain-specific systems
+Open the project in Cursor IDE:
 
-### Coding Agent as an Example
+```bash
+cursor .
+```
 
-We'll build a coding agent to demonstrate these concepts, but the patterns apply to any domain:
-- **Content agents** for writing and editing
-- **Analysis agents** for data processing
-- **Support agents** for customer service
-- **Sales agents** for lead management
+## 🛠️ Configure Your Local Environment
 
-## 🛠️ Setting Up Your Custom Coding Agent
+<Note>
+  This workshop requires Python 3.12.7 or newer. To check your current version, run:
+  
+  ```bash
+  python3 --version
+  ```
+  
+  If you need to upgrade, use the following methods:
+  - **macOS**: `brew install python3 && python3 --version` 
+  - **Windows (WSL/Git Bash)**: Download the latest installer from [python.org](https://www.python.org/downloads/)
+</Note>
 
-### Step 1: Create the Agent Foundation
+Inside the Cursor terminal, set up your Python environment and install dependencies:
 
-1. Navigate to the [xpander.ai platform](https://app.xpander.ai):
+```bash
+python3 -m venv .venv && \
+source .venv/bin/activate && \
+pip install -r requirements.txt --no-cache-dir
+npm install -g xpander-cli
+```
 
-   ```bash Terminal Command
-   # Open in your browser
-   open https://app.xpander.ai
-   ```
+<Note>
+  If you encounter issues with Node.js dependencies when installing xpander-cli, use the following commands to resolve them:
+  
+  ```bash
+  # Make sure to use Node 22+
+  nvm install 22
+  nvm use 22
+  nvm alias default 22
+  ```
+</Note>
 
-2. Sign in to your xpander.ai account
-3. In the left navigation menu, go to **Agents**
-4. Click **\+ New Agent** to create a new agent
-5. When prompted by the agent builder, click **Skip** (we'll build the agent manually)
+## 🔑 Authenticate to xpander.ai
+```bash
+xpander login
+```
 
-### Step 2: Design Your Agent's Role and Behavior
+This command will open the xpander.ai platform and ask you to login or register. Once confirmed, you will be redirected back to the terminal, which will display something similar to:
+```
+❯ xpander login
+⠏ Authorizing
+Hi David, Welcome to xpander!
+Your organization id: 8d185373*********
+Your personal API Key is: IhPLk2C*******
 
-1. Click on the **Gear Icon** in the top-right corner to open agent settings
-2. Configure your agent's identity and purpose:
+I've created default profile configured in ~/.xpander
+```
 
-   ```txt Agent Name
-   Senior Developer Agent
-   ```
+Create a `.env` file in the root directory with the following credentials:
 
-   ```txt Role
-   You are a Senior Developer Agent specialized in repository management, code analysis, and software development. You have deep expertise in multiple programming languages, best practices, and modern development workflows.
-   ```
+```txt .env file
+XPANDER_API_KEY=your_xpander_api_key ## From the output above
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AWS_SESSION_TOKEN=your_aws_session_token  # only needed if using temporary credentials
+AWS_REGION="us-east-2"
+BEDROCK_MODEL_ID="us.anthropic.claude-3-7-sonnet-20250219-v1:0"
 
-   ```txt Goal
-   Your goal is to assist with coding tasks including repository exploration, code analysis, feature implementation, bug fixes, and code reviews. You prioritize clean, maintainable code and follow software engineering best practices.
-   ```
+GIT_TOKEN=your-git-token                  # Generate at https://github.com/settings/tokens/new
+GIT_USERNAME=your-git-username
 
-   ```txt Instructions
-   1. Always start by understanding the repository structure and existing codebase
-   2. Ask clarifying questions when requirements are ambiguous
-   3. Follow the existing code style and patterns in the repository
-   4. Write clean, well-documented, and testable code
-   5. Consider edge cases and error handling in your implementations
-   6. Suggest improvements and optimizations when appropriate
-   7. Use local functions for file operations and repository management
-   8. Validate your work before presenting solutions
-   ```
+MAXIMUM_STEPS_SOFT_LIMIT=40
+MAXIMUM_STEPS_HARD_LIMIT=60
 
-3. Save your agent configuration
+OPENAI_MODEL_ID=gpt-4.1
+OPENAI_API_KEY=your-open-ai-keys
+```
 
-### Step 3: Add Repository Management Tools
+<Tip>
+  If you are running this workshop in person, ask the xpander.ai team to provide you access.
+</Tip>
 
-Add GitHub tools for repository operations:
+## 🤖 Create Your Agent
 
-1. Click the **\+** button in your agent canvas
-2. Select **Apps** from the menu
-3. Add **GitHub Search Manager** for repository discovery
-4. Add **GitHub Issues Manager** for issue tracking
-5. Configure each integration by clicking **Sign in** and authorizing access
+Now let's use the xpander CLI to create a new agent:
 
-<Frame>
-  ![GitHub Tools Integration](/images/screenshots/2025-05-03-23-53-27.png)
+```bash
+xpander agent new
+```
+
+Complete the agent creation wizard (Answer yes to load the agent locally):
+
+```
+✨ Agent Creation Wizard ✨
+──────────────────────────────────────────────────
+Create a powerful AI agent for your organization
+──────────────────────────────────────────────────
+
+? What name would you like for your agent? dev-agent-1
+⠋ Creating agent "dev-agent-1"...Creating agent in organization: 8d185373-8b24-47a7-8607-3e9036b968bb...
+✔ Agent "dev-agent-1" created successfully!
+
+🚀 Your Agent is Ready!
+──────────────────────────────────────────────────
+Name:     dev-agent-1
+ID:       4fe1163d-bb00-4837-9e25-6f82aed8038c
+Icon:     🚀
+Model:    openai/gpt-4o
+──────────────────────────────────────────────────
+
+✅ Agent creation complete!
+
+? Do you want to load this agent into your current workdir? Yes
+
+
+✨ Initializing agent
+────────────────────────────────────────────────────────────
+ℹ Agent dev-agent-1 retrieved successfully
+? The current directory is not empty. Proceeding will override 'requirements.txt' and add or update xpander-related files (xpander_config.json, 
+agent_instructions.json, etc). Yes
+✔ Agent initialized successfully
+```
+
+## 🚀 Run Your Agent Locally
+
+Now it's time to run your agent and ask it to introduce itself and its architecture!
+
+```bash
+python main.py
+```
+
+<Note>
+  Pay attention that the agent is limited to running inside the sandbox folder. To see files generated by the agent, navigate to the `sandboxes` folder and look for the thread ID from the terminal output.
+</Note>
+
+## 💬 Example Agent Interaction
+
+Here's what you might see in the terminal as your agent runs:
+
+```
+❯ python main.py
+Sandbox base directory: /Users/david/Developer/workshop/dev-agent-1/sandboxes
+b'{"stdout":"bG9hZGluZyBhZ2VudCA3Mzc2MmYyNi04MDMzLTRkODEtYWVlOC02NjViOWI0NGQ5Y2YK"}\n'
+2025-05-07 22:12:53.344 | INFO     | coding_agent:chat:82 - 🧠 Adding task to a new thread
+2025-05-07 22:12:54.254 | INFO     | coding_agent:_agent_loop:116 - 🪄 Starting Agent Loop
+2025-05-07 22:12:56.546 | INFO     | coding_agent:_agent_loop:127 - --------------------------------------------------------------------------------
+2025-05-07 22:12:56.546 | INFO     | coding_agent:_agent_loop:128 - 🔍 Step 1
+2025-05-07 22:12:58.438 | INFO     | llm_providers.openai:invoke_model:107 - 🔄 Model response received in 1.51 s
+2025-05-07 22:13:00.507 | INFO     | coding_agent:_agent_loop:177 - ✅ xpfinish-agent-execution-finished
+2025-05-07 22:13:00.508 | INFO     | coding_agent:_agent_loop:179 - 🔢 Step 1 tokens used: 1527 (output: 67, input: 1460)
+2025-05-07 22:13:01.677 | INFO     | coding_agent:_agent_loop:185 - ✨ Execution duration: 7.42 s
+2025-05-07 22:13:01.679 | INFO     | coding_agent:_agent_loop:188 - 🔢 Total tokens used: 1527 (output: 67, input: 1460)
+2025-05-07 22:13:02.051 | INFO     | coding_agent:chat:86 - --------------------------------------------------------------------------------
+2025-05-07 22:13:02.051 | INFO     | coding_agent:chat:87 - 🤖 Agent response: Hello! How can I assist you with your coding or project needs today? If you have a specific task or question, please let me know!
+```
+
+### Ask the agent to introduce itself and explain how it works
+
+In the same console, paste the following prompt
+
+```txt Prompt
+You are an autonomous Coding Agent built with the xpander-ai/coding-agent source-code. Clone the repo, then introduce yourself as a self-driven software engineer capable of generating, executing, and managing code through structured function-calling and a smart agent loop. Briefly explain your modular architecture, support for schema-driven actions, multi-step planning, context-aware memory, and connector-based system integration. Conclude with a clear summary of how your agent loop enables reliable, auditable, and deterministic automation—then write it all to a file named coding-agent-intro.md for the developer. Don't commit anything yet.
+```
+
+After completing various tasks (like creating a markdown introduction file), you'll see the final agent response:
+
+```
+2025-05-07 22:17:32.228 | INFO     | coding_agent:chat:79 - 🧠 Adding task to existing thread: aeea28ff-a49b-4a20-b5b3-5c49fbbeef29
+2025-05-07 22:17:34.202 | INFO     | coding_agent:_agent_loop:116 - 🪄 Starting Agent Loop
+2025-05-07 22:17:35.273 | INFO     | coding_agent:_agent_loop:127 - --------------------------------------------------------------------------------
+2025-05-07 22:17:35.273 | INFO     | coding_agent:_agent_loop:128 - 🔍 Step 1
+2025-05-07 22:17:36.941 | INFO     | llm_providers.openai:invoke_model:107 - 🔄 Model response received in 1.25 s
+2025-05-07 22:17:39.798 | INFO     | coding_agent:_execute_local_tool:229 - 🔦 LLM Requesting local tool: git_clone with generated payload: {'repo_url': 'https://github.com/xpander-ai/coding-agent'}
+2025-05-07 22:17:41.273 | INFO     | coding_agent:_execute_local_tool:279 - 🔧 Tool git_clone completed in 1.48 s
+2025-05-07 22:17:41.667 | INFO     | coding_agent:_agent_loop:177 - ✅ git_clone
+2025-05-07 22:17:41.669 | INFO     | coding_agent:_agent_loop:179 - 🔢 Step 1 tokens used: 1614 (output: 29, input: 1585)
+2025-05-07 22:17:42.475 | INFO     | coding_agent:_agent_loop:127 - --------------------------------------------------------------------------------
+2025-05-07 22:17:42.475 | INFO     | coding_agent:_agent_loop:128 - 🔍 Step 2
+2025-05-07 22:17:49.063 | INFO     | llm_providers.openai:invoke_model:107 - 🔄 Model response received in 6.17 s
+2025-05-07 22:17:51.932 | INFO     | coding_agent:_execute_local_tool:229 - 🔦 LLM Requesting local tool: new_file with generated payload: {'file_path': 'coding-agent-intro.md', 'content': '# Coding Agent Introduction\n\nHello! I am an autonomous Coding Agent, built with the [xpander-ai/coding-agent](https://github.com/xpander-ai/coding-agent) source code. As a self-driven software engineer, I am capable of generating, executing, and managing code through structured function-calling and a smart agent loop.\n\n## Modular Architecture\nMy architecture is modular, allowing for flexible extension and integration. Each component is designed to handle specific responsibilities, such as code generation, file management, version control, and external system interaction. This modularity ensures maintainability and scalability.\n\n## Schema-Driven Actions\nI support schema-driven actions, which means all my operations are defined and validated against explicit schemas. This guarantees that every action I perform is predictable, type-safe, and easy to audit.\n\n## Multi-Step Planning\nI am capable of multi-step planning, breaking down complex tasks into smaller, manageable subtasks. This enables me to tackle sophisticated development workflows while ensuring each step is executed reliably and in the correct order.\n\n## Context-Aware Memory\nMy context-aware memory allows me to retain and utilize relevant information throughout a session. I can reference previous actions, user instructions, and project state to make informed decisions and maintain continuity across tasks.\n\n## Connector-Based System Integration\nI integrate with external systems through a connector-based approach. This enables seamless interaction with tools such as Git, file systems, and APIs, making me adaptable to a wide range of development environments and workflows.\n\n## Reliable, Auditable, and Deterministic Automation\nMy agent loop orchestrates all actions in a reliable, auditable, and deterministic manner. Each step is logged, validated, and executed according to plan, ensuring transparency and reproducibility. This makes me a trustworthy assistant for automating software engineering tasks.\n\n---\n\nThis file provides an overview of my capabilities and architecture for developers working with or extending the Coding Agent.'}
+2025-05-07 22:17:51.935 | INFO     | coding_agent:_execute_local_tool:279 - 🔧 Tool new_file completed in 0.00 s
+2025-05-07 22:17:52.319 | INFO     | coding_agent:_agent_loop:177 - ✅ new_file
+2025-05-07 22:17:52.320 | INFO     | coding_agent:_agent_loop:179 - 🔢 Step 2 tokens used: 2108 (output: 424, input: 1684)
+2025-05-07 22:17:53.082 | INFO     | coding_agent:_agent_loop:127 - --------------------------------------------------------------------------------
+2025-05-07 22:17:53.082 | INFO     | coding_agent:_agent_loop:128 - 🔍 Step 3
+2025-05-07 22:17:54.696 | INFO     | llm_providers.openai:invoke_model:107 - 🔄 Model response received in 1.24 s
+2025-05-07 22:17:56.644 | INFO     | coding_agent:_execute_local_tool:229 - 🔦 LLM Requesting local tool: read_file with generated payload: {'file_path': 'coding-agent-intro.md'}
+2025-05-07 22:17:56.646 | INFO     | coding_agent:_execute_local_tool:279 - 🔧 Tool read_file completed in 0.00 s
+2025-05-07 22:17:57.047 | INFO     | coding_agent:_agent_loop:177 - ✅ read_file
+2025-05-07 22:17:57.049 | INFO     | coding_agent:_agent_loop:179 - 🔢 Step 3 tokens used: 2165 (output: 23, input: 2142)
+2025-05-07 22:17:57.822 | INFO     | coding_agent:_agent_loop:127 - --------------------------------------------------------------------------------
+2025-05-07 22:17:57.822 | INFO     | coding_agent:_agent_loop:128 - 🔍 Step 4
+2025-05-07 22:18:01.627 | INFO     | llm_providers.openai:invoke_model:107 - 🔄 Model response received in 3.43 s
+2025-05-07 22:18:04.100 | INFO     | coding_agent:_agent_loop:177 - ✅ xpfinish-agent-execution-finished
+2025-05-07 22:18:04.101 | INFO     | coding_agent:_agent_loop:179 - 🔢 Step 4 tokens used: 3068 (output: 474, input: 2594)
+2025-05-07 22:18:05.220 | INFO     | coding_agent:_agent_loop:185 - ✨ Execution duration: 31.02 s
+2025-05-07 22:18:05.224 | INFO     | coding_agent:_agent_loop:188 - 🔢 Total tokens used: 8955 (output: 950, input: 8005)
+2025-05-07 22:18:06.494 | INFO     | coding_agent:chat:86 - --------------------------------------------------------------------------------
+2025-05-07 22:18:06.495 | INFO     | coding_agent:chat:87 - 🤖 Agent response: Repository cloned and introduction file created as requested.
+
+---
+
+# Coding Agent Introduction
+
+Hello! I am an autonomous Coding Agent, built with the [xpander-ai/coding-agent](https://github.com/xpander-ai/coding-agent) source code. As a self-driven software engineer, I am capable of generating, executing, and managing code through structured function-calling and a smart agent loop.
+
+## Modular Architecture
+My architecture is modular, allowing for flexible extension and integration. Each component is designed to handle specific responsibilities, such as code generation, file management, version control, and external system interaction. This modularity ensures maintainability and scalability.
+
+## Schema-Driven Actions
+I support schema-driven actions, which means all my operations are defined and validated against explicit schemas. This guarantees that every action I perform is predictable, type-safe, and easy to audit.
+
+## Multi-Step Planning
+I am capable of multi-step planning, breaking down complex tasks into smaller, manageable subtasks. This enables me to tackle sophisticated development workflows while ensuring each step is executed reliably and in the correct order.
+
+## Context-Aware Memory
+My context-aware memory allows me to retain and utilize relevant information throughout a session. I can reference previous actions, user instructions, and project state to make informed decisions and maintain continuity across tasks.
+
+## Connector-Based System Integration
+I integrate with external systems through a connector-based approach. This enables seamless interaction with tools such as Git, file systems, and APIs, making me adaptable to a wide range of development environments and workflows.
+
+## Reliable, Auditable, and Deterministic Automation
+My agent loop orchestrates all actions in a reliable, auditable, and deterministic manner. Each step is logged, validated, and executed according to plan, ensuring transparency and reproducibility. This makes me a trustworthy assistant for automating software engineering tasks.
+
+---
+
+This file provides an overview of my capabilities and architecture for developers working with or extending the Coding Agent.
+
+No commits have been made yet. Let me know if you want to proceed with version control or further actions.
+```
+
+
+<Note>
+  Notice how the AI performed local functions and was able to read files, clone the GitHub repo, and summarize its answer for you. You can now ask your agent follow-up questions about how function calling works and how it succeeded in performing the git clone operation, or continue with the workshop.
+</Note>
+
+## 🌐 Stream Events from the Cloud to Your Local Agent
+
+Now let's set up your agent to receive events from the xpander.ai cloud platform. This allows you to interact with your agent through the web UI while processing happens on your local machine.
+
+Start the event handler to listen for cloud events:
+
+```bash
+python xpander_handler.py
+```
+
+```bash Example output
+❯ python xpander_handler.py
+Sandbox base directory: /Users/david/Developer/workshop/dev-agent-1/sandboxes
+2025-04-30 13:16:57.677 | INFO     | xpander_utils.events.listener:register:287 - Starting events listener
+2025-04-30 13:17:02.118 | INFO     | xpander_utils.events.listener:_register_agent_worker:238 - Worker registered - 1f588e29-fb15-4d53-b87b-5d037e108374
+2025-04-30 13:17:02.118 | INFO     | xpander_utils.events.listener:_register_agent_worker:244 - Agent Name: dev-agent-1
+ Chat URL: https://chocolate-jaguar.agents.xpander.ai
+```
+
+This url is the frontend of your agent, and it's already configured with threads and memory. Try chatting and watch the events coming to your local machine.
+
+You can also see the agent in the Tester Tab 
+
+1. Navigate to the URL displayed in the terminal output (e.g., `https://app.xpander.ai/agents/your-agent-id`) or to https://app.xpander.ai and search for dev-agent-1
+2. You'll see your agent in the xpander.ai web interface
+3. Try sending a message like "Hi" to your agent
+4. Watch as the request is processed by your local machine and the response appears in the web UI
+
+You can now send new messages in the Tester tab, and this time the agent will respond directly from your local machine!
+
+<Frame caption="Agent responding from local machine through cloud UI" alt="Screenshot of agent interface showing successful communication">
+![](/images/screenshots/2025-04-29-10-09-32.png)
 </Frame>
 
-## 🔧 Implementing Local Functions
+<Note>
+   You've built an agent capable of receiving events from anywhere (Slack, MCP, Teams, REST API, and even other Agents using A2A) with just a few lines of code! This allows you to focus your time on writing the business logic rather than integration code.
+</Note>
 
-### Step 4: Create Custom File Operations
+## 🔑 Configure Cloud Environment Variables
 
-Local functions allow your agent to execute custom code. Let's create functions for repository management:
+To securely deploy your agent using the xpander.ai platform, you need to configure your environment secrets. There are two ways to do this:
 
-1. In the left navigation, go to **Cloud Functions**
-2. Click **New** to create a new function
-3. Replace the example code with this repository analyzer:
+- **Auto-sync from `.env` using the CLI** (Recommended)
+- **Manual configuration via the platform UI**
 
-```python Repository Analyzer Function
-# === Repository Analyzer ===
-# Contract-name: xpander_run_action
-# Purpose: Analyze repository structure and provide insights
+---
 
-import os
-import subprocess
-import json
-from pathlib import Path
+### 🔐 Required Secrets
 
-def xpander_run_action(repo_url: str, analysis_type: str = "structure"):
-    """
-    Analyze a repository for structure, dependencies, or code quality
-    
-    Args:
-        repo_url: URL of the repository to analyze
-        analysis_type: Type of analysis ("structure", "dependencies", "quality")
-    
-    Returns:
-        dict: Analysis results with repository insights
-    """
-    
-    try:
-        # Extract repo name from URL
-        repo_name = repo_url.split('/')[-1].replace('.git', '')
-        temp_dir = f"/tmp/{repo_name}"
-        
-        # Clone repository if it doesn't exist
-        if not os.path.exists(temp_dir):
-            result = subprocess.run(
-                ['git', 'clone', '--depth', '1', repo_url, temp_dir],
-                capture_output=True,
-                text=True,
-                timeout=60
-            )
-            if result.returncode != 0:
-                return {"error": f"Failed to clone repository: {result.stderr}"}
-        
-        # Perform analysis based on type
-        if analysis_type == "structure":
-            return analyze_structure(temp_dir)
-        elif analysis_type == "dependencies":
-            return analyze_dependencies(temp_dir)
-        elif analysis_type == "quality":
-            return analyze_quality(temp_dir)
-        else:
-            return {"error": f"Unknown analysis type: {analysis_type}"}
-            
-    except Exception as e:
-        return {"error": f"Analysis failed: {str(e)}"}
+Ensure your `.env` file (or manual input) includes the following keys:
 
-def analyze_structure(repo_path):
-    """Analyze repository structure"""
-    structure = {"directories": [], "files_by_type": {}, "total_files": 0}
-    
-    for root, dirs, files in os.walk(repo_path):
-        # Skip hidden directories and common build/cache directories
-        dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ['node_modules', '__pycache__', 'dist', 'build']]
-        
-        rel_root = os.path.relpath(root, repo_path)
-        if rel_root != '.':
-            structure["directories"].append(rel_root)
-        
-        for file in files:
-            if not file.startswith('.'):
-                ext = Path(file).suffix.lower()
-                if ext:
-                    structure["files_by_type"][ext] = structure["files_by_type"].get(ext, 0) + 1
-                structure["total_files"] += 1
-    
-    # Identify primary language
-    if structure["files_by_type"]:
-        primary_lang = max(structure["files_by_type"], key=structure["files_by_type"].get)
-        structure["primary_language"] = primary_lang
-    
-    return structure
+```env
+XPANDER_API_KEY=your_xpander_api_key ## From the output above
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AWS_SESSION_TOKEN=your_aws_session_token  # only needed if using temporary credentials
+AWS_REGION="us-east-2"
+BEDROCK_MODEL_ID="us.anthropic.claude-3-7-sonnet-20250219-v1:0"
 
-def analyze_dependencies(repo_path):
-    """Analyze project dependencies"""
-    dependencies = {"package_files": [], "dependencies": {}}
-    
-    # Common dependency files
-    dep_files = {
-        "package.json": "npm",
-        "requirements.txt": "pip", 
-        "Pipfile": "pipenv",
-        "pom.xml": "maven",
-        "build.gradle": "gradle",
-        "Cargo.toml": "cargo"
-    }
-    
-    for file_name, manager in dep_files.items():
-        file_path = os.path.join(repo_path, file_name)
-        if os.path.exists(file_path):
-            dependencies["package_files"].append({"file": file_name, "manager": manager})
-            
-            # Parse specific file types
-            if file_name == "package.json":
-                try:
-                    with open(file_path, 'r') as f:
-                        package_data = json.load(f)
-                        deps = package_data.get("dependencies", {})
-                        dev_deps = package_data.get("devDependencies", {})
-                        dependencies["dependencies"][manager] = {
-                            "dependencies": deps,
-                            "devDependencies": dev_deps
-                        }
-                except json.JSONDecodeError:
-                    dependencies["dependencies"][manager] = {"error": "Invalid JSON"}
-            
-            elif file_name == "requirements.txt":
-                try:
-                    with open(file_path, 'r') as f:
-                        reqs = [line.strip() for line in f if line.strip() and not line.startswith('#')]
-                        dependencies["dependencies"][manager] = {"requirements": reqs}
-                except Exception:
-                    dependencies["dependencies"][manager] = {"error": "Failed to parse requirements"}
-    
-    return dependencies
+GIT_TOKEN=your-git-token                  # Generate at https://github.com/settings/tokens/new
+GIT_USERNAME=your-git-username
 
-def analyze_quality(repo_path):
-    """Basic code quality analysis"""
-    quality = {"metrics": {}, "issues": []}
-    
-    # Count lines of code
-    total_lines = 0
-    code_files = 0
-    
-    code_extensions = {'.py', '.js', '.ts', '.java', '.cpp', '.c', '.go', '.rs', '.rb'}
-    
-    for root, dirs, files in os.walk(repo_path):
-        dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ['node_modules', '__pycache__']]
-        
-        for file in files:
-            if Path(file).suffix.lower() in code_extensions:
-                file_path = os.path.join(root, file)
-                try:
-                    with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
-                        lines = len(f.readlines())
-                        total_lines += lines
-                        code_files += 1
-                except Exception:
-                    continue
-    
-    quality["metrics"]["total_lines"] = total_lines
-    quality["metrics"]["code_files"] = code_files
-    quality["metrics"]["avg_lines_per_file"] = total_lines // max(code_files, 1)
-    
-    # Check for common quality indicators
-    readme_exists = any(os.path.exists(os.path.join(repo_path, f)) for f in ['README.md', 'README.rst', 'README.txt'])
-    quality["metrics"]["has_readme"] = readme_exists
-    
-    tests_exist = any('test' in d.lower() for d in os.listdir(repo_path) if os.path.isdir(os.path.join(repo_path, d)))
-    quality["metrics"]["has_tests"] = tests_exist
-    
-    if not readme_exists:
-        quality["issues"].append("No README file found")
-    if not tests_exist:
-        quality["issues"].append("No test directory found")
-    
-    return quality
+MAXIMUM_STEPS_SOFT_LIMIT=40
+MAXIMUM_STEPS_HARD_LIMIT=60
+
+OPENAI_MODEL_ID=gpt-4.1
+OPENAI_API_KEY=your-open-ai-keys
+```
+<Note>
+  Make sure to create a **Personal Access Token (classic)** on GitHub with **repository** permissions.
+
+  <Frame>
+    ![](/images/screenshots/2025-04-30-12-33-02.png)
+  </Frame>
+</Note>
+
+---
+
+<Tabs>
+
+<Tab title="Option 1: Auto Sync Environment Secrets (Recommended)">
+Use the CLI to automatically sync environment secrets from your `.env` file:
+
+### Steps:
+
+1. Add the required keys above to your `.env` file.
+2. Run the following command in your terminal:
+
+```bash
+xpander secrets-sync
 ```
 
-4. Name this function **Repository Analyzer** and save it
-5. Add it to your agent by clicking **\+** → **Custom Action** → **Repository Analyzer**
+3. Proceed to the validation step to ensure all secrets were created correctly.
 
-### Step 5: Create Code Generation Function
+<Tip>
+  Your `.env` file is **not uploaded to the cloud**, so syncing via CLI or manually entering secrets in the UI is required for deployment.
+</Tip>
 
-Create another local function for code generation:
+</Tab>
 
-```python Code Generator Function
-# === Code Generator ===
-# Contract-name: xpander_run_action
-# Purpose: Generate code files based on specifications
+<Tab title="Option 2: Manual Configuration via UI (Alternative)">
+If you prefer to configure secrets manually, follow these steps:
 
-import os
-import tempfile
-from pathlib import Path
+### Steps:
 
-def xpander_run_action(file_path: str, code_content: str, language: str = "python"):
-    """
-    Generate and validate code files
-    
-    Args:
-        file_path: Target file path for the generated code
-        code_content: The code content to write
-        language: Programming language for syntax validation
-        
-    Returns:
-        dict: Generation results with validation info
-    """
-    
-    try:
-        # Create directory if it doesn't exist
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        
-        # Write code to file
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(code_content)
-        
-        # Basic validation
-        validation_result = validate_code(code_content, language)
-        
-        # Get file info
-        file_info = {
-            "path": file_path,
-            "size": len(code_content),
-            "lines": len(code_content.split('\n')),
-            "language": language
-        }
-        
-        return {
-            "success": True,
-            "file_info": file_info,
-            "validation": validation_result,
-            "message": f"Code generated successfully at {file_path}"
-        }
-        
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e),
-            "message": "Code generation failed"
-        }
+1. Sign in to [xpander.ai](https://xpander.ai)
+2. Go to **Settings > Environment Secrets**
+3. Add each of the required keys and their values manually (see list above)
 
-def validate_code(code_content: str, language: str):
-    """Basic code validation"""
-    validation = {"syntax_ok": True, "issues": [], "score": 100}
-    
-    # Basic checks for different languages
-    if language.lower() == "python":
-        # Check for basic Python syntax
-        try:
-            compile(code_content, '<string>', 'exec')
-        except SyntaxError as e:
-            validation["syntax_ok"] = False
-            validation["issues"].append(f"Syntax error: {e}")
-            validation["score"] -= 50
-        
-        # Check for basic quality indicators
-        if 'def ' not in code_content and 'class ' not in code_content:
-            validation["issues"].append("No functions or classes defined")
-            validation["score"] -= 20
-            
-        if '"""' not in code_content and "'''" not in code_content:
-            validation["issues"].append("No docstrings found")
-            validation["score"] -= 10
-    
-    elif language.lower() in ["javascript", "typescript"]:
-        # Basic JavaScript/TypeScript checks
-        if 'function' not in code_content and '=>' not in code_content:
-            validation["issues"].append("No functions defined")
-            validation["score"] -= 20
-            
-        if code_content.count('{') != code_content.count('}'):
-            validation["issues"].append("Mismatched braces")
-            validation["score"] -= 30
-    
-    # General quality checks
-    lines = code_content.split('\n')
-    empty_lines = sum(1 for line in lines if not line.strip())
-    if len(lines) > 10 and empty_lines / len(lines) < 0.1:
-        validation["issues"].append("Code could benefit from more whitespace")
-        validation["score"] -= 5
-    
-    return validation
-```
+<Tip>
+  If you're participating in this workshop in person, ask the xpander.ai team for credentials.
+</Tip>
+</Tab>
 
-6. Name this function **Code Generator** and save it
-7. Add it to your agent canvas
+</Tabs>
 
-## 🤖 Configuring Amazon Bedrock Integration
+---
 
-### Step 6: Set Up Bedrock Agent Integration
+### 🧪 Final Validation
 
-1. Click **\+** in your agent canvas
-2. Select **Apps** → **Amazon Bedrock**
-3. Configure your AWS credentials in the integration settings:
+After syncing or manually entering your secrets, validate that everything is set up correctly.
 
-   ```bash AWS Configuration
-   AWS_ACCESS_KEY_ID=your_access_key
-   AWS_SECRET_ACCESS_KEY=your_secret_key
-   AWS_DEFAULT_REGION=us-east-1
-   ```
-
-4. Select the Bedrock agent operations you want to include:
-   - **Create Agent** - For dynamic agent creation
-   - **Invoke Agent** - For agent-to-agent communication (we'll use this in later modules)
-   - **Get Agent** - For agent status and information
-
-### Step 7: Test Your Custom Agent
-
-Let's test your coding agent with a comprehensive scenario:
-
-1. In the **Tester** tab of your agent, try this prompt:
-
-   ```txt Test Prompt
-   Analyze the repository structure of https://github.com/octocat/Hello-World and then generate a Python function that reads a file and counts the number of lines, words, and characters. Save the function to a file called text_analyzer.py
-   ```
-
-2. Observe how your agent:
-   - Uses the Repository Analyzer function to understand the repo
-   - Applies the insights to generate appropriate code
-   - Uses the Code Generator function to create and validate the file
-   - Provides feedback on the generated code quality
+1. Go to the **Settings > Environment Secrets** page on [xpander.ai](https://xpander.ai)
+2. Ensure that all required keys appear.
 
 <Frame>
-  ![Agent Testing Results](/images/screenshots/2025-05-04-01-29-12.png)
+  ![](/images/workshops/env-vars.png)
 </Frame>
 
-## 🔄 Understanding the Custom Agent Pattern
+<Tip>
+  This validation ensures that your cloud agent will have access to the necessary credentials during deployment.
+</Tip>
 
-### What You've Built
+These credentials allow your cloud-deployed agent to access Amazon Bedrock and GitHub securely, without hardcoding sensitive data into your codebase.
 
-Your coding agent demonstrates key custom agent patterns:
+## 🚀 Deploy to the Cloud
 
-1. **Domain Specialization** - Focused on coding and development tasks
-2. **Local Functions** - Execute file operations and code analysis locally
-3. **Tool Integration** - Combine multiple tools (GitHub, Bedrock, local functions)
-4. **Custom Logic** - Repository analysis and code validation
-5. **Extensible Design** - Easy to add new capabilities
+Now that we've confirmed the agent is performing its job and can receive events from the cloud, we can simply host it as a container in the xpander cloud and trigger it when needed!
 
-### How This Applies to Other Domains
+Deploy the agent to the cloud:
 
-The same patterns work for any custom agent:
-
-```txt Content Agent Example
-- Domain: Content creation and editing
-- Local Functions: File operations, text processing, SEO analysis
-- Tools: Content APIs, grammar checkers, publishing platforms
-- Custom Logic: Brand voice validation, content scoring
+```bash
+xpander deploy
 ```
 
-```txt Sales Agent Example
-- Domain: Lead generation and nurturing
-- Local Functions: CRM operations, email automation, data analysis
-- Tools: Sales platforms, communication APIs, analytics tools
-- Custom Logic: Lead scoring, pipeline management
+Example output:
+```
+❯ xpander deploy
+✨ Agent deployment
+────────────────────────────────────────────────────────────
+? Are you sure you want to deploy your AI Agent? Yes
+[+] Building 15.9s (9/10)                                                                                                          docker:desktop-linux
+[+] Building 17.9s (11/11) FINISHED                                                                                                docker:desktop-linux
+ => [internal] load build definition from Dockerfile                                                                                               0.0s
+ => => transferring dockerfile: 839B                                                                                                               0.0s
+ => [internal] load metadata for docker.io/library/python:3.12-alpine                                                                              1.7s
+ => [internal] load .dockerignore                                                                                                                  0.0s
+ => => transferring context: 92B                                                                                                                   0.0s
+ => [1/6] FROM docker.io/library/python:3.12-alpine@sha256:c08bfdbffc9184cdfd225497bac12b2c0dac1d24bbe13287cfb7d99f1116cf43                        0.0s
+ => => resolve docker.io/library/python:3.12-alpine@sha256:c08bfdbffc9184cdfd225497bac12b2c0dac1d24bbe13287cfb7d99f1116cf43                        0.0s
+ => [internal] load build context                                                                                                                  0.4s
+ => => transferring context: 59.91MB                                                                                                               0.4s
+ => CACHED [2/6] WORKDIR /usr/src/app                                                                                                              0.0s
+ => CACHED [3/6] RUN apk add --no-cache     curl     bash     gcc     g++     libffi-dev     musl-dev     openssl-dev     make     python3-dev     0.0s
+ => CACHED [4/6] RUN python3 -m venv /venv                                                                                                         0.0st
+ => [5/6] COPY . .                                                                                                                                 0.4s
+ => [6/6] RUN pip install --no-cache-dir --upgrade pip &&     pip install --no-cache-dir -r requirements.txt                                      14.1s
+ => exporting to image                                                                                                                             1.2s
+ => => exporting layers                                                                                                                            1.2s
+ => => exporting manifest sha256:0289aa66b12daf4645d1a1a2b2ad91bf7909c88d5186fde50140d836c577530e                                                  0.0s
+ => => exporting config sha256:2b9c7296215e889d6fb02d88a0bee9a70ce2b394c11f0b5c5aaaadc2fa2e4dd8                                                    0.0s
+ => => exporting attestation manifest sha256:ae45b33e81cce3fd5f40701243f5ba6bf39d2cb58878d2d19c6b1bbc21d3ca9a                                      0.0s
+ => => exporting manifest list sha256:e2fd5bbeb03bfd140e8ea3847f2ce8f6734aba155da858e5e471d1db97857b99                                             0.0s
+ => => naming to docker.io/library/95c6db28-7052-4054-8970-fa1f69f16de0:latest                                                                     0.0s
+✔ ✅ Upload complete
+✔ Agent dev-agent-1 deployed successfully
 ```
 
-## 📊 Performance and Optimization
+Congratulations on deploying your agent to the cloud!
 
-### Step 8: Optimize Your Agent
+Once deployment is complete, your agent will be fully operational in the cloud, allowing others to interact with it through the web interface.
 
-Add performance monitoring to your agent:
+Access your agent via the agent platform (https://app.xpander.ai/agents)
 
-1. Go to agent settings and enable detailed logging
-2. Configure these optimization settings:
+Test the agent with the following prompt
 
-   ```json Agent Configuration
-   {
-     "max_context_length": 4000,
-     "response_timeout": 30,
-     "function_timeout": 15,
-     "retry_attempts": 2,
-     "quality_threshold": 0.8
-   }
-   ```
-
-3. Set up Agentic RAG for your GitHub tools to optimize API responses
-4. Test performance with various repository sizes and complexity
-
-### Step 9: Add Error Handling
-
-Enhance your agent with robust error handling:
-
-```python Enhanced Error Handling
-def xpander_run_action(repo_url: str, analysis_type: str = "structure"):
-    """Repository analyzer with enhanced error handling"""
-    
-    # Input validation
-    if not repo_url or not repo_url.startswith(('http://', 'https://')):
-        return {"error": "Invalid repository URL provided"}
-    
-    if analysis_type not in ["structure", "dependencies", "quality"]:
-        return {"error": f"Invalid analysis type: {analysis_type}. Must be one of: structure, dependencies, quality"}
-    
-    try:
-        # Implementation with proper error handling
-        # ... existing code ...
-        
-    except subprocess.TimeoutExpired:
-        return {"error": "Repository clone timeout - repository may be too large"}
-    except subprocess.CalledProcessError as e:
-        return {"error": f"Git operation failed: {e.stderr}"}
-    except PermissionError:
-        return {"error": "Permission denied accessing repository"}
-    except Exception as e:
-        return {"error": f"Unexpected error: {str(e)}"}
+```txt Prompt
+I want to submit app to xpander-ai/apps-by-agents can you summarize the requirements ?
 ```
 
-## ✅ Module Checkpoint
+<Frame>![](/images/screenshots/2025-05-05-16-49-43.png)</Frame>
 
-By completing this module, you should have:
+<Tip>
+  run `xpander logs` to stream logs from the remote server to your terminal
+</Tip>
 
-1. **Created a Custom Coding Agent** with specialized role and behavior
-2. **Implemented Local Functions** for repository analysis and code generation
-3. **Integrated Multiple Tools** including GitHub and Amazon Bedrock
-4. **Tested Agent Functionality** with real repository analysis
-5. **Applied Optimization Patterns** for performance and reliability
+## ✅ Checkpoint
 
-### Key Concepts Learned
+By completing this module, you should now be able to:
 
-- **Custom Agent Design** - How to create domain-specific agents
-- **Local Function Execution** - Running custom code within agents
-- **Tool Integration Patterns** - Combining multiple capabilities
-- **Error Handling** - Building robust agent operations
-- **Performance Optimization** - Making agents efficient and reliable
+1. Create and configure a developer agent with xpander.ai
+2. Run the agent locally and interact with it via terminal
+3. Connect your local agent to the xpander.ai cloud platform
+4. Deploy your agent to the cloud for remote access
+5. Understand the core architecture of developer agents
 
 ## 🔄 Next Steps
 
-Your first custom coding agent is now ready! In the next module, you'll:
-
-- Create a second coding agent with different capabilities
-- Learn about agent specialization and role differentiation
-- Explore how multiple agents can complement each other
-- Set up the foundation for Agent-to-Agent communication
-
-Ready to expand your agent fleet? Let's continue to Module 2! 
+Now that you've built your first developer agent, you're ready to expand your agent fleet in the [next module](/workshops/a2a-mcp-workshop/02-expand-agent-fleet).

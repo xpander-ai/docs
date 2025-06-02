@@ -1,98 +1,48 @@
 ---
 title: "Welcome"
-description: "Build custom AI agents that collaborate using Agent-to-Agent protocols with coding as a practical example"
+description: "Build custom Agents and Serverless AI agents that collaborate to streamline development tasks and assist with coding"
 icon: "rocket"
 ---
 
-# A2A Custom Agents Workshop
+# A2A-MCP Agents Workshop
 
 <Frame>
   ![A2A Workshop Banner](/images/workshops/Github.png)
 </Frame>
 
-In this workshop, you'll learn to build custom AI agents using xpander.ai that collaborate through Agent-to-Agent (A2A) protocols. Using coding agents as a practical example, you'll create agents that work together to handle complex multi-step tasks through intelligent coordination and communication.
+In this workshop, you'll build AI agents with xpander.ai and Amazon Bedrock. You'll create agents that work together to help with coding and development tasks.
 
-When finished, you'll understand how to create custom agents for any domain, implement A2A communication patterns, and build reliable multi-agent systems that can tackle sophisticated challenges.
-
-## The xpander.ai Custom Agent Platform
-
-xpander.ai provides the infrastructure for building custom autonomous agents:
-
-- **Custom Agent Framework** - Build agents for any domain or use case
-- **Agent-to-Agent Protocol (A2A)** - Orchestration and communication between agents
-- **Local Functions** - Execute custom code and local operations 
-- **Unified state management** - Memory objects to make agents stateful with thread support
-- **Tool access** - Model Context Protocol (MCP) compatible tool integration
-- **Agentic RAG** - Optimize API responses for better agent performance
-- **Reliable execution** - Robust engine for tool use and AI calls
-- **Human interfaces** - REST API, Web UI, MCP, and webhook support
-- **Vault** - Secure key management
-
-## Workshop Focus: Custom Agents with A2A
-
-This workshop teaches you to build custom agents using coding as a concrete example. The principles apply to any domain:
-
-1. **Custom Agent Design** - Design patterns for domain-specific agents
-2. **A2A Communication** - How agents coordinate and collaborate
-3. **Local Functions** - Execute custom logic and operations locally
-4. **Multi-Agent Orchestration** - Manage complex workflows across agents
-5. **Practical Implementation** - Build coding agents as a real-world example
-
-## Workshop Modules
-
-<CardGroup cols={2}>
-  <Card title="1. Build Your First Coding Agent" icon="code" href="/workshops/a2a-mcp-workshop/01-first-coding-agent" color="#4A2C99">
-    Create a custom developer agent with Amazon Bedrock that manages repos and writes code.
-  </Card>
-  
-  <Card title="2. Expand Your Agent Fleet" icon="users" href="/workshops/a2a-mcp-workshop/02-expand-agent-fleet" color="#753CFF">
-    Add a second coding agent with different capabilities and behavior patterns.
-  </Card>
-  
-  <Card title="3. Build a Manager Agent" icon="sitemap" href="/workshops/a2a-mcp-workshop/03-serverless-manager-agent" color="#9B70FF">
-    Create a coordinator agent that orchestrates your coding agents using A2A protocols.
-  </Card>
-</CardGroup>
+When finished, you'll have a GitHub agent in your IDE, two coding agents, and a manager agent that coordinates them. You'll use these agents to build and submit a sample application.
 
 ## What You'll Learn
 
 This workshop teaches you:
 
-- **Custom Agent Architecture** - Design patterns for building domain-specific agents
-- **A2A vs MCP** - When to use Agent-to-Agent communication vs. tool access protocols
-- **Local Functions** - How to execute custom code and operations within agents
-- **Multi-Agent Systems** - Orchestration, coordination, and communication patterns
-- **Practical Implementation** - Real-world coding agent examples you can adapt
+- When to use A2A for agent communication vs. MCP for tool access
+- How to use Agentic RAG to handle large API responses
+- Converting agents from different frameworks to work together
+- Adding tools to agents and setting up specific behaviors
+- Monitoring agent systems during operation
 
-## Key Concepts
+## Modules
 
-### Custom Agents
-Learn to build agents tailored for specific domains and use cases:
-- Role definition and specialization
-- Custom logic and business rules
-- Domain-specific tools and capabilities
-- Performance optimization for specific tasks
-
-### Agent-to-Agent (A2A) Protocol
-Understand how agents collaborate:
-- Coordination and task delegation
-- Information sharing between agents
-- Conflict resolution and consensus
-- Workflow orchestration across multiple agents
-
-### Local Functions
-Execute custom operations within agents:
-- File system operations
-- Database interactions
-- API integrations
-- Custom business logic
-
-### Coding Agent Example
-While the workshop uses coding agents as examples, the patterns apply to any domain:
-- Repository management agents
-- Code generation specialists
-- Quality assurance agents
-- Project management coordinators
+<CardGroup cols={2}>
+  <Card title="1. First Coding Agent" icon="code" href="/workshops/a2a-mcp-workshop/01-first-coding-agent" color="#4A2C99">
+    Create your first developer agent with Amazon Bedrock.
+  </Card>
+  
+  <Card title="2. Expand Agent Fleet" icon="users" href="/workshops/a2a-mcp-workshop/02-expand-agent-fleet" color="#4A2C99">
+    Add a second developer agent with different capabilities.
+  </Card>
+  
+  <Card title="3. Build Manager Agent" icon="sitemap" href="/workshops/a2a-mcp-workshop/03-serverless-manager-agent" color="#753CFF">
+    Create a manager agent to orchestrate your developer agents.
+  </Card>
+  
+  <Card title="4. Submit Application" icon="rocket" href="/workshops/a2a-mcp-workshop/04-submit-application" color="#9B70FF">
+    Build and submit your application using your agent fleet.
+  </Card>
+</CardGroup>
 
 ## Prerequisites
 
@@ -100,22 +50,8 @@ You need:
 
 - AWS account with Amazon Bedrock access
 - xpander.ai account
+- Cursor IDE with MCP support
+- Basic Python knowledge
 - GitHub account
-- Basic understanding of AI agents and APIs
-- Programming knowledge (Python/JavaScript helpful)
 
-## Beyond Coding Agents
-
-The patterns you'll learn apply to many domains:
-
-- **Content Creation** - Agents for writing, editing, and publishing
-- **Data Analysis** - Agents for processing, analyzing, and reporting
-- **Customer Service** - Agents for support, escalation, and resolution
-- **Sales & Marketing** - Agents for lead generation, nurturing, and conversion
-- **Operations** - Agents for monitoring, alerting, and automation
-
-## Getting Started
-
-Ready to build custom agents that work together? Start with Module 1 to create your first coding agent and learn the foundational patterns for custom agent development.
-
-Go to module 1 to begin building your custom agent system!
+Go to module 1 in order to start the workshop.
