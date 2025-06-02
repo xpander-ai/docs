@@ -110,8 +110,7 @@
                   "workshops/swe-cloud-agent-workshop/index",
                   "workshops/swe-cloud-agent-workshop/01-intro-cloud-swe-agents",
                   "workshops/swe-cloud-agent-workshop/02-load-backend-template",
-                  "workshops/swe-cloud-agent-workshop/03-submit-competition",
-                  "workshops/swe-cloud-agent-workshop/04-advanced-customization"
+                  "workshops/swe-cloud-agent-workshop/03-advanced-customization"
                 ]
               }
             ]
