@@ -263,6 +263,10 @@
   },
 "redirects": [
   {
+    "source": "/workshops/a2a-mcp-workshop",
+    "destination": "/workshops/a2a-mcp-workshop/index"
+  },
+  {
     "source": "/workshops/swe-cloud-agent-workshop",
     "destination": "/workshops/swe-cloud-agent-workshop/index"
   }
