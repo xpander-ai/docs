@@ -1,6 +1,6 @@
 ---
 title: "Module 3: Advanced Customization"
-description: "Run your own agent loop, add tools and optionally deploy with Xpander CLI"
+description: "Run the agent loop locally via a notebook"
 icon: "gear"
 ---
 
@@ -8,34 +8,25 @@ icon: "gear"
 
 ### **Module Summary**
 
-- **Goal**: Customize agent loops, add Python tools, and run the agent locally or via cloud event hook
-- **Estimated Time**: 45–60 minutes
-- **Prerequisites**: Python 3.12, Node.js v22, completed Modules 1–3
+- **Goal**: Customize agent loops, add Python tools, and run the agent locally
+- **Prerequisites**: Python 3.12, Node.js v22
 
 </Note>
 
 ---
 
-## 🧭 What You'll Do in This Module
+## What you'll do in This module
 
-In this module, you’ll gain **full control** over your agent’s behavior.
+In this module, you’ll gain full control over your agent’s behavior.
 
 You’ll learn how to:
 
-- Run your agent locally via **Notebook**, **CLI**, or **event handler**
-- Customize the **agent loop**, allowing advanced logic or prompt shaping
-- Add **your own Python tools** to expand what the agent can do
-- Optionally deploy the agent using the **xpander.ai CLI** for cloud-based execution
+- Run your agent locally via a Jupyter notebook.
+- Customize the agent loop, allowing advanced logic or prompt shaping
+- Add your own Python tools to expand what the agent can do
 
-By the end, you’ll be able to create and extend fully working agents tailored to your needs - whether you want to explore behavior in a notebook or power up a frontend integration.
 
-Let’s get started.
-
----
-
-## ⚙️ Environment Setup
-
-This setup is required for **all run modes** (Notebook, CLI, Event-driven):
+## Environment Setup
 
 | Tool    | Required Version |
 | ------- | ---------------- |
@@ -48,10 +39,7 @@ Use `pyenv` and `nvm` to manage these versions if needed:
 python3 --version     # 3.12.7
 node --version        # v22.x
 ````
-
----
-
-## 🧱 Step 1: Clone the Template Repository
+## Clone the template repository
 
 ```bash
 git clone https://github.com/xpander-ai/xpander.ai.git
@@ -60,9 +48,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
----
-
-## 🔐 Step 2: CLI Login & Agent Initialization
+## CLI Login & Agent Initialization
 
 Install the CLI and initialize your agent:
 
@@ -71,6 +57,12 @@ npm i -g xpander-cli
 xpander login
 xpander initialize
 ```
+To get the Agent ID of your SWE agent for the initialization part:
+1. Go back to the AI Workbench
+2. Click the "SDK" trigger node, at the top part of the canvas
+3. Copy the Agent ID from there, and paste it in the CLI prompt
+
+![swe cli init](/images/workshops/swe-cli-login-and-init.png)
 
 This creates the following files:
 
@@ -78,11 +70,8 @@ This creates the following files:
 * `agent_instructions.json`
 * `requirements.txt`
 
-![swe cli init](/images/workshops/swe-cli-login-and-init.png)
 
----
-
-## 📦 Step 3: Install Agent Dependencies
+## Install agent dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -96,109 +85,15 @@ OPENAI_MODEL_ID=gpt-4.1
 OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
----
+## Run the agent via a Jupyter notebook.
 
-## 💬 Step 4: Run the Agent
-
-### Option A: Notebook Mode (Recommended for Exploration)
-
-This mode is ideal for stepping through the agent lifecycle.
-
-#### ▶️ 1. Open the Notebook
-
-Open `my_agent.ipynb` in VSCode, Jupyter Lab, or any notebook viewer.
+Here, we'll step through the agent lifecycle.
+Open `my_agent.ipynb` in VSCode, Cursor, Jupyter Lab, or any notebook viewer.
 
 ![swe notebook](/images/workshops/swe-notebook.png)
 
-#### 🧪 2. Import Libraries
 
-Run this cell first:
-
-```python
-from xpander_sdk import XpanderClient, Agent
-from my_agent import MyAgent
-from dotenv import load_dotenv
-import json
-```
-
-#### 🔧 3. Load Configuration
-
-```python
-load_dotenv()
-
-with open('xpander_config.json', 'r') as config_file:
-    xpander_config = json.load(config_file)
-```
-
-#### 🧠 4. Initialize and Wrap the Agent
-
-```python
-xpander_client = XpanderClient(api_key=xpander_config.get("api_key"))
-xpander_agent = xpander_client.agents.get(agent_id=xpander_config.get("agent_id"))
-agent = MyAgent(xpander_agent)
-```
-
-#### 💬 5. Send a Task to the Agent
-
-```python
-thread = await agent.chat("Add a simple, beautiful Shazam-style app (HTML, CSS, JS) to xpander-ai/apps-by-agents.")
-```
-
-#### 📊 6. Retrieve and Display Result
-
-```python
-execution_result = xpander_agent.retrieve_execution_result()
-print("status:", execution_result.status.value)
-print("result:", execution_result.result)
-```
-
-![swe task result](/images/workshops/swe-coding-task-result.png)
-
-#### 🧾 7. Visualize Message History (Optional)
-
-```python
-from tabulate import tabulate
-
-messages = xpander_agent.messages
-for msg in messages:
-    print(msg["role"], ":", msg["content"][:100])
-```
-
-![swe task messages](/images/workshops/swe-coding-task-messages.png)
-
----
-
-### Option B: CLI Mode
-
-Run the agent directly via:
-
-```bash
-python app.py
-```
-
-Then send a prompt like:
-
-```text
-Create a responsive Agents Directory app (HTML, CSS, JS) with mock agents and PR to xpander-ai/apps-by-agents.
-```
-
-![swe cli](/images/workshops/swe-coding-cli.png)
-
----
-
-### Option C: Event-Driven Mode
-
-Run the event handler script for live frontend integration:
-
-```bash
-python xpander_handler.py
-```
-
-![swe coding handler](/images/workshops/swe-coding-handler.png)
-
----
-
-## 🔧 Step 5: Add Local Tools
+## Add Local Tools
 
 Define a custom tool in `tools/local_tools.py`:
 
@@ -235,7 +130,7 @@ self.agent.add_local_tools([tool["declaration"] for tool in local_tools])
 
 ---
 
-## 🧠 Step 6: Customize the Agent Loop
+## Customize the agent loop
 
 Modify the main loop in `my_agent.py`:
 
@@ -253,23 +148,7 @@ Customize:
 
 ---
 
-## 🚀 Step 7: Deploy to Cloud
 
-Use Xpander CLI to deploy your agent:
-
-```bash
-xpander deploy
-```
-
-![swe xpander deploy](/images/workshops/xpander-deploy.png)
-
-View live logs:
-
-```bash
-xpander logs
-```
-
----
 
 ## 🧯 Troubleshooting
 
@@ -289,5 +168,4 @@ xpander logs
 | 🧠 Custom Logic    | Full control with `_agent_loop()`      |
 | 🛠 Tooling         | Add Python tools as callable functions |
 | 🧲 Hybrid Mode     | Local + Cloud support                  |
-| 📦 One-Line Deploy | `xpander deploy` ready                 |
 | 🔍 Insights        | Built-in metrics and logs              |
