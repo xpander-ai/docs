@@ -98,41 +98,123 @@ Run through the notebook, and then come back to this guide to add local tools in
 
 ![swe notebook](/images/workshops/swe-notebook.png)
 
+---
+## Add a Local Tool to Star a GitHub Repository (Optional)
 
-## Add local tools
+In this step, you’ll enable your agent to run a custom tool that stars a GitHub repository.
 
-Define a custom tool in `tools/local_tools.py`:
+### 1. Generate a GitHub Token
+
+First, create a GitHub personal access token:  
+👉 [Generate Token](https://github.com/settings/tokens/new)
+
+<Frame>
+  <video
+    autoPlay
+    muted
+    loop
+    playsInline
+    className="w-full aspect-video"
+    src="https://assets.xpanderai.io/workshops/videos/create-github-token.mp4"
+  />
+</Frame>
+
+---
+
+### 2. Add the Token to Your `.env` File
+
+Update your `.env` file with the following:
+
+```env
+OPENAI_MODEL_ID=gpt-4.1                            # Your existing model ID
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  # Your existing OpenAI key
+GITHUB_TOKEN=YOUR_TOKEN_GOES_HERE                  # Paste your GitHub token here
+````
+
+---
+
+### 🧩 3. Define the Custom Tool
+
+Replace the contents of `tools/local_tools.py` with:
 
 ```python
-def say_hello(name: str) -> dict:
-    return {"message": f"Hello {name}, welcome to the workshop!"}
+import requests
+from os import getenv
+
+def star_github_repo(repo_full_name: str):
+    result = {"success": False, "message": ""}
+    try:
+        token = getenv("GITHUB_TOKEN")
+        if not token:
+            result["message"] = "Error: GITHUB_TOKEN not found in environment variables."
+            return result
+
+        url = f"https://api.github.com/user/starred/{repo_full_name}"
+        headers = {
+            "Authorization": f"token {token}",
+            "Accept": "application/vnd.github+json",
+        }
+
+        response = requests.put(url, headers=headers)
+        result["success"] = response.status_code == 204
+        result["message"] = "Done" if result["success"] else "Failed"
+    except Exception as e:
+        result["message"] = str(e)
+
+    return result
 
 local_tools = [
     {
         "declaration": {
             "type": "function",
             "function": {
-                "name": "say_hello",
-                "description": "Greets the user",
+                "name": "star_github_repo",
+                "description": "Star a GitHub repository",
                 "parameters": {
                     "type": "object",
                     "properties": {
-                        "name": {"type": "string", "description": "User's name"}
+                        "repo_full_name": {
+                            "type": "string",
+                            "description": "Full name of the repository (e.g. xpander-ai/xpander.ai)"
+                        }
                     },
-                    "required": ["name"]
+                    "required": ["repo_full_name"]
                 }
             }
         },
-        "fn": say_hello
+        "fn": star_github_repo
     }
 ]
+
+# Helper mappings
+local_tools_list = [tool["declaration"] for tool in local_tools]
+local_tools_by_name = {tool["declaration"]["function"]["name"]: tool["fn"] for tool in local_tools}
 ```
 
-Register in `my_agent.py`:
+![swe replace local tools](/images/workshops/swe-replacing-local-tools.png)
+
+---
+
+### 🔄 4. Reload the Agent
+
+Add a new cell to reinitialize the agent with the updated tools:
 
 ```python
-self.agent.add_local_tools([tool["declaration"] for tool in local_tools])
+agent = MyAgent(xpander_agent)  # The agent will now include the updated local tools
 ```
+
+---
+
+### 🤖 5. Ask the Agent to Star a Repository
+
+Add a new cell to send a prompt to the agent:
+
+```python
+# Ask the agent to star a specific repo
+await agent.chat("star repo xpander-ai/xpander.ai")
+```
+
+![swe star repo result](/images/workshops/swe-star-repo-result.png)
 
 ---
 
