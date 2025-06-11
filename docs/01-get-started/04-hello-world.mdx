@@ -17,7 +17,7 @@ This guide provides a simple Hello World example to get you started with xpander
 - Core SDK architecture and components
 </Note>
 
-This Hello World guide shows you how to enhance any AI agent with xpander.ai's backend capabilities for memory, tools, and more.
+This guide shows how to enhance any agent with xpander.ai's backend for memory, tools, and more.
 
 ## 📦 Installation
 
@@ -62,6 +62,9 @@ agent = xpander.agents.get(agent_id=os.getenv("XPANDER_AGENT_ID"))
 # Select the LLM provider you want to use
 agent.select_llm_provider(LLMProvider.OPEN_AI)
 
+# Let the LLM decide when it has finished
+agent.enable_agent_end_tool()
+
 # Add a task for the agent to process
 agent.add_task("Hello world! Tell me what you can do.")
 
@@ -69,7 +72,7 @@ agent.add_task("Hello world! Tell me what you can do.")
 while not agent.is_finished():
     # Get LLM response from OpenAI
     response = openai.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4.1",
         messages=agent.messages,
         tools=agent.get_tools(),
         tool_choice=agent.tool_choice,
@@ -93,6 +96,41 @@ print(result.result)
 # Store the thread_id for future conversations (memory persistence)
 thread_id = result.memory_thread_id
 print(f"Thread ID: {thread_id}")
+```
+
+```typescript hello_world_agent.ts
+import { XpanderClient, LLMProvider } from '@xpander-ai/sdk';
+import OpenAI from 'openai';
+
+const xpander = new XpanderClient({ apiKey: process.env.XPANDER_API_KEY });
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+const agent = await xpander.agents.get({ agentId: process.env.XPANDER_AGENT_ID });
+agent.selectLLMProvider(LLMProvider.OPEN_AI);
+// Allow the model to finish when done
+agent.enableAgentEndTool();
+await agent.addTask({ input: 'Hello world! Tell me what you can do.' });
+
+while (!(await agent.isFinished())) {
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4.1',
+    messages: agent.messages,
+    tools: agent.getTools(),
+    tool_choice: agent.toolChoice,
+    temperature: 0
+  });
+
+  await agent.addMessages(response);
+  const toolCalls = agent.extractToolCalls({ llmResponse: response });
+  if (toolCalls.length > 0) {
+    await agent.runTools({ toolCalls });
+  }
+}
+
+const result = await agent.retrieveExecutionResult();
+console.log(result.result);
+const threadId = result.memoryThreadId;
+console.log(`Thread ID: ${threadId}`);
 ```
 
 ### Deploy agent to the cloud

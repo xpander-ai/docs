@@ -62,7 +62,7 @@ def agent_loop(agent: Agent, local_tools_by_name=None):
         # Get response from OpenAI
         start_time = time.perf_counter()
         response = openai_client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4.1",
             messages=agent.messages,
             tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
             tool_choice=agent.tool_choice,
@@ -92,7 +92,7 @@ def agent_loop(agent: Agent, local_tools_by_name=None):
     # Report execution metrics to Xpander
     agent.report_execution_metrics(
         llm_tokens=execution_tokens,
-        ai_model="gpt-4o"
+        ai_model="gpt-4.1"
     )
     
     print(f"✨ Execution duration: {time.perf_counter() - execution_start_time:.2f} seconds")
@@ -214,7 +214,7 @@ Add local tool execution to the `agent_loop` function:
 # Inside agent_loop, after running cloud tools:
 # Run local tools if provided
 if local_tools_by_name:
-    pending_local_tool_execution = XpanderClient.retrieve_pending_local_tool_calls(tool_calls=tool_calls)
+    pending_local_tool_execution = agent.retrieve_pending_local_tool_calls(tool_calls=tool_calls)
     local_tools_results = []
     
     for tc in pending_local_tool_execution:
@@ -443,7 +443,7 @@ def agent_loop(agent: Agent, local_tools_by_name=None):
         # Get response from OpenAI
         start_time = time.perf_counter()
         response = openai_client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4.1",
             messages=agent.messages,
             tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
             tool_choice=agent.tool_choice,
@@ -478,7 +478,7 @@ def agent_loop(agent: Agent, local_tools_by_name=None):
             
             # Run local tools if provided
             if local_tools_by_name:
-                pending_local_tool_execution = XpanderClient.retrieve_pending_local_tool_calls(tool_calls=tool_calls)
+                pending_local_tool_execution = agent.retrieve_pending_local_tool_calls(tool_calls=tool_calls)
                 local_tools_results = []
                 
                 for tc in pending_local_tool_execution:
@@ -504,7 +504,7 @@ def agent_loop(agent: Agent, local_tools_by_name=None):
     # Report execution metrics to Xpander
     agent.report_execution_metrics(
         llm_tokens=execution_tokens,
-        ai_model="gpt-4o"
+        ai_model="gpt-4.1"
     )
     
     print(f"✨ Execution duration: {time.perf_counter() - execution_start_time:.2f} seconds")

@@ -258,7 +258,7 @@ Extracts tool calls from an LLM response using the agent's selected provider.
 <CodeGroup>
 ```python Python
 response = openai_client.chat.completions.create(
-    model="gpt-4o",
+    model="gpt-4.1",
     messages=agent.messages,
 )
 tool_calls = agent.extract_tool_calls(llm_response=response.model_dump())
@@ -266,7 +266,7 @@ tool_calls = agent.extract_tool_calls(llm_response=response.model_dump())
 
 ```typescript TypeScript
 const response = await openai.chat.completions.create({
-    model: "gpt-4o",
+    model: "gpt-4.1",
     messages: agent.messages
 });
 const toolCalls = agent.extractToolCalls({ llmResponse: response });
@@ -282,19 +282,19 @@ const toolCalls = agent.extractToolCalls({ llmResponse: response });
 The agent automatically uses its configured LLM provider when `llm_provider` is omitted. Change it with `agent.select_llm_provider()` if you need to parse a response from another provider. You can also call `XpanderClient.extract_tool_calls()` directly when working without an agent.
 </Note>
 
-### XpanderClient.retrieve_pending_local_tool_calls() / retrievePendingLocalToolCalls()
+### agent.retrieve_pending_local_tool_calls() / retrievePendingLocalToolCalls()
 
 Filters tool calls to retrieve only those that should be processed locally.
 
 <CodeGroup>
 ```python Python
-local_tool_calls = XpanderClient.retrieve_pending_local_tool_calls(
+local_tool_calls = agent.retrieve_pending_local_tool_calls(
     tool_calls=tool_calls
 )
 ```
 
 ```typescript TypeScript
-const localToolCalls = XpanderClient.retrievePendingLocalToolCalls({
+const localToolCalls = agent.retrievePendingLocalToolCalls({
     toolCalls: toolCalls
 });
 ```

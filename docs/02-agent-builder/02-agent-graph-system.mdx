@@ -255,7 +255,7 @@ You can create agent graphs using either the visual UI or programmatically with 
             # Run the agent execution loop
             while not self.agent.is_finished():
                 response = self.openai_client.chat.completions.create(
-                    model="gpt-4o",
+                    model="gpt-4.1",
                     messages=self.agent.messages,
                     tool_choice=self.agent.tool_choice,
                     temperature=0.0

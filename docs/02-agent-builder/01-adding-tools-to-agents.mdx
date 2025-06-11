@@ -302,7 +302,7 @@ When using local tools, you need to execute them manually when the LLM calls the
 
 ```python my-agent.py
 response = openai_client.chat.completions.create(
-    model="gpt-4o",
+    model="gpt-4.1",
     messages=agent.messages,
     tools=agent.get_tools(),
     temperature=0
@@ -314,7 +314,7 @@ all_calls = self.agent_backend.extract_tool_calls(
 )
     
 # Process local tools manually
-local_tool_calls = XpanderClient.retrieve_pending_local_tool_calls(all_calls)
+local_tool_calls = agent.retrieve_pending_local_tool_calls(all_calls)
     
 ## execute local tool calls
 ## Manually call the functions 
