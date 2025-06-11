@@ -21,7 +21,7 @@ response = self.model.chat.completions.create(
             )
 self.agent_backend.add_messages(response.model_dump())
 
-tool_calls = XpanderClient.extract_tool_calls(llm_response=response.model_dump())
+tool_calls = self.agent_backend.extract_tool_calls(llm_response=response.model_dump())
 tool_results = self.agent_backend.run_tools(tool_calls=tool_calls)
 
 for tool in tool_results:
@@ -309,7 +309,7 @@ response = openai_client.chat.completions.create(
 )
 
 # Extract all tool calls
-all_calls = XpanderClient.extract_tool_calls(
+all_calls = self.agent_backend.extract_tool_calls(
     response.model_dump()
 )
     

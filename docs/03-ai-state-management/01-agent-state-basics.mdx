@@ -60,7 +60,6 @@ while not agent.is_finished():
     response = openai_client.chat.completions.create(
         model="gpt-4o",
         messages=agent.messages,
-        tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
         tool_choice=agent.tool_choice,
         temperature=0.0
     )
@@ -69,9 +68,8 @@ while not agent.is_finished():
     agent.add_messages(response.model_dump())
     
     # Extract and execute tool calls
-    tool_calls = XpanderClient.extract_tool_calls(
+    tool_calls = agent.extract_tool_calls(
         llm_response=response.model_dump(),
-        llm_provider=LLMProvider.OPEN_AI
     )
     
     if tool_calls:

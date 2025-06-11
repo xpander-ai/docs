@@ -284,7 +284,7 @@ Next, we’ll add the agent’s response to memory, call the `GoogleFileManageme
 agent.add_messages(response.model_dump())
 
 # Run tool calling to get the result
-tool_calls = XpanderClient.extract_tool_calls(llm_response=response.model_dump())
+tool_calls = agent.extract_tool_calls(llm_response=response.model_dump())
 tool_result = agent.run_tools(tool_calls=tool_calls)
 
 for result in tool_result:
@@ -337,7 +337,7 @@ Just like before, we’ll add the agent response to the memory, call the corresp
 agent.add_messages(response.model_dump())
 
 # Run tool calling to get the result
-tool_calls = XpanderClient.extract_tool_calls(llm_response=response.model_dump())
+tool_calls = agent.extract_tool_calls(llm_response=response.model_dump())
 tool_result = agent.run_tools(tool_calls=tool_calls)
 
 for result in tool_result:
@@ -387,7 +387,7 @@ This time, the agent wants to call `xpfinish-agent-execution-finished` to signal
 # Add messages to the memory
 agent.add_messages(response.model_dump())
 # Run tool calling to get the result
-tool_calls = XpanderClient.extract_tool_calls(llm_response=response.model_dump())
+tool_calls = agent.extract_tool_calls(llm_response=response.model_dump())
 tool_result = agent.run_tools(tool_calls=tool_calls)
 
 for result in tool_result:
@@ -471,7 +471,7 @@ while not agent.is_finished():
     agent.add_messages(response.model_dump())
 
     # Extract and run tool calls
-    tool_calls = XpanderClient.extract_tool_calls(llm_response=response.model_dump())
+    tool_calls = agent.extract_tool_calls(llm_response=response.model_dump())
     tool_result = agent.run_tools(tool_calls=tool_calls)
 ```
 Once the agent has finished its execution, you can also retrieve the thread ID of the agent execution by simply using the following method:

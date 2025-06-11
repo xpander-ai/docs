@@ -134,6 +134,9 @@
               "api-reference/07-sdk/xpander-sdk/Tasks",
               "api-reference/07-sdk/xpander-sdk/Agent.Graph",
               "api-reference/07-sdk/xpander-sdk/tool-models"
+              ,"api-reference/07-sdk/xpander-sdk/LLMTokens"
+              ,"api-reference/07-sdk/xpander-sdk/LLMMetrics"
+              ,"api-reference/07-sdk/xpander-sdk/ExecutionMetrics"
             ]
           }
         ]

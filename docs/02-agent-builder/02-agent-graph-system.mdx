@@ -257,16 +257,14 @@ You can create agent graphs using either the visual UI or programmatically with 
                 response = self.openai_client.chat.completions.create(
                     model="gpt-4o",
                     messages=self.agent.messages,
-                    tools=self.agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
                     tool_choice=self.agent.tool_choice,
                     temperature=0.0
                 )
                 
                 self.agent.add_messages(response.model_dump())
                 
-                tool_calls = XpanderClient.extract_tool_calls(
+                tool_calls = self.agent.extract_tool_calls(
                     llm_response=response.model_dump(),
-                    llm_provider=LLMProvider.OPEN_AI
                 )
                 
                 if tool_calls:

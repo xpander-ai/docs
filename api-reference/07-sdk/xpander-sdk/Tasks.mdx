@@ -237,7 +237,6 @@ while not agent.is_finished():
     response = openai_client.chat.completions.create(
         model="gpt-4o",
         messages=agent.messages,
-        tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
         temperature=0
     )
     
@@ -245,9 +244,8 @@ while not agent.is_finished():
     agent.add_messages(response.model_dump())
     
     # Process tool calls
-    tool_calls = XpanderClient.extract_tool_calls(
+    tool_calls = agent.extract_tool_calls(
         llm_response=response.model_dump(),
-        llm_provider=LLMProvider.OPEN_AI
     )
     
     if tool_calls:
@@ -276,10 +274,7 @@ while (!(await agent.isFinished())) {
     await agent.addMessages(response);
     
     // Process tool calls
-    const toolCalls = XpanderClient.extractToolCalls({
-        llmResponse: response,
-        llmProvider: LLMProvider.OPEN_AI
-    });
+    const toolCalls = agent.extractToolCalls({ llmResponse: response });
     
     if (toolCalls.length > 0) {
         await agent.runTools({ toolCalls });
@@ -388,4 +383,15 @@ if (task.status === "COMPLETED") {
   <Card title="XpanderClient" icon="microchip" href="/api-reference/07-sdk/xpander-sdk/XpanderClient">
     Main client for the xpander.ai SDK
   </Card>
-</CardGroup> 
+  <Card title="LLMMetrics" icon="chart-simple" href="/api-reference/07-sdk/xpander-sdk/LLMMetrics">
+    Token usage metrics
+  </Card>
+  <Card title="ExecutionMetrics" icon="chart-simple" href="/api-reference/07-sdk/xpander-sdk/ExecutionMetrics">
+    Execution statistics
+  </Card>
+</CardGroup>
+
+<Note>
+You can find detailed task examples in the
+<Link href="https://github.com/xpander-ai/xpander-sdk/blob/main/docs/python/Agents.md">xpander-sdk docs</Link>.
+</Note>

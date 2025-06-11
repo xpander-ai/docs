@@ -49,7 +49,7 @@ Returns: `Agent` instance
 |--------------------|---------------------|--------------------------------------------------|
 | `memory_type`      | MemoryType          | Type of memory (e.g., SHORT_TERM)                |
 | `memory_strategy`  | MemoryStrategy      | Strategy for memory management (e.g., FULL)      |
-| `end_tool_enabled` | boolean             | Whether automatic task ending is enabled         |
+| `end_tool_enabled` | boolean             | Whether the xpfinish-agent-execution-finished tool is available to the model |
 | `has_local_tools`  | boolean             | Whether agent has local tools attached           |
 | `access_scope`     | AgentAccessScope    | Access scope (e.g., ORGANIZATIONAL)              |
 | `delegation_type`  | AgentDelegationType | Delegation type (e.g., ROUTER)                   |
@@ -106,16 +106,16 @@ Returns: Updated `Agent` object
 
 ### disable_agent_end_tool() / disableAgentEndTool()
 
-Disables the automatic task completion tool, giving more control over when a task ends.
+Disables the `xpfinish-agent-execution-finished` tool so the model cannot decide when to finish the task. When disabled, you can implement your own end logic or rely on the task ending once the model stops producing tool calls.
 
 <CodeGroup>
 ```python Python
-# Disable automatic task completion
+# Disable the xpfinish-agent-execution-finished function
 agent.disable_agent_end_tool()
 ```
 
 ```typescript TypeScript
-// Disable automatic task completion
+// Disable the xpfinish-agent-execution-finished function
 agent.disableAgentEndTool();
 ```
 </CodeGroup>
@@ -173,6 +173,156 @@ const node = agent.retrieveNodeFromGraph("tool-id-123");
 | `item_id` | string | Yes      | ID of the graph node  |
 
 Returns: `GraphItem` object or `undefined` if not found
+
+### enable_agent_end_tool() / enableAgentEndTool()
+
+Allows the model to finish a task by calling the `xpfinish-agent-execution-finished` function. Use this when you want the LLM to decide when it has completed all required steps.
+
+<CodeGroup>
+```python Python
+# Enable the xpfinish-agent-execution-finished function
+agent.enable_agent_end_tool()
+```
+
+```typescript TypeScript
+// Enable the xpfinish-agent-execution-finished function
+agent.enableAgentEndTool();
+```
+</CodeGroup>
+
+Returns: `void`
+
+### init_task() / initTask()
+
+Starts a new task execution for the agent.
+
+<CodeGroup>
+```python Python
+execution = agent.init_task(execution=execution_obj)
+```
+
+```typescript TypeScript
+const execution = await agent.initTask({ execution });
+```
+</CodeGroup>
+
+| Parameter   | Type      | Required | Description                 |
+|-------------|-----------|----------|-----------------------------|
+| `execution` | Execution | Yes      | Execution details to start |
+
+Returns: `Execution` object
+
+### report_execution_metrics() / reportExecutionMetrics()
+
+Report token usage metrics for the current execution.
+
+<CodeGroup>
+```python Python
+agent.report_execution_metrics(llm_tokens)
+```
+
+```typescript TypeScript
+agent.reportExecutionMetrics({ llmTokens });
+```
+</CodeGroup>
+
+| Parameter        | Type   | Required | Description                   |
+|------------------|--------|----------|-------------------------------|
+| `llm_tokens`     | Tokens | Yes      | Token counts to report        |
+| `ai_model`       | string | No       | Model identifier              |
+| `source_node_type` | string | No     | Source node type if relevant  |
+
+Returns: `void`
+
+### report_llm_usage() / reportLlmUsage()
+
+Send raw LLM usage statistics to xpander.ai.
+
+<CodeGroup>
+```python Python
+agent.report_llm_usage(llm_response)
+```
+
+```typescript TypeScript
+agent.reportLlmUsage({ llmResponse });
+```
+</CodeGroup>
+
+| Parameter              | Type         | Required | Description            |
+|------------------------|--------------|----------|------------------------|
+| `llm_response`         | any          | Yes      | LLM response payload   |
+| `llm_inference_duration` | number     | No       | Inference time in ms   |
+| `llm_provider`         | LLMProvider  | No       | Provider name          |
+| `source_node_type`     | string       | No       | Source node type       |
+
+Returns: `void`
+
+### select_llm_provider() / selectLLMProvider()
+
+Specify which LLM provider the agent should use.
+
+<CodeGroup>
+```python Python
+agent.select_llm_provider(llm_provider=LLMProvider.OPEN_AI)
+```
+
+```typescript TypeScript
+agent.selectLLMProvider({ llmProvider: LLMProvider.OPEN_AI });
+```
+</CodeGroup>
+
+| Parameter      | Type        | Required | Description                  |
+|----------------|------------|----------|------------------------------|
+| `llm_provider` | LLMProvider | Yes      | Provider to set for requests |
+
+Returns: `void`
+
+### stop() / stop()
+
+Gracefully stop the agent's current execution without reporting a result.
+
+<CodeGroup>
+```python Python
+agent.stop()
+```
+
+```typescript TypeScript
+agent.stop();
+```
+</CodeGroup>
+
+Returns: `void`
+
+### stop_execution() / stopExecution()
+
+Stop execution and report a final result to the controller.
+
+<CodeGroup>
+```python Python
+agent.stop_execution(is_success=True, result="Task complete")
+```
+
+```typescript TypeScript
+agent.stopExecution({ isSuccess: true, result: "Task complete" });
+```
+</CodeGroup>
+
+| Parameter   | Type    | Required | Description                            |
+|-------------|--------|----------|----------------------------------------|
+| `is_success`| boolean | Yes      | Whether the task succeeded             |
+| `result`    | string  | No       | Optional result string to send back    |
+
+Returns: `void`
+
+<Note>
+This method triggers the `xpfinish-agent-execution-finished` function internally. When stopping an agent due to a step limit you can call:
+```python
+agent.stop_execution(
+    is_success=False,
+    result="This request was terminated automatically after reaching the agent's maximum step limit. Try breaking it into smaller, more focused requests."
+)
+```
+</Note>
 
 ## Type Definitions
 
@@ -256,4 +406,15 @@ await agent.update();
   <Card title="Agent.Graph" icon="diagram-project" href="/api-reference/07-sdk/xpander-sdk/Agent.Graph">
     Working with knowledge graphs
   </Card>
+  <Card title="LLMMetrics" icon="chart-simple" href="/api-reference/07-sdk/xpander-sdk/LLMMetrics">
+    Recording token usage metrics
+  </Card>
+  <Card title="ExecutionMetrics" icon="chart-simple" href="/api-reference/07-sdk/xpander-sdk/ExecutionMetrics">
+    Aggregated execution statistics
+  </Card>
 </CardGroup>
+
+<Note>
+For the exhaustive Agent API, see the
+<Link href="https://github.com/xpander-ai/xpander-sdk/blob/main/docs/python/Agent.md">xpander-sdk documentation</Link>.
+</Note>

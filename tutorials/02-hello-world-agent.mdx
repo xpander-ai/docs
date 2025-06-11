@@ -78,14 +78,12 @@ def agent_loop(agent: Agent, local_tools_by_name=None):
         agent.report_llm_usage(
             llm_response=response.model_dump(),
             llm_inference_duration=time.perf_counter() - start_time,
-            llm_provider=LLMProvider.OPEN_AI
         )
         
         agent.add_messages(response.model_dump())
         
-        tool_calls = XpanderClient.extract_tool_calls(
+        tool_calls = agent.extract_tool_calls(
             llm_response=response.model_dump(),
-            llm_provider=LLMProvider.OPEN_AI
         )
         
         if tool_calls:
@@ -461,14 +459,12 @@ def agent_loop(agent: Agent, local_tools_by_name=None):
         agent.report_llm_usage(
             llm_response=response.model_dump(),
             llm_inference_duration=time.perf_counter() - start_time,
-            llm_provider=LLMProvider.OPEN_AI
         )
         
         agent.add_messages(response.model_dump())
         
-        tool_calls = XpanderClient.extract_tool_calls(
+        tool_calls = agent.extract_tool_calls(
             llm_response=response.model_dump(),
-            llm_provider=LLMProvider.OPEN_AI
         )
         
         if tool_calls:

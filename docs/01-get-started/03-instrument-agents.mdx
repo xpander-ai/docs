@@ -144,7 +144,7 @@ class MyAgent:
             self.agent_backend.add_messages(response.model_dump())
             
             # Let xpander handle tool execution
-            tool_calls = XpanderClient.extract_tool_calls(
+            tool_calls = self.agent_backend.extract_tool_calls(
                 llm_response=response.model_dump()
             )
             tool_results = self.agent_backend.run_tools(tool_calls=tool_calls)

@@ -21,10 +21,10 @@ client = XpanderClient(api_key="your-xpander-api-key")
 ```typescript TypeScript
 import { XpanderClient } from '@xpander-ai/sdk';
 
-const client = new XpanderClient("your-xpander-api-key");
+const client = new XpanderClient({ apiKey: "your-xpander-api-key" });
 
 // For running Xpander locally:
-// const client = new XpanderClient(apiKey: "my-agent-controller-api-key");
+// const client = new XpanderClient({ apiKey: "my-agent-controller-api-key" });
 ```
 </CodeGroup>
 
@@ -199,4 +199,23 @@ async function main() {
 
 main().catch(console.error);
 ```
-</CodeGroup> 
+</CodeGroup>
+
+## Related Documentation
+
+<CardGroup cols={2}>
+  <Card title="Agent" icon="robot" href="/api-reference/07-sdk/xpander-sdk/agent">
+    Core agent functionality
+  </Card>
+  <Card title="LLMMetrics" icon="chart-simple" href="/api-reference/07-sdk/xpander-sdk/LLMMetrics">
+    Token usage metrics
+  </Card>
+  <Card title="ExecutionMetrics" icon="chart-simple" href="/api-reference/07-sdk/xpander-sdk/ExecutionMetrics">
+    Execution statistics
+  </Card>
+</CardGroup>
+
+<Note>
+For the complete class reference, see the
+<Link href="https://github.com/xpander-ai/xpander-sdk/blob/main/docs/python/XpanderClient.md">xpander-sdk documentation</Link>.
+</Note>
