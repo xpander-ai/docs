@@ -58,7 +58,7 @@ agent.add_task(input="Tell me about machine learning")
 while not agent.is_finished():
     # Get LLM response
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4.1",
         messages=agent.messages,
         tool_choice=agent.tool_choice,
         temperature=0.0

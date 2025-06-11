@@ -235,7 +235,7 @@ agent.add_task(input="Summarize the latest news on AI")
 while not agent.is_finished():
     # Run LLM to process messages and generate tool calls
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4.1",
         messages=agent.messages,
         temperature=0
     )
@@ -264,7 +264,7 @@ await agent.addTask({ input: "Summarize the latest news on AI" });
 while (!(await agent.isFinished())) {
     // Run LLM to process messages and generate tool calls
     const response = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-4.1",
         messages: agent.messages,
         tools: await agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
         temperature: 0

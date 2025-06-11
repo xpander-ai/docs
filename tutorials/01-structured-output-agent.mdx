@@ -243,7 +243,7 @@ Following the execution workflow of our agent with xpander’s SDK is pretty str
 
 ```python
 response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4.1",
         messages=agent.messages,
         tools=agent.get_tools(),
         tool_choice=agent.tool_choice,
@@ -308,7 +308,7 @@ The result of the tool calling can be used as an input to the next agent call.
 
 ```python
 response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4.1",
         messages=agent.messages,
         tools=agent.get_tools(),
         tool_choice=agent.tool_choice,
@@ -361,7 +361,7 @@ Next, let’s proceed to the next agent call after receiving the response from t
 
 ```python
 response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4.1",
         messages=agent.messages,
         tools=agent.get_tools(),
         tool_choice=agent.tool_choice,
@@ -411,7 +411,7 @@ Now we can proceed to the last agent call and save the response to the memory.
 
 ```python
 response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4.1",
         messages=agent.messages,
         tools=agent.get_tools(),
         tool_choice=agent.tool_choice,
@@ -460,7 +460,7 @@ Here’s the final, simplified workflow using a `while` loop:
 while not agent.is_finished():
     # Get LLM response with available tools
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4.1",
         messages=agent.messages,
         tools=agent.get_tools(),
         tool_choice=agent.tool_choice,

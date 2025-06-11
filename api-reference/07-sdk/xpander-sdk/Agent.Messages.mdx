@@ -106,7 +106,7 @@ interface Message {
 ```python Python
 # Pass messages directly to LLM API
 response = openai_client.chat.completions.create(
-    model="gpt-4o",
+    model="gpt-4.1",
     messages=agent.messages,
     temperature=0.0
 )
@@ -115,7 +115,7 @@ response = openai_client.chat.completions.create(
 ```typescript TypeScript
 // Pass messages directly to LLM API
 const response = await openai.chat.completions.create({
-    model: "gpt-4o",
+    model: "gpt-4.1",
     messages: agent.messages,
     tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
     temperature: 0
@@ -129,7 +129,7 @@ const response = await openai.chat.completions.create({
 ```python Python
 # Count tokens
 from tiktoken import encoding_for_model
-enc = encoding_for_model("gpt-4o")
+enc = encoding_for_model("gpt-4.1")
 total_tokens = sum(len(enc.encode(msg.get("content", ""))) for msg in agent.messages)
 
 # Extract user messages
@@ -172,7 +172,7 @@ agent.add_task(input="What's the weather in New York?")
 while not agent.is_finished():
     # Get LLM response
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4.1",
         messages=agent.messages,
         temperature=0
     )
@@ -197,7 +197,7 @@ await agent.addTask({ input: "What's the weather in New York?" });
 while (!agent.isFinished()) {
     // Get LLM response
     const response = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-4.1",
         messages: agent.messages,
         tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
         temperature: 0

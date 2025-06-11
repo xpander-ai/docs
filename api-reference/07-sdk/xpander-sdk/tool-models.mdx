@@ -109,7 +109,7 @@ openai_client = OpenAI(api_key="your-openai-key")
 
 # Get LLM response with tool calls
 response = openai_client.chat.completions.create(
-    model="gpt-4o",
+    model="gpt-4.1",
     messages=[{"role": "user", "content": "What's the weather in London?"}],
     tools=[{
         "type": "function",
@@ -152,7 +152,7 @@ async function extractToolCalls() {
     
     // Get LLM response with tool calls
     const response = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-4.1",
         messages: [{ role: "user", content: "What's the weather in London?" }],
         tools: [{
             type: "function",
@@ -384,7 +384,7 @@ agent.add_task(
 
 # Use the tools with OpenAI
 response = openai_client.chat.completions.create(
-    model="gpt-4o",
+    model="gpt-4.1",
     messages=agent.messages,
     tools=tools,
     tool_choice="auto"
@@ -417,7 +417,7 @@ async function llmProviderExample() {
     
     // Use the tools with OpenAI
     const response = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-4.1",
         messages: agent.messages,
         tools: tools,
         tool_choice: "auto"

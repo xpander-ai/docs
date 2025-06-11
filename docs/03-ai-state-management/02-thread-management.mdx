@@ -124,7 +124,7 @@ def run_agent_with_thread(prompt, thread_id=None):
     while not agent.is_finished():
         # Get next action from LLM
         response = openai_client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4.1",
             messages=agent.messages,
             tool_choice=agent.tool_choice,
             temperature=0.0
@@ -183,7 +183,7 @@ async function runAgentWithThread(prompt: string, threadId?: string) {
     while (!(await agent.isFinished())) {
         // Get next action from LLM
         const response = await openai.chat.completions.create({
-            model: "gpt-4o",
+            model: "gpt-4.1",
             messages: agent.messages,
             tools: agent.getTools({ llmProvider: LLMProvider.OPEN_AI }),
             tool_choice: agent.toolChoice,

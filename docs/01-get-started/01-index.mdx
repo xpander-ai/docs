@@ -66,7 +66,7 @@ xpander.ai provides a comprehensive set of technical components to power your AI
     while not agent.is_finished():
         # Get LLM response
         response = llm_provider.chat.completions.create(
-            model="function-call-model",
+            model="gpt-4.1",
             messages=agent.messages,  # Auto-translate messages object between frameworks
             tools=agent.get_tools(),  # Auto-translate tools object between frameworks
         )
