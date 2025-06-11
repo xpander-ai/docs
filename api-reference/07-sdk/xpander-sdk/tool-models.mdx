@@ -131,9 +131,8 @@ response = openai_client.chat.completions.create(
 )
 
 # Extract tool calls in xpander.ai format
-tool_calls = XpanderClient.extract_tool_calls(
+tool_calls = agent.extract_tool_calls(
     llm_response=response.model_dump(),
-    llm_provider=LLMProvider.OPEN_AI
 )
 
 # Process the tool calls
@@ -175,10 +174,7 @@ async function extractToolCalls() {
     });
     
     // Extract tool calls in xpander.ai format
-    const toolCalls = XpanderClient.extractToolCalls({
-        llmResponse: response,
-        llmProvider: LLMProvider.OPEN_AI
-    });
+    const toolCalls = agent.extractToolCalls({ llmResponse: response });
     
     // Process the tool calls
     for (const toolCall of toolCalls) {
@@ -385,7 +381,6 @@ agent.add_task(
 )
 
 # Get tools formatted for OpenAI
-tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
 
 # Use the tools with OpenAI
 response = openai_client.chat.completions.create(
@@ -396,9 +391,8 @@ response = openai_client.chat.completions.create(
 )
 
 # Extract tool calls from the response
-tool_calls = XpanderClient.extract_tool_calls(
+tool_calls = agent.extract_tool_calls(
     llm_response=response.model_dump(),
-    llm_provider=LLMProvider.OPEN_AI
 )
 ```
 
@@ -430,10 +424,7 @@ async function llmProviderExample() {
     });
 
     // Extract tool calls from the response
-    const toolCalls = XpanderClient.extractToolCalls({
-        llmResponse: response,
-        llmProvider: LLMProvider.OPEN_AI
-    });
+    const toolCalls = agent.extractToolCalls({ llmResponse: response });
 }
 ```
 </CodeGroup>
@@ -453,4 +444,9 @@ async function llmProviderExample() {
   <Card title="Client API" icon="code" href="/api-reference/07-sdk/client/index">
     Detailed client API documentation
   </Card>
-</CardGroup> 
+</CardGroup>
+
+<Note>
+Full schema definitions live in the
+<Link href="https://github.com/xpander-ai/xpander-sdk/tree/main/docs/python">xpander-sdk docs</Link>.
+</Note>

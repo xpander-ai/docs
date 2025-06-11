@@ -126,7 +126,6 @@ def run_agent_with_thread(prompt, thread_id=None):
         response = openai_client.chat.completions.create(
             model="gpt-4o",
             messages=agent.messages,
-            tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
             tool_choice=agent.tool_choice,
             temperature=0.0
         )
@@ -135,9 +134,8 @@ def run_agent_with_thread(prompt, thread_id=None):
         agent.add_messages(response.model_dump())
         
         # Extract and execute tool calls
-        tool_calls = XpanderClient.extract_tool_calls(
+        tool_calls = agent.extract_tool_calls(
             llm_response=response.model_dump(),
-            llm_provider=LLMProvider.OPEN_AI
         )
         
         if tool_calls:
@@ -196,10 +194,7 @@ async function runAgentWithThread(prompt: string, threadId?: string) {
         await agent.addMessages({ messages: response });
         
         // Extract and execute tool calls
-        const toolCalls = XpanderClient.extractToolCalls({
-            llmResponse: response,
-            llmProvider: LLMProvider.OPEN_AI
-        });
+        const toolCalls = agent.extractToolCalls({ llmResponse: response });
         
         if (toolCalls.length > 0) {
             await agent.runTools({ toolCalls });

@@ -298,7 +298,7 @@ while not agent.is_finished():
     agent.add_messages(response.model_dump())
 
     # Extract and run tool calls
-    tool_calls = XpanderClient.extract_tool_calls(llm_response=response.model_dump())
+    tool_calls = agent.extract_tool_calls(llm_response=response.model_dump())
     tool_result = agent.run_tools(tool_calls=tool_calls)
 
 ```

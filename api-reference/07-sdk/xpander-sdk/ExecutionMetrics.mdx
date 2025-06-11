@@ -1,0 +1,33 @@
+---
+title: "ExecutionMetrics"
+description: "Aggregate metrics for a task execution"
+icon: "chart-simple"
+---
+
+`ExecutionMetrics` aggregates metrics for an agent task, including LLM usage and overall duration.
+
+## Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `execution_id` | `string` | ID of the execution |
+| `ai_model` | `string` | Model used during the task |
+| `duration` | `number` | Total execution time in seconds |
+| `llm_tokens` | [`LLMTokens`](./LLMTokens) | Token counts for the task |
+| `result` | `string` | Final result summary |
+| `status` | `string` | Execution status |
+
+## Example
+
+```python Python
+from xpander_sdk import ExecutionMetrics
+
+metrics = ExecutionMetrics(execution_id="exec-1234")
+print(metrics.status)
+```
+
+<Note>
+The
+<Link href="https://github.com/xpander-ai/xpander-sdk/blob/main/docs/python/ExecutionMetrics.md">xpander-sdk reference</Link>
+contains additional examples.
+</Note>

@@ -72,7 +72,7 @@ xpander.ai provides a comprehensive set of technical components to power your AI
         )
 
         # Extract tool calls from the AI response
-        tool_calls = XpanderClient.extract_tool_calls(
+        tool_calls = agent.extract_tool_calls(
             llm_response=response.model_dump()
         )
 

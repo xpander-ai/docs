@@ -80,7 +80,7 @@ while not agent.is_finished():
     agent.add_messages(response.model_dump())
     
     # Extract and run any tools the agent wants to use
-    tool_calls = XpanderClient.extract_tool_calls(
+    tool_calls = agent.extract_tool_calls(
         llm_response=response.model_dump()
     )
     if tool_calls:
@@ -140,9 +140,10 @@ The xpander.ai backend is model-agnostic. You can use any LLM provider:
     
     # Process the response
     agent.add_messages(response.model_dump())
-    agent.run_tools(XpanderClient.extract_tool_calls(
+    tool_calls = agent.extract_tool_calls(
         llm_response=response.model_dump()
-    ))
+    )
+    agent.run_tools(tool_calls=tool_calls)
     ```
   </Tab>
   
@@ -168,9 +169,10 @@ The xpander.ai backend is model-agnostic. You can use any LLM provider:
     # Process the response
     response_body = json.loads(response["body"].read().decode())
     agent.add_messages(response_body)
-    agent.run_tools(XpanderClient.extract_tool_calls(
+    tool_calls = agent.extract_tool_calls(
         llm_response=response_body
-    ))
+    )
+    agent.run_tools(tool_calls=tool_calls)
     ```
   </Tab>
 </Tabs>
