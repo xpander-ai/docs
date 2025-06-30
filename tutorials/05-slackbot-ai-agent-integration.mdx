@@ -1,0 +1,364 @@
+---
+title: "Build a Slackbot with AI Agent Backend"
+description: "Create a fully integrated Slack bot powered by xpander.ai agents with event processing via Pipedream"
+icon: "slack"
+---
+
+<Note>
+**Tutorial Overview**
+* **Goal**: Build a Slack bot that responds intelligently using xpander.ai AI agents
+* **Estimated Time**: 30-45 minutes  
+* **Prerequisites**: xpander.ai account, Slack workspace admin access, Pipedream account
+* **Tech Stack**: Slack API, Pipedream, xpander.ai webhooks
+</Note>
+
+🤖 This tutorial will guide you through creating a sophisticated Slack bot that leverages AI agents for intelligent responses. You'll learn to handle Slack events, process them through Pipedream, and trigger xpander.ai agents via webhooks.
+
+## 🏗️ Architecture Overview
+
+The integration follows this flow:
+1. **Slack Events** → User mentions bot or sends direct message
+2. **Pipedream Processor** → Filters events and formats payload  
+3. **xpander.ai Agent** → Processes request and generates response
+4. **Slack Response** → Bot replies with AI-generated content
+
+<Tip>
+You can choose to send events directly to xpander.ai or use Pipedream to filter and preprocess events. Pipedream provides better control over which events trigger your agent.
+</Tip>
+
+## ⚡ Step 1: Set Up Pipedream Event Processing
+
+### Create New Pipedream Workflow
+1. Go to [Pipedream](https://pipedream.com)
+2. Create new workflow
+3. Add **HTTP / Webhook** trigger
+4. **Copy the generated webhook URL** - you'll need this for Slack Event Subscriptions
+
+### Add Event Filter Node
+Add a **Node.js Code** step to filter Slack events:
+
+```javascript
+export default defineComponent({
+  async run({ steps, $ }) {
+    const event = steps.trigger.event;
+    
+    // Handle Slack URL verification challenge
+    if (event.challenge) {
+      $.respond({ challenge: event.challenge });
+      return;
+    }
+    
+    // Skip bot messages to prevent loops
+    if (event.event?.bot_id || event.event?.subtype === 'bot_message') {
+      return $.flow.exit('Skipping bot message');
+    }
+    
+    // Only process relevant events
+    const eventType = event.event?.type;
+    if (eventType !== 'app_mention' && eventType !== 'message') {
+      return $.flow.exit('Event type not handled');
+    }
+    
+    return event;
+  },
+})
+```
+
+### Add Payload Converter Node
+Add another **Node.js Code** step exactly as you provided:
+
+```javascript
+import { axios } from "@pipedream/platform"
+
+export default defineComponent({
+  async run({steps, $}) {
+    // Helper function to recursively process objects and format them
+    const formatValue = (value, indent = '') => {
+      if (typeof value === 'object' && value !== null) {
+        if (Array.isArray(value)) {
+          const arrayStr = value.map(item => formatValue(item, indent + '  ')).join(', ');
+          return `[${arrayStr}]`;
+        }
+        const entries = Object.entries(value)
+          .map(([key, val]) => `${indent}  ${key}: ${formatValue(val, indent + '  ')}`)
+          .join('\n');
+        return `{\n${entries}\n${indent}}`;
+      }
+      return typeof value === 'string' ? `"${value}"` : String(value);
+    }
+
+    // Get the trigger event data and format it
+    const eventData = steps.trigger.event;
+    const formattedString = formatValue(eventData);
+    
+    // Return the formatted string
+    return formattedString;
+  },
+})
+```
+
+## 📱 Step 2: Create Your Slack App
+
+### Create the App
+1. Go to [Slack API Apps](https://api.slack.com/apps)
+2. Click **"Create New App"** → **"From scratch"**
+3. Enter app name: `"Cool Slack Agent"`
+4. Select your Slack workspace
+5. Click **"Create App"**
+
+### Configure OAuth Scopes
+Navigate to **"OAuth & Permissions"** in the sidebar and add these **Bot Token Scopes**:
+
+```text
+app_mentions:read      # View messages mentioning @bot
+assistant:write        # Act as an App Agent  
+channels:history       # View messages in public channels
+channels:join          # Join public channels
+channels:manage        # Manage public channels
+channels:read          # View basic channel info
+channels:write.invites # Invite members to channels
+channels:write.topic   # Set channel descriptions
+chat:write             # Send messages as @bot
+chat:write.public      # Send messages to channels bot isn't in
+groups:history         # View messages in private channels
+groups:read            # View basic private channel info
+im:history             # View messages in direct messages
+im:read                # View basic direct message info
+im:write               # Start direct messages
+incoming-webhook       # Post messages to channels
+mpim:history           # View messages in group direct messages  
+mpim:read              # View basic group direct message info
+```
+
+### Install App to Workspace
+1. Click **"Install to Workspace"** 
+2. Authorize the app
+3. Copy the **Bot User OAuth Token** (starts with `xoxb-`)
+
+### Configure Event Subscriptions
+1. Go to **"Event Subscriptions"** in sidebar
+2. Enable Events: **On**
+3. Set Request URL: **Use the Pipedream webhook URL from Step 1** (e.g., `https://eovl6coun4310op.m.pipedream.net`)
+4. Under **"Subscribe to bot events"**, add:
+   ```text
+   app_mention
+   message.channels  
+   message.groups
+   message.im
+   message.mpim
+   ```
+
+## 🤖 Step 3: Create Your xpander.ai Agent
+
+### Install xpander CLI
+```bash
+pip install xpander-ai
+xpander login
+```
+
+### Create New Agent
+```bash
+mkdir slack-ai-agent && cd slack-ai-agent
+xpander agent new
+```
+
+Follow the wizard prompts:
+- **Name**: `Cool Slack Agent`
+- **Description**: `Slack AI Agent running with xpander.ai backend`
+
+### Add Slack Integration Tools
+1. Navigate to your agent in the xpander.ai dashboard
+2. Click **"Interfaces"** in the top-right corner
+3. Find and select **"Slack"** from the available integrations
+4. Add these specific Slack operations to your agent:
+   - **Send Message To Channel**
+   - **Open Direct Message** 
+   - **Close Direct Message**
+   - **Get Thread Messages**
+   - **Search Messages**
+   - **Get Bot User Info**
+   - **Join Channel**
+   - **List Team Channels**
+   - And any other operations you need
+
+<Note>
+These Slack tools are essential for your agent to respond back to Slack. Without them, your agent can only receive events but cannot send responses.
+</Note>
+
+### Configure Agent Instructions
+Edit `agent_instructions.json`:
+
+```json
+{
+  "role": "Helpful Slack Assistant",
+  "goal": "Process Slack events and respond intelligently using the Slack integration tools",
+  "general": "You are a Slack bot powered by AI. When you receive a formatted Slack event payload, follow these guidelines:\n\n1. **Parse the Event Data**:\n   - Extract user, channel, message text, and event type from the payload\n   - Determine if it's a mention, direct message, or channel message\n   - Get the user ID and channel ID for responding\n\n2. **Response Strategy**:\n   - For app mentions: Respond in the same channel\n   - For direct messages: Reply directly to the user\n   - For channel messages: Only respond if directly relevant\n   - Use the 'Send Message To Channel' tool to send responses\n\n3. **Message Formatting**:\n   - Keep responses concise and helpful\n   - Use Slack markdown formatting when appropriate\n   - Include emojis to make responses friendly\n   - Format code blocks properly for technical responses\n\n4. **Tools Usage**:\n   - Always use the Slack integration tools to send responses\n   - Extract channel/user information from the payload\n   - Send responses back to the appropriate channel or user\n\n5. **Content Guidelines**:\n   - Provide helpful, contextual responses\n   - Ask clarifying questions when needed\n   - Suggest next steps or actions\n   - Maintain a professional yet friendly tone\n\nWhen you receive a Slack payload, parse it to understand the context, then use the appropriate Slack tools to send a helpful response back to the user or channel."
+}
+```
+
+### Get Webhook URL
+1. Deploy your agent: `xpander deploy`
+2. Navigate to your agent in the xpander.ai dashboard
+3. Click the **"Webhook"** trigger node
+4. Copy the webhook URL (format: `https://webhook.xpander.ai?asynchronous=true`)
+5. Note your **Agent ID** and **Source Node ID**
+
+## 🔗 Step 4: Complete the Pipedream → xpander.ai Connection
+
+### Add xpander.ai Webhook Node
+Add an **HTTP Request** step to your Pipedream workflow with these exact settings:
+
+**Method**: `POST`  
+**URL**: `https://webhook.xpander.ai?asynchronous=true`
+
+**Headers**:
+```
+User-Agent: pipedream/1
+Content-Type: application/json
+x-api-key: YOUR_XPANDER_API_KEY
+```
+
+**Body** (JSON):
+```json
+{
+  "source_node_id": "YOUR_SOURCE_NODE_ID",
+  "agent_id": "YOUR_AGENT_ID", 
+  "prompt": "Here is the payload coming from Slack backend, deal with it and reply if needed according to the payload information : {{steps.payload_to_string.$return_value}}"
+}
+```
+
+<Warning>
+Replace `YOUR_XPANDER_API_KEY`, `YOUR_SOURCE_NODE_ID`, and `YOUR_AGENT_ID` with your actual values from the xpander.ai dashboard.
+</Warning>
+
+## 🔐 Step 5: Configure Authentication & Slack Integration
+
+### Get Your xpander.ai API Key
+1. In xpander.ai dashboard, go to Settings
+2. Generate or copy your API key
+3. Add it to the Pipedream HTTP request headers (replace `YOUR_XPANDER_API_KEY`)
+
+### Configure Slack Authentication in xpander.ai
+1. In your xpander.ai agent dashboard, go to **"Apps"** section
+2. Find **"Slack"** and click **"Enable"**  
+3. Enter Interface name: `"Cool Slack Agent"`
+4. Choose **"Bot Token"** as authentication method
+5. Paste your Slack Bot User OAuth Token (the `xoxb-` token from Step 2)
+6. Save the configuration
+
+<Note>
+This step is crucial! Your agent needs Slack authentication to send messages back to your workspace. Without this, the agent can receive events but cannot respond.
+</Note>
+
+## 🧪 Step 6: Test the Complete Integration
+
+### Test the Complete Flow
+1. **Activate Pipedream workflow** - ensure all steps are working
+2. **Deploy your xpander.ai agent** - run `xpander deploy`
+3. **Test event to response loop**:
+   - **Mention your bot** in a Slack channel: `@Cool Slack Agent hello!`
+   - **Check Pipedream logs** to verify event processing  
+   - **Monitor xpander.ai Activity** tab to see agent execution
+   - **Verify the bot responds back in Slack** ✅
+
+### Expected Flow
+```
+User mentions bot in Slack
+    ↓
+Slack sends event to Pipedream webhook
+    ↓
+Pipedream processes and formats event
+    ↓
+Pipedream sends formatted payload to xpander.ai
+    ↓
+xpander.ai agent processes request
+    ↓
+Agent uses Slack tools to send response back
+    ↓
+User sees bot response in Slack ✅
+```
+
+### Test Different Scenarios
+- **Direct Messages**: Send a DM to your bot - should get direct reply
+- **Channel Mentions**: Mention bot in different channels - should respond in channel
+- **Complex Queries**: Ask programming questions - should get formatted responses
+- **Multiple Users**: Have different people interact - should handle concurrent conversations
+
+## 📊 Step 7: Monitor and Debug
+
+### Pipedream Monitoring
+- Check workflow execution history
+- Review step-by-step data flow
+- Monitor for failed executions
+- Test payload transformations
+
+### xpander.ai Monitoring  
+- Use the **Activity** tab for detailed execution logs
+- Monitor API calls and LLM responses
+- Check webhook delivery status
+- Review agent performance metrics
+
+### Common Issues & Solutions
+
+**Event Not Triggering:**
+- Verify Slack Event Subscriptions URL
+- Check Pipedream trigger is active
+- Ensure bot has proper channel permissions
+
+**Agent Not Responding:**
+- Validate API key in HTTP request
+- Confirm agent_id and source_node_id are correct
+- Check xpander.ai agent deployment status
+
+**Slack Authentication Errors:**
+- Reinstall Slack app if scopes changed
+- Verify bot token permissions
+- Check workspace installation status
+
+## 🚀 Step 8: Advanced Features
+
+### Add Response Handling
+To make your bot respond back to Slack, modify your xpander.ai agent to include Slack API calls in its tool arsenal.
+
+### Event Filtering
+Enhance Pipedream filtering to handle:
+- Specific keywords or patterns
+- Channel-specific behaviors  
+- User role-based responses
+- Time-based filtering
+
+### Multi-Agent Routing
+Route different types of queries to specialized agents:
+- Technical questions → Developer Agent
+- HR queries → HR Agent  
+- General chat → Conversational Agent
+
+## 📝 Summary
+
+You've successfully built a complete Slack bot with AI agent backend! The integration provides:
+
+✅ **Complete Event Loop**: Slack → Pipedream → xpander.ai → Slack response  
+✅ **Event Processing**: Pipedream filters and formats Slack events  
+✅ **AI Processing**: xpander.ai agents generate intelligent responses  
+✅ **Response Delivery**: Agent sends responses back to Slack using integrated tools  
+✅ **Authentication**: Proper OAuth setup for bidirectional communication  
+✅ **Monitoring**: Full visibility into the processing pipeline  
+
+Your bot now provides:
+- **Bidirectional Communication**: Receives events AND sends responses back  
+- **Smart Event Filtering**: Only processes relevant mentions and messages
+- **Formatted Payload Processing**: Converts Slack events to readable format for AI
+- **Multiple Interaction Types**: Handles mentions, DMs, and channel messages
+- **Real-time Responses**: Users get immediate AI-generated replies
+
+## 🔗 Next Steps
+
+- **Add Slack Response Actions**: Configure your agent to send messages back to Slack
+- **Implement Thread Support**: Handle threaded conversations
+- **Add File Processing**: Enable file uploads and analysis
+- **Create Agent Specializations**: Build domain-specific agents for different use cases
+- **Scale Across Workspaces**: Deploy to multiple Slack workspaces
+
+<Tip>
+For production deployments, consider implementing rate limiting, error handling, and user authentication to ensure a robust and secure integration.
+</Tip> 
