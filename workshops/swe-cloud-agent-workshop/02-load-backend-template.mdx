@@ -5,17 +5,19 @@ icon: "desktop"
 ---
 
 <Note>
-In this module, we deploy a custom UI that is similar to the capabilities you get with ChatGPT-Codex. Then, we submit a coding task to the SWE agent.
-
-  - **Goal**: Clone a minimal ChatGPT-Codex style frontend and connect it to to the agent your deployed in the previous module.
+In this module, we deploy a custom UI that is similar to the capabilities you get with ChatGPT-Codex, connect it to Agent Backend, and we will submit development tasks while we explore how the agent is working.
 </Note>
 
-## Use-case
+**Goal**: Build a full-stack coding agent (Frontend and Backend) and task it to write an application and send a PR completely autonomously
 
-Many times, AI Agents running on a Backend-as-a-Service platform are a part of a wider application. In this case, our AI agent is already available, and we'd like to hook it up to a task management system. The task management system in this module is not a part of the xpander.ai platform, and it's simply used for demonstration purposes.
+## Step 1: GitHub Manual Fork
 
+To submit a PR with your generated app to the apps-by-agents repository, first fork the repo:
 
-## Clone the frontend example app
+1. Go to https://github.com/xpander-ai/apps-by-agents
+2. Fork the repo to your GitHub account
+
+## Step 2: Clone the frontend example app
 
 We’ll start by cloning and installing the prebuilt UI:
 
@@ -25,9 +27,7 @@ cd coding-agent-frontend-example-app
 npm install
 ```
 
-![Step 1 - Clone and Install](/images/workshops/git-clone.png)
-
-## Configure environment variables
+## Step 3: Configure environment variables
 
 Copy the example .env file and populate it
 
@@ -35,40 +35,20 @@ Copy the example .env file and populate it
 mv .env.example .env
 ```
 
-Fill in the following:
+## Step 4: Connect the Frontend to the Agent Backend
+
+In the frontend application, go to the `.env` file and fill in the following:
 
 ```env
-# API Key - Available in xpander.ai UI from Settings -> API keys 
+# API Key - Available in CLI output
 VITE_APP_API_KEY=your_api_key_here
-# Agent ID - Available in xpander.ai UI from the Workbench -> SDK node at the top of the canvas
+# Agent ID - Available in CLI output
 VITE_APP_AGENT_ID=your_agent_id_here
-# Organization ID - Available in xpander.ai UI from Settings -> API keys
+# Organization ID - Available in the CLI output
 VITE_APP_ORGANIZATION_ID=your_organization_id_here
 ```
 
-<Accordion title="Videos: getting the required variables">
-<Frame>
-  <video autoPlay muted loop playsInline className="w-full aspect-video" src="https://assets.xpanderai.io/workshops/videos/settings-api-keys.mp4" />
-</Frame>
-
-### Copy Your Agent ID
-<Frame>
-  <video autoPlay muted loop playsInline className="w-full aspect-video" src="https://assets.xpanderai.io/workshops/videos/swe-copy-agent-id.mp4" />
-</Frame>
-</Accordion>
-
-# Github manual fork
-To submit a PR with your generated app to the apps-by-agents repo, first fork the repo:
-
-1. Go to https://github.com/xpander-ai/apps-by-agents
-2. Fork the repo
-3. In the Task management app Web UI, submit the prompt and mention your forked repo
-4. For example: 
-
-> Add a simple, cool and beautiful todo list app (HTML, CSS, JS) to `<address of your fork>` in one-shot, single commit.
-> your coding agent will push the app to your forked repo, afterwards you'll create a PR to the original repo.
-
-## Start the App
+## Step 5: Start the frontend app
 
 Launch the demo app locally:
 
@@ -86,17 +66,25 @@ http://localhost:3000
 Your AI Agent's task management demo app:
 ![Step 3 - Open Browser](/images/workshops/swe-blank-tasks-manager.png)
 
-## Send your first coding task
+## Step 6: Send coding tasks
+
 Your local task management demo app is now connected to the SWE agent you deployed in the last module. Let's start using it.
 
 In the input field, submit one of the example prompts below
-feel free to be creative, but specify that it should be an (HTML, CSS, JS) app, and mention the address of your forked repo
-
-<Accordion title="Prompt Examples for apps-by-agents">
 
 <Note>
-We are pushing the results of the coding task to a fork of the repo called xpander-ai/apps-by-agents - this repo is used in the workshop to host apps that are developed by SWE agents. Then, you'll do a PR from your fork to the xpander-ai/apps-by-agents repo.
+In the Task management app Web UI, submit the prompt and mention your forked repo
+
+For example:
+
+"Add a simple, cool and beautiful todo list app (HTML, CSS, JS) to `my-github-user-name/apps-by-agents` in one-shot, single commit."
+
+Your coding agent will push the app to your forked repo, afterwards you'll create a PR to the original repo.
 </Note>
+
+Feel free to be creative, but specify that it should be an (HTML, CSS, JS) app, and mention the address of your forked repo
+
+<Accordion title="Prompt Examples for apps-by-agents">
 
 ### ✅ Todo List App
 ```text
@@ -171,18 +159,18 @@ Create a memory card matching game (HTML, CSS, JS) and drop it into https://gith
 
 ---
 
-## Track task execution
+## Step 7: Track task execution
 
 Click **View codex logs** to view real-time execution details and explore the logs.
-Pay attention of the way codex manage and run the agentic loop and the creation process of your app.
+Pay attention to the way Codex manages and runs the agentic loop and the creation process of your app.
 
-> ⏳ **Note**: Task execution takes a few minutes - sit back, relax, and watch the agent work its magic. codex may split the task into multiple sub-tasks that can take up to 15 minutes. if it takes more than 15 minutes just let it run in the background and proceed with the rest of the workshop.
+> ⏳ **Note**: Task execution takes a few minutes - sit back, relax, and watch the agent work its magic. Codex may split the task into multiple sub-tasks that can take up to 15 minutes. If it takes more than 15 minutes, just let it run in the background and proceed with the rest of the workshop.
 
 <Frame>
   <video autoPlay muted loop playsInline className="w-full aspect-video" src="https://assets.xpanderai.io/workshops/videos/swe-track-result.mp4" />
 </Frame>
 
-### You’ll see:
+You’ll see:
 
 - **Top**: The original prompt or task
 - **Popup**: Logs and generated output from the agent
@@ -210,11 +198,13 @@ Pay attention of the way codex manage and run the agentic loop and the creation 
   💡 A task can include multiple threads - each representing a conversation or execution chain tied to your agent.
 </Accordion>
 
-### Succesful app creation
+Successful app creation
+
 ![swe coding task result with pr](/images/workshops/swe-coding-task-result-with-pr.png)
 
-# Pay attention, your PR is targeting the fork and not xpander's repo
-1. Submit a new PR (manually) from your fork to xpander-ai/apps-by-agents
+<Note>
+Pay attention, your PR is targeting the fork and not xpander's repo
+</Note>
 
 ## Summary and next steps
 
@@ -223,5 +213,4 @@ Through the UI, you instructed the agent to build an application and push it to 
 
 Check out your Pull Request at: https://github.com/xpander-ai/apps-by-agents
 
-
-→ Proceed to [Module 3: Advanced customization](./03-advanced-customization) 
+→ Proceed to [Module 3: Advanced customization](./03-advanced-customization)

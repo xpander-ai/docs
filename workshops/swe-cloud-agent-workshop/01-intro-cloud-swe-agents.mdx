@@ -4,21 +4,18 @@ icon: "server"
 ---
 
 <Note>
-  In this module, we'll test the **SWE (Software Engineering) Agent** using **GPT-4.1 & Codex**, exploring its ability to reason, interact with GitHub, and execute code-related tasks in a real environment.
-
-  - **Goal**: Set up xpander.ai access and deploy the coding agent template
-  - **Prerequisites**: xpander.ai account, basic agent concepts
+  In this module, we'll explore the **SWE (Software Engineering) Agent** template on the xpander.ai platform, connect it to GitHub, download the code locally, and test it.
 </Note>
 
-## Quick Setup
+**Goal**: Learn how to develop an autonomous coding agent and configure it to work with coding tools such as OpenAI Codex and how it can use different tools
 
-### Template Import
-To avoid manual configuration work around adding tools, setting instructions, etc. A SWE agent template is ready to be deployed on the platform.
-After clicking the Template import button, you will register or login to xpander.ai, and be redirected to the template deployment screen.
+## Step 1: Template Import
 
+To avoid manual configuration work around adding tools, setting instructions, etc., a SWE agent template is ready to be deployed on the platform.
+After clicking the Template import button, you will register or log in to xpander.ai and be redirected to the template deployment screen.
 
 <a 
-  href="https://app.xpander.ai/templates/14c5e651-a207-4a60-8dd6-143e147df890?utm=swe-workshop-sf" 
+  href="https://app.xpander.ai/templates/14c5e651-a207-4a60-8dd6-143e147df890?utm=swe-workshop-sf-july25" 
   target="_blank" 
   style={{
     display: 'inline-block',
@@ -35,37 +32,35 @@ After clicking the Template import button, you will register or login to xpander
 >
   Import Codex SWE Agent to your xpander.ai Account
 </a>
-<br />
-<br />
 
 Follow the import steps as seen in the video:
+
 1. In the agent import wizard, select "New Github Pull Requests interface"
-2. The excalamation mark (⚠️) on the Github tools indicates that the Connector for Github has not been authorized yet. Click on one of them to see the connector settings.
-3. In the popup window, connect to Github with Oauth2.
+2. The exclamation mark (⚠️) on the Github tools indicates that the Connector for Github has not been authorized yet. Click on one of them to see the connector settings.
+3. In the popup window, connect to Github with OAuth2.
 
 <Frame>
   <video autoPlay muted loop playsInline className="w-full aspect-video" src="https://assets.xpanderai.io/workshops/videos/import-process.mp4" />
 </Frame>
 
-
-### Your coding agent
-
-You are now seeing the AI Workbench - a user interface used to design, deploy, test and observe agents. 
+You are now seeing the AI Workbench - a user interface used to design, deploy, test and observe agents.
 
 <Tip>
-  The left side of the AI Workbench can be used to easily intract with your agent and see how it behaves in real time - we will do that in a minute.
-
-  The right side is a visual representation of your agent or multi-agent team, including its different triggering capabilities and its available tools.
+  The left side of the AI Workbench can be used to easily interact with your agent and see how it behaves in real time - we will do that in a minute.
 </Tip>
+
+Change the view to **Agent Graph** to see the visual representation of your agent or multi-agent team, including its different triggering capabilities and its available tools.
 
 Check out the available tools your agent has. It can interact with GitHub - listing, creating, updating, and commenting on pull requests. More importantly, it can code using the built-in Coding agent, built on an enhanced version of Codex CLI.
 
+<Frame>
 ![Serverless coding agent](/images/workshops/serverless-coding-agent.png)
+</Frame>
 
 <Accordion title="Red exclamation mark on Github tools?">
 
 
-<Warning>If the Github tools on the graph are displaying a red exclamation mark, it's becuase you still need to authorize the Github connector. Click on the exclamation mark and go through the Auth process with Oauth2</Warning>
+<Warning>If the Github tools on the graph are displaying a red exclamation mark, it's because you still need to authorize the Github connector. Click on the exclamation mark and go through the Auth process with OAuth2</Warning>
 
 
 <Frame>
@@ -88,12 +83,12 @@ Check out the available tools your agent has. It can interact with GitHub - list
 
 </Accordion>
 
-### Test your agent using the visual AI Workbench
+## Step 2: Test your agent using the visual AI Workbench
 
 Let’s walk through a real GitHub workflow using your agent. We'll use the `xpander-ai/apps-by-agents` repository and test out some core capabilities.
 
 ---
-#### Test 1: The agent's capabilities
+### Test 1: The agent's capabilities
 
 In the left tab of the AI Workbench (Tester tab), submit this prompt:
 
@@ -101,19 +96,13 @@ In the left tab of the AI Workbench (Tester tab), submit this prompt:
 What can you do ?
 ```
 
+<Frame>
 ![Step 1 capabilities](/images/workshops/swe-capabilities.png)
-
-<Tip>
-What's with the purple pulsing dot? 🟣
-
-You are seeing one of most useful parts of the AI Workbench - a visual indication of the AI Agent's path traversal - through other agents (in multi-agent setups) and through tools.
-
-Basically, the purple pulsing dot indicates the current state of the agent on the state machine.
-</Tip>
+</Frame>
 
 ---
 
-#### Test 2: List Pull Requests
+### Test 2: List Pull Requests
 
 In the left tab of the AI Workbench (Tester tab), submit this prompt:
 
@@ -121,17 +110,99 @@ In the left tab of the AI Workbench (Tester tab), submit this prompt:
 List all pull requests (open or closed) in "xpander-ai/apps-by-agents"
 ```
 
-![Step 2 PR List](/images/workshops/list-prs.png)
+
+<Tip>
+Change the view to **Full View** and expand the API calls to see the generated parameters from the AI model to the different APIs and the payload returned to the AI model.
+</Tip>
+
+<Frame>
+![Full view](/images/workshops/full-view-action.png)
+</Frame>
 
 ---
 
-#### Test 3: Summarize the Latest PR
+### Test 3: Summarize the Latest PR
 
 ```text
-Explain the most recent pull request and what the code changes do.
+In xpander-ai/apps-by-agents, explain the most recent pull request and what the code changes do.
 ```
 
+<Tip>
+Click on "Channels" and go to "Chat" and open Markdown rich Web Interface built-in for your agent
+</Tip>
+
+<Frame>
 ![Step 3 PR Summary](/images/workshops/pr-summary.png)
+</Frame>
+
+## Step 3: Load the agent locally
+
+
+Run the CLI to get your agent
+
+```bash
+xpander login
+```
+
+![xpander-login screenshot](/images/workshops/xpander-login.png)
+
+You can now pull a list of the agents with 
+
+```bash
+xpander agent list
+```
+
+Click on the URL of the agent, and click on the CLI icon at the top left, and run
+```
+xpander agent init <agent-id>
+```
+
+![xpander-agent-init](/images/xpander-agent-init.png)
+
+## Step 4: Run the agent locally
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Then run `python myAgent.py`
+
+```log
+❯ python myAgent.py
+22:07:51 | 🚀 Initializing MyAgent...
+22:07:51 | 📋 Agent: Coding Agent
+22:07:51 | 🔧 Tools: 9 available
+22:07:51 | 💡 Example prompts: 5
+22:07:51 |    e.g. "List open PRs in xpander-ai/xpander-sdk."
+22:07:51 | ✅ Ready!
+22:07:51 | 📝 Task: Hi!
+22:08:10 |   📊 Step tokens: 3607
+22:08:23 |   ✅ xpfinish-agent-execution-finished
+22:08:23 | ✅ Done! Duration: 15.4s | Total tokens: 3607
+
+Hello! How can I help you today? 😊
+```
+
+Next, run `python xpander_handler.py` to register your machine to receive events to the agent
+
+```log
+❯ python xpander_handler.py
+22:16:36 | 🚀 Initializing MyAgent...
+22:16:37 | 📋 Agent: Coding Agent
+22:16:37 | 🔧 Tools: 9 available
+22:16:37 | 💡 Example prompts: 5
+22:16:37 |    e.g. "List open PRs in xpander-ai/xpander-sdk."
+22:16:37 | ✅ Ready!
+22:16:41 | Listener started; waiting for events…
+22:16:47 | Worker registered – id=f3eee766-a787-4a84-a902-07e29c72953e
+22:16:47 | Agent 'Coding Agent' chat: https://silver-finch.agents.xpander.ai | builder: https://app.xpander.ai/agents/860c35b6-3c74-4f19-af4c-f65209c6166b
+```
+
+<Check>
+We now have the backend ready. The UI can help us control the agent tools, the model, the events that are coming, the authentication, and all the infrastructure needed for the agent.
+</Check>
 
 ##  What's Next?
 
