@@ -39,15 +39,19 @@ Follow the import steps as seen in the video:
 2. The exclamation mark (⚠️) on the Github tools indicates that the Connector for Github has not been authorized yet. Click on one of them to see the connector settings.
 3. In the popup window, connect to Github with OAuth2.
 
-<Frame>
-  <video autoPlay muted loop playsInline className="w-full aspect-video" src="https://assets.xpanderai.io/workshops/videos/import-process.mp4" />
-</Frame>
-
 You are now seeing the AI Workbench - a user interface used to design, deploy, test and observe agents.
 
-<Tip>
-  The left side of the AI Workbench can be used to easily interact with your agent and see how it behaves in real time - we will do that in a minute.
-</Tip>
+<Frame>
+![post-template](/images/workshops/post-template.png)
+</Frame>
+
+Give the Agent permissions to use GitHub
+
+Click on "Authorization required" in the tools view of the agent and complete the OAuth flow.
+
+<Frame>
+  <video autoPlay muted loop playsInline className="w-full aspect-video" src="https://assets.xpanderai.io/workshops/videos/swe-authorize-github.mp4" />
+</Frame>
 
 Change the view to **Agent Graph** to see the visual representation of your agent or multi-agent team, including its different triggering capabilities and its available tools.
 
@@ -57,17 +61,8 @@ Check out the available tools your agent has. It can interact with GitHub - list
 ![Serverless coding agent](/images/workshops/serverless-coding-agent.png)
 </Frame>
 
-<Accordion title="Red exclamation mark on Github tools?">
-
 
 <Warning>If the Github tools on the graph are displaying a red exclamation mark, it's because you still need to authorize the Github connector. Click on the exclamation mark and go through the Auth process with OAuth2</Warning>
-
-
-<Frame>
-  <video autoPlay muted loop playsInline className="w-full aspect-video" src="https://assets.xpanderai.io/workshops/videos/swe-authorize-github.mp4" />
-</Frame>
-
-</Accordion>
 
 
 <Accordion title="Codex CLI built into the agent?">
@@ -85,7 +80,7 @@ Check out the available tools your agent has. It can interact with GitHub - list
 
 ## Step 2: Test your agent using the visual AI Workbench
 
-Let’s walk through a real GitHub workflow using your agent. We'll use the `xpander-ai/apps-by-agents` repository and test out some core capabilities.
+Let’s walk through a real GitHub workflow using your agent
 
 ---
 ### Test 1: The agent's capabilities
@@ -109,7 +104,6 @@ In the left tab of the AI Workbench (Tester tab), submit this prompt:
 ```text
 List all pull requests (open or closed) in "xpander-ai/apps-by-agents"
 ```
-
 
 <Tip>
 Change the view to **Full View** and expand the API calls to see the generated parameters from the AI model to the different APIs and the payload returned to the AI model.
@@ -135,29 +129,76 @@ Click on "Channels" and go to "Chat" and open Markdown rich Web Interface built-
 ![Step 3 PR Summary](/images/workshops/pr-summary.png)
 </Frame>
 
-## Step 3: Load the agent locally
+## Step 3: Load the agent locally (Optional)
 
+Click on the CLI icon at the top left, and run the code snippet that shown
 
-Run the CLI to get your agent
+![alt text](/images/workshops/cli-icon.png)
 
 ```bash
+npm i -g xpander-cli
 xpander login
+xpander initialize <<your-agent-id>>
 ```
 
-![xpander-login screenshot](/images/workshops/xpander-login.png)
+Example output
 
-You can now pull a list of the agents with 
+```log
+❯ xpander login --new
+🚀 Welcome to Xpander!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Hi David! You've successfully logged in.
+
+  Profile: default
+  Organization ID: ********
+  API Key: ********
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 Quick Start Tips:
+  • Initialize your first agent: xpander agent init
+  • Visit the platform: https://app.xpander.ai
+  • Switch profiles: xpander profile --switch <name>
+
+✓ Profile saved to ~/.xpander
+
+❯ xpander initialize *****
+✨ Initializing agent
+────────────────────────────────────────────────────────────
+✔ Agents loaded successfully
+? Select an agent to initialize: Coding Agent (*****)
+ℹ Agent Coding Agent retrieved successfully
+✔ Agent initialized successfully
+
+❯ ls
+agent_instructions.json Dockerfile              myAgent.py              requirements.txt        xpander_config.json     xpander_handler.py
+```
+
+<Tip>
+You can now pull a list of the agents with
 
 ```bash
 xpander agent list
 ```
 
-Click on the URL of the agent, and click on the CLI icon at the top left, and run
-```
-xpander agent init <agent-id>
-```
+Example output
 
-![xpander-agent-init](/images/xpander-agent-init.png)
+```log
+❯ xpander agent list
+🤖 Your Agents
+──────────────────────────────────────────────────
+┌────────────────────────┬───────────┬────────────────────────────────────────────────────────────────────┐
+│ Name                   │ Created   │ Link                                                               │
+├────────────────────────┼───────────┼────────────────────────────────────────────────────────────────────┤
+│ Coding Agent           │ 6/30/2025 │ https://app.xpander.ai/agents/c1620615-9686-4177-96dc-1de7cc281b3f │
+├────────────────────────┼───────────┼────────────────────────────────────────────────────────────────────┤
+│ AI RSS and Google News │ 6/30/2025 │ https://app.xpander.ai/agents/7887dffd-d30a-4185-b5d6-3d85681df845 │
+└────────────────────────┴───────────┴────────────────────────────────────────────────────────────────────┘
+──────────────────────────────────────────────────
+Total agents: 2
+```
+</Tip>
 
 ## Step 4: Run the agent locally
 
@@ -167,37 +208,30 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Then run `python myAgent.py`
+Then run `python xpander_handler.py` to register your machine to receive events to the agent, open the chat URL and send some message then monitor terminal.
 
-```log
-❯ python myAgent.py
-22:07:51 | 🚀 Initializing MyAgent...
-22:07:51 | 📋 Agent: Coding Agent
-22:07:51 | 🔧 Tools: 9 available
-22:07:51 | 💡 Example prompts: 5
-22:07:51 |    e.g. "List open PRs in xpander-ai/xpander-sdk."
-22:07:51 | ✅ Ready!
-22:07:51 | 📝 Task: Hi!
-22:08:10 |   📊 Step tokens: 3607
-22:08:23 |   ✅ xpfinish-agent-execution-finished
-22:08:23 | ✅ Done! Duration: 15.4s | Total tokens: 3607
-
-Hello! How can I help you today? 😊
-```
-
-Next, run `python xpander_handler.py` to register your machine to receive events to the agent
+You should see something similar to the following log.
 
 ```log
 ❯ python xpander_handler.py
-22:16:36 | 🚀 Initializing MyAgent...
-22:16:37 | 📋 Agent: Coding Agent
-22:16:37 | 🔧 Tools: 9 available
-22:16:37 | 💡 Example prompts: 5
-22:16:37 |    e.g. "List open PRs in xpander-ai/xpander-sdk."
-22:16:37 | ✅ Ready!
-22:16:41 | Listener started; waiting for events…
-22:16:47 | Worker registered – id=f3eee766-a787-4a84-a902-07e29c72953e
-22:16:47 | Agent 'Coding Agent' chat: https://silver-finch.agents.xpander.ai | builder: https://app.xpander.ai/agents/860c35b6-3c74-4f19-af4c-f65209c6166b
+14:14:02 | Listener started; waiting for events...
+14:14:03 | Worker registered – id=ff22f89c-d8f9-49b8-8c08-ebd589952ad8
+14:14:03 | Agent 'Coding Agent' chat: https://amaranth-whale.agents.xpander.ai | builder: https://app.xpander.ai/agents/c1620615-9686-4177-96dc-1de7cc281b3f
+14:15:21 | 🚀 Initializing MyAgent...
+14:15:22 | 📋 Agent: Coding Agent
+14:15:22 | 🔧 Tools: 8 available
+14:15:22 | 💡 Example prompts: 5
+14:15:22 |    e.g. "List open PRs in xpander-ai/xpander-sdk."
+14:15:22 | ✅ Ready!
+14:15:22 | 
+📨 Incoming message: hi
+👤 From user: ******
+📧 Email: ****
+14:15:22 | 📝 Task: hi
+14:15:26 |   📊 Step tokens: 4253
+14:15:31 |   ✅ xpfinish-agent-execution-finished
+14:15:31 | ✅ Done! Duration: 8.8s | Total tokens: 4253
+14:15:31 | Agent result: Hi David! How can I help you today? If you have any questions or need assistance, just let me know!
 ```
 
 <Check>
