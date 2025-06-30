@@ -1,117 +1,84 @@
 ---
 title: "Quickstart - Workbench"
-description: "Get started with xpander.ai and build your first AI agent"
+description: "Easily prototype agents in the AI agent workbench"
 icon: "desktop"
 ---
 
 ## What you will achieve in this quickstart guide:
-1. Design an AI Agent in the Workbench, including: The AI Agent state machine, tools (API function calling), and system instructions.
+1. Prototype an AI Agent in the Workbench by adding tools and instructions.
 2. Use the visual tester to test the behavior and tool calling.
 3. Chat to the AI Agent from an external source (fully hosted Chainlit).
-4. Apply the design and configuration to an AI Agent in code.
 
 ## Using the AI Agent Workbench
 
 <Steps>
 
 <Step title="Log in to the xpander.ai platform.">
-  Go to [https://app.xpander.ai](https://app.xpander.ai) and sign in with your credentials.
+  Go to [https://app.xpander.ai](https://app.xpander.ai) and sign in with your credentials, then click the `+New Agent` button
 </Step>
 
-<Step title="Open the AI Agent Workbench.">
-  In the left navigation menu, go to **AI Agents**, then click the **New AI Agent** button.
+<Step title="Welcome to the AI agent workbench">
+
+
+<Frame>
+          ![](/static/images/screenshots/wb-full1.png)
+</Frame>
+The workbench is split to two parts:
+
+💻Agent configuration - add tools, memory and storage, agent triggering, multi-agent configuration, add your agent instructions and rules, and more.
+
+🤖Agent preview - chat to your agent or view the "Agent graph" which shows your API dependency, multi-agent connectivity, and a real-time reaction of your agent when prompted through the Agent preview chat.
+
 </Step>
 
-      <Step title="Use the Planner to automatically design your AI Agent via a single prompt">
 
-      <Frame className="my-6">
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="w-full aspect-video rounded-lg shadow-lg"
-        src="https://assets.xpanderai.io/vidoes/getting-started/planner.mp4"
-      ></video>
-      </Frame>
+<Step title="Build a new AI agent">
+1. In the Agent configuration panel, give your agent a name.
+2. In the Tools tab, click the `+ Add tools` button, and in the right panel add these following tools:
+   - Google News → Retrieve News Articles By Topic  
+   - Built-in actions → Send Email
+</Step>
 
-      For this quickstart, use the following prompt:
-      "Build an AI Agent that is able to get the top stories and their item details from Hacker News"
-      <Tip>This action will automatically: design the AI Agent state machine, add the relevant tools to the AI Agent, and write the AI Agent system level instructions.</Tip>
-      <Note>It could take up to a minute for the Planner agent to complete the AI Agent design and configuration.</Note>
+<Step title="Add AI-assisted instructions and rules">
+1. In the Instructions tab, click "Write instructions with AI"
+2. Enter the following: `AI Agent that can get the latest news about any topic from the Google News tool, and then send those news in a nicely parsed way via the Send Email tool`
+3. You will see the System prompt, Rules and Goals automatically get populated with agent-optimized prompts.
+4. Deploy your agent by clicking the `Deploy` button on the top right.
 
-      </Step>
-
-      <Step>
-
-      Your result should be similar to: 
-
-        <Frame>
-          ![](/static/images/screenshots/planner-result-hn.png)
-        </Frame>
-
-      </Step>
-
-    <Step>
-    Manually add another operation (tool) to the AI Agent: Hover over the bottom operation in the graph -> click the + button. Then, go to xpander functions -> send email -> click Done.
-
-        <Frame>
-          ![](/static/images/screenshots/add-operation.png)
-        </Frame>
+</Step>
 
 
-        <Frame>
-          ![](/static/images/screenshots/add-send-email.png)
-        </Frame>
-
-    </Step>
-        <Step>
-        Save your AI Agent configuration by clicking the **Deploy** button.
- 
-    </Step>
-
-      <Step title="Use the Agent Tester (left pane) to prompt your AI Agent and view its behavior live">
-      
-      Insert a test prompt such as: Get the top 3 news items from hackernews and send them over to \<your email\>
-
-      You will see the decision making process in the graph indicated by the moving Purple dot, as well as the request/response process and payloads in the left pane. 
-
-      <Warning>If email sending doesn't work despite having added the Email sending operation to the AI Agent's tools, go to the AI Agent's settings, and in the Instructions settings, add the following:       
-      "**if asked to send an email, use the send_email operation**" </Warning>
-      
-        <Frame>
-          ![](/static/images/screenshots/testing-process.png)
-        </Frame>
-      </Step>      
-
-
-
+<Step title="Test your agent">
+1. In the top right workbench tabs, switch to `Full view` - now you see the configuration panel, Tester (Chat) panel, and the Agent graph on the right.
+2. In the Tester (chat) panel, enter the following prompt: `Get the latest news about LLM reasoning models, and send them to me over email`
+3. Check the tool selection process in the graph indicated by the moving Purple dot. This gets more useful as you add more tools and connected agents.
+4. Check the request/response process and payloads in the tester panel.
+</Step>      
 </Steps>
-
 <Check>
 <Icon icon="web-awesome" iconType="solid" size={20} /> You successfully used the AI Agent Workbench to build and test your agent!<br />
 Continue the tutorial to trigger and use your AI Agent from external sources.
 </Check>
-
 ## Chat to you AI Agent from a fully-managed Chainlit instance.
 
 <Steps>
       <Step title='Open Chainlit'>
-      Click the Chat trigger node at the top of the graph, and click the URL for your hosted Chainlit instance. 
+      From the `Connect` tab in the Agent Configuration panel, click the URL for your agent's Chat UI.
         <Frame>
-          ![](/static/images/screenshots/chat-01.png)
+          ![](/static/images/screenshots/wb-chainlit-link1.png)
         </Frame>
 </Step>
 <Step>
 You can continue prompting your AI Agent from this external source.
 
         <Frame>
-          ![](/static/images/screenshots/2025-03-15-20-53-31.png)
+          ![](/static/images/screenshots/chainlit-full-1.png)
         </Frame>        
       </Step>
 </Steps>
 
 
 <Check>
-<Icon icon="web-awesome" iconType="solid" size={20} /> You successfully chatted to your AI Agent from an external source.<br />
+<Icon icon="web-awesome" iconType="solid" size={20} /> You successfully chatted to your AI Agent from an external source. <br />
+From here, the sky is the limit - you can continue adding tools, optimize your agent with storage and memory, connect multiple agents, and much more.<br />
 </Check>
