@@ -4,7 +4,7 @@ description: "Build a cloud-based SWE agent system with custom frontend and back
 icon: "cloud-arrow-up"
 ---
 
-# SWE Cloud Agent Workshop
+## SWE Cloud Agent Workshop
 
 ![swe cloud agent banner](/images/workshops/github_agent.png)
 
@@ -12,6 +12,7 @@ icon: "cloud-arrow-up"
 ## Workshop introduction
 
 What this workshop covers:
+
 - Running a customizable SWE agent in the cloud, with built in tools: Coding (based on Codex CLI) and Github access
 - Running agents on a managed Backend-as-a-Service platform, designed specifically for AI agents
 - Deploy a Codex-GPT style frontend for managing the SWE agent tasks, logs and status
@@ -19,33 +20,17 @@ What this workshop covers:
 
 End goal: A fully customizable version of ChatGPT-Codex, controlled and configured by you, ready to take on coding tasks, connect to any tool and agent, and be triggered from anywhere.
 
-### Solution architecture
-
-```mermaid
-graph TB
-    X[xpander.ai Console] --> B[xpander.ai Backend]
-    A[SWE Task Management UI] --> B[xpander.ai Backend]
-    B --> C[OpenAI Codex CLI]
-    B --> D[GitHub Tools]
-    B --> E[Custom Agent Loop]
-    C --> F[Code Generation]
-    D --> G[Repository Operations]
-    E --> H[Local Functions]
-```
-
-
-
 ## Intro to xpander.ai Backend-as-a-Service for agents
 
 Framework-agnostic backend for scalable, real-time AI agents.
 
-| Feature        | Description                                          |
-| -------------- | ---------------------------------------------------- |
+| Feature      | Description                                          |
+| ------------ | ---------------------------------------------------- |
 | 🛠️ Frameworks | Use OpenAI, LangChain, CrewAI, Agno, or raw LLM APIs |
-| ⚙️ Tools       | Plug-and-play MCP-compatible tools                   |
-| ⚡ Events       | Built-in streaming: WebUI, Slack, Webhooks           |
-| 💾 State       | Multi-user, distributed out of the box               |
-| 🚀 Hosting     | Auto-scaling infra, one-command deploy               |
+| ⚙️ Tools      | Plug-and-play MCP-compatible tools                   |
+| ⚡ Events     | Built-in streaming: WebUI, Slack, Webhooks           |
+| 💾 State      | Multi-user, distributed out of the box               |
+| 🚀 Hosting    | Auto-scaling infra, one-command deploy               |
 | 🛡️ Guardrails | Tool dependency safety via agent graphs              |
 
 
@@ -54,5 +39,4 @@ Framework-agnostic backend for scalable, real-time AI agents.
 - On your dev machine, have Python 3.12 & Node.js 22
 - Github account
 
-
-Ready to build a production-grade SWE agent system? Start with **Module 1**\!
+Ready to build a production-grade SWE agent system? Start with **Module 1**

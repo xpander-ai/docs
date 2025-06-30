@@ -14,6 +14,58 @@ components:
       required: true
       schema:
         type: string
+  schemas:
+    Agent:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the agent
+          example: "18c35567-7977-4cb8-be64-5b2d2d5519a7"
+        name:
+          type: string
+          description: Human-readable name of the agent
+          example: "Coding Agent"
+        icon:
+          type: string
+          description: Icon representing the agent
+          example: "🤖"
+        status:
+          type: string
+          enum: [ "ACTIVE", "INACTIVE" ]
+          description: Current status of the agent
+          example: "ACTIVE"
+        deployment_provider:
+          type: string
+          enum: [ "xpander", "worker" ]
+          description: Provider used for deploying the agent
+          example: "xpander"
+        organization_id:
+          type: string
+          description: Organization ID that owns the agent
+          example: "bbe95a5a-a157-4657-a879-c8e6b02f0f87"
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the agent was created
+          example: "2025-06-26T11:05:57.417415+00:00"
+        instructions:
+          type: object
+          properties:
+            role:
+              type: array
+              items:
+                type: string
+              description: Role instructions for the agent
+            goal:
+              type: array
+              items:
+                type: string
+              description: Goal instructions for the agent
+            general:
+              type: string
+              description: General instructions for the agent
+          description: Instructions object containing role, goal, and general instructions
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
@@ -25,6 +77,59 @@ info:
   version: 1.0.0
 openapi: 3.1.0
 paths:
+  /v1/agents/list:
+    get:
+      description: Retrieves a list of all agents for the authenticated organization
+      operationId: list-agents
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: Successful response with list of agents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Agent'
+              example:
+              - id: "18c35567-7977-4cb8-be64-5b2d2d5519a7"
+                deployment_provider: "xpander"
+                name: "New Agent"
+                icon: "🤖"
+                status: "ACTIVE"
+                organization_id: "bbe95a5a-a157-4657-a879-c8e6b02f0f87"
+                created_at: "2025-06-26T11:05:57.417415+00:00"
+                instructions:
+                  role: []
+                  goal: []
+                  general: ""
+              - id: "d5bd7c45-9862-4fa5-b0f8-f22144d6e571"
+                deployment_provider: "xpander"
+                name: "Coding Agent"
+                icon: "🖥️"
+                status: "ACTIVE"
+                organization_id: "bbe95a5a-a157-4657-a879-c8e6b02f0f87"
+                created_at: "2025-06-26T05:04:39.099492+00:00"
+                instructions:
+                  role: [ "You are the **Manager Coding Agent**..." ]
+                  goal: [ "1. Turn product requirements into tasks..." ]
+                  general: "### ⚠️ DISPOSABLE CONTAINER POLICY..."
+        '403':
+          description: Invalid API key or insufficient permissions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: "Invalid API key - Invalid API key"
+      summary: 'List all agents for organization'
+      tags:
+      - agents
+      x-pretty-description: 'Retrieves a list of all agents for the authenticated organization'
+      x-pretty-name: 'List Agents'
   /{agentId}/operations/{toolName}:
     parameters:
     - $ref: '#/components/parameters/agentId'
@@ -92,6 +197,6 @@ paths:
       - default
       x-pretty-description: 'Gets all tools / function calling available for the agent'
 servers:
-- url: https://inbound.xpander.ai/agent
+- url: https://inbound.xpander.ai
 security:
 - ApiKeyAuth: []
