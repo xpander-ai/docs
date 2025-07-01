@@ -133,7 +133,7 @@ In line 46, right after `self.agent_backend.select_llm_provider(LLMProvider.OPEN
 self.agent_backend.add_local_tools(local_tools_list)
 ```
 
-and in line 95 add, right after `tool_calls = self.agent_backend.extract_tool_calls(response.model_dump())` add :
+and in line 95 add, right after `tool_calls = self.agent_backend.extract_tool_calls(response.model_dump())` add:
 
 ```python
 if tool_calls[0].name == "star_github_repo":
@@ -155,7 +155,7 @@ if tool_calls[0].name == "star_github_repo":
 ```
 
 <Note>
-    This is very simple implementation of AI calling local functions, designed to teach the basics of how generated payload passes to a function that sits on the local machine. For more robust, and dynamic naming with asynchronous runtime and logger, refer to docs in xpander-ai/xpander.ai repo.
+    This is a very simple implementation of AI calling local functions, designed to teach the basics of how generated payload passes to a function that sits on the local machine. For more robust, and dynamic naming with asynchronous runtime and logger, refer to docs in xpander-ai/xpander.ai repo.
 </Note>
 ---
 
