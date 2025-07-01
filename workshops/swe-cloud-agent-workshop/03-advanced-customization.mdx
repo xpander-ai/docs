@@ -5,106 +5,21 @@ icon: "gear"
 ---
 
 <Note>
-
-### **Module Summary**
-
-- **Goal**: Customize agent loops, add Python tools, and run the agent locally
-- **Prerequisites**: Python 3.12, Node.js v22
-
-</Note>
-
----
-
-## What You'll Do in This Module
-
 In this module, you’ll gain full control over your agent’s behavior.
 
 You’ll learn how to:
 
-- Run your agent locally via a Jupyter notebook.
-- Customize the agent loop, allowing advanced logic or prompt shaping
 - Add your own Python tools to expand what the agent can do
+- Add observability to your agent using AgentsOps
+</Note>
 
+**Goal**: Customize agent loops, add Python tools, and run the agent locally with full observability
 
-## Environment Setup
-
-| Tool    | Required Version |
-| ------- | ---------------- |
-| Python  | `3.12.7`         |
-| Node.js | `v22`            |
-
-Use `pyenv` and `nvm` to manage these versions if needed:
-
-```bash
-python3 --version     # 3.12.7
-node --version        # v22.x
-```
-
-## Clone the Template Repository
-
-```bash
-git clone https://github.com/xpander-ai/xpander.ai.git
-cd xpander.ai/Getting-Started/hello-world
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-## CLI Login & Agent Initialization
-
-Install the CLI and initialize your agent:
-
-```bash
-npm i -g xpander-cli
-xpander login
-xpander initialize
-```
-To get the Agent ID of your SWE agent for the initialization part:
-1. Go back to the AI Workbench
-2. Click the "SDK" trigger node, at the top part of the canvas
-3. Copy the Agent ID from there, and paste it in the CLI prompt
-
-![swe cli init](/images/workshops/swe-cli-login-and-init.png)
-
-This creates the following files:
-
-* `xpander_config.json`
-* `agent_instructions.json`
-* `requirements.txt`
-
-
-## Install agent dependencies
-
-```bash
-pip install -r requirements.txt
-mv .env.example .env
-```
-
-Fill in the required values in `.env`:
-
-<Tip>
-If you're running the workshop in an event, get the OpenAI key from the event's Notes file, or use your own key.
-</Tip>
-
-```env
-OPENAI_MODEL_ID=gpt-4.1
-OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-## Run the Agent via a Jupyter Notebook
-
-Here, we'll step through the agent lifecycle.
-Open `my_agent.ipynb` in VSCode, Cursor, Jupyter Lab, or any notebook viewer.
-
-Run through the notebook, and then come back to this guide to add local tools in the next step.
-
-![swe notebook](/images/workshops/swe-notebook.png)
-
----
-## Add a Local Tool to Star a GitHub Repository (Optional)
+## Step 1: Add a Local Tool to Star a GitHub Repository
 
 In this step, you’ll enable your agent to run a custom tool that stars a GitHub repository.
 
-### 1. Generate a GitHub Token
+Generate a GitHub Token
 
 First, create a GitHub personal access token:  
 👉 [Generate Token](https://github.com/settings/tokens/new)
@@ -123,21 +38,31 @@ First, create a GitHub personal access token:
 
 ---
 
-### 2. Add the Token to Your `.env` File
+Add the Token to Your `.env` File
 
 Update your `.env` file with the following:
 
 ```env
-OPENAI_MODEL_ID=gpt-4.1                            # Your existing model ID
-OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  # Your existing OpenAI key
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  # Your OpenAI key
 GITHUB_TOKEN=YOUR_TOKEN_GOES_HERE                  # Paste your GitHub token here
 ```
+
+Update your requirements.txt to match
+
+```bash
+xpander-sdk
+openai
+python-dotenv
+requests
+```
+
+And run `pip install -r requirements.txt`
 
 ---
 
 ### 🧩 3. Define the Custom Tool
 
-Replace the contents of `tools/local_tools.py` with:
+Create a file under `tools/local_tools.py` with:
 
 ```python
 import requests
@@ -193,31 +118,57 @@ local_tools_list = [tool["declaration"] for tool in local_tools]
 local_tools_by_name = {tool["declaration"]["function"]["name"]: tool["fn"] for tool in local_tools}
 ```
 
-![swe replace local tools](/images/workshops/swe-replacing-local-tools.png)
+## Step 2:  Add the local function to the agent
 
----
-
-### 🔄 4. Reload the Agent
-
-Add a new cell to reinitialize the agent with the updated tools:
+Go to `myAgent.py` and add the tool to the import section:
 
 ```python
-agent = MyAgent(xpander_agent)  # The agent will now include the updated local tools
+from xpander_sdk import ToolCallResult ## Add just ToolCallResult
+from tools.local_tools import local_tools_by_name, local_tools_list ## From your local_tools file
 ```
 
----
-
-### 🤖 5. Ask the Agent to Star a Repository
-
-Add a new cell to send a prompt to the agent:
+In line 46, right after `self.agent_backend.select_llm_provider(LLMProvider.OPEN_AI)` add:
 
 ```python
-# Ask the agent to star a specific repo
-await agent.chat("star repo xpander-ai/xpander.ai")
+self.agent_backend.add_local_tools(local_tools_list)
+```
+
+and in line 95 add, right after `tool_calls = self.agent_backend.extract_tool_calls(response.model_dump())` add :
+
+```python
+if tool_calls[0].name == "star_github_repo":
+    result = local_tools_by_name[tool_calls[0].name](
+        **tool_calls[0].payload)
+    print(result)
+    tool_results = [
+        ToolCallResult(
+            function_name=tool_calls[0].name,
+            tool_call_id=tool_calls[0].tool_call_id,
+            is_success=result['success'],
+            is_local=True,
+            result=result['message'],
+            payload=tool_calls[0].payload
+        )
+    ]
+    self.agent_backend.add_tool_call_results(tool_results)
+    tool_calls.pop(0)
+```
+
+<Note>
+    This is very simple implementation of AI calling local functions, designed to teach the basics of how generated payload passes to a function that sits on the local machine. For more robust, and dynamic naming with asynchronous runtime and logger, refer to docs in xpander-ai/xpander.ai repo.
+</Note>
+---
+
+## Step 3: Run the Agent
+
+Run the `python xpander_handler.py` and send the following prompt
+
+```md
+star repo xpander-ai/xpander.ai
 ```
 
 ![swe star repo result](/images/workshops/swe-star-repo-result.png)
 
 ---
 
-## Agent activated. GitHub stars beware — you’ve built a coding assassin. 💻
+## Step 4: Add observability (Optional)

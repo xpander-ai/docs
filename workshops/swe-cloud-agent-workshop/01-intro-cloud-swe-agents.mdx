@@ -133,13 +133,64 @@ Click on "Channels" and go to "Chat" and open Markdown rich Web Interface built-
 
 Click on the CLI icon at the top left, and run the code snippet that shown
 
+<Frame>
 ![alt text](/images/workshops/cli-icon.png)
+</Frame>
 
 ```bash
 npm i -g xpander-cli
 xpander login
 xpander initialize <<your-agent-id>>
 ```
+
+<Warning>
+xpander-cli requires Node.js v22 or higher and CLI version 0.0.31 or above. If you install the CLI but it shows an old version, your system is likely using a cached or outdated install
+
+<Accordion title="Follow these steps to fix it">
+Step 1: Use Node.js v22+
+
+If you have nvm (Node Version Manager) installed:
+
+```bash
+nvm install 22
+nvm use 22
+nvm alias default 22
+```
+
+If you don’t have nvm
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+```
+
+Alternatively, if you prefer not to use nvm, make sure your Node.js version is at least 22:
+
+```bash
+node -v  # Should return v22.x.x or higher
+```
+
+Step 2: Remove any old xpander-cli installs
+
+```bash
+npm uninstall -g xpander-cli
+which xpander  # Should return nothing
+```
+
+If it still shows a path, delete the old binary:
+
+```bash
+rm -f $(which xpander)
+```
+
+Step 3: Install the latest CLI
+
+```bash
+npm install -g xpander-cli
+xpander --version  # Should show 0.0.31 or higher
+```
+</Accordion>
+
+</Warning>
 
 Example output
 
@@ -200,7 +251,7 @@ Total agents: 2
 ```
 </Tip>
 
-## Step 4: Run the agent locally
+## Step 4: Run the agent locally (Optional)
 
 ```bash
 python3 -m venv .venv
