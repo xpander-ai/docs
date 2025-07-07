@@ -1,6 +1,7 @@
 ---
 title: "AWS Usage Cost Report Generator Agent"
-description: "Learn how to integrate AI agents with AWS Cost Exporer MCP Server, Notion, and tools with xpander.ai"
+description: "Learn how to integrate AI agents with AWS Cost Exporer MCP Server, Notion, and built-in tools with xpander.ai"
+icon: "clipboard"
 ---
 ## Introduction
 
@@ -153,6 +154,8 @@ Agno is a Python framework for building multi-agent systems that allows us to in
 Next, we’ll wrap the AWS MCP-powered Agno agent with the xpander backend, which is already equipped with tools like the Notion and Email interfaces you created from the template in the previous section.
 
 ```python
+# Inside a Python file called agno_agent_with_aws_mcp.py
+
 import asyncio
 from dotenv import load_dotenv
 import os
@@ -182,6 +185,8 @@ To build the agent, we’ll use the `Agent` class from Agno.  In the `tools` arg
 This setup ensures that our AI agent has access to all the necessary tools to complete its tasks.
 
 ```python
+# Inside a Python file called agno_agent_with_aws_mcp.py
+
 class AgnoAgent:
     def __init__(self, agent_backend: AgnoAdapter):
         self.mcp_tools = MultiMCPTools(
@@ -252,7 +257,7 @@ from xpander_utils.sdk.adapters import AgnoAdapter
 
 from pathlib import Path
 from dotenv import load_dotenv
-from agno_agent_with_aws import AgnoAgent
+from agno_agent_with_aws_mcp import AgnoAgent
 from xpander_sdk import LLMTokens, Tokens
 
 load_dotenv()
