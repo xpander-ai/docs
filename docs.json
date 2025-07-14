@@ -82,7 +82,8 @@
               "tutorials/01-structured-output-agent",
               "tutorials/02-hello-world-agent",
               "tutorials/03-outage-manager-agent",
-              "tutorials/04-supercharge-your-ide-with-mcp"
+              "tutorials/04-supercharge-your-ide-with-mcp",
+              "tutorials/05-travel-expense-assistant"
             ]
           }
         ]
