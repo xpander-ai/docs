@@ -65,3 +65,4 @@ Where to go from here...
 3. [Multi-Agent Outage Manager](./03-outage-manager-agent.mdx) - Detect and broadcast outages using a collaborative agent team
 4. [Supercharge Your IDE with MCP](./04-supercharge-your-ide-with-mcp.mdx) - Create and optimise a GitHub MCP server with Agentic RAG
 5. [Travel & Expense Assistant](./05-travel-expense-assistant.mdx) - Manage travel bookings and expense tracking with Xpander.ai + Agno
+6. [GitHub PR Review Agent](./06-github-pr-review-agent.mdx) - Build a GitHub PR Review Agent that Analyse
