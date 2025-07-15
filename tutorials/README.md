@@ -60,4 +60,8 @@ Where to go from here...
 
 ## Current Tutorials
 
-1. [Hello World Agent](./01-hello-world-agent.mdx) - Build your first agent programmatically with goals, instructions, and the Tavily search tool 
+1. [Prompt to Structured Output](./01-structured-output-agent.mdx) - Build a ready-to-deploy agent to transform text into structured data in minutes
+2. [Hello World Agent](./02-hello-world-agent.mdx) - Build your first agent programmatically with goals, instructions, and the Tavily search tool
+3. [Multi-Agent Outage Manager](./03-outage-manager-agent.mdx) - Detect and broadcast outages using a collaborative agent team
+4. [Supercharge Your IDE with MCP](./04-supercharge-your-ide-with-mcp.mdx) - Create and optimise a GitHub MCP server with Agentic RAG
+5. [Travel & Expense Assistant](./05-travel-expense-assistant.mdx) - Manage travel bookings and expense tracking with Xpander.ai + Agno
