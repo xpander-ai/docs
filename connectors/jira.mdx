@@ -1,0 +1,108 @@
+---
+title: "Jira"
+description: "Learn how to integrate AI agents with Jira using xpander.ai. Create intelligent workflows that automatically assign tasks, analyze issue trends, generate reports, and trigger actions based on project activity."
+icon: "jira"
+---
+
+## About Jira
+
+Jira is a versatile project management and issue-tracking software developed by Atlassian, widely utilized by software development teams and various other departments to plan, track, and manage work efficiently.
+
+Key features include:
+
+- **Customizable Workflows**: Adapt Jira to fit your team's processes by customizing issue types, fields, and workflows.
+
+- **Agile Boards**: Utilize Scrum and Kanban boards to visualize work, manage sprints, and track progress.
+
+- **Reporting and Dashboards**: Generate real-time reports and dashboards to gain insights into team performance and project status.
+
+- **Integration Capabilities**: Jira integrates with various development and collaboration tools, including Bitbucket, Confluence, and third-party applications, enhancing its functionality.
+
+
+## Authentication Options
+
+Below are possible authentication options you can choose:
+
+<Tabs>
+
+  <Tab title="API Access">
+
+    ### Generate a Jira API Key
+
+    1. Log in to your [Atlassian profile account](https://id.atlassian.com/manage-profile/).  
+    2. Navigate to **Security** in the top bar, then click **Create and manage API tokens**.  
+
+       ![Img 1](/images/connectors/jira/img_1.png)
+
+    3. Click **Create API token**, give it a name and set an expiration date.  
+    4. Your API key will be displayed—copy it somewhere safe.  
+    5. Encode the combination of your email address and API key in base64 using the format:  
+       `your@email.com:your-api-key`  
+       You can do this in one of two ways:  
+       - Run the following command in your terminal:
+         ```
+         echo -n 'your@email.com:your-api-token' | base64
+         ```
+       - Or use an [online base64 encoder](https://www.base64encode.org/).  
+
+    ### Integrate Jira into xpander.ai
+
+    1. Go to the **Connectors** section in the sidebar of your xpander.ai dashboard.  
+    2. Select **Jira** from the available integrations.  
+    3. Click **Other auth options**.  
+    4. Enter an **Interface name**, e.g., "xpander-jira".  
+    5. Select **API Key** as the authentication mode.  
+    6. Choose **Integration User** as the authentication scope.  
+    7. Paste the base64-encoded string from the previous section into the provided field.  
+    8. Set the **Auth Type** to **Basic**.  
+    9. Save the configuration.  
+
+    ![Img 2](/images/connectors/jira/img_2.png)
+
+  </Tab>
+</Tabs>
+
+## Integration of Jira into AI Agent
+
+Once you've configured your Jira account with the authentication option(s) described above, you can integrate it into your AI agent with xpander.ai:
+
+1. Go to the **+** sign located in the top right of the graph visualization of your xpander.ai agent.  
+2. Select **Connectors**.  
+3. Choose **Jira** with the same **Interface name** you configured in the previous section (e.g., xpander-jira).  
+4. Select the available Jira operations that suit your use case.  
+
+## Expose Jira as MCP Server
+
+Alternatively, you can also expose your Jira account as an MCP server. To do so:
+
+1. Go to the **Connectors** section in the sidebar of your xpander.ai dashboard.  
+2. Select **Jira** with the same **Interface name** you configured in the previous section (e.g., xpander-jira).  
+3. Click **MCP Configuration**.  
+4. Enter the MCP configuration into the appropriate settings of the client app you want to use (e.g., Cursor, Windsurf, Claude Desktop, etc.).
+
+![Img 3](/images/connectors/jira/img_3.png)
+
+## AI Agent Jira Prompt Library
+
+Below are possible prompts or use cases you can try after integrating Jira into your xpander AI agent:
+
+```
+Could you retrieve the audit records from {start_date} to {end_date}?
+```
+
+````
+Could you create a new component called {component_name} in the {project_key} project?
+````
+
+```
+Can you bulk move these issues to the {project_name} project?
+```
+
+```
+Can you retrieve the thumbnail for attachment {attachment_id}?
+```
+
+## Related Resources
+
+- [Understanding Model Context Protocol (MCP)](/docs/05-human-interfaces/04-mcp)
+- [Jira API Documentation](https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/)

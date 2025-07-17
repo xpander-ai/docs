@@ -1,0 +1,118 @@
+---
+title: "Notion"
+description: "Learn how to integrate AI agents with Notion using xpander.ai. Create intelligent workflows that automate tasks, generate content, summarize notes, and enhance decision-making."
+icon: "note-sticky"
+---
+
+## About Notion
+
+Notion is a highly versatile productivity platform that combines note-taking, task management, databases, and collaboration tools into a single, customizable workspace. It's designed to help individuals and teams organize information, manage projects, and streamline workflows.
+
+Key features include:
+
+- **All-in-One Workspace**: Notion allows users to create and organize notes, tasks, wikis, and databases within a unified interface. This flexibility enables users to tailor their workspace to fit personal or team needs. 
+
+- **Block-Based Structure**: Content in Notion is built using "blocks," which can be text, images, checklists, code snippets, or embedded files. This modular approach allows for easy customization and rearrangement of content.
+
+- **Templates**: Notion offers a vast gallery of pre-built templates for various use cases, including project management, personal planning, and documentation. These templates help users get started quickly and can be customized as needed. 
+
+- **AI Integration**: Notion AI assists users by generating content drafts, summarizing notes, translating text, and providing writing suggestions. It also offers features like AI Meeting Notes and Enterprise Search to enhance productivity. 
+
+- **Calendar Integration**: With Notion Calendar, users can link database entries to calendar events, enabling efficient planning and task tracking. It syncs with Google Calendar for consolidated scheduling. 
+
+## Authentication Options
+
+Below are possible authentication options you can choose:
+
+<Tabs>
+
+  <Tab title="Built-in xpander.ai Auth">
+
+    The simplest way to connect Notion is by using xpander.ai's built-in authentication:
+
+    1. Go to the **Connectors** section in the sidebar of your xpander.ai dashboard.  
+    2. Select **Notion** from the available integrations.  
+    3. Click **Sign in with Notion**.  
+    4. Grant xpander.ai permission to access your Notion workspace.  
+    5. Your Notion integration is now ready to use.
+
+  </Tab>
+
+  <Tab title="API Access">
+
+    ### Generate a Notion API Key
+
+    1. Log in to your [Notion Integrations dashboard](https://www.notion.so/profile/integrations) and click **New Integration**.  
+
+       ![Img 1](/images/connectors/notion/img_1.png)
+
+    2. Under **Associated workspace**, choose your Notion workspace.  
+       Under **Type**, select **Internal**.  
+
+       ![Img 2](/images/connectors/notion/img_2.png)
+
+    3. After clicking **Save**, you'll see your Notion API key under the **Internal Integration Secret** section.
+
+    ### Integrate Notion into xpander.ai
+
+    1. Go to the **Connectors** section in the sidebar of your xpander.ai dashboard.  
+    2. Select **Notion** from the available integrations.  
+    3. Click **Other auth options**.  
+    4. Enter an **Interface name**, e.g., "xpander-notion".  
+    5. Select **API Key** as the authentication mode.  
+    6. Choose **Integration User** as the authentication scope.  
+    7. Paste the Notion API key into the provided field.  
+    8. Set the **Auth Type** to **Bearer**.  
+    9. Save the configuration.  
+
+    ![Img 3](/images/connectors/notion/img_3.png)
+
+  </Tab>
+</Tabs>
+
+## Integration of Notion into AI Agent
+
+Once you've configured your Notion account with the authentication option(s) described above, you can integrate it into your AI agent with xpander.ai:
+
+1. Go to the **+** sign located in the top right of the graph visualization of your xpander.ai agent.  
+2. Select **Connectors**.  
+3. Choose **Notion** with the same **Interface name** you configured in the previous section (e.g., xpander-notion).  
+4. Select the available Notion operations that suit your use case.  
+
+![Img 4](/images/connectors/notion/img_4.png)
+
+## Expose Notion as MCP Server
+
+Alternatively, you can also expose your Notion account as an MCP server. To do so:
+
+1. Go to the **Connectors** section in the sidebar of your xpander.ai dashboard.  
+2. Select **Notion** with the same **Interface name** you configured in the previous section (e.g., xpander-notion).  
+3. Click **MCP Configuration**.  
+4. Enter the MCP configuration into the appropriate settings of the client app you want to use (e.g., Cursor, Windsurf, Claude Desktop, etc.).
+
+![Img 5](/images/connectors/notion/img_5.png)
+
+## AI Agent Notion Prompt Library
+
+Below are possible prompts or use cases you can try after integrating Notion into your xpander AI agent:
+
+```
+Can you search for all pages related to {project_name} in our workspace?
+```
+
+````
+Can you retrieve all tasks assigned to {team_member} from our project tracker?
+````
+
+```
+Can you delete the outdated section about {old_feature} from our documentation?
+```
+
+```
+Can you show me all unresolved comments on our {document_name} document?
+```
+
+## Related Resources
+
+- [Understanding Model Context Protocol (MCP)](/docs/05-human-interfaces/04-mcp)
+- [Notion API Documentation](https://developers.notion.com/reference/intro)

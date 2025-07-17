@@ -1,0 +1,123 @@
+---
+title: "Github Search Manager"
+description: "Learn how to integrate AI agents with GitHub Search Manager using xpander.ai. Create intelligent workflows that dynamically query GitHub repositories, issues, and codebases based on contextual prompts."
+icon: "github"
+---
+
+## About Github Search Manager
+
+GitHub is a cloud-based platform designed for developers to store, manage, and collaborate on code.
+
+Key features of Github Search Manager include:
+
+- **Repositories**: Search for repositories based on criteria like name, description, topics, and more.
+
+- **Code**: Find specific code snippets or files within repositories.
+
+- **Commits**: Search commit messages and associated metadata.
+
+- **Issues and Pull Requests**: Locate issues or pull requests matching certain conditions.
+
+- **Users**: Search for users by username or other profile information.
+
+- **Topics**: Discover repositories associated with specific topics
+
+
+## Authentication Options
+
+Below are possible authentication options you can choose:
+
+<Tabs>
+
+  <Tab title="Built-in xpander.ai Auth">
+
+    The simplest way to connect Github Search Manager is by using xpander.ai's built-in authentication:
+
+    1. Go to the **Connectors** section in the sidebar of your xpander.ai dashboard.  
+    2. Select **Github Search Manager** from the available integrations.  
+    3. Click **Sign in with Github Search Manager**.  
+    4. Grant xpander.ai permission to access your Github workspace.  
+    5. Your Github Search Manager integration is now ready to use.
+
+  </Tab>
+
+  <Tab title="API Access">
+
+    ### Generate a Github Search Manager API Key
+
+    1. Log in to your [Github account](https://github.com/).  
+    2. Click on your profile icon in the top-right corner, then select **Settings**.  
+       ![Img 1](/images/connectors/github-search-manager/img_1.png)
+
+    3. In the sidebar, go to **Developer settings**.  
+    4. Select **Personal access tokens**, then click on **Tokens (classic)**.  
+    5. Click **Generate new token**, and then **Generate new token (classic)**.  
+       ![Img 2](/images/connectors/github-search-manager/img_2.png)
+
+    6. Add a description under the **Note** field, set an expiration date, and select the appropriate scopes for your token.  
+    7. Click **Generate token**. You’ll see your Github access token—copy and store it securely.
+
+    ### Integrate Github Search Manager into xpander.ai
+
+    1. Go to the **Connectors** section in the sidebar of your xpander.ai dashboard.  
+    2. Select **Github Search Manager** from the available integrations.  
+    3. Click **Other auth options**.  
+    4. Enter an **Interface name**, e.g., "xpander-github-search-manager".  
+    5. Select **API Key** as the authentication mode.  
+    6. Select **Integration User** as the authentication scope.  
+    7. Paste the Github access token into the provided field.  
+    8. Choose **Bearer** as the **Auth Type**.  
+    9. Save the configuration.  
+
+    ![Img 3](/images/connectors/github-search-manager/img_3.png)
+
+  </Tab>
+
+</Tabs>
+
+## Integration of Github Search Manager into AI Agent
+
+Once you've configured your Github Search Manager account with the authentication option(s) described above, you can integrate it into your AI agent with xpander.ai:
+
+1. Go to the **+** sign located in the top right of the graph visualization of your xpander.ai agent.  
+2. Select **Connectors**.  
+3. Choose **Github Search Manager** with the same **Interface name** you configured in the previous section (e.g., xpander-github-search-manager).  
+4. Select the available Github Search Manager operations that suit your use case.  
+
+![Img 4](/images/connectors/github-search-manager/img_4.png)
+
+## Expose Github Search Manager as MCP Server
+
+Alternatively, you can also expose your Github Search Manager account as an MCP server. To do so:
+
+1. Go to the **Connectors** section in the sidebar of your xpander.ai dashboard.  
+2. Select **Github Search Manager** with the same **Interface name** you configured in the previous section (e.g., xpander-github-search-manager).  
+3. Click **MCP Configuration**.  
+4. Enter the MCP configuration into the appropriate settings of the client app you want to use (e.g., Cursor, Windsurf, Claude Desktop, etc.).
+
+![Img 5](/images/connectors/github-search-manager/img_5.png)
+
+## AI Agent Github Search Manager Prompt Library
+
+Below are possible prompts or use cases you can try after integrating Github Search Manager into your xpander AI agent:
+
+```
+Can you show me code snippets that implement a {specific_algorithm} in {language}?
+```
+
+````
+Are there any recent commits mentioning {bug_id} or fixing related issues?
+````
+
+```
+What are the most popular repositories related to {technology} or {framework}?
+```
+
+```
+Can you find all pull requests related to {feature_name} in {repo_name}?
+```
+
+## Related Resources
+
+- [Understanding Model Context Protocol (MCP)](/docs/05-human-interfaces/04-mcp)
+- [Github Search Manager API Documentation](https://docs.github.com/en/rest/search/search?apiVersion=2022-11-28)

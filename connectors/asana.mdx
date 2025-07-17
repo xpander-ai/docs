@@ -1,0 +1,102 @@
+---
+title: "Asana"
+description: "Learn how to integrate AI agents with Asana using xpander.ai. Create intelligent workflows that automate routine tasks, assign responsibilities, and provide real-time insights to enhance team productivity and decision-making."
+icon: "square-poll-vertical"
+---
+
+## About Asana
+
+Asana is a web-based and mobile work management platform designed to help teams organize, track, and manage their work.
+
+Asana key features:
+
+- **Task and Project Management**: Asana allows teams to create projects, assign tasks, set deadlines, and track progress. Users can organize work using various views such as lists, boards, calendars, and timelines.
+
+- **Collaboration Tools**: Team members can communicate directly within tasks through comments, share files, and receive notifications, facilitating seamless collaboration.
+
+- **Reporting and Analytics**: Asana provides real-time reporting features, enabling teams to gain insights into project statuses and identify potential risks or bottlenecks.
+
+- **Integrations**: The platform integrates with various third-party applications, including Google Workspace, Figma, and Zoom, enhancing its functionality and adaptability to different workflows.
+
+- **AI Capabilities**: In recent developments, Asana has introduced AI features like "AI teammates," which assist users by performing tasks, setting up triggers, and providing work analysis through a chatbot interface.
+
+## Authentication Options
+
+Below are possible authentication options you can choose:
+
+<Tabs>
+
+  <Tab title="API Access">
+
+    ### Generate an Asana API Key
+
+    1. Log in to your [Asana developer console](https://app.asana.com/0/my-apps).
+    2. Click **Create New Token** and give your token a name.
+
+    ![Img 1](/images/connectors/asana/img_1.png)
+
+    3. Your access token will be displayed—make sure to copy and store it securely.
+		
+    ### Integrate Asana into xpander.ai
+
+    1. In your xpander.ai dashboard, go to the **Connectors** section in the sidebar.  
+    2. Select **Asana** from the list of available integrations.  
+    3. Click **Other auth options**.  
+    4. Enter an **Interface name**, e.g., "xpander-asana".  
+    5. Choose **API Key** as the authentication mode.  
+    6. Select **Integration User** for the authentication scope.  
+    7. Paste your Asana access token into the provided field.  
+    8. Set the **Auth Type** to **Bearer**.  
+    9. Save the configuration.  
+
+    ![Img 2](/images/connectors/asana/img_2.png)
+
+  </Tab>
+</Tabs>
+
+## Integration of Asana into AI Agent
+
+Once you've configured your Asana account with the authentication option(s) described above, you can integrate it into your AI agent with xpander.ai:
+
+1. Go to the **+** sign located in the top right of the graph visualization of your xpander.ai agent.  
+2. Select **Connectors**.  
+3. Choose **Asana** with the same **Interface name** you configured in the previous section (e.g., xpander-asana).  
+4. Select the available Asana operations that suit your use case.  
+
+![Img 3](/images/connectors/asana/img_3.png)
+
+## Expose Asana as MCP Server
+
+Alternatively, you can also expose your Asana account as an MCP server. To do so:
+
+1. Go to the **Connectors** section in the sidebar of your xpander.ai dashboard.  
+2. Select **Asana** with the same **Interface name** you configured in the previous section (e.g., xpander-asana).  
+3. Click **MCP Configuration**.  
+4. Enter the MCP configuration into the appropriate settings of the client app you want to use (e.g., Cursor, Windsurf, Claude Desktop, etc.).
+
+![Img 4](/images/connectors/asana/img_4.png)
+
+## AI Agent Asana Prompt Library
+
+Below are possible prompts or use cases you can try after integrating Asana into your xpander AI agent:
+
+```
+Could you create a new goal for Q3 titled "{goal_name}" and link it to our current objectives?
+```
+
+````
+Can you upload the latest {document_name} brief to our project and notify the team?
+````
+
+```
+Could you create a new project from our {template_name} template and set the due date to {date}?
+```
+
+```
+Can you add {user_name} to the {project_name} project team and give them editor access?
+```
+
+## Related Resources
+
+- [Understanding Model Context Protocol (MCP)](/docs/05-human-interfaces/04-mcp)
+- [Asana API Documentation](https://developers.asana.com/reference/rest-api-reference)
