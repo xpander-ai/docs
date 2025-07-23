@@ -64,11 +64,10 @@
           {
             "group": "Human Interfaces",
             "pages": [
-              "docs/05-human-interfaces/02-slack-bots",
+              "docs/05-human-interfaces/02-slack-agents",
               "docs/05-human-interfaces/03-webui",
               "docs/05-human-interfaces/04-mcp",
-              "docs/05-human-interfaces/05-webhooks",
-              "docs/05-human-interfaces/06-slack-agents"
+              "docs/05-human-interfaces/05-webhooks"
 
             ]
           }
