@@ -152,7 +152,11 @@ Agno is a Python framework for building multi-agent systems that allows us to in
 Next, we’ll wrap the AWS MCP-powered Agno agent with the xpander backend, which is already equipped with tools like the Notion and Email interfaces you created from the template in the previous section.
 
 ```python
+<<<<<<< HEAD:tutorials/07-aws-cost-report-agent.mdx
 # inside a Python script called agno_agent_with_aws.py
+=======
+# Inside a Python file called ai_agent.py
+>>>>>>> 539ba40 (Rename script):tutorials/05-aws-cost-report-agent.mdx
 
 import asyncio
 from dotenv import load_dotenv
@@ -183,7 +187,11 @@ To build the agent, we’ll use the `Agent` class from Agno.  In the `tools` arg
 This setup ensures that our AI agent has access to all the necessary tools to complete its tasks.
 
 ```python
+<<<<<<< HEAD:tutorials/07-aws-cost-report-agent.mdx
 # still inside a Python script called agno_agent_with_aws.py
+=======
+# Inside a Python file called ai_agent.py
+>>>>>>> 539ba40 (Rename script):tutorials/05-aws-cost-report-agent.mdx
 
 class AgnoAgent:
     def __init__(self, agent_backend: AgnoAdapter):
@@ -255,7 +263,11 @@ from xpander_utils.sdk.adapters import AgnoAdapter
 
 from pathlib import Path
 from dotenv import load_dotenv
+<<<<<<< HEAD:tutorials/07-aws-cost-report-agent.mdx
 from agno_agent_with_aws import AgnoAgent
+=======
+from ai_agent import AgnoAgent
+>>>>>>> 539ba40 (Rename script):tutorials/05-aws-cost-report-agent.mdx
 from xpander_sdk import LLMTokens, Tokens
 
 load_dotenv()
