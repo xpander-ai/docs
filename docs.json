@@ -85,7 +85,8 @@
               "tutorials/03-outage-manager-agent",
               "tutorials/04-supercharge-your-ide-with-mcp",
               "tutorials/05-travel-expense-assistant",
-              "tutorials/06-github-pr-review-agent"
+              "tutorials/06-github-pr-review-agent",
+              "tutorials/07-aws-cost-report-agent"
             ]
           }
         ]
