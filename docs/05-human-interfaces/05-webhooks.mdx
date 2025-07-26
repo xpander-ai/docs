@@ -32,7 +32,6 @@ To find your webhook URL:
 | Parameter | Type | Description |
 | --------- | ---- | ----------- |
 | `agent_id` | string | The unique identifier of your agent |
-| `source_node_id` | string | The starting node ID in your agent's workflow |
 | `x-api-key` | string | Your API key for authentication (header or query parameter) |
 | `asynchronous` | boolean | Whether to wait for completion (`false`) or return immediately (`true`) |
 
@@ -71,7 +70,6 @@ curl --location "https://webhook.xpander.ai?asynchronous=true" \
 --form "files=@/path/to/first-file.pdf" \
 --form "files=@/path/to/second-file.pdf" \
 --form "files=@/path/to/image.png" \
---form "source_node_id=YOUR_SOURCE_NODE_ID" \
 --form "agent_id=YOUR_AGENT_ID"
 ```
 
@@ -101,7 +99,7 @@ All uploaded files are stored securely on our platform. Your agent doesn't need 
 curl --location "https://webhook.xpander.ai?asynchronous=false" \
 --header "x-api-key: YOUR_API_KEY" \
 --header "Content-Type: application/json" \
---data '{"source_node_id": "YOUR_SOURCE_NODE_ID", "agent_id": "YOUR_AGENT_ID", "prompt": "What can you do?"}'
+--data '{"agent_id": "YOUR_AGENT_ID", "prompt": "What can you do?"}'
 ```
 
 - HTTP request remains open until agent completes
@@ -127,7 +125,7 @@ curl --location "https://webhook.xpander.ai?asynchronous=false" \
 curl --location "https://webhook.xpander.ai?asynchronous=true" \
 --header "x-api-key: YOUR_API_KEY" \
 --header "Content-Type: application/json" \
---data '{"source_node_id": "YOUR_SOURCE_NODE_ID", "agent_id": "YOUR_AGENT_ID", "prompt": "What can you do?"}'
+--data '{"agent_id": "YOUR_AGENT_ID", "prompt": "What can you do?"}'
 ```
 
 - Returns immediately while agent processes in background
@@ -151,7 +149,6 @@ curl --location "https://webhook.xpander.ai?asynchronous=false" \
 --header "x-api-key: YOUR_API_KEY" \
 --form "prompt=Extract text from this document" \
 --form "files=@/path/to/your/document.pdf" \
---form "source_node_id=YOUR_SOURCE_NODE_ID" \
 --form "agent_id=YOUR_AGENT_ID"
 ```
 
