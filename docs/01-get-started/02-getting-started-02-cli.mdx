@@ -45,6 +45,86 @@ icon: "terminal"
   </Step>
 </Steps>
 
+## Troubleshooting
+
+If you encounter issues during installation or configuration, here are solutions to common problems:
+
+### Permission Errors During Global Installation
+
+If you get permission errors when installing the CLI globally:
+
+**On macOS/Linux:**
+```bash
+# Option 1: Use sudo (not recommended for npm packages)
+sudo npm install -g xpander-cli
+
+# Option 2: Configure npm to use a different directory (recommended)
+mkdir ~/.npm-global
+npm config set prefix '~/.npm-global'
+echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.profile
+source ~/.profile
+npm install -g xpander-cli
+```
+
+**On Windows:**
+```cmd
+# Run Command Prompt as Administrator, then:
+npm install -g xpander-cli
+```
+
+### Corporate Network/Proxy Configuration
+
+If you're behind a corporate firewall or proxy:
+
+```bash
+# Configure npm proxy settings
+npm config set proxy http://proxy.company.com:8080
+npm config set https-proxy http://proxy.company.com:8080
+
+# If authentication is required:
+npm config set proxy http://username:password@proxy.company.com:8080
+npm config set https-proxy http://username:password@proxy.company.com:8080
+
+# Then try installing again
+npm install -g xpander-cli
+```
+
+For persistent proxy issues, you may also need to set environment variables:
+```bash
+export HTTP_PROXY=http://proxy.company.com:8080
+export HTTPS_PROXY=http://proxy.company.com:8080
+export NO_PROXY=localhost,127.0.0.1
+```
+
+### CLI Version Command Fails
+
+If `xpander --version` doesn't work after installation:
+
+1. **Verify installation path:**
+   ```bash
+   which xpander
+   npm list -g xpander-cli
+   ```
+
+2. **Check PATH configuration:**
+   ```bash
+   echo $PATH
+   npm config get prefix
+   ```
+
+3. **Reinstall if needed:**
+   ```bash
+   npm uninstall -g xpander-cli
+   npm install -g xpander-cli
+   ```
+
+4. **Try running with npx:**
+   ```bash
+   npx xpander-cli --version
+   ```
+
+If issues persist, check that your Node.js version is compatible (Node.js 16+ recommended).
+
 ## Creating Your First Agent
 
 <Steps>
