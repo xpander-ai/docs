@@ -8,7 +8,7 @@ icon: "terminal"
 
 <Steps>
   <Step title="Install the CLI">
-    Install the xpander CLI globally:
+    Install the xpander CLI globally (current version: v0.0.37):
 
     ```bash
     npm install -g xpander-cli
@@ -49,13 +49,21 @@ icon: "terminal"
 
 <Steps>
   <Step title="Create a new agent">
-    Create your agent using the CLI:
+    Create your agent using the CLI with template selection:
 
     ```bash
     xpander agent new
     ```
 
-    <Accordion title="Example agent creation output">
+    The CLI will guide you through:
+    1. **Agent naming**: Choose a descriptive name for your agent
+    2. **Template selection**: Choose from available templates including:
+       - **Basic Agent**: Simple agent with core functionality
+       - **Agno Framework**: Multi-agent system using the Agno Python framework
+       - **Custom**: Start with a blank template for full customization
+    3. **Configuration**: Set up initial agent settings and capabilities
+
+    <Accordion title="Example agent creation output with template selection">
     ```
     ✨ Agent Creation Wizard ✨
     ──────────────────────────────────────────────────
@@ -63,6 +71,13 @@ icon: "terminal"
     ──────────────────────────────────────────────────
 
     ? What name would you like for your agent? my-first-agent
+    
+    ? Select an agent template:
+    ❯ Basic Agent - Simple agent with core functionality
+      Agno Framework - Multi-agent system using Agno Python framework
+      Custom - Start with blank template for full customization
+    
+    ✔ Selected template: Basic Agent
     ⠋ Creating agent "my-first-agent"...Creating agent in organization: 8d185373-8b24-47a7-8607-3e9036b968bb...
     ✔ Agent "my-first-agent" created successfully!
 
@@ -87,6 +102,29 @@ icon: "terminal"
     ✔ Agent initialized successfully
     ```
     </Accordion>
+
+    ### Template Selection Details
+
+    When creating a new agent, you'll be prompted to select from these templates:
+
+    <CardGroup cols={3}>
+      <Card title="Basic Agent" icon="robot">
+        A simple agent with core functionality and basic tools. Perfect for getting started quickly.
+      </Card>
+      
+      <Card title="Agno Framework" icon="network-wired">
+        Multi-agent system using the Agno Python framework. Ideal for complex workflows requiring multiple coordinated agents.
+      </Card>
+      
+      <Card title="Custom Template" icon="wrench">
+        Start with a blank template for full customization. Best for experienced users with specific requirements.
+      </Card>
+    </CardGroup>
+
+    <Note>
+    The **Agno Framework** template is particularly powerful for building complex multi-agent systems. Agno is a Python framework that enables sophisticated agent coordination, making it perfect for enterprise workflows that require multiple specialized agents working together.
+    </Note>
+
   </Step>
 
   <Step title="Configure environment variables">
