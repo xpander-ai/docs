@@ -13,6 +13,10 @@ icon: "terminal"
     ```bash
     npm install -g xpander-cli
     ```
+
+    <Info>
+    CLI version v0.0.37 was the latest at the time of writing. Check for updates by running `npm list -g xpander-cli` to see your current version, or visit the [npm package page](https://www.npmjs.com/package/xpander-cli) for the latest release.
+    </Info>
   </Step>
 
   <Step title="Configure your credentials">
@@ -54,6 +58,10 @@ icon: "terminal"
     ```bash
     xpander agent new
     ```
+
+    <Tip>
+    The CLI will prompt you to select from available templates. The **Agno template** is ideal for general-purpose conversational agents and provides a solid foundation for most use cases, including document processing, Q&A systems, and workflow automation.
+    </Tip>
 
     <Accordion title="Example agent creation output">
     ```
@@ -109,4 +117,57 @@ With your agent created, you can now work with it in several ways:
 3. **Deploy to the cloud**: Host your agent in the xpander.ai cloud
 
 For detailed code examples and step-by-step implementation instructions, see our dedicated [Instrument & Run AI Agents](/docs/01-get-started/03-instrument-agents) guide.
+
+## Troubleshooting
+
+### Common Issues with `xpander agent new`
+
+<AccordionGroup>
+  <Accordion title="Network Connectivity Problems">
+    **Symptoms**: Connection timeouts, DNS resolution errors, or "Unable to reach xpander.ai" messages.
+    
+    **Solutions**:
+    - Check your internet connection
+    - Verify you can access https://api.xpander.ai in your browser
+    - If behind a corporate firewall, ensure the following domains are whitelisted:
+      - `api.xpander.ai`
+      - `registry.npmjs.org` (for CLI updates)
+    - Try using a different network or mobile hotspot to isolate network issues
+  </Accordion>
+
+  <Accordion title="Authentication Errors">
+    **Symptoms**: "Invalid API key", "Unauthorized", or "Organization not found" errors.
+    
+    **Solutions**:
+    - Run `xpander configure` to reconfigure your credentials
+    - Verify your API key is correct by checking your xpander.ai dashboard
+    - Ensure your API key has the necessary permissions to create agents
+    - Check that your organization ID is properly detected during configuration
+    - If using multiple profiles, verify you're using the correct one with `xpander profile list`
+  </Accordion>
+
+  <Accordion title="Agent Creation Failures">
+    **Symptoms**: Agent creation starts but fails during the process, or "Agent creation failed" errors.
+    
+    **Solutions**:
+    - Ensure you have sufficient permissions in your organization
+    - Check if you've reached your organization's agent limit
+    - Try creating the agent with a different name (avoid special characters)
+    - Verify your organization has active billing/subscription if required
+    - Contact support if the issue persists with error details
+  </Accordion>
+
+  <Accordion title="Template or Initialization Issues">
+    **Symptoms**: Template loading fails, or agent initialization errors after creation.
+    
+    **Solutions**:
+    - Ensure the target directory has proper write permissions
+    - Clear the CLI cache: `npm cache clean --force` then reinstall xpander-cli
+    - Update to the latest CLI version: `npm update -g xpander-cli`
+    - Try initializing in an empty directory first
+    - Check that your Node.js version is compatible (Node.js 16+ recommended)
+  </Accordion>
+</AccordionGroup>
+
+If you continue experiencing issues, please contact support with the full error message and output from `xpander --version`.
 
