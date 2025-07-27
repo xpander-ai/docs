@@ -57,10 +57,37 @@ icon: "terminal"
 
     <Accordion title="Example agent creation output">
     ```
+    │    Build Better AI Agents faster                             │
+    │    v0.0.37   Profile: default                                │
+    ╰──────────────────────────────────────────────────
+
+
     ✨ Agent Creation Wizard ✨
     ──────────────────────────────────────────────────
     Create a powerful AI agent for your organization
     ──────────────────────────────────────────────────
+
+
+    Step 1: Choose a template for your agent
+
+
+
+    📋 Select Agent Template
+    ────────────────────────────────────────────────────────────
+    Choose a template as the foundation for your new agent
+    ────────────────────────────────────────────────────────────
+    ? Select a template: Agno
+
+
+    📋 Selected Template
+    ──────────────────────────────────────────────────
+    Name:        Agno
+    Category:    AI Framework
+    Description: Agno AI framework template for building sophisticated AI agents
+    Repository:  git@github.com:xpander-ai/custom-agents-assets.git
+    ──────────────────────────────────────────────────
+
+    Step 2: Name your agent
 
     ? What name would you like for your agent? my-first-agent
     ⠋ Creating agent "my-first-agent"...Creating agent in organization: 8d185373-8b24-47a7-8607-3e9036b968bb...
@@ -76,15 +103,17 @@ icon: "terminal"
 
     ✅ Agent creation complete!
 
-    ? Do you want to load this agent into your current workdir? Yes
+    Step 3: Initialize agent with template
 
 
-    ✨ Initializing agent
+
+    🚀 Initializing Agent with Template
     ────────────────────────────────────────────────────────────
     ℹ Agent my-first-agent retrieved successfully
-    ? The current directory is not empty. Proceeding will override 'requirements.txt' and add or update xpander-related files (xpander_config.json, 
-    agent_instructions.json, etc). Yes
-    ✔ Agent initialized successfully
+    ? The current directory is not empty. What would you like to do? (Use arrow keys)
+      Continue in current directory (you will be prompted before overwriting files) 
+    ❯ Create a new subfolder "my-first-agent" 
+      Cancel initialization
     ```
     </Accordion>
   </Step>
