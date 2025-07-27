@@ -110,3 +110,132 @@ With your agent created, you can now work with it in several ways:
 
 For detailed code examples and step-by-step implementation instructions, see our dedicated [Instrument & Run AI Agents](/docs/01-get-started/03-instrument-agents) guide.
 
+## Troubleshooting Common CLI Issues
+
+<AccordionGroup>
+  <Accordion title="CLI command not found after installation">
+    If you get a "command not found" error after installing the CLI:
+    
+    **Solution:**
+    1. Verify the installation completed successfully:
+       ```bash
+       npm list -g xpander-cli
+       ```
+    2. Check your PATH includes npm global binaries:
+       ```bash
+       npm config get prefix
+       ```
+    3. Restart your terminal or reload your shell configuration
+    4. If using nvm, ensure you're using the correct Node.js version
+  </Accordion>
+
+  <Accordion title="API key validation failed">
+    If your API key validation fails during configuration:
+    
+    **Possible causes and solutions:**
+    - **Invalid API key**: Double-check your API key from the xpander.ai dashboard
+    - **Network issues**: Verify your internet connection and proxy settings
+    - **Expired key**: Generate a new API key if yours has expired
+    - **Incorrect formatting**: Ensure no extra spaces or characters in the key
+    
+    **Debugging steps:**
+    ```bash
+    # View current configuration
+    xpander config show
+    
+    # Reconfigure with verbose output
+    xpander configure --verbose
+    ```
+  </Accordion>
+
+  <Accordion title="Organization ID detection failed">
+    If the CLI cannot detect your organization ID:
+    
+    **Solution:**
+    1. Manually set your organization ID:
+       ```bash
+       xpander config set organization-id YOUR_ORG_ID
+       ```
+    2. You can find your organization ID in the xpander.ai web dashboard
+    3. Verify your API key has the correct permissions for your organization
+  </Accordion>
+
+  <Accordion title="Agent creation fails">
+    If `xpander agent new` fails or hangs:
+    
+    **Common solutions:**
+    - **Check permissions**: Ensure your API key has agent creation permissions
+    - **Network timeout**: Try again with a stable internet connection
+    - **Directory permissions**: Verify write permissions in the current directory
+    - **Clear cache**: Clear any cached credentials and reconfigure:
+      ```bash
+      rm -rf ~/.xpander/cache
+      xpander configure
+      ```
+  </Accordion>
+
+  <Accordion title="Environment variable issues">
+    If your agent can't access required environment variables:
+    
+    **Checklist:**
+    1. Verify `.env` file exists in the correct directory
+    2. Check variable names match exactly (case-sensitive)
+    3. Ensure no quotes around values unless needed
+    4. Restart your development server after changes
+    5. For production, verify environment variables are set in your deployment platform
+    
+    **Example `.env` validation:**
+    ```bash
+    # Check if .env file exists and is readable
+    ls -la .env
+    cat .env
+    ```
+  </Accordion>
+
+  <Accordion title="Permission denied errors">
+    If you encounter permission errors:
+    
+    **Solutions:**
+    - **Global installation**: Use `sudo` on macOS/Linux if needed:
+      ```bash
+      sudo npm install -g xpander-cli
+      ```
+    - **Use npx**: Run without global installation:
+      ```bash
+      npx xpander-cli configure
+      ```
+    - **Check directory permissions**: Ensure write access to the working directory
+  </Accordion>
+
+  <Accordion title="Version compatibility issues">
+    If you experience unexpected behavior:
+    
+    **Update to latest version:**
+    ```bash
+    npm update -g xpander-cli
+    xpander --version
+    ```
+    
+    **Check for breaking changes:**
+    - Review the [changelog](https://github.com/xpander-ai/xpander-cli/releases)
+    - Ensure your API version is compatible
+    - Update your agent configuration if needed
+  </Accordion>
+</AccordionGroup>
+
+### Getting Additional Help
+
+If you continue to experience issues:
+
+1. **Check the documentation**: Visit [docs.xpander.ai](https://docs.xpander.ai) for the latest guides
+2. **Community support**: Join our Discord server for community help
+3. **Report bugs**: Create an issue on our [GitHub repository](https://github.com/xpander-ai/xpander-cli)
+4. **Contact support**: Reach out to our support team for enterprise customers
+
+<Tip>
+Enable verbose logging to get more detailed error information:
+```bash
+xpander --verbose [command]
+```
+</Tip>
+
