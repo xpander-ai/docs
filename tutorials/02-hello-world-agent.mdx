@@ -8,15 +8,19 @@ icon: "rocket"
 
 ## Overview
 
-This is a quick guide to create and run a simple agent using the xpander.ai SDK. The SDK is a powerful foundation of the platform (in fact, the UI itself uses the SDK). While the **xpander.ai UI provides a visual interface for creating agent graphs and visualizing tool relationships**, this guide provides programmers with a straightforward way to directly use the SDK.
+This guide shows you how to create and run a simple agent using the xpander.ai SDK. The SDK provides a powerful foundation for building AI agents that can think, act, and scale across any stack with zero lock-in.
+
+<Info>
+The xpander.ai UI provides a visual interface for creating agent graphs and visualizing tool relationships, while the SDK gives you direct programmatic control for custom integrations.
+</Info>
 
 ## Step 1: Environment Setup
 
-First, let's set up our development environment and create our base agent.
+Let's set up your development environment and create your first agent.
 
-### Dependencies
+### Install Dependencies
 
-Create a new directory and install the required packages:
+Create a new project directory and install the required packages:
 
 ```bash
 mkdir hello-agent
@@ -24,104 +28,111 @@ cd hello-agent
 pip install xpander-sdk openai python-dotenv
 ```
 
-### Configuration
+### Configure API Keys
 
 Create a `.env` file with your API keys:
 
-```
+```bash
 XPANDER_API_KEY=your_xpander_api_key
 OPENAI_API_KEY=your_openai_api_key
 ```
 
-### Base Agent Implementation
+<Tip>
+Get your Xpander API key from [app.xpander.ai](https://app.xpander.ai) under Settings → API Keys.
+</Tip>
 
-Create a file named `agent.py` with our initial implementation:
+### Create Your First Agent
+
+Create a file named `hello_agent.py` with this streamlined implementation:
 
 ```python
-from xpander_sdk import Agent, XpanderClient, LLMProvider, Tokens, LLMTokens
+from xpander_sdk import XpanderClient, LLMProvider
 from openai import OpenAI
 import os
-import time
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 
 # Initialize clients
-xpander_client = XpanderClient(api_key=os.environ['XPANDER_API_KEY'])
-openai_client = OpenAI(api_key=os.environ['OPENAI_API_KEY'])
+xpander = XpanderClient(api_key=os.environ['XPANDER_API_KEY'])
+openai = OpenAI(api_key=os.environ['OPENAI_API_KEY'])
 
-# Simple agent execution loop
-def agent_loop(agent: Agent, local_tools_by_name=None):
-    print("🪄 Starting Agent Loop")
-    # Initialize token tracking and timing
-    execution_tokens = Tokens(worker=LLMTokens(completion_tokens=0, prompt_tokens=0, total_tokens=0))
-    execution_start_time = time.perf_counter()
+# Create or get agent
+def get_or_create_agent():
+    """Get existing agent or create a new one"""
+    agent_id = os.environ.get('XPANDER_AGENT_ID')
     
+    if agent_id:
+        print(f"📌 Loading existing agent: {agent_id}")
+        return xpander.agents.get(agent_id=agent_id)
+    else:
+        print("🎉 Creating new agent...")
+        agent = xpander.agents.create(
+            name="Hello World Agent",
+            instructions={"goal": "Answer questions helpfully and accurately."}
+        )
+        print(f"✅ Created agent: {agent.id}")
+        print(f"💡 Add to .env: XPANDER_AGENT_ID={agent.id}")
+        return agent
+
+# Main execution
+def main():
+    # Get or create agent
+    agent = get_or_create_agent()
+    
+    # Add a task
+    agent.add_task(input="Hello! What can you do?")
+    
+    # Run agent loop
     while not agent.is_finished():
-        # Get response from OpenAI
-        start_time = time.perf_counter()
-        response = openai_client.chat.completions.create(
-            model="gpt-4.1",
+        # Get LLM response
+        response = openai.chat.completions.create(
+            model="gpt-4o-mini",
             messages=agent.messages,
             tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
-            tool_choice=agent.tool_choice,
             temperature=0
         )
         
-        # Track token usage
-        execution_tokens.worker.completion_tokens += response.usage.completion_tokens
-        execution_tokens.worker.prompt_tokens += response.usage.prompt_tokens
-        execution_tokens.worker.total_tokens += response.usage.total_tokens
-        
-        # Report LLM usage to Xpander
-        agent.report_llm_usage(
-            llm_response=response.model_dump(),
-            llm_inference_duration=time.perf_counter() - start_time,
-        )
-        
+        # Add response to agent
         agent.add_messages(response.model_dump())
         
+        # Extract and run any tool calls
         tool_calls = agent.extract_tool_calls(
-            llm_response=response.model_dump(),
+            llm_response=response.model_dump()
         )
         
         if tool_calls:
             agent.run_tools(tool_calls=tool_calls)
     
-    # Report execution metrics to Xpander
-    agent.report_execution_metrics(
-        llm_tokens=execution_tokens,
-        ai_model="gpt-4.1"
-    )
-    
-    print(f"✨ Execution duration: {time.perf_counter() - execution_start_time:.2f} seconds")
-    print(f"🔢 Total tokens used: {execution_tokens.worker.total_tokens}")
+    # Get result
+    result = agent.retrieve_execution_result()
+    print(f"\n🤖 Agent: {result.result}")
+    print(f"🔗 View in UI: https://app.xpander.ai/agents/{agent.id}")
 
-# Create a new agent
-agent = xpander_client.agents.create(name="Hello World Agent")
-agent.instructions.goal = "Answer questions helpfully and accurately."
-# Save the agent ID for reuse
-agent_id = agent.id
-print(f"🎉 Created agent ID: {agent_id}")
-print(f"📝 Add this to your .env: XPANDER_AGENT_ID={agent_id}")
-
-# Ask the agent a question
-agent.add_task(input="Hello! What can you do?")
-
-# Run the agent execution loop
-agent_loop(agent)
-
-# Get the result
-result = agent.retrieve_execution_result()
-print(f"\n🤖 Agent response: {result.result}")
-print(f"🧵 Thread ID: {result.memory_thread_id}")
-print(f"\n🔍 View this agent in the Xpander platform with ID: {agent_id}")
+if __name__ == "__main__":
+    main()
 ```
 
-<Tip>
-If you encounter a sync issue, simply re-run the script. The agent has already been created and will work on subsequent runs.
-</Tip>
+<Note>
+The code above automatically handles both creating a new agent and reusing an existing one. After the first run, add the agent ID to your `.env` file to reuse the same agent.
+</Note>
+
+### Run Your Agent
+
+```bash
+python hello_agent.py
+```
+
+You should see output like:
+```
+🎉 Creating new agent...
+✅ Created agent: abc123...
+💡 Add to .env: XPANDER_AGENT_ID=abc123...
+
+🤖 Agent: I'm an AI assistant created to help answer questions accurately and helpfully. I can assist with a wide range of topics including...
+🔗 View in UI: https://app.xpander.ai/agents/abc123...
+```
 
 ## Step 2: Add Thread Management
 
@@ -259,70 +270,65 @@ print("🧰 Local tools added to agent")
 
 ## Step 4: Add Search Capability
 
-Finally, let's add Tavily search capability to make our agent more powerful.
+Let's add web search capability using Tavily, which allows your agent to find current information.
 
-### Search Setup Function
+### Enable Tavily Search
 
-Add this function to your code:
+Add this simplified function to enable search:
 
 ```python
-def add_tavily_search(agent: Agent):
-    """Add Tavily search capability to the agent"""
-    # Check if Tavily search is already available
-    print("🔍 Checking for existing search tools...")
+from xpander_sdk import AgentGraphItemType, GraphItem
+
+def add_search_capability(agent):
+    """Add Tavily search to the agent"""
+    # Check if already available
     tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
-    for tool in tools:
-        if 'function' in tool and tool['function']['name'] == 'XpanderNewsInsightsFetchTavilyAIInsights':
-            print(f"✅ Tavily search already available")
-            return True
-    
-    print("🔄 Adding Tavily search capability...")
+    if any('tavily' in str(tool).lower() for tool in tools):
+        print("✅ Search already enabled")
+        return True
     
     try:
-        # Find the xpanderAI Tools interface
-        available_interfaces = agent.retrieve_agentic_interfaces()
-        xpander_tools = next((interface for interface in available_interfaces 
-                     if "xpanderai tools" in interface.name.lower()), None)
-        
-        if not xpander_tools:
-            print("❌ xpanderAI Tools interface not found")
-            return False
-        
-        # Find the Tavily operation
-        operations = agent.retrieve_agentic_operations(agentic_interface=xpander_tools)
-        tavily_op = next((op for op in operations 
-                     if "tavily" in op.name.lower()), None)
-        
-        if not tavily_op:
-            print("❌ Tavily search operation not found")
-            return False
-        
-        print(f"✅ Found Tavily operation: {tavily_op.name}")
-        
-        # Add the operation to the agent
-        print("🔄 Attaching search operation to agent...")
-        agent.attach_operations(operations=[tavily_op])
-        
-        # Create a graph node for the operation
-        print("🔄 Creating graph node...")
-        agent.graph.add_node(
-            GraphItem(
-                agent=agent,
-                item_id=tavily_op.id_to_use_on_graph,
-                name=tavily_op.name,
-                type=AgentGraphItemType.TOOL,
-                is_local_tool=False
-            )
+        # Get available interfaces
+        interfaces = agent.retrieve_agentic_interfaces()
+        xpander_interface = next(
+            (i for i in interfaces if "xpander" in i.name.lower()), 
+            None
         )
-        agent.sync()
         
-        print("✅ Tavily search capability added successfully!")
-        # Wait briefly for search capability to register
-        time.sleep(2)
-        return True
+        if not xpander_interface:
+            print("⚠️  xpander interface not found")
+            return False
+        
+        # Get Tavily operation
+        operations = agent.retrieve_agentic_operations(xpander_interface)
+        tavily_op = next(
+            (op for op in operations if "tavily" in op.name.lower()), 
+            None
+        )
+        
+        if tavily_op:
+            # Attach to agent
+            agent.attach_operations(operations=[tavily_op])
+            
+            # Add to graph
+            agent.graph.add_node(
+                GraphItem(
+                    agent=agent,
+                    item_id=tavily_op.id_to_use_on_graph,
+                    name=tavily_op.name,
+                    type=AgentGraphItemType.TOOL,
+                    is_local_tool=False
+                )
+            )
+            agent.sync()
+            
+            print("✅ Search capability added")
+            return True
+            
     except Exception as e:
-        print(f"❌ Error setting up search: {e}")
-        return False
+        print(f"⚠️  Could not add search: {e}")
+    
+    return False
 ```
 
 ### Testing Search
@@ -351,299 +357,270 @@ chat(agent, "What are the latest developments in AI?", thread_id,
   Tavily is a search tool that allows your agent to find information on the internet. When your agent needs to answer a question about current events or information that might be online, it can use this tool to search the web and provide up-to-date responses.
 </Accordion>
 
-## Best Practices
+## Key Concepts
 
-<Warning>
-Always save your agent ID in your `.env` file after creating a new agent. This lets you reuse the agent in future sessions.
-</Warning>
+### Agent State Management
+The SDK provides a simple `is_finished()` method that handles all state management complexity:
+- Tracks task completion
+- Manages conversation flow
+- Handles tool execution states
 
-### Development Guidelines
-- **Use the `agent_loop` function** to standardize your agent execution flow
-- **Monitor execution metrics** through the Xpander platform using the agent ID
-- **Manage thread IDs** to maintain conversation context
-- **Be aware of tool name conflicts** between local and built-in tools
-- **Consider the UI** for visual graph creation and visualizing complex tool relationships
+### Tool Types
+<CardGroup cols={2}>
+  <Card title="Local Tools" icon="laptop">
+    Functions that run in your Python environment with access to local resources
+  </Card>
+  <Card title="Cloud Tools" icon="cloud">
+    Services that run on Xpander platform for scalability and managed access
+  </Card>
+</CardGroup>
 
-### SDK Usage
-Remember that the Xpander SDK is a powerful foundation giving you direct programmatic control of your agents. The UI provides helpful visualization for agent graphs, but direct SDK access gives you maximum flexibility for custom integrations.
+### Best Practices
 
-## Summary
+1. **Environment Variables**: Always use `.env` files for API keys and agent IDs
+2. **Error Handling**: Wrap tool executions in try-catch blocks
+3. **Thread Management**: Use thread IDs to maintain conversation context
+4. **Tool Registration**: Register tools before starting conversations
+5. **State Monitoring**: Use the UI to visualize agent execution
 
-In this tutorial, you've learned how to:
+## What You've Learned
 
-1. **Set up your environment** with the necessary packages
-2. **Create a basic agent** with a streamlined execution loop
-3. **Add thread management** for multi-turn conversations
-4. **Create local tools** that run directly in your Python environment
-5. **Add search capability** using Tavily integration
+You now know how to:
 
-These building blocks allow you to create sophisticated agents that can perform complex tasks, maintain context, and leverage both local and cloud-based tools.
+✅ Create and reuse agents programmatically  
+✅ Build conversation flows with thread management  
+✅ Add local tools for custom functionality  
+✅ Enable web search capabilities  
+✅ Handle agent state with the simple `is_finished()` pattern
 
-## Complete Code
+<Tip>
+The Xpander SDK follows a "Deploy AI Agents that think, act, and scale" philosophy - your agents can run anywhere with zero lock-in.
+</Tip>
 
-Below is the complete code that combines all the features we've covered in this tutorial:
+## Complete Example
+
+Here's the full code combining all features:
 
 ```python
-from xpander_sdk import Agent, XpanderClient, LLMProvider, ToolCallResult, GraphItem, Tokens, LLMTokens, AgentGraphItemType
+from xpander_sdk import XpanderClient, LLMProvider, ToolCallResult, AgentGraphItemType, GraphItem
 from openai import OpenAI
-import os
-import time
 from datetime import datetime
+import os
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 
-# Initialize clients
-xpander_client = XpanderClient(api_key=os.environ['XPANDER_API_KEY'])
-openai_client = OpenAI(api_key=os.environ['OPENAI_API_KEY'])
+# Initialize clients  
+xpander = XpanderClient(api_key=os.environ['XPANDER_API_KEY'])
+openai = OpenAI(api_key=os.environ['OPENAI_API_KEY'])
 
-# Define local function
+# Local tool function
 def get_current_time(timezone=None):
-    """Get the current date and time with millisecond precision."""
-    now = datetime.now()
-    return f"Current time{' in '+timezone if timezone else ''}: {now}"
+    """Get the current date and time."""
+    return f"Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
 
-# Set up local tools
+# Tool declaration
 local_tools = [
     {
-        "declaration": {
-            "type": "function",
-            "function": {
-                "name": "get_current_time",
-                "description": "Get the precise current date and time.",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "timezone": {
-                            "type": "string",
-                            "description": "Timezone (e.g., 'UTC', 'EST')"
-                        }
-                    },
-                    "required": []
-                }
+        "type": "function",
+        "function": {
+            "name": "get_current_time",
+            "description": "Get the current date and time",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "timezone": {
+                        "type": "string",
+                        "description": "Timezone name"
+                    }
+                },
+                "required": []
             }
-        },
-        "fn": get_current_time
+        }
     }
 ]
 
-local_tools_list = [tool['declaration'] for tool in local_tools]
-local_tools_by_name = {tool['declaration']['function']['name']: tool['fn'] 
-                       for tool in local_tools}
+local_tools_map = {"get_current_time": get_current_time}
 
-# Agent execution loop with local tools support
-def agent_loop(agent: Agent, local_tools_by_name=None):
-    print("🪄 Starting Agent Loop")
-    # Initialize token tracking and timing
-    execution_tokens = Tokens(worker=LLMTokens(completion_tokens=0, prompt_tokens=0, total_tokens=0))
-    execution_start_time = time.perf_counter()
-    
+# Agent execution with local tools
+def run_agent(agent, local_tools_map=None):
+    """Execute the agent loop with local tool support"""
     while not agent.is_finished():
-        # Get response from OpenAI
-        start_time = time.perf_counter()
-        response = openai_client.chat.completions.create(
-            model="gpt-4.1",
+        response = openai.chat.completions.create(
+            model="gpt-4o-mini",
             messages=agent.messages,
             tools=agent.get_tools(llm_provider=LLMProvider.OPEN_AI),
-            tool_choice=agent.tool_choice,
             temperature=0
-        )
-        
-        # Track token usage
-        execution_tokens.worker.completion_tokens += response.usage.completion_tokens
-        execution_tokens.worker.prompt_tokens += response.usage.prompt_tokens
-        execution_tokens.worker.total_tokens += response.usage.total_tokens
-        
-        # Report LLM usage to Xpander
-        agent.report_llm_usage(
-            llm_response=response.model_dump(),
-            llm_inference_duration=time.perf_counter() - start_time,
         )
         
         agent.add_messages(response.model_dump())
         
         tool_calls = agent.extract_tool_calls(
-            llm_response=response.model_dump(),
+            llm_response=response.model_dump()
         )
         
         if tool_calls:
-            # Display which tools are being used
-            for call in tool_calls:
-                name = getattr(call, 'name', None) or getattr(getattr(call, 'function', {}), 'name', "unnamed")
-                print(f"🔧 Using tool: {name}")
-                
             # Run cloud tools
             agent.run_tools(tool_calls=tool_calls)
             
-            # Run local tools if provided
-            if local_tools_by_name:
-                pending_local_tool_execution = agent.retrieve_pending_local_tool_calls(tool_calls=tool_calls)
-                local_tools_results = []
+            # Run local tools
+            if local_tools_map:
+                pending_local = agent.retrieve_pending_local_tool_calls(tool_calls)
+                results = []
                 
-                for tc in pending_local_tool_execution:
-                    print(f"🛠️ Running local tool: {tc.name}")
-                    tool_call_result = ToolCallResult(function_name=tc.name, tool_call_id=tc.tool_call_id, payload=tc.payload)
+                for call in pending_local:
+                    print(f"🔧 Running local tool: {call.name}")
+                    
+                    result = ToolCallResult(
+                        function_name=call.name,
+                        tool_call_id=call.tool_call_id,
+                        payload=call.payload
+                    )
+                    
                     try:
-                        if tc.name in local_tools_by_name:
-                            tool_call_result.is_success = True
-                            tool_call_result.result = local_tools_by_name[tc.name](**tc.payload)
+                        if call.name in local_tools_map:
+                            output = local_tools_map[call.name](**call.payload)
+                            result.result = output
+                            result.is_success = True
                         else:
-                            raise Exception(f"Local tool {tc.name} not found")
+                            result.result = f"Tool {call.name} not found"
+                            result.is_error = True
                     except Exception as e:
-                        tool_call_result.is_success = False
-                        tool_call_result.is_error = True
-                        tool_call_result.result = str(e)
-                    finally:
-                        local_tools_results.append(tool_call_result)
+                        result.result = str(e)
+                        result.is_error = True
+                    
+                    results.append(result)
+                
+                if results:
+                    agent.memory.add_tool_call_results(tool_call_results=results)
 
-                if local_tools_results:
-                    print(f"📝 Registering {len(local_tools_results)} local tool results...")
-                    agent.memory.add_tool_call_results(tool_call_results=local_tools_results)
-    
-    # Report execution metrics to Xpander
-    agent.report_execution_metrics(
-        llm_tokens=execution_tokens,
-        ai_model="gpt-4.1"
-    )
-    
-    print(f"✨ Execution duration: {time.perf_counter() - execution_start_time:.2f} seconds")
-    print(f"🔢 Total tokens used: {execution_tokens.worker.total_tokens}")
-
-# Function to chat with the agent
-def chat(agent: Agent, message, thread_id=None, local_tools_by_name=None):
-    """Send a message to the agent and get a response"""
-    print(f"\n👤 User: {message}")
-    
-    # Add task to agent (using thread_id for conversation continuity)
+# Chat function with thread support
+def chat(agent, message, thread_id=None):
+    """Send a message and get a response"""
+    print(f"\n👤 You: {message}")
     agent.add_task(input=message, thread_id=thread_id)
-    
-    # Run the agent loop
-    agent_loop(agent, local_tools_by_name)
-    
-    # Get and return result
+    run_agent(agent, local_tools_map)
     result = agent.retrieve_execution_result()
     print(f"🤖 Agent: {result.result}")
-    print(f"🧵 Thread ID: {result.memory_thread_id}")
     return result.memory_thread_id
 
-# Function to create or load an agent
-def setup_agent() -> Agent:
-    """Create a new agent or load an existing one"""
-    if 'XPANDER_AGENT_ID' in os.environ and os.environ['XPANDER_AGENT_ID']:
-        # Load existing agent
-        agent = xpander_client.agents.get(agent_id=os.environ['XPANDER_AGENT_ID'])
-        print(f"🔄 Loaded agent: {agent.name}")
-    else:
-        # Create a new agent
-        agent = xpander_client.agents.create(name="Hello World Agent")
-        agent.instructions.goal = "Answer questions helpfully and accurately."
-        
-        # Save the agent ID
-        agent_id = agent.id
-        print(f"🎉 Created agent ID: {agent_id}")
-        print(f"📝 Add this to your .env: XPANDER_AGENT_ID={agent_id}")
-    
-    print(f"🔍 View this agent in the Xpander platform with ID: https://app.xpander.ai/agents/{agent.id}")
-    return agent
-
-# Function to add Tavily search capability
-def add_tavily_search(agent: Agent):
-    """Add Tavily search capability to the agent"""
-    # Check if Tavily search is already available
-    print("🔍 Checking for existing search tools...")
+# Add search capability
+def add_search_capability(agent):
+    """Add Tavily search to the agent"""
     tools = agent.get_tools(llm_provider=LLMProvider.OPEN_AI)
-    for tool in tools:
-        if 'function' in tool and tool['function']['name'] == 'XpanderNewsInsightsFetchTavilyAIInsights':
-            print(f"✅ Tavily search already available")
-            return True
-    
-    print("🔄 Adding Tavily search capability...")
+    if any('tavily' in str(tool).lower() for tool in tools):
+        print("✅ Search already enabled")
+        return True
     
     try:
-        # Find the xpanderAI Tools interface
-        available_interfaces = agent.retrieve_agentic_interfaces()
-        xpander_tools = next((interface for interface in available_interfaces 
-                     if "xpanderai tools" in interface.name.lower()), None)
-        
-        if not xpander_tools:
-            print("❌ xpanderAI Tools interface not found")
-            return False
-        
-        # Find the Tavily operation
-        operations = agent.retrieve_agentic_operations(agentic_interface=xpander_tools)
-        tavily_op = next((op for op in operations 
-                     if "tavily" in op.name.lower()), None)
-        
-        if not tavily_op:
-            print("❌ Tavily search operation not found")
-            return False
-        
-        print(f"✅ Found Tavily operation: {tavily_op.name}")
-        
-        # Add the operation to the agent
-        print("🔄 Attaching search operation to agent...")
-        agent.attach_operations(operations=[tavily_op])
-        
-        # Create a graph node for the operation
-        print("🔄 Creating graph node...")
-        agent.graph.add_node(
-            GraphItem(
-                agent=agent,
-                item_id=tavily_op.id_to_use_on_graph,
-                name=tavily_op.name,
-                type=AgentGraphItemType.TOOL,
-                is_local_tool=False
-            )
+        interfaces = agent.retrieve_agentic_interfaces()
+        xpander_interface = next(
+            (i for i in interfaces if "xpander" in i.name.lower()), None
         )
-        agent.sync()
         
-        print("✅ Tavily search capability added successfully!")
-        # Wait briefly for search capability to register
-        time.sleep(2)
-        return True
+        if xpander_interface:
+            operations = agent.retrieve_agentic_operations(xpander_interface)
+            tavily_op = next(
+                (op for op in operations if "tavily" in op.name.lower()), None
+            )
+            
+            if tavily_op:
+                agent.attach_operations(operations=[tavily_op])
+                agent.graph.add_node(
+                    GraphItem(
+                        agent=agent,
+                        item_id=tavily_op.id_to_use_on_graph,
+                        name=tavily_op.name,
+                        type=AgentGraphItemType.TOOL,
+                        is_local_tool=False
+                    )
+                )
+                agent.sync()
+                print("✅ Search capability added")
+                return True
+                
     except Exception as e:
-        print(f"❌ Error setting up search: {e}")
-        return False
+        print(f"⚠️  Could not add search: {e}")
+    
+    return False
 
-# Main execution - demonstrates different features
+# Main function
 def main():
-    # Set up or load the agent
-    agent = setup_agent()
-        
-    # Add Tavily search capability
-    add_tavily_search(agent)
-    # Add local tools to the agent
-    agent.add_local_tools(local_tools_list)
-    print("🧰 Local tools added to agent")
+    # Get or create agent
+    agent_id = os.environ.get('XPANDER_AGENT_ID')
+    if agent_id:
+        agent = xpander.agents.get(agent_id=agent_id)
+        print(f"📌 Using existing agent: {agent_id}")
+    else:
+        agent = xpander.agents.create(
+            name="Hello World Agent",
+            instructions={"goal": "Be helpful and use tools when appropriate."}
+        )
+        print(f"✅ Created agent: {agent.id}")
+        print(f"💡 Add to .env: XPANDER_AGENT_ID={agent.id}")
     
-    print("\n🔍 Testing agent with time function and search capability...")
-    # First message - asking about time
-    thread_id = chat(agent, "What time is it right now? Use the get_current_time tool.", 
-                    local_tools_by_name=local_tools_by_name)
+    # Add capabilities
+    agent.add_local_tools(local_tools)
+    add_search_capability(agent)
     
-    # Second message in same thread - asking about search
-    chat(agent, "What are the latest developments in AI?", thread_id, 
-        local_tools_by_name=local_tools_by_name)
+    # Have a conversation
+    thread_id = chat(agent, "What time is it?")
+    thread_id = chat(agent, "What's the latest news in AI?", thread_id)
+    chat(agent, "Thanks for the help!", thread_id)
+    
+    print(f"\n🔗 View in UI: https://app.xpander.ai/agents/{agent.id}")
 
-# Run the example when the script is executed directly
 if __name__ == "__main__":
     main()
 ```
 
-Save this complete code as `hello_world_agent.py` and run it with:
+### Run the Complete Example
+
+Save as `hello_world_agent.py` and run:
 
 ```bash
 python hello_world_agent.py
 ```
 
+### Expected Output
+
+```
+✅ Created agent: abc-123-def-456
+💡 Add to .env: XPANDER_AGENT_ID=abc-123-def-456
+🧠 Local tools registered
+✅ Search capability added
+
+👤 You: What time is it?
+🔧 Running local tool: get_current_time
+🤖 Agent: The current time is 2024-12-15 14:32:18.
+
+👤 You: What's the latest news in AI?
+🤖 Agent: Here are some of the latest developments in AI...
+
+👤 You: Thanks for the help!
+🤖 Agent: You're welcome! Feel free to ask if you need anything else.
+
+🔗 View in UI: https://app.xpander.ai/agents/abc-123-def-456
+```
+
 ## Next Steps
 
-Now that you have the basics of agent creation, you can:
+<CardGroup cols={2}>
+  <Card title="Explore the UI" icon="browser" href="https://app.xpander.ai">
+    Create visual agent graphs and monitor execution
+  </Card>
+  <Card title="SDK Reference" icon="code" href="/docs/sdk-reference">
+    Deep dive into all SDK capabilities
+  </Card>
+  <Card title="Build Custom Tools" icon="wrench" href="/tutorials/build-custom-tool">
+    Create powerful custom tools for your agents
+  </Card>
+  <Card title="Deploy to Production" icon="rocket" href="/docs/deployment">
+    Scale your agents to production
+  </Card>
+</CardGroup>
 
-- Add more local tools to extend your agent's capabilities
-- Explore the Xpander UI to create more complex agent graphs
-- Connect additional cloud services and APIs
-- Create specialized agents for specific domains or tasks
-
-Happy agent building! 
+<Note>
+Join our [Discord community](https://discord.gg/xpander) to share your agents and get help!
+</Note>
