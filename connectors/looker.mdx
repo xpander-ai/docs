@@ -28,43 +28,52 @@ Below are possible authentication options you can choose:
 
   <Tab title="API Access">
 
-    ### Generate a Tableau API Token
+  ### Generate a Tableau API Token
 
-    1. Log in to your [Looker account](https://cloud.google.com/looker?hl=en). 
-    2. In the the sidebar of your Looker dashboard, click on **Admin**.
+  1. Log in to your [Looker account](https://cloud.google.com/looker?hl=en).  
 
-    ![Img 1](/images/connectors/looker/img_1.png)
+  2. In the sidebar of your Looker dashboard, click **Admin**.  
 
-    3. In the sidebar of **Admin** panel, select **Users**, and then choose or create a user that you want to grant the API to.
+   ![Img 1](/images/connectors/looker/img_1.png)  
 
-    4. Click on **Edit keys** in **API Keys** section of a specific user, and you'll get a Client ID and Client Secret that you can use to obtain access token.
+  3. In the **Admin** panel sidebar, select **Users**, then choose an existing user or create a new one to grant API access.  
 
-    ![Img 2](/images/connectors/looker/img_2.png)
+  4. Under the **API Keys** section for that user, click **Edit Keys**. You’ll receive a **Client ID** and **Client Secret**, which you’ll use to obtain an access token.  
 
-    5. Next, obtain access token by executing the following request:
+   ![Img 2](/images/connectors/looker/img_2.png)  
 
-    ```
-    curl -d "client_id=<YOUR_CLIENT_ID>&client_secret=<YOUR_CLIENT_SECRET>" https://<YOUR_ACCOUNT>.cloud.looker.com/api/4.0/login
-    ```
-    You can find the name of your account in your Looker URL. As an example, if the Looker URL is https://xpander.cloud.looker.com, then the account name is xpander.
+  5. Next, obtain an access token by executing the following request:  
 
-    6. Copy your access token somewhere safe.
+   ```
+   curl -d "client_id=<YOUR_CLIENT_ID>&client_secret=<YOUR_CLIENT_SECRET>" \
+   https://<YOUR_ACCOUNT>.cloud.looker.com/api/4.0/login
+   ```
+
+  Note: You can find your account name in your Looker URL. For example, if the URL is https://xpander.cloud.looker.com, the account name is xpander.
+
+  6. Copy your access token and store it somewhere safe.
 
 
     ### Integrate Looker into xpander.ai
 
-    1. In your xpander.ai dashboard, go to the **Connectors** section in the sidebar.  
-    2. Select **Looker** from the available integrations.  
-    3. Click **Enable**.  
-    4. Enter a **connector name**, e.g., "xpander-looker". 
-    5. Choose **Integration User** as the authentication scope.   
-    6. Select **API Key** as the authentication mode.  
-    7. Paste your Looker access token into the provided field.  
-    8. Set the **Auth Type** to **Bearer**.  
-    9. Under **Interface specific settings**, enter the base URL: `https://{host}:{port}/api/4.0`. Replace **{host}** with the base URL of your Looker account (e.g xpander.cloud.looker.com). Meanwhile for the **{port}** replace it with 443 if your Looker instance hosted on Google Cloud, Microsoft Azure, and AWS that were created on or after 07/07/2020. If it's created before 07/07/2020, use port 19999.
-    10. Save the configuration.
+  1. In your **xpander.ai** dashboard, navigate to the **Connectors** section in the sidebar.  
+  2. Select **Looker** from the list of available integrations.  
+  3. Click **Enable**.  
+  4. Enter a **connector name**, for example: `xpander-looker`.  
+  5. Set the Authentication Mode to **Integration User**.  
+  6. Choose **API Key** as the authentication method.  
+  7. Paste your Looker **Access Token** into the provided field.  
+  8. Set **Auth Type** to **Bearer**.  
+  9. Under **Interface-Specific Settings**, enter the base URL `https://{host}:{port}/api/4.0`
 
-    ![Img 3](/images/connectors/looker/img_3.png)
+  - Replace `{host}` with the base URL of your Looker account (e.g., `xpander.cloud.looker.com`).  
+  - For `{port}`, use:  
+    - `443` if your Looker instance is hosted on Google Cloud, Microsoft Azure, or AWS **and was created on or after 07/07/2020**.  
+    - `19999` if it was created **before 07/07/2020**.  
+
+  10. Save the configuration.  
+
+  ![Img 3](/images/connectors/looker/img_3.png)
 
   </Tab>
 </Tabs>
@@ -73,7 +82,7 @@ Below are possible authentication options you can choose:
 
 Once you've configured your Looker account with the authentication option(s) described above, you can integrate it into your AI agent with xpander.ai:
 
-1. Select **Tools** in the Agent configuration tab of your xpander.ai dashboard, and then  click on **Add tools**.  
+1. In your xpander.ai dashboard, go to the **Agent Configuration** tab and select **Tools**, then click **Add Tools**. 
 2. Select **Connectors**.  
 3. Choose **Tableau** with the same **connector name** you configured in the previous section (e.g., xpander-looker).  
 4. Select the available Looker operations that suit your use case.  

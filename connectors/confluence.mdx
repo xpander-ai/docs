@@ -51,9 +51,9 @@ Below are possible authentication options you can choose:
     1. Go to the **Connectors** section in the sidebar of your xpander.ai dashboard.  
     2. Select **Confluence** from the available integrations.  
     3. Click **Other auth options**.  
-    4. Enter an **Interface name**, e.g., xpander-confluence.  
-    5. Select **API Key** as the authentication mode.  
-    6. Choose **Integration User** as the authentication scope.  
+    4. Enter a **connector name**, e.g., xpander-confluence. 
+    5. Choose **Integration User** as the authentication mode.  
+    6. Select **API Key** as the authentication method.  
     7. Paste the base64-encoded string from the previous section into the provided field.  
     8. Set the **Auth Type** to **Basic**.  
     9. In the **Interface specific settings** section, enter your Atlassian domain in the following format:  
@@ -70,9 +70,9 @@ Below are possible authentication options you can choose:
 
 Once you've configured your Confluence account with the authentication option(s) described above, you can integrate it into your AI agent with xpander.ai:
 
-1. Go to the **+** sign located in the top right of the graph visualization of your xpander.ai agent.  
+1. In your xpander.ai dashboard, go to the **Agent Configuration** tab and select **Tools**, then click **Add Tools**. 
 2. Select **Connectors**.  
-3. Choose **Confluence** with the same **Interface name** you configured in the previous section (e.g., xpander-confluence).  
+3. Choose **Confluence** with the same **connector name** you configured in the previous section (e.g., xpander-confluence).  
 4. Select the available Confluence operations that suit your use case.  
 
 ![Img 3](/images/connectors/confluence/img_3.png)
@@ -82,7 +82,7 @@ Once you've configured your Confluence account with the authentication option(s)
 Alternatively, you can also expose your Confluence account as an MCP server. To do so:
 
 1. Go to the **Connectors** section in the sidebar of your xpander.ai dashboard.  
-2. Select **Confluence** with the same **Interface name** you configured in the previous section (e.g., xpander-confluence).  
+2. Select **Confluence** with the same **connector name** you configured in the previous section (e.g., xpander-confluence).  
 3. Click **MCP Configuration**.  
 4. Enter the MCP configuration into the appropriate settings of the client app you want to use (e.g., Cursor, Windsurf, Claude Desktop, etc.).
 

@@ -33,42 +33,41 @@ Below are possible authentication options you can choose:
     3. Click **Sign in with Power BI**.  
     4. Grant xpander.ai permission to access your account.  
     5. Your Power BI integration is now ready to use.
-
+  </Tab>
   <Tab title="API Access">
 
     ### Generate a Power BI API Token
 
-    1. Log in to [your Azure Portal](https://portal.azure.com/). 
-    2. We need to create and register an app to access Power BI API. Therefore, in the sidebar of your Azure portal, select **Microsoft Entra ID**.
+    1. Log in to [Azure Portal](https://portal.azure.com/).  
+    2. Create and register an app to access the Power BI API. To do this, in the sidebar, select **Microsoft Entra ID**.  
 
-    ![Img 1](/images/connectors/power-bi/img_1.png)
+   ![Img 1](/images/connectors/power-bi/img_1.png)
 
-    3. In the sidebar, Under **Manage** section, select **App registrations** and then click on **New Registration**
+    3. Under the **Manage** section, select **App registrations** and click **New registration**.  
 
-    ![Img 2](/images/connectors/power-bi/img_2.png)
+   ![Img 2](/images/connectors/power-bi/img_2.png)
 
-    4. Give the app a name and choose one of the options under **Supported account types** that supports your use case. Next, click **Register**
+    4. Provide an app name and choose the **Supported account types** option that fits your use case. Then, click **Register**.  
+    5. After creating the app, note down the **Client ID** and **Tenant ID**. You’ll need these credentials later to obtain an access token.  
+    6. In **Microsoft Entra ID**, go to **App registrations** > **All applications**, and select your newly created app.  
 
-    5. Once you created an app, you'll get the app credentials such as client ID and tenant ID. You'll need these credentials to get an access token later on.
+   ![Img 3](/images/connectors/power-bi/img_3.png)
 
-    6. In the sidebar of **Microsoft Entra ID**, under **Manage** section, click on **App registrations**. Next, click on **All applications** tab and select your newly created app.
+    7. Under **Manage**, select **Certificates & secrets**, then click **New client secret**. Save the secret value securely.  
 
-    ![Img 3](/images/connectors/power-bi/img_3.png)
+   ![Img 4](/images/connectors/power-bi/img_4.png)
 
-    7. In the sidebar, under **Manage** section, select **Certificates & secrets**, and then click on **New client secret**. Save the secret value somewhere safe.
+    8. Ensure your app does **not** have any admin-consent-required permissions. Follow [these steps in the Azure documentation](https://learn.microsoft.com/en-us/fabric/admin/enable-service-principal-admin-apis#how-to-check-if-your-app-has-admin-consent-required-permissions) to verify.  
 
-    ![Img 4](/images/connectors/power-bi/img_4.png)
+    9. In your Power BI account, enable the Power BI Service admin settings by following [Step 3 in this guide](https://learn.microsoft.com/en-us/power-bi/developer/embedded/embed-service-principal?tabs=azure-portal#step-3---enable-the-power-bi-service-admin-settings).  
 
-    8. Next, make sure that your app doesn't have any admin-consent required permissions. You can follow the steps mentioned in [Azure documentation](https://learn.microsoft.com/en-us/fabric/admin/enable-service-principal-admin-apis#how-to-check-if-your-app-has-admin-consent-required-permissions) to do this.
-
-    9. Go to your Power BI account, and then follow the instruction mentioned in the step 3 of [this Azure documentation](https://learn.microsoft.com/en-us/power-bi/developer/embedded/embed-service-principal?tabs=azure-portal#step-3---enable-the-power-bi-service-admin-settings).
-
-    10. Go to the dashboard of your desired Power BI workspace, and under **Manage access**, add your newly created app as a member or admin by typing its name in the provided search bar.
+    10. In the dashboard of your desired Power BI workspace, go to **Manage access** and add your newly created app as a **Member** or **Admin** by searching for its name.  
 
     ![Img 5](/images/connectors/power-bi/img_5.png)
 
-    11. Finally, obtain your access token by executing the following request:
-    ```
+    11. Finally, obtain your access token by executing the following request:  
+
+    ```bash
     curl -X POST \
     -H "Content-Type: application/x-www-form-urlencoded" \
     -d "grant_type=client_credentials" \
@@ -76,9 +75,9 @@ Below are possible authentication options you can choose:
     -d "client_secret=<YOUR_SECRET_VALUE>" \
     -d "scope=https://analysis.windows.net/powerbi/api/.default" \
     https://login.microsoftonline.com/<YOUR_APP_TENANT_ID>/oauth2/v2.0/token
-    ```    
+    ```
 
-    Replace the placeholders above with credentials you obtained from previous steps. Save the access token that you get somewhere safe.
+    Replace the placeholders with your credentials from previous steps, and store the access token securely.
 
     ### Integrate Power BI into xpander.ai
 
@@ -86,8 +85,8 @@ Below are possible authentication options you can choose:
     2. Select **Power BI** from the available integrations.  
     3. Click **Other auth options**.  
     4. Enter a **connector name**, e.g., "xpander-power-bi".  
-    5. Choose **Integration User** as the authentication scope. 
-    6. Select **API Key** as the authentication mode.   
+    5. Choose **Integration User** as the authentication mode. 
+    6. Select **API Key** as the authentication method.   
     7. Paste your Power BI access token into the provided field.  
     8. Set the **Auth Type** to **Bearer**.  
     9. Save the configuration.
@@ -101,7 +100,7 @@ Below are possible authentication options you can choose:
 
 Once you've configured your Power BI account with the authentication option(s) described above, you can integrate it into your AI agent with xpander.ai:
 
-1. Select **Tools** in the Agent configuration tab of your xpander.ai dashboard, and then  click on **Add tools**.  
+1. In your xpander.ai dashboard, go to the **Agent Configuration** tab and select **Tools**, then click **Add Tools**. 
 2. Select **Connectors**.  
 3. Choose **Power BI** with the same **connector name** you configured in the previous section (e.g., xpander-power-bi).  
 4. Select the available Power BI operations that suit your use case.  
