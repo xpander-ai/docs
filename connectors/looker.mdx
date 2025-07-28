@@ -1,0 +1,118 @@
+---
+title: "Looker"
+description: "Learn how to integrate AI agents with Looker using xpander.ai. Create intelligent data workflows that enable AI agents to analyze Looker models, generate actionable insights, and trigger automated business decisions in real time."
+icon: "gauge"
+---
+
+## About Looker
+
+Looker is a cloud-based enterprise business intelligence (BI) and data analytics platform which is now part of Google Cloud.
+
+Key features include:
+
+- **LookML Semantic Layer**: Central definition of business logic and metrics, enabling a single source of truth and scalable governance.
+
+- **Self-Service Analytics & Visualization**: Users can explore data visually via "Explores," dashboards, and charts without requiring SQL skills.
+
+- **Embedded & Extensible Analyticst**: Looker provides robust APIs to embed dashboards into apps/websites and build customized data applications, with options like the Looker Agent for AI workflows 
+
+- **Scalable In-Database Architecture**: Queries are pushed directly to high-performance cloud warehouses (e.g. BigQuery, Snowflake, Redshift, Vertica) for speed and scale.
+
+
+
+## Authentication Options
+
+Below are possible authentication options you can choose:
+
+<Tabs>
+
+  <Tab title="API Access">
+
+    ### Generate a Tableau API Token
+
+    1. Log in to your [Looker account](https://cloud.google.com/looker?hl=en). 
+    2. In the the sidebar of your Looker dashboard, click on **Admin**.
+
+    ![Img 1](/images/connectors/looker/img_1.png)
+
+    3. In the sidebar of **Admin** panel, select **Users**, and then choose or create a user that you want to grant the API to.
+
+    4. Click on **Edit keys** in **API Keys** section of a specific user, and you'll get a Client ID and Client Secret that you can use to obtain access token.
+
+    ![Img 2](/images/connectors/looker/img_2.png)
+
+    5. Next, obtain access token by executing the following request:
+
+    ```
+    curl -d "client_id=<YOUR_CLIENT_ID>&client_secret=<YOUR_CLIENT_SECRET>" https://<YOUR_ACCOUNT>.cloud.looker.com/api/4.0/login
+    ```
+    You can find the name of your account in your Looker URL. As an example, if the Looker URL is https://xpander.cloud.looker.com, then the account name is xpander.
+
+    6. Copy your access token somewhere safe.
+
+
+    ### Integrate Looker into xpander.ai
+
+    1. In your xpander.ai dashboard, go to the **Connectors** section in the sidebar.  
+    2. Select **Looker** from the available integrations.  
+    3. Click **Enable**.  
+    4. Enter a **connector name**, e.g., "xpander-looker". 
+    5. Choose **Integration User** as the authentication scope.   
+    6. Select **API Key** as the authentication mode.  
+    7. Paste your Looker access token into the provided field.  
+    8. Set the **Auth Type** to **Bearer**.  
+    9. Under **Interface specific settings**, enter the base URL: `https://{host}:{port}/api/4.0`. Replace **{host}** with the base URL of your Looker account (e.g xpander.cloud.looker.com). Meanwhile for the **{port}** replace it with 443 if your Looker instance hosted on Google Cloud, Microsoft Azure, and AWS that were created on or after 07/07/2020. If it's created before 07/07/2020, use port 19999.
+    10. Save the configuration.
+
+    ![Img 3](/images/connectors/looker/img_3.png)
+
+  </Tab>
+</Tabs>
+
+## Integration of Looker into AI Agent
+
+Once you've configured your Looker account with the authentication option(s) described above, you can integrate it into your AI agent with xpander.ai:
+
+1. Select **Tools** in the Agent configuration tab of your xpander.ai dashboard, and then  click on **Add tools**.  
+2. Select **Connectors**.  
+3. Choose **Tableau** with the same **connector name** you configured in the previous section (e.g., xpander-looker).  
+4. Select the available Looker operations that suit your use case.  
+
+![Img 4](/images/connectors/looker/img_4.png)
+
+## Expose Looker as MCP Server
+
+Alternatively, you can also expose your Looker account as an MCP server. To do so:
+
+1. Go to the **Connectors** section in the sidebar of your xpander.ai dashboard.  
+2. Select **Looker** with the same **connector name** you configured in the previous section (e.g., xpander-looker).  
+3. Click **MCP Configuration**.  
+4. Enter the MCP configuration into the appropriate settings of the client app you want to use (e.g., Cursor, Windsurf, Claude Desktop, etc.).
+
+![Img 5](/images/connectors/looker/img_5.png)
+
+## AI Agent Looker Prompt Library
+
+Below are possible prompts or use cases you can try after integrating Looker into your xpander AI agent:
+
+```
+Find me all content items that mention {keyword} across the platform.
+```
+
+````
+Show me all favorite content records for user {user_id}.
+
+````
+
+```
+Can you get me the detailed metadata information for content item {content_metadata_id}?
+```
+
+```
+Create a new filter named "{filter_name}" of type {filter_type} for dashboard {dashboard_id}.
+```
+
+## Related Resources
+
+- [Understanding Model Context Protocol (MCP)](/docs/05-human-interfaces/04-mcp)
+- [Looker API Documentation](https://cloud.google.com/looker/docs/reference/looker-api/latest)
