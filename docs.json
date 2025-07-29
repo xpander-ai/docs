@@ -239,6 +239,11 @@
           "href": "https://docs.xpander.ai/workshops/index"
         },
         {
+          "dropdown": "Templates",
+          "icon": { "name": "floppy-disk", "style": "regular" },
+          "href": "https://docs.xpander.ai/templates/index"
+        },
+        {
           "dropdown": "Connectors",
           "icon": { "name": "plug", "style": "regular" },
           "href": "https://docs.xpander.ai/connectors/index"
