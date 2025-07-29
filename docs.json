@@ -127,8 +127,9 @@
           {
             "group": "Templates",
             "pages": [
-              "templates/index",
-              "templates/docs-agent-mintlify"
+              "templates/01-index",
+              "templates/02-docs-agent-mintlify",
+              "templates/03-support-agent"
             ]
           }
         ]
