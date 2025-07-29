@@ -122,6 +122,18 @@
         ]
       },
       {
+        "tab": "Templates",
+        "groups": [
+          {
+            "group": "Templates",
+            "pages": [
+              "templates/index",
+              "templates/docs-agent-mintlify"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "SDK Reference",
         "groups": [
           {
