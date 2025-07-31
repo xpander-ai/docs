@@ -1,0 +1,65 @@
+---
+title: "Coding Agent (Claude Code)"
+description: "A ready-to-use AI agent for coding tasks, code review, and automated GitHub PRs using Claude Code."
+icon: "code"
+---
+
+The Coding Agent template provides a ready-to-deploy AI agent that leverages Claude Code for code generation, review, and automation. It can find issues, generate code, check task status, and open Pull Requests in GitHub. The agent also has access to Tavily for research and to find issues and PRs on GitHub, and can send emails to update on job completion.
+
+## When to use this agent
+
+While local coding assistants on your laptop are great for quick edits, they're limited by your machine's resources and can't scale with your team's needs. This cloud-based Coding Agent provides the power and flexibility you need for serious development automation:
+
+- **🚀 Slack-Native Integration**: Deploy directly to your team's Slack workspace as part of xpander.ai's Slack-native agents feature - get instant coding assistance and code reviews right where your team collaborates
+- **Unlimited Resources**: Access to powerful cloud computing resources that can handle complex code generation, analysis, and multiple concurrent tasks without slowing down your local machine
+- **Team Collaboration**: Run coding agents as a managed service that your entire team can access, with centralized configuration and shared processes
+- **Decoupled Architecture**: Keep your development environment clean while the agent runs independently in the cloud, handling background tasks, monitoring, and continuous integration
+- **Scalable Operations**: Automate repetitive coding tasks, code reviews, and PR creation across multiple repositories and projects simultaneously
+- **Integration Ecosystem**: Connect seamlessly with your existing tools - GitHub, research databases, email notifications, and more - without cluttering your local setup
+- **Persistent State**: Maintain context and progress across sessions, unlike local agents that reset when you close your IDE
+
+Perfect for teams looking to accelerate code delivery, organizations wanting to integrate AI-powered development into their CI/CD pipeline, and scenarios where you need reliable, scalable coding automation that doesn't compete with your local development resources.
+
+## How to Deploy and Use the Coding Agent
+
+<Steps>
+<Step title="Import the Template">
+Click this link to open the Coding Agent template: [Coding Agent Template](https://app.xpander.ai/templates/02ee3226-55ef-447d-b122-c2968f937155)
+
+<Note>
+If you are not registered on the platform yet, you will be prompted to sign up.
+</Note>
+</Step>
+<Step title="Complete the Import Wizard">
+Go through the template import wizard. You will see the Coding Agent and its connectors (Claude Code, Tavily, Email) being imported. In the next step, you'll be prompted to select or authorize your Claude Code connector. If you haven't authorized Claude Code yet, you can do so now or when you land in the AI Workbench.
+
+<Note>
+The Claude Code connector is required for code generation, review, and PR creation. You can use an existing authorization or create a new one during setup.
+</Note>
+</Step>
+<Step title="Explore the Agent Configuration">
+Review the agent's configuration in the Workbench. You can see the tools it uses (Claude Code, Tavily, Email) and adjust prompts, processes, or add more integrations as needed.
+</Step>
+<Step title="Demo: Find, Fix, and PR on GitHub">
+To demo the agent's capabilities:
+- Ask the agent to find an open issue in your GitHub repo
+- Let it generate the code to fix the issue using Claude Code
+- The agent will check the status of the coding task
+- Once ready, it will open a Pull Request in GitHub for you to review
+</Step>
+</Steps>
+
+## Next steps
+
+1. **Connect to Slack**  
+   Integrate your Coding Agent with Slack to provide instant coding support and assistance in your team's workspace. See the [Slack Agents](/docs/05-human-interfaces/02-slack-agents) documentation for setup instructions.
+
+2. **Further customize your agent**  
+   Add tools, triggering, modify instructions, and adjust any configuration using the powerful AI Workbench. You can connect to additional repositories, research tools, or notification and ticketing systems as needed.
+
+3. **Need to customize with code?**  
+   Click the **Download code** button in the top right of the AI Workbench to export your agent and implement custom logic as needed.
+
+---
+
+Have questions or need help? Join our community on [Slack](https://join.slack.com/t/xpandercommunity/shared_invite/zt-2mt2xkxkz-omM7f~_h2jcuzFudrYtZQQ) or [Discord](https://discord.gg/CUcp4WWh5g)! 

@@ -129,7 +129,8 @@
             "pages": [
               "templates/01-index",
               "templates/02-docs-agent-mintlify",
-              "templates/03-support-agent"
+              "templates/03-support-agent",
+              "templates/04-coding-agent-claude"
             ]
           }
         ]
