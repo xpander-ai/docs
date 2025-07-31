@@ -1,8 +1,12 @@
 # xpander.ai Documentation
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/xpander-ai/docs?quickstart=1)
+
 This repository contains the documentation for xpander.ai, built with [Mintlify](https://mintlify.com).
 
 🌐 **Live Documentation**: https://docs.xpander.ai
+
+> **Quick Start**: Click the "Open in GitHub Codespaces" button above to instantly start reviewing or contributing to the documentation. No local setup required!
 
 ## 🚀 Getting Started with GitHub Codespaces
 
@@ -38,23 +42,25 @@ GitHub Codespaces provides a complete, ready-to-use development environment in y
 
 ### Reviewing Pull Requests
 
-1. **Open PR in Codespaces**
-   - Navigate to the Pull Request
-   - Click the "Code" button within the PR
-   - Select "Open with Codespaces"
-   - Create a new codespace or use an existing one
+> **Note for Reviewers**: GitHub automatically shows an "Open with Codespaces" button on all pull requests. Simply click it to launch a pre-configured environment with all changes ready to preview!
 
-2. **Preview Changes**
-   ```bash
-   npm install
-   npm run dev
-   ```
+1. **Open PR in Codespaces** (Single Click!)
+   - On any Pull Request page, look for the green "Code" dropdown
+   - Click "Open with Codespaces" 
+   - A new Codespace will launch with the PR's changes automatically loaded
+   - No local setup or installation required!
+
+2. **Preview Changes** (Automatic)
+   - Codespaces will automatically run `npm install` during setup
+   - Simply run: `npm run dev`
+   - The preview URL will appear automatically
 
 3. **Visual Review**
    - Navigate through the documentation at `http://localhost:3000`
    - Check for formatting issues, broken links, and content accuracy
    - Test the search functionality
    - Verify images and code snippets render correctly
+   - Leave feedback directly in the PR while viewing changes live
 
 ## 🖥️ Local Development
 
@@ -110,13 +116,26 @@ icon: "rocket"
 
 ## 🔄 Contributing
 
+### Automatic Codespaces for All PRs and Branches
+
+> **Important**: This repository is configured to automatically offer GitHub Codespaces for all pull requests and feature branches. No additional setup is required!
+
+- ✅ **Automatic for PRs**: Every pull request shows an "Open with Codespaces" button
+- ✅ **Works on all branches**: Create a Codespace from any branch instantly
+- ✅ **Zero configuration**: Everything is pre-configured and ready to use
+- ✅ **Free for contributors**: Uses GitHub's free Codespaces tier
+
+### Contributing Steps
+
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-docs`)
-3. Make your changes
-4. Test locally or in Codespaces
-5. Commit your changes (`git commit -m 'Add amazing documentation'`)
-6. Push to your branch (`git push origin feature/amazing-docs`)
-7. Open a Pull Request
+2. Click [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/xpander-ai/docs?quickstart=1) to start developing
+3. Make your changes in the cloud-based environment
+4. Test your changes with `npm run dev`
+5. Commit and push directly from Codespaces
+6. Open a Pull Request
+7. Reviewers can instantly preview your changes using Codespaces
+
+See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for detailed guidelines.
 
 ## 🛠️ Troubleshooting
 

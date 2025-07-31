@@ -55,5 +55,21 @@
   // "remoteUser": "root"
   
   // Add a welcome message
-  "postStartCommand": "echo '🚀 Welcome to xpander-ai/docs Codespace! Run \"mintlify dev\" to start the documentation server.'"
+  "postStartCommand": "echo '🚀 Welcome to xpander-ai/docs Codespace! Run \"mintlify dev\" to start the documentation server.'",
+  
+  // Codespaces configuration
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "4gb",
+    "storage": "32gb"
+  },
+  
+  // Wait for postCreateCommand to finish
+  "waitFor": "postCreateCommand",
+  
+  // Additional settings for better Codespaces experience
+  "updateContentCommand": "npm install",
+  
+  // Open README.md by default
+  "postAttachCommand": "code README.md"
 }
