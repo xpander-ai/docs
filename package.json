@@ -1,0 +1,21 @@
+{
+  "name": "xpander-ai-docs",
+  "version": "1.0.0",
+  "description": "xpander.ai Documentation",
+  "scripts": {
+    "dev": "mintlify dev",
+    "start": "mintlify dev",
+    "build": "mintlify build",
+    "preview": "mintlify preview"
+  },
+  "keywords": [
+    "documentation",
+    "mintlify",
+    "xpander.ai"
+  ],
+  "author": "xpander.ai",
+  "license": "MIT",
+  "devDependencies": {
+    "mintlify": "latest"
+  }
+}
