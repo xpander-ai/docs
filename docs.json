@@ -82,11 +82,12 @@
               "tutorials/index",
               "tutorials/01-structured-output-agent",
               "tutorials/02-hello-world-agent",
-              "tutorials/03-outage-manager-agent",
-              "tutorials/04-supercharge-your-ide-with-mcp",
-              "tutorials/05-travel-expense-assistant",
-              "tutorials/06-github-pr-review-agent",
-              "tutorials/07-aws-cost-report-agent"
+              "tutorials/03-smart-support-agent",
+              "tutorials/04-outage-manager-agent",
+              "tutorials/05-supercharge-your-ide-with-mcp",
+              "tutorials/06-travel-expense-assistant",
+              "tutorials/07-github-pr-review-agent",
+              "tutorials/08-aws-cost-report-agent"
             ]
           }
         ]
