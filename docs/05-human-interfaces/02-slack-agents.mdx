@@ -1,230 +1,101 @@
 ---
 title: "Slack Agents"
-description: "Deploy Slack-native AI agents in minutes with any AI framework - no infrastructure to manage"
+description: "Make your Custom AI Agents Slack-native in zero-effort."
 icon: "slack"
 ---
 
-Deploy powerful AI agents to Slack in minutes with xpander.ai - the platform that enables teams to create Slack-native AI agents with no infrastructure to manage. Works seamlessly with any AI framework including Agno, OpenAI, Bedrock, LangChain, CrewAI, and more. Learn more at [slack.xpander.ai](https://slack.xpander.ai/).
+Slack Agents let you bring the power of xpander.ai's AI Agents directly into any Slack workspace. With just a few steps, you can create, connect, and customize intelligent agents that automate tasks, answer questions, and boost productivity - all from within Slack. Learn more at [slack.xpander.ai](https://slack.xpander.ai/).
 
 <Tip>
-**Smart Engage** technology pre-screens Slack messages to reduce LLM costs by 80%+ by only invoking your agent when truly needed - eliminating wasteful API calls on irrelevant messages.
+You can build new agents or connect existing xpander.ai agents to Slack, enabling advanced workflows and real-time collaboration.
 </Tip>
 
-## <Icon icon="star" /> Why xpander.ai for Slack Agents?
+## Key Features & Benefits
 
-<CardGroup cols={2}>
-  <Card title="Deploy in Minutes" icon="rocket">
-    Go from idea to live Slack agent in minutes. Create from templates or bring your own code - your agent is instantly live with no DevOps required.
+<CardGroup>
+  <Card title="Slack Agent" icon="slack">
+    An agent entity that is connected to a Slack workspace of your choice. You can then connect it to a Custom AI Agent on the xpander platform, as well as configure it to auto-engage in channels on specific topics, add conversation starters, and more.
   </Card>
-  <Card title="Smart Engage™" icon="brain">
-    Intelligent pre-screening reduces LLM costs by 80%+ by analyzing messages before invoking your agent, ensuring it only responds when truly relevant.
+  <Card title="Custom AI Agent" icon="robot">
+    The agent entity that the Slack Agent entity connects to. These are AI agents running on the xpander.ai Agent platform, ready for you to build, customize, test, and easily connect to Slack.
   </Card>
-  <Card title="Built-in OAuth" icon="shield-check">
-    User-authenticated actions for GitHub, Jira, Google Drive, and more. Per-user permission scoping with secure token storage built right in.
+  <Card title="Zero Infrastructure" icon="server">
+    Add Custom AI Agents to any Slack Workspace without the development and infrastructure overhead. xpander.ai handles hosting and stitches the integration directly to your custom AI Agents.
   </Card>
-  <Card title="Any AI Framework" icon="layers">
-    Works with Agno, OpenAI, Bedrock, LangChain, CrewAI, Meta Llama, Anthropic, Mistral, NVIDIA NeMo, Google Gemini, and more.
+  <Card title="Versatile Use-Cases" icon="users">
+    Perfect for internal use, joint customer channels, and community support - add your Slack Agent to any Slack Workspace. Automate tasks like opening support tickets, scheduling calls, and more - whatever you can build with a Custom AI Agent.
   </Card>
 </CardGroup>
 
-## <Icon icon="zap" /> Quick Start: Deploy Your First Agent
+## Setup Guide
 
-<Steps>
-  <Step title="Choose Your Starting Point">
-    **Option A:** Start from a template in our [Slack Agent Directory](https://slack.xpander.ai/agents)
-    **Option B:** Bring your own code - any Python-based AI framework works
-  </Step>
+<Tabs>
+  <Tab title="Start from Scratch">
+    <Steps>
+      <Step title="Go to Slack Agents section">
+        In the xpander.ai console, navigate to the **Slack Agents** section.
+        {/* Screenshot: Slack Agents section in xpander.ai UI */}
+      </Step>
+      <Step title="Create your Slack AI Agent">
+        Click **Create Agent** and follow the prompts to set up your new Slack AI Agent.
+        {/* Screenshot: Create Slack Agent form */}
+      </Step>
+      <Step title="Connect to your xpander AI Agent">
+        Link your Slack Agent to an existing xpander AI Agent, or create a new one if needed.
+        {/* Screenshot: Agent connection panel */}
+      </Step>
+      <Step title="Customize or build your agent">
+        You can further customize your agent's behavior, or build a new agent from scratch in xpander.ai for advanced use cases.
+        {/* Screenshot: Agent customization options */}
+      </Step>
+      <Step title="Start using your Slack Agent">
+        Once connected, your Slack Agent is ready to use in your workspace. Interact with it in channels or direct messages to automate tasks and get instant answers.
+        {/* Screenshot: Slack conversation with AI Agent */}
+      </Step>
+    </Steps>
+  </Tab>
   
-  <Step title="Complete Import & Install">
-    - Authorize with Slack OAuth
-    - Select channels for your agent
-    - Configure auto-engage options
-    - Set Smart Engage sensitivity
-  </Step>
-  
-  <Step title="Your Agent is Live!">
-    That's it - your agent is instantly available in Slack. No servers to manage, no infrastructure to configure.
-  </Step>
-</Steps>
+  <Tab title="Deploy Template">
+    <Steps>
+      <Step title="Browse Agent Templates">
+        Go to the [xpander.ai Agent Hub](https://slack.xpander.ai/templates/) to find a list of ready-to-use AI Agents.
+        {/* Screenshot: xpander.ai Agent Hub page */}
+      </Step>
+      <Step title="Select and Deploy">
+        Choose an agent that fits your needs and click "Deploy". This will redirect you to Slack to authorize the installation.
+        {/* Screenshot: Slack authorization screen */}
+      </Step>
+      <Step title="Automatic Setup">
+        Once authorized, xpander.ai automatically deploys a Custom AI Agent template to your account and connects it to your new Slack Agent.
+        {/* Screenshot: Deployed agent template in xpander.ai UI */}
+      </Step>
+      <Step title="Start Using and Customize">
+        Your new agent is ready to use in Slack! You can further customize the underlying Custom AI Agent template from the xpander.ai console.
+        {/* Screenshot: Agent interacting in a Slack channel */}
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
 
-## <Icon icon="magic-wand-sparkles" /> Core Features
-
-### Smart Engage™
-Our intelligent pre-screening technology analyzes every message in your selected channels before invoking your LLM, dramatically reducing costs:
-
-- **80%+ cost reduction** on LLM API calls
-- **Configurable sensitivity** to match your use case
-- **Context-aware filtering** that understands conversation flow
-- **Zero latency** for end users - instant responses when engaged
-
-### Auto-Engage
-Let your agents proactively join relevant conversations without @ mentions:
-
-<CardGroup cols={2}>
-  <Card title="Keyword Triggers" icon="search">
-    Configure specific keywords or phrases that trigger agent responses
-  </Card>
-  <Card title="Context Awareness" icon="brain">
-    Agent understands conversation context to provide relevant help
-  </Card>
-  <Card title="Channel-Specific Rules" icon="hashtag">
-    Different auto-engage rules for different channels
-  </Card>
-  <Card title="Respect Boundaries" icon="hand">
-    Built-in controls to prevent agent spam and unwanted responses
-  </Card>
-</CardGroup>
-
-### Built-in OAuth System
-Enable user-specific authenticated actions without building your own auth flow:
-
-- **Pre-built integrations:** GitHub, Jira, Google Drive, Salesforce, and more
-- **Per-user permissions:** Each user authenticates their own accounts
-- **Secure token storage:** Enterprise-grade encryption for all credentials
-- **Automatic refresh:** Tokens are automatically refreshed as needed
-
-## <Icon icon="code" /> Supported Frameworks & Models
-
-### AI Frameworks
-- **Agno** - Build agents with structured outputs
-- **LangChain** - Chain multiple LLMs and tools
-- **CrewAI** - Multi-agent orchestration
-- **AutoGen** - Microsoft's multi-agent framework
-- **Custom Python** - Any Python-based AI code
-
-### Language Models
-- **OpenAI** - GPT-4, GPT-3.5
-- **Anthropic** - Claude 3, Claude 2
-- **AWS Bedrock** - Access to multiple models
-- **Google Gemini** - Latest Google AI models
-- **Meta Llama** - Open source LLMs
-- **Mistral** - European AI models
-- **NVIDIA NeMo** - Enterprise AI platform
-- **Custom Models** - Bring your own fine-tuned models
-
-## <Icon icon="server" /> Backend Platform Features
+## Advanced features of Slack AI Agents in xpander.ai
 
 <CardGroup cols={2}>
-  <Card title="Observability" icon="chart-line">
-    Real-time monitoring, detailed logs, and performance metrics for every agent interaction
+  <Card title="Auto OCR from Images" icon="image">
+    Automatically read text from images (supports .jpg, .jpeg, .png, .gif, .bmp, .tiff, .tif, .webp, .heic, .avif)
   </Card>
-  <Card title="Event Streaming" icon="stream">
-    Process events in real-time with built-in event streaming infrastructure
+  <Card title="Auto Transcribe Audio" icon="microphone">
+    Automatically transcribe audio messages so the agent can process them
   </Card>
-  <Card title="Tool Guardrails" icon="shield">
-    Control what actions your agents can take with granular permission systems
+  <Card title="Auto OCR from PDF" icon="file-pdf">
+    Automatically read text from PDF files
   </Card>
-  <Card title="Schema Overrides" icon="code">
-    Customize agent behaviors and responses with flexible schema configurations
+  <Card title="Auto Crawl Links" icon="link">
+    Automatically crawl and fetch data from the first page of links sent to the agent
   </Card>
-  <Card title="CI/CD Integration" icon="infinity">
-    Deploy agents through your existing CI/CD pipelines with our API
+  <Card title="Auto-Engage in Channels" icon="hashtag">
+    Define conditions when the agent should automatically engage in channels. For example: "When user is asking about stock price"
   </Card>
-  <Card title="Version Control" icon="git-branch">
-    Track changes, rollback deployments, and manage agent versions
-  </Card>
-  <Card title="Agentic RAG" icon="database">
-    Built-in vector database for retrieval-augmented generation
-  </Card>
-  <Card title="Multi-Modal Support" icon="image">
-    Handle voice messages, images, PDFs, and other file types automatically
+  <Card title="Conversation Starters" icon="sparkles">
+    Create prompt suggestions for users. They will be presented on the chat UI before the first interaction of every new conversation.
   </Card>
 </CardGroup>
-
-## <Icon icon="shield-halved" /> Enterprise Security
-
-<CardGroup cols={2}>
-  <Card title="SOC 2 Type II" icon="certificate">
-    Independently audited security controls and practices
-  </Card>
-  <Card title="GDPR Compliant" icon="globe">
-    Full compliance with European data protection regulations
-  </Card>
-  <Card title="Self-Hosted Option" icon="building">
-    Deploy on your own infrastructure for complete control
-  </Card>
-  <Card title="Data Encryption" icon="lock">
-    End-to-end encryption for all data in transit and at rest
-  </Card>
-</CardGroup>
-
-## <Icon icon="users" /> Featured Agents
-
-Explore our [Slack Agent Directory](https://slack.xpander.ai/agents) for ready-to-deploy agents:
-
-<CardGroup cols={2}>
-  <Card title="DevOps Assistant" icon="terminal">
-    Monitor deployments, respond to alerts, and execute runbooks
-  </Card>
-  <Card title="Customer Support Bot" icon="headset">
-    Answer FAQs, create tickets, and escalate to human agents
-  </Card>
-  <Card title="Sales Companion" icon="chart-line">
-    Update CRM, schedule meetings, and provide deal insights
-  </Card>
-  <Card title="HR Helper" icon="users">
-    Answer policy questions, manage time-off requests, and more
-  </Card>
-</CardGroup>
-
-## <Icon icon="question-circle" /> Frequently Asked Questions
-
-<AccordionGroup>
-  <Accordion title="How does Smart Engage reduce costs by 80%+?">
-    Smart Engage pre-screens every message in your configured channels using lightweight analysis before invoking your LLM. It only triggers your agent when the message is relevant to its purpose, eliminating thousands of unnecessary API calls to expensive language models.
-  </Accordion>
-
-  <Accordion title="How does user authentication work?">
-    Our built-in OAuth system allows each Slack user to authenticate their own accounts (GitHub, Jira, etc.) directly through Slack. Tokens are stored securely and scoped to individual users, ensuring agents can perform actions on behalf of specific users while maintaining security boundaries.
-  </Accordion>
-
-  <Accordion title="Can agents respond to threads and maintain context?">
-    Yes! Agents automatically understand thread context and maintain conversation history. They can respond appropriately whether in a channel, thread, or direct message, preserving the full context of the discussion.
-  </Accordion>
-
-  <Accordion title="What file types can agents process?">
-    Agents support multi-modal inputs including:
-    - Voice messages (automatically transcribed)
-    - Images (PNG, JPEG, GIF)
-    - PDFs and documents
-    - Code files
-    - CSV and structured data
-  </Accordion>
-
-  <Accordion title="How fast can I deploy an agent?">
-    From zero to live agent in under 5 minutes. If you're using a template, it's even faster - just click deploy, authorize Slack, and you're done. No infrastructure setup, no DevOps, no waiting.
-  </Accordion>
-
-  <Accordion title="How do I control when my agent responds?">
-    Multiple control mechanisms:
-    - **Smart Engage sensitivity:** Adjust how selective the pre-screening is
-    - **Auto-engage rules:** Define specific triggers and conditions
-    - **Channel permissions:** Control which channels the agent can access
-    - **@ mention only mode:** Require explicit mentions for responses
-  </Accordion>
-
-  <Accordion title="Is this suitable for enterprise deployments?">
-    Absolutely. We're SOC 2 Type II certified, GDPR compliant, and offer self-hosted options for enterprises requiring complete control. Our platform handles agents for Fortune 500 companies processing millions of messages.
-  </Accordion>
-
-  <Accordion title="Can I bring my existing AI code?">
-    Yes! Any Python-based AI code can be deployed as a Slack agent. Whether you've built with LangChain, CrewAI, or custom code, you can deploy it to Slack without modifications. We handle all the Slack integration complexity.
-  </Accordion>
-</AccordionGroup>
-
-## <Icon icon="rocket" /> Get Started Now
-
-Ready to deploy your first Slack agent? Choose your path:
-
-<CardGroup cols={2}>
-  <Card title="Browse Agent Templates" icon="grid" href="https://slack.xpander.ai/agents">
-    Explore our directory of ready-to-deploy agents for common use cases
-  </Card>
-  <Card title="Create Custom Agent" icon="code" href="https://app.xpander.ai/slack_agents/new">
-    Build and deploy your own agent with any AI framework
-  </Card>
-</CardGroup>
-
-<Info>
-**Need help?** Join our [community Slack](https://xpander.ai/slack) or check out our [video tutorials](https://xpander.ai/tutorials) to see xpander.ai in action.
-</Info>
