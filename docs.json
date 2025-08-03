@@ -1,7 +1,10 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "name": "xpander.ai",
-  "theme": "maple",
+  "theme": "mint",
+  "styling": {
+  "codeblocks": "dark"
+  },
   "colors": {
     "primary": "#753CFF",
     "light": "#9B70FF",
