@@ -3,7 +3,7 @@
   "name": "xpander.ai",
   "theme": "mint",
   "styling": {
-  "codeblocks": "dark"
+    "codeblocks": "dark"
   },
   "colors": {
     "primary": "#753CFF",
@@ -71,7 +71,6 @@
               "docs/05-human-interfaces/03-webui",
               "docs/05-human-interfaces/04-mcp",
               "docs/05-human-interfaces/05-webhooks"
-
             ]
           }
         ]
@@ -143,22 +142,30 @@
         "tab": "SDK Reference",
         "groups": [
           {
-            "group": "Getting Started",
-            "pages": ["api-reference/07-sdk/index"]
+            "group": "Overview",
+            "pages": ["sdk-reference/07-sdk/index"]
           },
           {
-            "group": "xpander-sdk",
+            "group": "Core Modules",
             "pages": [
-              "api-reference/07-sdk/xpander-sdk/XpanderClient",
-              "api-reference/07-sdk/xpander-sdk/agent",
-              "api-reference/07-sdk/xpander-sdk/Agent.Messages",
-              "api-reference/07-sdk/xpander-sdk/Agent.Tools",
-              "api-reference/07-sdk/xpander-sdk/Tasks",
-              "api-reference/07-sdk/xpander-sdk/Agent.Graph",
-              "api-reference/07-sdk/xpander-sdk/tool-models"
-              ,"api-reference/07-sdk/xpander-sdk/LLMTokens"
-              ,"api-reference/07-sdk/xpander-sdk/LLMMetrics"
-              ,"api-reference/07-sdk/xpander-sdk/ExecutionMetrics"
+              "sdk-reference/07-sdk/agents/index",
+              "sdk-reference/07-sdk/tasks/index",
+              "sdk-reference/07-sdk/tools/index",
+              "sdk-reference/07-sdk/knowledge/index",
+              "sdk-reference/07-sdk/events/index"
+            ]
+          },
+          {
+            "group": "API Reference",
+            "pages": [
+              "sdk-reference/07-sdk/agents/api-reference/index",
+              "sdk-reference/07-sdk/tasks/api-reference/index",
+              "sdk-reference/07-sdk/tools/api-reference/index",
+              "sdk-reference/07-sdk/knowledge/api-reference/index",
+              "sdk-reference/07-sdk/events/api-reference/index",
+              "sdk-reference/07-sdk/configuration/index",
+              "sdk-reference/07-sdk/types",
+              "sdk-reference/07-sdk/exceptions"
             ]
           }
         ]
@@ -232,7 +239,7 @@
         {
           "dropdown": "SDK Reference",
           "icon": { "name": "code", "style": "regular" },
-          "href": "https://docs.xpander.ai/api-reference/07-sdk/index"
+          "href": "https://docs.xpander.ai/sdk-reference/07-sdk/index"
         },
         {
           "dropdown": "Tutorials",
@@ -273,7 +280,7 @@
         },
         {
           "anchor": "SDK Reference",
-          "href": "https://docs.xpander.ai/api-reference/07-sdk/index",
+          "href": "https://docs.xpander.ai/sdk-reference/07-sdk/index",
           "icon": { "name": "code", "style": "regular" }
         },
         {
@@ -294,16 +301,16 @@
       "apiKey": "a217b67ed9af1f3663abbdb97c358d86"
     }
   },
-"redirects": [
-  {
-    "source": "/workshops/a2a-mcp-workshop",
-    "destination": "/workshops/a2a-mcp-workshop/index"
-  },
-  {
-    "source": "/workshops/swe-cloud-agent-workshop",
-    "destination": "/workshops/swe-cloud-agent-workshop/index"
-  }
-],
+  "redirects": [
+    {
+      "source": "/workshops/a2a-mcp-workshop",
+      "destination": "/workshops/a2a-mcp-workshop/index"
+    },
+    {
+      "source": "/workshops/swe-cloud-agent-workshop",
+      "destination": "/workshops/swe-cloud-agent-workshop/index"
+    }
+  ],
   "footer": {
     "socials": {
       "x": "https://x.com/xpander_ai",

@@ -1,0 +1,275 @@
+---
+title: "Configuration Class API Reference"
+description: "Complete API reference for the Configuration class including all parameters and methods"
+icon: "gear"
+---
+
+# Configuration Class
+
+The **Configuration** class manages authentication and environment settings for the xpander.ai SDK. While the SDK uses automatic configuration by default, this class allows you to override settings or use multiple configurations.
+
+## Constructor
+
+```python
+Configuration(
+    api_key: Optional[str] = None,
+    organization_id: Optional[str] = None,
+    base_url: Optional[str] = None
+)
+```
+
+**Parameters:**
+- `api_key` (Optional[str]): Your xpander.ai API key. If not provided, uses `XPANDER_API_KEY` environment variable.
+- `organization_id` (Optional[str]): Your organization identifier. If not provided, uses `XPANDER_ORGANIZATION_ID` environment variable.
+- `base_url` (Optional[str]): Custom base URL for the API. If not provided, uses `XPANDER_BASE_URL` environment variable or defaults to production URL.
+
+**Example:**
+```python
+from xpander_sdk import Configuration
+
+# Use environment variables (recommended)
+config = Configuration()
+
+# Override specific settings
+config = Configuration(
+    api_key="your-custom-api-key",
+    organization_id="your-org-id"
+)
+
+# Full custom configuration
+config = Configuration(
+    api_key="your-api-key",
+    organization_id="your-org-id",
+    base_url="https://custom.xpander.ai"
+)
+```
+
+## Properties
+
+### `api_key`
+```python
+api_key: str
+```
+The API key used for authentication. Read-only after initialization.
+
+### `organization_id`
+```python
+organization_id: str
+```
+The organization identifier. Read-only after initialization.
+
+### `base_url`
+```python
+base_url: str
+```
+The base URL for API requests. Read-only after initialization.
+
+## Methods
+
+### `is_valid()`
+
+Check if the configuration has all required parameters.
+
+```python
+def is_valid() -> bool
+```
+
+**Returns:** `True` if both `api_key` and `organization_id` are set, `False` otherwise.
+
+**Example:**
+```python
+config = Configuration(api_key="test-key")
+if not config.is_valid():
+    print("Configuration is missing organization_id")
+```
+
+### `get_headers()`
+
+Get HTTP headers for API requests.
+
+```python
+def get_headers() -> Dict[str, str]
+```
+
+**Returns:** Dictionary containing authorization and other necessary headers.
+
+**Example:**
+```python
+config = Configuration()
+headers = config.get_headers()
+# Headers include: Authorization, Organization-Id, User-Agent, etc.
+```
+
+## Usage Examples
+
+### Default Configuration (Recommended)
+
+```python
+from xpander_sdk import Agents, Tasks
+
+# SDK automatically uses environment variables
+# No need to create Configuration object
+agents = Agents()
+tasks = Tasks()
+```
+
+### Custom Configuration
+
+```python
+from xpander_sdk import Configuration, Agents
+
+# Create custom configuration
+config = Configuration(
+    api_key="your-api-key",
+    organization_id="your-org-id"
+)
+
+# Use with SDK modules
+agents = Agents(configuration=config)
+```
+
+### Multiple Environments
+
+```python
+from xpander_sdk import Configuration, Agents
+
+# Development environment
+dev_config = Configuration(
+    api_key="dev-api-key",
+    organization_id="dev-org-id",
+    base_url="https://dev.xpander.ai"
+)
+
+# Production environment
+prod_config = Configuration(
+    api_key="prod-api-key",
+    organization_id="prod-org-id"
+)
+
+# Use different configurations
+dev_agents = Agents(configuration=dev_config)
+prod_agents = Agents(configuration=prod_config)
+```
+
+### Configuration Validation
+
+```python
+from xpander_sdk import Configuration
+from xpander_sdk.exceptions import ModuleException
+
+try:
+    config = Configuration(api_key="test-key")  # Missing organization_id
+    if not config.is_valid():
+        raise ValueError("Invalid configuration")
+    
+    agents = Agents(configuration=config)
+except (ValueError, ModuleException) as e:
+    print(f"Configuration error: {e}")
+```
+
+## Environment Variables
+
+The Configuration class automatically reads from these environment variables:
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `XPANDER_API_KEY` | Your xpander.ai API key | Yes |
+| `XPANDER_ORGANIZATION_ID` | Your organization identifier | Yes |
+| `XPANDER_BASE_URL` | Custom base URL (optional) | No |
+
+### Setting Environment Variables
+
+**Linux/macOS:**
+```bash
+export XPANDER_API_KEY="your-api-key"
+export XPANDER_ORGANIZATION_ID="your-org-id"
+export XPANDER_BASE_URL="https://custom.xpander.ai"  # Optional
+```
+
+**Windows:**
+```cmd
+set XPANDER_API_KEY=your-api-key
+set XPANDER_ORGANIZATION_ID=your-org-id
+set XPANDER_BASE_URL=https://custom.xpander.ai
+```
+
+**Using .env file:**
+```bash
+echo "XPANDER_API_KEY=your-api-key" > .env
+echo "XPANDER_ORGANIZATION_ID=your-org-id" >> .env
+echo "XPANDER_BASE_URL=https://custom.xpander.ai" >> .env
+```
+
+## Security Best Practices
+
+### ✅ Recommended Approaches
+
+1. **Use environment variables:**
+```python
+# Configuration automatically loaded from environment
+from xpander_sdk import Agents
+agents = Agents()
+```
+
+2. **Use .env files for development:**
+```python
+# Load from .env file using python-dotenv
+from dotenv import load_dotenv
+load_dotenv()
+
+from xpander_sdk import Agents
+agents = Agents()  # Uses loaded environment variables
+```
+
+3. **Override only when necessary:**
+```python
+# Override specific settings while keeping others from environment
+config = Configuration(base_url="https://staging.xpander.ai")
+agents = Agents(configuration=config)
+```
+
+### ❌ Avoid These Practices
+
+1. **Never hardcode credentials:**
+```python
+# DON'T DO THIS
+config = Configuration(
+    api_key="xpdr_1234567890abcdef",  # Never hardcode!
+    organization_id="org_0987654321"
+)
+```
+
+2. **Don't commit credentials to version control:**
+```python
+# DON'T DO THIS
+API_KEY = "xpdr_secret_key"  # Never in source code!
+config = Configuration(api_key=API_KEY)
+```
+
+## Error Handling
+
+```python
+from xpander_sdk import Configuration
+from xpander_sdk.exceptions import ModuleException
+
+try:
+    # This will fail if environment variables are not set
+    # and no parameters are provided
+    config = Configuration()
+    agents = Agents(configuration=config)
+except ModuleException as e:
+    print(f"Configuration error: {e.description}")
+    # Handle missing or invalid configuration
+```
+
+## Related Classes
+
+- [`Agents`](/sdk-reference/07-sdk/agents/api-reference): Agent management using configuration
+- [`Tasks`](/sdk-reference/07-sdk/tasks/api-reference): Task management using configuration
+- [`Events`](/sdk-reference/07-sdk/events/api-reference): Event handling using configuration
+
+## Related Modules
+
+- [Agents Module](/sdk-reference/07-sdk/agents): Agent management and task creation
+- [Tasks Module](/sdk-reference/07-sdk/tasks): Task execution and management
+- [Events Module](/sdk-reference/07-sdk/events): Event-driven programming

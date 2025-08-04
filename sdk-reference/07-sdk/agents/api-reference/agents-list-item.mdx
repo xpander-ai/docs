@@ -1,0 +1,197 @@
+---
+title: "AgentsListItem Class API Reference"
+description: "Complete API reference for the AgentsListItem class representing agent summaries"
+icon: "list"
+---
+
+# AgentsListItem Class
+
+The **AgentsListItem** class represents a summary item from the agents list with basic agent information. It provides convenient methods to load the full agent details when needed.
+
+## Properties
+
+### `id`
+```python
+id: str
+```
+Unique identifier for the agent.
+
+### `name`
+```python
+name: str
+```
+Display name of the agent.
+
+### `description`
+```python
+description: Optional[str]
+```
+Brief description of the agent's purpose and capabilities.
+
+### `version`
+```python
+version: int
+```
+Current version number of the agent.
+
+### `is_active`
+```python
+is_active: bool
+```
+Indicates whether the agent is currently active and available for use.
+
+### `created_at`
+```python
+created_at: datetime
+```
+Timestamp when the agent was created.
+
+### `updated_at`
+```python
+updated_at: datetime
+```
+Timestamp when the agent was last modified.
+
+## Methods
+
+### `aload()`
+
+Asynchronously load the full agent details from this list item.
+
+```python
+async def aload() -> Agent
+```
+
+**Returns:** Complete [`Agent`](/sdk-reference/07-sdk/agents/api-reference/agent.mdx) object with full configuration.
+
+**Example:**
+```python
+agents_list = await agents.alist()
+if agents_list:
+    # Load full agent details from the first list item
+    full_agent = await agents_list[0].aload()
+    print(f"Loaded agent: {full_agent.name}")
+    print(f"Agent tools count: {len(full_agent.tools.functions)}")
+```
+
+**Raises:**
+- [`ModuleException`](/sdk-reference/07-sdk/exceptions.mdx): If the agent cannot be loaded or access is denied.
+
+---
+
+### `load()`
+
+Synchronously load the full agent details from this list item.
+
+```python
+def load() -> Agent
+```
+
+**Returns:** Complete [`Agent`](/sdk-reference/07-sdk/agents/api-reference/agent.mdx) object with full configuration.
+
+**Example:**
+```python
+agents_list = agents.list()
+if agents_list:
+    # Load full agent details from the first list item
+    full_agent = agents_list[0].load()
+    print(f"Loaded agent: {full_agent.name}")
+    print(f"Agent tools count: {len(full_agent.tools.functions)}")
+```
+
+**Raises:**
+- [`ModuleException`](/sdk-reference/07-sdk/exceptions.mdx): If the agent cannot be loaded or access is denied.
+
+## Usage Examples
+
+### Filtering and Loading Agents
+
+```python
+from xpander_sdk import Agents
+
+async def find_and_load_agent():
+    agents = Agents()
+    
+    # Get all agents
+    agents_list = await agents.alist()
+    
+    # Filter for active agents
+    active_agents = [agent for agent in agents_list if agent.is_active]
+    print(f"Found {len(active_agents)} active agents")
+    
+    # Find agent by name
+    target_agent_item = next(
+        (agent for agent in agents_list if "analytics" in agent.name.lower()),
+        None
+    )
+    
+    if target_agent_item:
+        # Load the full agent
+        full_agent = await target_agent_item.aload()
+        print(f"Loaded agent: {full_agent.name}")
+        print(f"Description: {full_agent.description}")
+    else:
+        print("Analytics agent not found")
+```
+
+### Batch Loading with Error Handling
+
+```python
+from xpander_sdk import Agents
+from xpander_sdk.exceptions import ModuleException
+
+async def load_all_agents_safely():
+    agents = Agents()
+    agents_list = await agents.alist()
+    loaded_agents = []
+    
+    for agent_item in agents_list:
+        try:
+            full_agent = await agent_item.aload()
+            loaded_agents.append(full_agent)
+            print(f"✓ Loaded: {full_agent.name}")
+        except ModuleException as e:
+            print(f"✗ Failed to load {agent_item.name}: {e.description}")
+    
+    print(f"Successfully loaded {len(loaded_agents)}/{len(agents_list)} agents")
+    return loaded_agents
+```
+
+### Agent Information Display
+
+```python
+from datetime import datetime
+
+def display_agent_summary(agent_item: AgentsListItem):
+    """Display formatted summary of an agent list item."""
+    status = "🟢 Active" if agent_item.is_active else "🔴 Inactive"
+    
+    print(f"""
+    Agent Summary:
+    -------------
+    Name: {agent_item.name}
+    ID: {agent_item.id}
+    Status: {status}
+    Version: {agent_item.version}
+    Description: {agent_item.description or 'No description'}
+    Created: {agent_item.created_at.strftime('%Y-%m-%d %H:%M:%S')}
+    Updated: {agent_item.updated_at.strftime('%Y-%m-%d %H:%M:%S')}
+    """)
+
+# Usage
+agents_list = await agents.alist()
+for agent_item in agents_list[:3]:  # Show first 3 agents
+    display_agent_summary(agent_item)
+```
+
+## Related Classes
+
+- [`Agents`](/sdk-reference/07-sdk/agents/api-reference): Parent class for agent management
+- [`Agent`](/sdk-reference/07-sdk/agents/api-reference/agent.mdx): Full agent with complete capabilities
+- [`Configuration`](/sdk-reference/07-sdk/configuration/api-reference): SDK configuration
+
+## Related Modules
+
+- [Tasks Module](/sdk-reference/07-sdk/tasks): Task creation and management
+- [Tools Repository](/sdk-reference/07-sdk/tools): Tool integration and management
+- [Knowledge Bases](/sdk-reference/07-sdk/knowledge): Document management and search
