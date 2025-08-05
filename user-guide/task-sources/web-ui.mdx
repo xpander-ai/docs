@@ -25,14 +25,4 @@ A ChatGPT-like interface that you can use to chat with your agent and share in y
 
 ## Configuration
 
-The Web UI can be set up through the "Connect" tab in the Workbench. Deploy creates a shareable URL for your agent's web interface. Can be embedded in existing applications using standard iframe.
-
-
-```python
-from xpander_sdk import Backend  
-from agno.agent import Agent
-
-backend = Backend()
-web_agent = Agent(**backend.get_args())
-# Web UI automatically available when deployed
-```
+The Web UI can be set up through the `Task sources` tab in the Workbench. 

@@ -1,45 +1,174 @@
 ---
 title: "Webhooks"
-description: "Trigger agents from external systems via HTTP"
+description: "Connect external systems to your agents using webhook endpoints"
 icon: "webhook"
-mode: "wide"
 ---
 
-Trigger agents programmatically from any system that makes HTTP requests. Each agent gets a unique webhook URL for external integrations.
+Webhooks enable you to trigger xpander.ai agents from any external system that can make HTTP requests. Each agent has a unique webhook URL for programmatic interaction.
 
-<Frame>
-![alt text](/images/webhook-config.png)
+## Accessing Your Webhook URL
+
+To find your webhook URL:
+1. Navigate to your agent in the Workbench and go to the `Task sources` tab.
+2. Toggle to enable the Webhook Task source and click `Configure and test`
+3. The Webhook Configuration panel will open, providing a curl snippet and the ability to test the webhook from the Workbench.
+
+<Frame caption="Webhook Configuration Interface">
+![Webhook Configuration Interface](/static/images/screenshots/AECAB014-E97A-4D2C-BEDF-64118F45BD4D.png)
 </Frame>
 
-**File Processing** - Upload PDFs, images directly via multipart/form-data
+## Making Webhook Requests
 
-**Sync/Async Modes** - Wait for completion or return immediately  
+### Required Parameters
 
-**Secure File URLs** - Automatic presigned URL generation for 30-day access
+| Parameter | Type | Description |
+| --------- | ---- | ----------- |
+| `agent_id` | string | The unique identifier of your agent |
+| `x-api-key` | string | Your API key for authentication (header or query parameter) |
+| `asynchronous` | boolean | Whether to wait for completion (`false`) or return immediately (`true`) |
 
-```python
-from xpander_sdk import Backend
-from agno.agent import Agent
+### Request Body Options
 
-backend = Backend()
-webhook_agent = Agent(**backend.get_args())
-# Webhook URL available in agent interface
-```
+| Option | Type | Description |
+| ------ | ---- | ----------- |
+| `files` | file | One or more files to process (PDF, PNG, JPEG, GIF, WEBP) |
+| `prompt` | string | A text prompt to send to the agent |
 
-## Usage
+<Warning>
+When uploading files, you must send the actual files using `multipart/form-data`. Direct external URLs to files are not supported as inputs. The platform will generate secure presigned URLs for your agent to access the uploaded files.
+</Warning>
 
-Access webhook URL from the agent's trigger panel. Required parameters:
+### Content Types
 
-- `agent_id`: Your agent identifier
-- `x-api-key`: API key (header or query param)
-- `asynchronous`: Wait for completion (false) or return immediately (true)
+- **With files**: Use `multipart/form-data` (curl handles this automatically with `--form`)
+- **JSON only**: Use `application/json` with the appropriate header
+
+## File Handling
+
+### Supported File Types
+
+xpander.ai supports a variety of file formats:
+- Documents: PDF
+- Images: PNG, JPEG, GIF, WEBP
+
+### Uploading Multiple Files
+
+To process multiple files in a single request:
 
 ```bash
-curl --location "https://webhook.xpander.ai" \
+curl --location "https://webhook.xpander.ai?asynchronous=true" \
 --header "x-api-key: YOUR_API_KEY" \
---form "prompt=Process this document" \
---form "files=@document.pdf" \
+--form "prompt=Process these documents" \
+--form "files=@/path/to/first-file.pdf" \
+--form "files=@/path/to/second-file.pdf" \
+--form "files=@/path/to/image.png" \
 --form "agent_id=YOUR_AGENT_ID"
 ```
 
-Supports multiple files per request. Use `multipart/form-data` for files, `application/json` for text-only prompts.
+For large batches of files (10+ files), we recommend:
+1. Using asynchronous mode (`asynchronous=true`)
+2. Breaking uploads into multiple requests of 5-10 files each
+3. Using a dedicated file uploader with retry capabilities
+
+### File URL Mechanism
+
+When you upload files through the webhook:
+
+1. xpander.ai automatically handles storage of your files
+2. Your agent receives secure presigned URLs to access these files
+3. These URLs remain valid for 30 days after upload
+4. Files are accessible only to your organization's agents
+
+<Info>
+All uploaded files are stored securely on our platform. Your agent doesn't need to handle file storage or download logic - it will automatically receive properly formatted URLs to access the files.
+</Info>
+
+## Synchronous vs Asynchronous Requests
+
+### Synchronous Mode
+
+```bash
+curl --location "https://webhook.xpander.ai?asynchronous=false" \
+--header "x-api-key: YOUR_API_KEY" \
+--header "Content-Type: application/json" \
+--data '{"agent_id": "YOUR_AGENT_ID", "prompt": "What can you do?"}'
+```
+
+- HTTP request remains open until agent completes
+- Returns complete execution details and results
+- Best for immediate responses and short tasks
+
+**Response:**
+
+```json
+{
+  "result": {
+    "id": "9642f5dd-e535-465f-bdaf-89be6ecaa2d5",
+    "status": "completed",
+    "result": "I specialize in extracting text from image and PDF files using Optical Character Recognition (OCR) technology. If you provide me with a file in a supported format (pdf, png, jpeg, gif, webp), I can extract the text content for you.",
+    "source": "webhook"
+  }
+}
+```
+
+### Asynchronous Mode
+
+```bash
+curl --location "https://webhook.xpander.ai?asynchronous=true" \
+--header "x-api-key: YOUR_API_KEY" \
+--header "Content-Type: application/json" \
+--data '{"agent_id": "YOUR_AGENT_ID", "prompt": "What can you do?"}'
+```
+
+- Returns immediately while agent processes in background
+- Best for long-running tasks and large file processing
+- Allows your application to continue execution
+
+**Response:**
+
+```json
+{
+  "result": "Started"
+}
+```
+
+## Example: OCR Document Processing
+
+This example shows how to extract text from a document using the OCR agent:
+
+```bash
+curl --location "https://webhook.xpander.ai?asynchronous=false" \
+--header "x-api-key: YOUR_API_KEY" \
+--form "prompt=Extract text from this document" \
+--form "files=@/path/to/your/document.pdf" \
+--form "agent_id=YOUR_AGENT_ID"
+```
+
+<Info>
+The OCR agent handles multiple document formats (PDFs and images) and preserves formatting when possible, including tables and structured content.
+</Info>
+
+### Sample OCR Result
+
+```json
+{
+  "result": {
+    "id": "07d6f375-53e9-4aa3-a7af-c36ce99a07d8",
+    "status": "completed",
+    "result": "## Financial Statement\n\n## ACCOUNT SUMMARY FOR PERIOD ENDED SEPTEMBER 30, 2024\n\n| Description | Amount | Percentage |\n|------------|--------|------------|\n| Opening Balance | 50,000 | - |\n| Deposits | 25,000 | - |\n| Withdrawals | (10,000) | - |\n| Fees | (1,500) | 3% |\n| Interest | 1,200 | 2.4% |\n| Closing Balance | 64,700 | - |",
+    "source": "webhook"
+  }
+}
+```
+
+## Common Use Cases
+
+<CardGroup cols={2}>
+  <Card title="Workflow Automation" icon="robot">
+    Integrate with platforms like Zapier, Make.com, or n8n to trigger document processing based on external events.
+  </Card>
+  
+  <Card title="Document Processing" icon="file-pdf">
+    Extract structured data from documents to automate data entry and analysis workflows.
+  </Card>
+</CardGroup>

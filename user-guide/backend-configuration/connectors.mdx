@@ -10,9 +10,19 @@ icon: "plug"
 
 Browse and select from hundreds of pre-built tools in the Workbench, covering popular SaaS platforms like GitHub, Google Workspace, Jira, Asana, Notion, and more. These connectors are:
 
-- **Ready to use** - No configuration required, just select and enable
-- **Production-tested** - Built and maintained by the xpander connector generator agent.
-- **Regularly updated** - Keep pace with API changes and new features
+<CardGroup cols={3}>
+<Card title="Ready to Use" icon="play">
+No configuration required, just select and enable
+</Card>
+
+<Card title="Production-tested" icon="shield-check">
+Built and maintained by the xpander connector generator agent.
+</Card>
+
+<Card title="Regularly Updated" icon="arrow-rotate-right">
+Keep pace with API changes and new features
+</Card>
+</CardGroup>
 
 <Note>
 You can also generate your own connectors by providing an OpenAPI/Swagger specification. This allows you to create private connectors for your internal APIs or custom home-grown tools.
@@ -20,7 +30,7 @@ You can also generate your own connectors by providing an OpenAPI/Swagger specif
 
 ## MCP (Model Context Protocol) Integration
 
-Connect tools to your agnets using the [Model Context Protocol](https://modelcontextprotocol.io):
+Connect tools to your agents using the [Model Context Protocol](https://modelcontextprotocol.io):
 ### 🔌 Remote MCPs
 Use a **remote MCP** to connect your agent to an MCP server hosted externally - either in your own infrastructure or by a SaaS provider.
 

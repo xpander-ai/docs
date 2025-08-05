@@ -94,16 +94,3 @@ Visit [slack.xpander.ai](https://slack.xpander.ai/) to connect agents to Slack w
   </Tab>
 </Tabs>
 
-
-Once your Slack integration is configured in the Workbench, your agent code remains simple and clean. The backend automatically handles all Slack-specific functionality:
-
-```python
-from xpander_sdk import Backend
-from agno.agent import Agent
-
-# Your agent automatically inherits Slack capabilities
-backend = Backend()
-slack_agent = Agent(**backend.get_args())
-```
-
-The `backend.get_args()` method includes all your Slack configuration, so your agent can immediately respond to Slack messages, process files, and use conversation history without any additional code.
