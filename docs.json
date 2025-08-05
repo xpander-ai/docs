@@ -152,7 +152,8 @@
               "sdk-reference/07-sdk/tasks/index",
               "sdk-reference/07-sdk/tools/index",
               "sdk-reference/07-sdk/knowledge/index",
-              "sdk-reference/07-sdk/events/index"
+              "sdk-reference/07-sdk/events/index",
+              "sdk-reference/07-sdk/backend/index"
             ]
           },
           {

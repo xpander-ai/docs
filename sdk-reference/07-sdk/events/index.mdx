@@ -16,10 +16,56 @@ The SDK supports comprehensive event handling systems:
   - Set up using the `@on_task` decorators
   - Handle incoming task execution requests
   - Integrate with Server Sent Events (SSE) for real-time communication
+  - Includes strict validation to ensure the task parameter is correctly specified and returned
 
 - **Task Event Streaming**
   - Monitor updates in real-time during task execution
   - Track task progress, tool calls, and lifecycle events
+
+## Strict Validation
+
+The `@on_task` decorator includes comprehensive validation to ensure proper usage and prevent runtime errors:
+
+### Parameter Validation
+
+- **Required `task` Parameter**: The decorated function must have a parameter named `task`
+- **Task Type Validation**: The `task` parameter must be an instance of the `Task` class
+- **Return Type Validation**: The function must return an instance of the `Task` class
+- **Test Task Validation**: If provided, `test_task` must be an instance of `LocalTaskTest`
+
+### Validation Examples
+
+#### Valid Function Signature
+
+```python
+from xpander_sdk import on_task
+from xpander_sdk.modules.tasks.sub_modules.task import Task
+
+@on_task
+def valid_handler(task: Task) -> Task:
+    # Process the task
+    task.result = "Processed successfully"
+    return task
+```
+
+#### Invalid Function Signatures (Will Raise Errors)
+
+```python
+# Missing 'task' parameter - TypeError will be raised
+@on_task
+def invalid_no_task():
+    pass
+
+# Wrong parameter name - TypeError will be raised
+@on_task
+def invalid_wrong_param(my_task):
+    pass
+
+# Not returning Task instance - TypeError will be raised at runtime
+@on_task
+def invalid_return_type(task):
+    return "string"  # Should return Task instance
+```
 
 ## Examples
 
@@ -52,6 +98,56 @@ def handle_task(task):
     print(f"Processing task: {task.id}")
     # Custom task logic
     task.result = "Task processed successfully"
+    return task
+```
+
+### Advanced Decorator Usage
+
+The `@on_task` decorator supports additional parameters for advanced use cases:
+
+#### Using Custom Configuration
+
+```python
+from xpander_sdk import on_task, Configuration
+
+# Create custom configuration
+custom_config = Configuration(
+    api_key="your-api-key",
+    base_url="https://custom.api.url"
+)
+
+@on_task(configuration=custom_config)
+async def handle_task_with_config(task):
+    # Task will use the custom configuration
+    print(f"Processing task with custom config: {task.id}")
+    task.result = "Processed with custom configuration"
+    return task
+```
+
+#### Using Test Tasks for Local Development
+
+```python
+from xpander_sdk import on_task
+from xpander_sdk.modules.tasks.models.task import LocalTaskTest, AgentExecutionInput
+from xpander_sdk.models.shared import OutputFormat
+
+# Define a local test task for development
+test_task = LocalTaskTest(
+    input=AgentExecutionInput(text="What can you do?"),
+    output_format=OutputFormat.Json,
+    output_schema={"capabilities": "list of capabilities"}
+)
+
+@on_task(test_task=test_task)
+async def handle_test_task(task):
+    print(f"Testing with local task: {task.input.text}")
+    task.result = {
+        "capabilities": [
+            "Data analysis",
+            "Text processing",
+            "API integration"
+        ]
+    }
     return task
 ```
 
