@@ -1,0 +1,114 @@
+---
+title: "Quick Start"
+description: "Get started with xpander in 5 simple steps - from configuration to production deployment"
+icon: "rocket"
+mode: "wide"
+---
+
+<Steps>
+  <Step title="Start from a new or existing agent">
+    Use the Workbench at [app.xpander.ai](https://app.xpander.ai) to set up your agent's framework (runtime environment), instructions, model, tools, and knowledge bases through the intuitive web interface.
+
+    You can also start from a [template](/Examples/templates/01-index).
+
+  <Tip>
+  You can also start from the CLI and skip the UI, by running `xpander agent new` and following the wizard. Install the xpander CLI by running `npm install -g xpander-cli`
+</Tip>
+    <Frame caption="The Agent Workbench is used to control and test the agent backend">
+    ![Agent Workbench](/images/workbench.png)
+    </Frame>
+
+
+  </Step>
+
+  <Step title="Download and customize your agent code">
+   The `init` command is used to download the entire agent code to your local machine, pre-scaffolded with the desired framework (runtime environment - i.e. Agno), as well as the configuration of the agent.
+
+   <Note>
+   Get your Agent ID from the Workbench URL or from the `Connect` tab in the Workbench.
+   </Note>
+
+    ```bash
+    # Install the xpander CLI
+    npm install -g xpander-cli
+
+    # Initialize your agent project
+    xpander agent init "your-agent-id"
+    ```
+
+  </Step>
+
+  <Step title="Add your business logic">
+  By editing your agent's code, you can add your own business logic, workflows and functions, or external API calls - giving you full control over how your agent behaves.
+<Note>
+  The `@on_task` decorator registers your function as an event handler that processes incoming tasks from Slack, WebUI, or webhooks. 
+
+  The `@register_tool` decorator makes your custom functions available to the AI agent, allowing it to call your business logic when needed. 
+  
+     Read more about these decorators in the [Events](/API%20reference/events) and [Tools](/API%20reference/tools) sections of the API Reference.
+  </Note>
+    ```python Agent Code
+    from xpander_sdk import Backend, on_task, Task, register_tool
+    from agno.agent import Agent
+
+    @register_tool  # Register local tools
+    def weather_check(location: str) -> str:
+        """Check weather for a location"""
+        return f"Weather in {location}: Sunny, 25°C"
+
+    @on_task
+    def handle_request(task: Task):
+        backend = Backend(task.configuration)
+        agent = Agent(**backend.get_args())  # Gets remote tools + your local tools
+        
+        result = agent.arun(message=task.to_message())
+        task.result = result.content
+        return task
+    ```
+  </Step>
+
+  <Step title="Test locally">
+    Test your agent in real-time by running it locally. The development server connects to your xpander backend and routes all incoming requests (Slack, WebUI, webhooks) to your local machine for instant feedback and debugging.
+
+    ```bash Local Development
+    # Start local development server
+    xpander dev
+    
+    # Or run with debug logging
+    xpander dev --debug
+    ```
+
+    ```text Development Output
+    DEBUG    | Events initialised 
+    INFO     | Listener started; waiting for events…
+    INFO     | Agent 'Support AI Engineer' chat: https://amaranth-mammal.agents.xpander.ai | builder: https://app.xpander.ai/agents/4b4cf37c-53ae-4280-8b96-844ed13bea6c
+    ```
+  </Step>
+
+  <Step title="Deploy to your environment">
+    ```bash Deployment
+    # Deploy the agent to the xpander cloud
+    xpander deploy
+    ```
+
+    Your agent is now live with automatic scaling, monitoring, and all human interfaces (Slack, WebUI, webhooks) configured!
+  </Step>
+</Steps>
+
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="AI Model Configuration" icon="brain" href="/user-guide/backend-configuration/ai-model">
+    Learn more about configuring AI models for your agents
+  </Card>
+  <Card title="Examples" icon="code" href="/Examples">
+    Explore real-world agent examples and templates
+  </Card>
+  <Card title="API Reference" icon="book" href="/API reference">
+    Complete SDK and API documentation
+  </Card>
+  <Card title="Connectors" icon="plug" href="/connectors">
+    Browse available MCP connectors
+  </Card>
+</CardGroup>

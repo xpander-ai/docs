@@ -1,0 +1,130 @@
+---
+title: "Introduction"
+description: "xpander.ai is a backend-as-a-service platform for building and deploying AI agents while making your infrastructure invisible. Developers focus purely on business logic with full access to the agent logic and framework, while xpander handles all the operational complexity - MCP Tools, agent memory and storage, workbench development, automated CI/CD, human interfaces for agent triggering, and testing environments."
+icon: "sparkles"
+mode: "wide"
+---
+
+Teams use xpander.ai to **build Agents as products**. That means they don’t just create one-off automations or single-use scripts. Instead, they use xpander to build AI Agents that are:
+
+- **Reusable** – packaged with functionality that can be leveraged across use cases and teams.  
+- **Deployed** – running reliably in production, not just in notebooks.  
+- **Integrated** – accessible via APIs, MCP and A2A, Slack, and more.
+- **Maintained** – versioned, monitored, and continuously improved like any software product.  
+- **Scoped for others** – usable across teams or externally, with clear access and governance in place.
+
+Some examples include:
+
+- **Simple tool calling Agents**: Agents with tools and instructions
+- **Knowledge Agents**: Agents with knowledge bases and storage  
+- **Reasoning Agents**: Agents with memory and reasoning capabilities
+- **Autonomous Agents**: Agents that don't require user interactions and powered by scheduled tasks and events
+- **Multi-Agent Systems**: Complex multi-agent systems that work together on achieving tasks
+- 🧠**AI Employees**: Production-grade agents designed to behave like software-powered teammates and can include all of the above.
+
+## Code Examples
+
+<CodeGroup>
+
+```python agent_without_backend.py
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+
+agno_agent = Agent(model=OpenAIChat(api_key="your-openai-key"))
+agno_agent.print_response(message="What's your role?")
+agno_agent.print_response(message="What did I ask you?")
+```
+
+```python agent_with_backend.py
+from xpander_sdk import Backend
+from agno.agent import Agent
+
+backend = Backend()
+agno_agent = Agent(**backend.get_args())
+agno_agent.print_response(message="What's your role?")
+agno_agent.print_response(message="What did I ask you?")
+```
+
+</CodeGroup>
+
+
+<CodeGroup>
+
+```txt agent_without_backend.py
+$ python without_backend.py
+
+User: What's your role?
+
+Agent: I serve as an AI developed by OpenAI, designed to assist with a 
+wide range of inquiries and tasks. My role involves providing information, 
+answering questions, generating creative content, assisting with 
+problem-solving, and offering general guidance across various topics.
+
+User: What did I ask you?
+
+Agent: I'm sorry, but I don't have the ability to recall past 
+interactions or questions you might have asked. Can you please 
+remind me or ask your question again?
+```
+
+```txt agent_with_backend.py
+$ python with_backend.py
+
+User: What's your role?
+
+Agent: I am the Support AI Engineer. My primary role is to provide 
+precise, technical assistance and solutions to resolve user problems 
+within an organizational context. If you have a technical issue or 
+need support, please let me know how I can assist you!
+
+User: What did I ask you?
+
+Agent: You asked, "What's your role?"
+```
+
+</CodeGroup>
+
+## What the Backend Provides
+
+The Backend automatically provides memory, custom instructions, model settings, tools, and storage - all configured through xpander.ai's platform.
+
+All agents in xpander.ai have a complete agent lifecycle with CI/CD pipelines, event triggers that can be configured with Slack, WebUI, MCP, and webhooks - all without infrastructure setup and available out of the box. The Workbench allows you to customize the agent backend and test the agent in real-time.
+
+
+
+## Dive Deeper
+
+xpander is built for production-grade AI agent development. Learn more about the platform capabilities:
+
+<CardGroup cols={3}>
+  <Card title="Quick Start" icon="rocket" href="/user-guide/quick-start">
+    Get started with your first agent in 5 steps
+  </Card>
+  <Card title="AI Model Configuration" icon="brain" href="/user-guide/backend-configuration/ai-model">
+    Configure and manage AI models for your agents
+  </Card>
+  <Card title="System Prompts" icon="message" href="/user-guide/backend-configuration/system-prompt">
+    Define your agent's personality and behavior
+  </Card>
+  <Card title="Tools & Connectors" icon="plug" href="/user-guide/backend-configuration/connectors">
+    Integrate with external services and APIs
+  </Card>
+  <Card title="Agent Memory" icon="brain-circuit" href="/user-guide/backend-configuration/agent-memory">
+    Configure persistent memory and conversation history
+  </Card>
+  <Card title="Slack Integration" icon="slack" href="/user-guide/task-sources/slack">
+    Deploy agents to Slack workspaces
+  </Card>
+  <Card title="Web Interface" icon="globe" href="/user-guide/task-sources/web-ui">
+    Create professional web interfaces
+  </Card>
+  <Card title="MCP Integration" icon="bridge" href="/user-guide/task-sources/mcp">
+    Connect MCP clients like Claude Desktop
+  </Card>
+  <Card title="Webhooks" icon="webhook" href="/user-guide/task-sources/webhooks">
+    Trigger agents from external systems
+  </Card>
+  <Card title="API Reference" icon="code" href="/API reference">
+    Complete SDK and API documentation
+  </Card>
+</CardGroup>

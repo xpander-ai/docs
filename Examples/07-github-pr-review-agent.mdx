@@ -1,0 +1,379 @@
+---
+title: "GitHub PR Review Agent"
+description: "Build an AI agent that reviews pull requests, generates summaries, scores code quality, notifies Slack, and auto-merges when safe"
+icon: "github"
+---
+
+<Note>
+  **Tutorial Summary**
+
+  - **Goal**: Build a PR Review agent that analyses code changes, posts summaries to Slack, and auto-merges approved PRs
+  - **Estimated Time**: 30–40 minutes
+  - **Prerequisites**: Python 3.10+, Xpander SDK, Agno framework, GitHub App token, Slack bot token, Nebius/OpenAI key
+</Note>
+
+Large pull requests slow teams down and hide critical issues. Let's combine **Xpander.ai** (production-ready backend) with the **Agno** agent framework to create a fully-automated **PR Review Agent**.
+
+## 🗺️ What We're Building
+
+<Frame>
+  <video autoPlay loop playsInline controls allowFullScreen className="w-full aspect-video" src="https://assets.xpanderai.io/GitHub_PR_Review_Agent_Demo.mp4" />
+</Frame>
+
+Our agent will:
+
+- **Fetch PR data** from GitHub API
+- **Analyse code changes** and generate readable summaries
+- **Score PRs** based on size, complexity, and best practices
+- **Send notifications** to Slack with review results
+- **Auto-merge** approved PRs that meet quality criteria
+
+<Frame>
+  ![Xpander Dashboard](/images/examples/github-pr-review/Screenshot_2025-07-11_at_20.34.28.png)
+</Frame>
+
+## 🛠️ Prerequisites
+
+**Environment Setup:**
+- Python 3.10+
+- **xpander-sdk** – main SDK for interacting with Xpander.ai agents
+- **agno** – agent framework for orchestration and memory
+- **python-dotenv**, **slack-sdk**, **PyGithub** – integration libraries
+
+**API Keys Required:**
+- **GitHub App Token** – for PR data access
+- **Slack Bot Token** – for team notifications
+- **Nebius AI Studio** or **OpenAI** – for LLM inference
+- **Xpander.ai Credentials** – for agent configuration
+
+<Frame>
+  ![Agent SDK panel](/images/examples/github-pr-review/Screenshot_2025-07-14_at_12.31.16.png)
+</Frame>
+
+Create your `xpander_config.json`:
+
+```json
+{
+  "organization_id": "<YOUR_ORG_ID>",
+  "api_key": "<YOUR_XPANDER_API_KEY>",
+  "agent_id": "<YOUR_AGENT_ID>"
+}
+```
+
+## 🧩 Core Components
+
+Our agent consists of these key files:
+
+- **`pr_tools.py`** – Main tool that handles PR analysis workflow
+- **`agno_agent.py`** – Orchestrator using Agno framework
+- **`pr_review.py`** – Core logic for summarizing diffs and scoring
+- **`slack.py`** – Slack integration for notifications
+- **`xpander_handler.py`** – Production event handler
+- **`main.py`** – CLI interface for testing
+
+## ✍️ Step 1: Create the PR Analysis Tool
+
+Create `tools/pr_tools.py`:
+
+```python
+from agno.tools import tool
+from github import Github
+from core.pr_review import summarize_diff, score_pr, generate_action_items, final_decision
+from core.slack import send_slack_message
+import os
+
+@tool(
+    name="PRReviewTool",
+    description="Analyze a GitHub PR, generate summary, score, and auto-merge if approved.",
+    show_result=True,
+    stop_after_tool_call=True
+)
+def review_pr(pr_url: str) -> dict:
+    github_token = os.getenv("GITHUB_TOKEN")
+    
+    # Connect to GitHub and fetch PR data
+    g = Github(github_token)
+    repo_name, pr_number = extract_repo_and_number(pr_url)
+    repo = g.get_repo(repo_name)
+    pr = repo.get_pull(pr_number)
+    
+    # Analyze the PR
+    summary = summarize_diff(pr.get_files())
+    score = score_pr(pr)
+    actions = generate_action_items(pr)
+    decision = final_decision(score)
+    
+    # Auto-merge if approved
+    merge_status = "Skipped"
+    if decision == "✅ Approve":
+        try:
+            pr.merge(commit_message="Auto-merged by PR Review Agent ✅")
+            merge_status = "Success"
+        except Exception as e:
+            merge_status = f"Failed: {str(e)}"
+    
+    # Send Slack notification
+    slack_msg = format_slack_message(repo_name, pr_number, pr.title, score, summary, actions, decision, merge_status)
+    send_slack_message(slack_msg)
+    
+    return {
+        "summary": summary,
+        "score": score,
+        "decision": decision,
+        "merge_status": merge_status
+    }
+```
+
+## ✍️ Step 2: Build the Core Review Logic
+
+Create `core/pr_review.py`:
+
+```python
+import sqlite3
+
+def summarize_diff(pr_files) -> str:
+    if not pr_files:
+        return "No files changed in this PR."
+    
+    summary_lines = []
+    for f in pr_files:
+        summary_lines.append(
+            f"📄 **{f.filename}**\n"
+            f"- ➕ {f.additions} additions\n"
+            f"- ➖ {f.deletions} deletions\n"
+        )
+    return "\n".join(summary_lines)
+
+def score_pr(pr):
+    score = 10
+    if pr.additions > 500:
+        score -= 2
+    if pr.deletions > pr.additions:
+        score -= 1
+    if not pr.body:
+        score -= 1
+    return max(score, 0)
+
+def generate_action_items(pr):
+    items = []
+    if "fix" in pr.title.lower() and "test" not in pr.title.lower():
+        items.append("Add test cases for the fix.")
+    if pr.additions > 1000:
+        items.append("Break the PR into smaller parts.")
+    return items
+
+def final_decision(score):
+    return "✅ Approve" if score >= 7 else "❌ Push Back"
+```
+
+## ✍️ Step 3: Set Up Slack Integration
+
+Create `core/slack.py`:
+
+```python
+import os
+import requests
+import json
+
+def send_slack_message(text: str):
+    slack_token = os.getenv("SLACK_BOT_TOKEN")
+    slack_channel = os.getenv("SLACK_CHANNEL_ID")
+    
+    headers = {
+        "Authorization": f"Bearer {slack_token}",
+        "Content-Type": "application/json"
+    }
+    
+    payload = {
+        "channel": slack_channel,
+        "text": text,
+        "unfurl_links": False
+    }
+    
+    response = requests.post(
+        "https://slack.com/api/chat.postMessage",
+        headers=headers,
+        data=json.dumps(payload)
+    )
+    
+    return response.json()
+```
+
+## ✍️ Step 4: Create the Agent Orchestrator
+
+Create `orchestrator/agno_agent.py`:
+
+```python
+from agno.agent import Agent
+from agno.models.nebius import Nebius
+from agno.memory.v2.db.sqlite import SqliteMemoryDb
+from agno.memory.v2.memory import Memory
+from agno.storage.sqlite import SqliteStorage
+from agno.tools.thinking import ThinkingTools
+from tools.pr_tools import review_pr
+import os
+
+class PRReviewOrchestrator:
+    def __init__(self, agent_backend):
+        self.agent_backend = agent_backend
+        self.agent = None
+        self.tools = [ThinkingTools(add_instructions=True), review_pr]
+        
+        # Set up memory and storage
+        self.memory = Memory(
+            model=Nebius(id="Qwen/Qwen3-235B-A22B", api_key=os.getenv("NEBIUS_API_KEY")),
+            db=SqliteMemoryDb(table_name="user_memories", db_file="agent_state.db")
+        )
+        self.storage = SqliteStorage(table_name="agent_sessions", db_file="agent_state.db")
+    
+    async def run(self, message: str, user_id: str, session_id: str, cli: bool = False):
+        if not self.agent:
+            self.agent = Agent(
+                model=Nebius(id="Qwen/Qwen3-235B-A22B", api_key=os.getenv("NEBIUS_API_KEY")),
+                tools=self.tools,
+                memory=self.memory,
+                storage=self.storage,
+                session_id=session_id,
+                user_id=user_id
+            )
+        
+        return await self.agent.arun(message, stream=False)
+```
+
+<Tip>
+The orchestrator manages conversation context, tool execution, and memory across sessions. Agno handles the complex coordination between these components automatically.
+</Tip>
+
+## ✍️ Step 5: Add Production Event Handler
+
+Create `xpander_handler.py`:
+
+```python
+import json
+import asyncio
+from xpander_utils.events import XpanderEventListener, AgentExecutionResult
+from xpander_utils.sdk.adapters import AgnoAdapter
+from orchestrator.agno_agent import PRReviewOrchestrator
+from pathlib import Path
+
+# Load configuration
+CFG_PATH = Path("xpander_config.json")
+xpander_cfg = json.loads(CFG_PATH.read_text())
+
+# Initialize backend and orchestrator
+xpander_backend = asyncio.run(
+    asyncio.to_thread(AgnoAdapter, agent_id=xpander_cfg["agent_id"], api_key=xpander_cfg["api_key"])
+)
+agno_agent_orchestrator = PRReviewOrchestrator(xpander_backend)
+
+async def on_execution_request(execution_task) -> AgentExecutionResult:
+    try:
+        await asyncio.to_thread(xpander_backend.agent.init_task, execution=execution_task.model_dump())
+        
+        agent_response = await agno_agent_orchestrator.run(
+            execution_task.input.text,
+            execution_task.input.user.id,
+            execution_task.memory_thread_id
+        )
+        
+        return AgentExecutionResult(result=agent_response.content, is_success=True)
+    except Exception as e:
+        return AgentExecutionResult(result=str(e), is_success=False)
+
+# Register the handler
+listener = XpanderEventListener(**xpander_cfg)
+listener.register(on_execution_request=on_execution_request)
+```
+
+## ✍️ Step 6: Test the Agent
+
+Create `main.py` for CLI testing:
+
+```python
+import asyncio
+import json
+from pathlib import Path
+from orchestrator.agno_agent import PRReviewOrchestrator
+from xpander_utils.sdk.adapters import AgnoAdapter
+
+async def main():
+    cfg_path = Path("xpander_config.json")
+    xpander_cfg = json.loads(cfg_path.read_text())
+    
+    xpander_backend = AgnoAdapter(
+        agent_id=xpander_cfg["agent_id"],
+        api_key=xpander_cfg["api_key"]
+    )
+    
+    orchestrator = PRReviewOrchestrator(xpander_backend)
+    
+    while True:
+        message = input("\nYou: ")
+        if message.lower() in ["exit", "quit"]:
+            break
+        
+        response = await orchestrator.run(
+            message=message,
+            user_id="user123",
+            session_id="session456",
+            cli=True
+        )
+        
+        print(f"Agent: {response.content}")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+## 🧪 Testing Your Agent
+
+1. **Start the CLI interface:**
+   ```bash
+   python main.py
+   ```
+
+2. **Test with a PR URL:**
+   ```
+   You: Please review this PR: https://github.com/user/repo/pull/123
+   ```
+
+3. **Run the production handler:**
+   ```bash
+   python xpander_handler.py
+   ```
+
+## 📈 Sample Output
+
+<Frame>
+  ![Agent processing](/images/examples/github-pr-review/Screenshot_2025-07-14_at_13.27.17.png)
+</Frame>
+
+<Frame>
+  ![Slack notification](/images/examples/github-pr-review/Screenshot_2025-07-14_at_13.13.35.png)
+</Frame>
+
+The agent will:
+- Generate a detailed PR summary with file changes
+- Assign a quality score (0-10)
+- Suggest actionable improvements
+- Auto-merge if score ≥ 7
+- Send a formatted summary to your Slack channel
+
+## 🎯 Final Thoughts
+
+You've built a production-ready PR Review Agent that:
+
+- **Automates repetitive review tasks** without removing human oversight
+- **Maintains consistency** across team reviews with standardized scoring
+- **Speeds up workflows** by handling safe merges automatically
+- **Keeps teams informed** through real-time Slack notifications
+
+This foundation can be extended with custom rules, integration with CI/CD pipelines, or additional quality metrics based on your team's needs.
+
+**Next Steps:**
+- Add custom scoring rules for your codebase
+- Integrate with your CI/CD pipeline
+- Set up webhook triggers for automatic reviews
+- Customize Slack message formatting for your team
+
+For more advanced agent patterns, explore the [Xpander.ai documentation](https://docs.xpander.ai/).

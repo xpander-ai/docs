@@ -1,0 +1,178 @@
+---
+title: "Knowledge Bases Module Reference"
+description: "Complete API reference for the Knowledge Bases module including all classes, methods, properties, and parameters"
+icon: "database"
+mode: "wide"
+---
+
+## Introduction
+
+The **Knowledge Bases Module** provides comprehensive functionality for managing knowledge repositories and performing semantic searches within the xpander.ai platform.
+
+## Overview
+
+In this module, you can:
+
+- Create and manage knowledge bases for document storage
+- Add documents from URLs to knowledge repositories
+- Perform semantic searches across document collections
+- Delete and manage knowledge base lifecycle
+- Handle both synchronous and asynchronous operations
+
+## Examples
+
+### Creating Knowledge Bases
+
+This example demonstrates how to create new knowledge bases with both asynchronous and synchronous approaches.
+
+#### Asynchronous Example
+
+Using `acreate()` to create knowledge bases asynchronously:
+
+```python
+from xpander_sdk import KnowledgeBases
+
+kbs = KnowledgeBases()
+kb = await kbs.acreate(
+    name="Product Documentation",
+    description="Knowledge base for product documentation and guides"
+)
+print(f"Created knowledge base: {kb.name} (ID: {kb.id})")
+```
+
+#### Synchronous Example
+
+Using `create()` to create knowledge bases synchronously:
+
+```python
+from xpander_sdk import KnowledgeBases
+
+kbs = KnowledgeBases()
+kb = kbs.create(
+    name="Product Documentation",
+    description="Knowledge base for product documentation and guides"
+)
+print(f"Created knowledge base: {kb.name} (ID: {kb.id})")
+```
+
+### Listing Knowledge Bases
+
+Retrieve all available knowledge bases in your organization.
+
+#### Asynchronous Example
+
+```python
+kbs_list = await kbs.alist()
+for kb in kbs_list:
+    print(f"Knowledge Base: {kb.name} (ID: {kb.id})")
+    print(f"Type: {kb.type}")
+```
+
+#### Synchronous Example
+
+```python
+kbs_list = kbs.list()
+for kb in kbs_list:
+    print(f"Knowledge Base: {kb.name} (ID: {kb.id})")
+    print(f"Type: {kb.type}")
+```
+
+### Adding Documents
+
+Add documents to knowledge bases from URLs.
+
+#### Asynchronous Example
+
+```python
+documents = await kb.aadd_documents(
+    document_urls=[
+        "https://example.com/docs/user-guide.pdf",
+        "https://example.com/docs/API reference.md"
+    ],
+    sync=True
+)
+print(f"Added {len(documents)} documents to knowledge base")
+```
+
+#### Synchronous Example
+
+```python
+documents = kb.add_documents(
+    document_urls=[
+        "https://example.com/docs/user-guide.pdf",
+        "https://example.com/docs/API reference.md"
+    ],
+    sync=True
+)
+print(f"Added {len(documents)} documents to knowledge base")
+```
+
+### Searching Knowledge Bases
+
+Perform semantic searches across document collections.
+
+#### Asynchronous Example
+
+```python
+search_results = await kb.asearch("authentication methods")
+for result in search_results:
+    print(f"Score: {result.score:.3f}")
+    print(f"Content: {result.content[:200]}...")
+    print("---")
+```
+
+#### Synchronous Example
+
+```python
+search_results = kb.search("authentication methods")
+for result in search_results:
+    print(f"Score: {result.score:.3f}")
+    print(f"Content: {result.content[:200]}...")
+    print("---")
+```
+
+### Deleting Knowledge Bases
+
+Remove knowledge bases when they're no longer needed.
+
+#### Asynchronous Example
+
+```python
+await kb.adelete()
+print(f"Knowledge base {kb.name} has been deleted")
+```
+
+#### Synchronous Example
+
+```python
+kb.delete()
+print(f"Knowledge base {kb.name} has been deleted")
+```
+
+---
+
+Continue to the [Knowledge Bases API Reference](/API reference/knowledge/API reference) for detailed documentation on classes and methods.
+
+## Related Documentation
+
+<CardGroup cols={2}>
+  <Card title="Agents Module" icon="robot" href="/API reference/agents">
+    Agent interaction with knowledge bases
+  </Card>
+  <Card title="Tools Repository" icon="wrench" href="/API reference/tools">
+    Tool integration and management
+  </Card>
+  <Card title="Configuration" icon="gear" href="/API reference/configuration">
+    SDK configuration and authentication
+  </Card>
+  <Card title="Tasks Module" icon="play" href="/API reference/tasks">
+    Task execution and management
+  </Card>
+</CardGroup>
+
+## Support
+
+For additional help:
+- Full [SDK Documentation](https://docs.xpander.ai)
+- Email: dev@xpander.ai
+

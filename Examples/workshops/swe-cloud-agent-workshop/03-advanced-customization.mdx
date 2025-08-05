@@ -1,0 +1,288 @@
+---
+title: "Module 3: Advanced Customization"
+description: "Add local tools and observability"
+icon: "gear"
+---
+
+<Note>
+In this module, you’ll gain full control over your agent’s behavior.
+
+You'll learn how to:
+
+- Add your own Python tools to expand what the agent can do
+- Add observability to your agent using AgentOps
+</Note>
+
+**Goal**: Customize agent loops, add Python tools, and run the agent locally with full observability
+
+## Step 1: Add a Local Tool to Star a GitHub Repository
+
+In this step, you’ll enable your agent to run a custom tool that stars a GitHub repository.
+
+Generate a GitHub Token
+
+First, create a GitHub personal access token:  
+👉 [Generate Token](https://github.com/settings/tokens/new)
+> ⏳ **Note**: Make sure to select full repo access scope in order to star a repo.
+
+<Frame>
+  <video
+    autoPlay
+    muted
+    loop
+    playsInline
+    controls
+    allowFullScreen
+    className="w-full aspect-video"
+    src="https://assets.xpanderai.io/examples/workshops/videos/create-github-token.mp4"
+  />
+</Frame>
+
+---
+
+Add the Token to Your `.env` File
+
+Update your `.env` file with the following:
+
+```env
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  # Your OpenAI key
+GITHUB_TOKEN=YOUR_TOKEN_GOES_HERE                  # Paste your GitHub token here
+```
+
+Update your requirements.txt to match
+
+```bash
+xpander-sdk
+openai
+python-dotenv
+requests
+```
+
+And run `pip install -r requirements.txt`
+
+---
+
+### 🧩 3. Define the Custom Tool
+
+Create a file under `tools/local_tools.py` with:
+
+```python
+import requests
+from os import getenv
+
+def star_github_repo(repo_full_name: str):
+    result = {"success": False, "message": ""}
+    try:
+        token = getenv("GITHUB_TOKEN")
+        if not token:
+            result["message"] = "Error: GITHUB_TOKEN not found in environment variables."
+            return result
+
+        url = f"https://api.github.com/user/starred/{repo_full_name}"
+        headers = {
+            "Authorization": f"token {token}",
+            "Accept": "application/vnd.github+json",
+        }
+
+        response = requests.put(url, headers=headers)
+        result["success"] = response.status_code == 204
+        result["message"] = "Done" if result["success"] else "Failed"
+    except Exception as e:
+        result["message"] = str(e)
+
+    return result
+
+local_tools = [
+    {
+        "declaration": {
+            "type": "function",
+            "function": {
+                "name": "star_github_repo",
+                "description": "Star a GitHub repository",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "repo_full_name": {
+                            "type": "string",
+                            "description": "Full name of the repository (e.g. xpander-ai/xpander.ai)"
+                        }
+                    },
+                    "required": ["repo_full_name"]
+                }
+            }
+        },
+        "fn": star_github_repo
+    }
+]
+
+# Helper mappings
+local_tools_list = [tool["declaration"] for tool in local_tools]
+local_tools_by_name = {tool["declaration"]["function"]["name"]: tool["fn"] for tool in local_tools}
+```
+
+## Step 2:  Add the local function to the agent
+
+Go to `myAgent.py` and add the tool to the import section:
+
+```python
+from xpander_sdk import ToolCallResult ## Add just ToolCallResult
+from tools.local_tools import local_tools_by_name, local_tools_list ## From your local_tools file
+```
+
+In line 46, right after `self.agent_backend.select_llm_provider(LLMProvider.OPEN_AI)` add:
+
+```python
+self.agent_backend.add_local_tools(local_tools_list)
+```
+
+and in line 95 add, right after `tool_calls = self.agent_backend.extract_tool_calls(response.model_dump())` add:
+
+```python
+if tool_calls[0].name == "star_github_repo":
+    result = local_tools_by_name[tool_calls[0].name](
+        **tool_calls[0].payload)
+    print(result)
+    tool_results = [
+        ToolCallResult(
+            function_name=tool_calls[0].name,
+            tool_call_id=tool_calls[0].tool_call_id,
+            is_success=result['success'],
+            is_local=True,
+            result=result['message'],
+            payload=tool_calls[0].payload
+        )
+    ]
+    self.agent_backend.add_tool_call_results(tool_results)
+    tool_calls.pop(0)
+```
+
+<Note>
+    This is a very simple implementation of AI calling local functions, designed to teach the basics of how generated payload passes to a function that sits on the local machine. For more robust, and dynamic naming with asynchronous runtime and logger, refer to docs in xpander-ai/xpander.ai repo.
+</Note>
+---
+
+## Step 3: Run the Agent
+
+Run the `python xpander_handler.py` and send the following prompt
+
+```md
+star repo xpander-ai/xpander.ai
+```
+
+![swe star repo result](/images/examples/workshops/swe-star-repo-result.png)
+
+---
+
+## Step 4: Add Observability with AgentOps
+
+AgentOps is a powerful observability platform designed specifically for monitoring and debugging AI agents. It provides real-time insights into your agent's behavior, performance metrics, and execution traces.
+
+### Getting Started with AgentOps
+
+First, sign up for an AgentOps account and get your API key:
+👉 [Get your API key from app.agentops.ai](https://app.agentops.ai)
+
+Update your `.env` file with your AgentOps API key:
+
+```env
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  # Your OpenAI key
+GITHUB_TOKEN=YOUR_TOKEN_GOES_HERE                  # Your GitHub token
+AGENTOPS_API_KEY=YOUR_AGENTOPS_KEY_HERE           # Add your AgentOps API key
+```
+
+Update your `requirements.txt` to include AgentOps:
+
+```bash
+xpander-sdk
+openai
+python-dotenv
+requests
+agentops
+```
+
+Run `pip install -r requirements.txt` to install the new dependency.
+
+### Integrate AgentOps into Your Agent
+
+The integration is remarkably simple. Add these two lines to the top of your `myAgent.py` file:
+
+```python
+import agentops
+agentops.init()  # Initialize AgentOps with your API key from environment
+```
+
+That's it! With just these two lines, AgentOps will automatically start tracking:
+- Agent execution traces
+- LLM calls and responses
+- Tool usage and results
+- Performance metrics
+- Error tracking and debugging information
+
+### AgentOps Code Example
+
+Here's how your `myAgent.py` imports section should look with AgentOps:
+
+```python
+import agentops
+agentops.init()  # Initialize AgentOps
+
+from xpander_sdk import XpanderClient, LLMProvider
+from xpander_sdk import Agent, Tasks
+from xpander_sdk import ToolCallResult
+from tools.local_tools import local_tools_by_name, local_tools_list
+from dotenv import load_dotenv
+import json
+```
+
+> **Note**: AgentOps will automatically instrument your agent without requiring any additional code changes!
+
+![agentops code snippet](/images/examples/workshops/agentops-code-snippet.png)
+---
+
+## Step 5: AgentOps MCP (Model Context Protocol)
+
+AgentOps also provides an MCP server that allows you to access your agent's observability data directly within your development environment. This enables seamless integration with tools like Cursor, allowing you to monitor and debug your agents without leaving your IDE.
+
+### Setting Up AgentOps MCP
+
+The AgentOps MCP server provides tools to:
+- Authenticate with your AgentOps project
+- Retrieve project information
+- Access trace and span data
+- View performance metrics
+- Debug agent executions in real-time
+
+![agentops cursor snippet](/images/examples/workshops/agentops-cursor.png)
+
+### Using AgentOps MCP in Cursor
+
+Once configured, you can interact with AgentOps directly through Cursor's chat interface. Simply ask about your agent's performance, request specific trace information, or debug issues - all without switching contexts.
+
+[Here's](https://docs.agentops.ai/v2/usage/mcp-server) a guide to set it up!
+
+![agentops cursor side snippet](/images/examples/workshops/agentops-cursor-side.png)
+
+The MCP integration allows you to:
+- Query trace information by ID
+- Analyze span metrics for performance optimization
+- Get real-time insights about your agent's behavior
+- Debug complex agent workflows
+
+### Example MCP Results
+
+Here's what you'll see when querying AgentOps data through the MCP interface:
+
+![agentops cursor chat snippet](/images/examples/workshops/agentops-cursor-chat.png)
+
+With AgentOps MCP, you have full observability of your agents integrated directly into your development workflow, making it easier than ever to build, debug, and optimize AI agents.
+
+---
+
+## Summary
+
+In this module, you've learned how to:
+- ✅ Add custom Python tools to extend your agent's capabilities
+- ✅ Integrate AgentOps for comprehensive agent observability
+- ✅ Use AgentOps MCP for seamless debugging within your IDE
+
+Your agent now has powerful local tools and full observability, giving you complete control and insight into its behavior!

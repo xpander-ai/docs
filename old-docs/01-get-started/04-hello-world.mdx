@@ -1,0 +1,114 @@
+---
+title: "Hello World Example"
+description: "Get started with xpander.ai as a backend for your AI agents"
+icon: "rocket"
+---
+
+## Quick Start: Add a Backend to Your Agent
+
+<Note>
+This guide provides a simple Hello World example to get you started with xpander's backend services.
+
+**You'll learn:**
+- How to connect to xpander's backend services
+- Basic agent execution flow
+- How to process tool calls
+- How to manage conversation state
+- Core SDK architecture and components
+</Note>
+
+This guide shows how to enhance any agent with xpander.ai's backend for memory, tools, and more.
+
+## 📦 Installation
+
+```bash
+# Python
+pip install xpander-sdk
+
+# Node.js
+npm install @xpander-ai/sdk
+
+# CLI (for agent creation)
+npm install -g xpander-cli
+```
+
+### Use xpander-cli to scaffold a new agent template
+
+```bash
+xpander login
+xpander agent new
+python xpander_handler.py  # Entry point for your agent's event handling
+```
+
+### Create Hello World Agent
+
+```python hello_world_agent.py
+# First, install the SDK if you haven't already
+# pip install xpander-sdk
+
+from xpander_sdk import Agents
+import os
+
+# Initialize the Agents module (backend-as-a-service)
+# Set these environment variables before running:
+# XPANDER_API_KEY and XPANDER_ORGANIZATION_ID
+agents = Agents()
+
+# Get your agent backend from xpander.ai
+# Create your agent first at https://app.xpander.ai
+agent_backend = agents.get(agent_id=os.getenv("XPANDER_AGENT_ID"))
+
+# Create and execute a task
+task = agent_backend.create_task(
+    prompt="Hello world! Tell me what you can do."
+)
+
+# Check task status and result
+print(f"Task Status: {task.status}")
+print(f"Task Result: {task.result}")
+
+# Or stream events for real-time monitoring
+for event in task.events():
+    print(f"Event: {event.type}")
+    if event.type == "task_finished":
+        print("Task completed!")
+        break
+print(f"Thread ID: {thread_id}")
+```
+
+
+### Deploy agent to the cloud
+
+```bash
+xpander deploy  # Deploys the Docker container to the cloud and runs it via xpander_handler.py
+xpander logs    # Streams logs locally from your configured agent
+```
+
+
+## What This Does
+
+The example above:
+
+1. Connects to xpander.ai's backend services
+2. Loads an agent you've created in the [Builder](https://app.xpander.ai)
+3. Adds a task for the agent to process
+4. Runs the agent with the OpenAI API
+5. Executes any tools the agent needs
+6. Returns the result with a thread ID for continuity
+
+See the full Hello World application [here](https://github.com/xpander-ai/xpander.ai/tree/main/Getting-Started/hello-worlds).
+
+## How the Backend Works
+
+The xpander.ai backend handles LLM calls, tool execution, and memory management automatically. You simply:
+
+1. **Create tasks** with simple prompts
+2. **Get results** immediately via task properties 
+3. **Monitor progress** with event streaming if needed
+4. **Manage agents** through the console at https://app.xpander.ai
+
+The backend automatically handles:
+- LLM provider selection and API calls
+- Tool execution and validation  
+- Memory management and context
+- Error handling and retries
