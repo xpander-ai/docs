@@ -1,20 +1,43 @@
 ---
 title: "Tools & Connectors"  
-description: "Add pre-built tools and integrations to your agent"
+description: "There are multiple ways to supply agentic tools to your agents running in xpander.
+"
 icon: "plug"
 ---
 
-There are two ways to add tools to your agents in xpander.
 
-**Pre-built Connectors** - Browse and select from 50+ available tools in the UI 
+## Pre-built Agent-Ready Connectors
 
-**Custom Tools** - Register your own functions directly in the code
+Browse and select from hundreds of pre-built tools in the Workbench, covering popular SaaS platforms like GitHub, Google Workspace, Jira, Asana, Notion, and more. These connectors are:
 
-Once you select tools in the UI, they become available to your agent automatically through the backend configuration.
+- **Ready to use** - No configuration required, just select and enable
+- **Production-tested** - Built and maintained by the xpander connector generator agent.
+- **Regularly updated** - Keep pace with API changes and new features
 
-<Frame>
-![alt text](/images/Connectors.png)
-</Frame>
+<Note>
+You can also generate your own connectors by providing an OpenAPI/Swagger specification. This allows you to create private connectors for your internal APIs or custom home-grown tools.
+</Note>
+
+## MCP (Model Context Protocol) Integration
+
+Connect tools to your agnets using the [Model Context Protocol](https://modelcontextprotocol.io):
+### 🔌 Remote MCPs
+Use a **remote MCP** to connect your agent to an MCP server hosted externally - either in your own infrastructure or by a SaaS provider.
+
+**How it works**: You provide a URL to a running MCP server and select which tools to attach to the agent. xpander will connect to it at runtime and allow your agent to call the selected tools.
+
+### 🧱 Local MCPs
+Use a **local MCP** to run the MCP server directly alongside your agent within the xpander cloud environment.
+
+**How it works**: You define the command that runs the MCP server process. xpander launches it as part of the agent's lifecycle, connects to it automatically, and provides the tools from the MCP server to the agent.
+
+
+
+## Custom Tools
+
+Register your own functions directly in the agent's code using the `@register_tool` decorator for complete control over tool behavior and integration.
+
+Once you configure any of these options in the UI or code, the tools become available to your agent automatically through the backend configuration.
 
 <CodeGroup>
 
@@ -42,11 +65,15 @@ agno_agent.print_response(message="Check my calendar")
 ```
 </CodeGroup>
 
-`agno_agent.tools` will now contain the functions from the cloud and the weather_check local tool.
+The agent now has access to both pre-built connectors (configured in the Workbench) and your custom tools. The `agno_agent.tools` property contains all available functions, seamlessly combining cloud-managed connectors with your local custom tools.
 
 ## Authentication
 
-xpander helps you streamline the authentication to the connectors. You can use the agent without configuring pre-defined auth or you can connect it with user authentication or integration user.
+xpander provides flexible authentication options for your connectors. You can choose between:
+
+- **Integration user authentication** - Agents that use this connector use the same predefined credentials (useful for shared services)
+- **End-user authentication** - Each user authenticates individually when the agent needs to access their data (supported on Slack agents)
+- **No authentication** - Use connectors that don't require authentication
 
 <Frame>
 ![alt text](/images/oauth.png)
@@ -54,53 +81,59 @@ xpander helps you streamline the authentication to the connectors. You can use t
 
 ## Tool Dependencies
 
-Dependencies force the agent to run one tool only after another has finished. In other words, Tool B will run only after Tool A completes, while Tool A can still run on its own. You can add multiple dependencies to a single tool.
+Tool dependencies control the execution order of your agent's tools. When you set a dependency, Tool B will only run after Tool A completes successfully, while Tool A can still run independently. This is useful for workflows where one tool needs data from another or if you want to make sure a tool never runs before a different tool is invoked.
 
-To create a dependency, click on the top connector of the tool that must wait (Tool B) and then click the bottom connector of the tool it depends on (Tool A).
+**How to set dependencies:**
+1. Click the top connection point of the tool that must wait (Tool B)
+2. Drag the line to the bottom connection point of the tool it depends on (Tool A)
+3. The dependency will be created automatically
+
+You can add multiple dependencies to a single tool, creating complex workflow chains.
+
+In the following example, we set the `Send Email` tool to only be available after the Calendly `Get Availability Schedule` tool is called.
 
 <Frame>
 ![alt text](/images/tool_dep.png)
 </Frame>
 
-In this example we set the email tool to be available only after checking Calendly.
 
 
 ## Tool Scheme Advanced Tab
 
-When you select an operation in the builder interface, you'll see several configuration tabs that control different aspects of the operation's behavior:
+Individual tool details and configurations are available in the Workbench by clicking the Settings button next to each tool.
 
 <Tabs>
   <Tab title="Details">
-    The Details tab shows the original, generated function calling description that defines the operation's purpose and behavior. This serves as a reference for the operation's intended use.
+    The Details tab shows the original, generated function calling description that defines the tool's purpose and behavior. This serves as a reference for the tool's intended use.
     
     <Frame>
-    ![Operation Details Tab](/static/images/screenshots/2025-03-15-22-57-40.png)
+    ![Tool Details Tab](/static/images/screenshots/2025-03-15-22-57-40.png)
     </Frame>
     
-    This information is especially useful when you're working with multiple similar operations and need to understand the exact purpose of each one.
+    This information is especially useful when you're working with multiple similar tools and need to understand the exact purpose of each one.
   </Tab>
   
   <Tab title="Instructions">
-    The Instructions tab allows you to add custom descriptions to provide more context about the operation. This is particularly useful for:
+    The Instructions tab allows you to add custom descriptions to provide more context about the tool. This is particularly useful for:
     
-    - Giving the AI agent specific guidance on when to use this operation
-    - Explaining nuances about the data returned by the operation
+    - Giving the AI agent specific guidance on when to use this tool
+    - Explaining nuances about the data returned by the tool
     - Setting expectations about rate limits or performance considerations
     - Providing examples of effective usage patterns
 
     <Frame>
-    ![Operation Instructions Tab](/static/images/screenshots/2025-03-15-22-58-05.png)
+    ![Tool Instructions Tab](/static/images/screenshots/2025-03-15-22-58-05.png)
     </Frame>
     
     <Tip>
-    Well-crafted instructions can significantly improve your agent's decision-making when choosing and using operations. Be specific about when the operation should and shouldn't be used.
+    Well-crafted instructions can significantly improve your agent's decision-making when choosing and using tools. Be specific about when the tool should and shouldn't be used.
     </Tip>
   </Tab>
   
   <Tab title="Input Schema">
-    The Input Schema tab lets you hard-code parameters to override values that would normally be generated by the AI. This gives you precise control over operation execution, which is useful for:
+    The Input Schema tab lets you hard-code parameters to override values that would normally be generated by the AI model during tool calling. This gives you precise control over tool execution, which is useful for:
     
-    - Enforcing specific parameter values regardless of AI decisions
+    - Enforcing specific parameter values regardless of the AI model decisions
     - Setting default values that the AI can override when needed
     - Restricting certain parameters to prevent undesired behaviors
     - Pre-configuring complex parameters that require specific formatting
@@ -110,7 +143,7 @@ When you select an operation in the builder interface, you'll see several config
     </Frame>
     
     <Accordion title="Example: Hard-coding API Keys">
-    If your operation requires an API key or authentication token, you can hard-code it in the Input Schema rather than having the AI provide it:
+    If your tool requires an API key or authentication token, you can hard-code it in the Input Schema rather than having the AI provide it:
     
     1. Find the parameter that requires the API key (often called `apiKey` or `authToken`)
     2. Click the parameter and enter your key as the default value
@@ -121,33 +154,31 @@ When you select an operation in the builder interface, you'll see several config
   </Tab>
   
   <Tab title="Output Schema">
-    The Output Schema tab lets you configure filtering that runs before payload data is returned to the AI. This is extremely valuable for:
+    The Output Schema tab lets you configure filtering that runs before payload data is returned to the AI model. This is extremely valuable for:
     
     - Reducing token usage by removing unnecessary data
     - Removing personally identifiable information (PII)
-    - Focusing the AI on the most relevant parts of the response
-    - Preventing the AI from seeing sensitive or irrelevant data
+    - Focusing the AI model on the most relevant parts of the response
+    - Preventing the AI model from seeing sensitive or irrelevant data
 
     <Frame>
     ![Output Schema Filtering](/static/images/screenshots/2025-03-15-22-59-03.png)
     </Frame>
     
     <Accordion title="How Output Filtering Works">
-    When you configure the Output Schema, you're essentially creating a template that determines which fields from the API response will be passed to the AI:
+    When you configure the Output Schema, you're essentially creating a template that determines which fields from the API response will be passed to the AI model:
     
     1. Expand the schema tree to see all available fields
-    2. Toggle fields on/off to include/exclude them from the AI's view
+    2. Toggle fields on/off to include/exclude them from the AI model's view
     3. For nested data structures, you can selectively include specific sub-fields
     
-    For example, if a LinkedIn profile response contains personal contact information you don't want the AI to access, you can exclude those specific fields while keeping professional details visible.
+    For example, if a LinkedIn profile response contains personal contact information you don't want the AI model to access, you can exclude those specific fields while keeping professional details visible.
     </Accordion>
   </Tab>
   
   <Tab title="Advanced">
-    The Advanced tab contains additional settings for specialized use cases:
-    
-    <Accordion title="Real-time Filtering for Large Payloads">
-    For operations that return large amounts of data, the Advanced tab provides real-time filtering capabilities. This allows the AI to perform in-place queries on large API payloads without consuming excessive tokens.
+  
+    For tools that return large amounts of data, the Advanced tab provides real-time filtering capabilities. This allows the AI model to perform in-place queries on large API payloads without consuming excessive tokens.
     
     <Frame>
     ![Advanced Filtering Options](/static/images/screenshots/2025-03-15-22-59-29.png)
@@ -158,7 +189,6 @@ When you select an operation in the builder interface, you'll see several config
     - APIs that return verbose responses with many fields
     - Data that requires complex filtering logic
     
-    The AI can specify search criteria at runtime, and only matching results will be returned, dramatically reducing token usage and improving response times.
-    </Accordion>
+    The AI model can specify search criteria at runtime, and only matching results will be returned, dramatically reducing token usage and improving response times.
   </Tab>
 </Tabs>

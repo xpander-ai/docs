@@ -5,17 +5,33 @@ icon: "brain-circuit"
 mode: "wide"
 ---
 
+Configure your agent's memory settings in the Workbench to control how it stores and recalls information.
+
 <Frame>
-![alt text](/images/storage.png)
+![Agent Memory Configuration](/images/storage.png)
 </Frame>
 
-Each agent includes a PostgreSQL database for persistent storage, accessible via `agno_agent.storage`.
+## Memory Types
 
-**Session Storage** - Automatic conversation history and state persistence (always enabled)
+Each agent includes a PostgreSQL database for persistent storage. Configure which memory types your agent supports using the toggles in the Workbench UI:
 
-**User Memories** - Long-term facts and preferences about users ("ChatGPT-style" memory)
+<CardGroup cols={3}>
+  <Card title="Session Storage" icon="database">
+    Automatic conversation history and state persistence (always enabled)
+  </Card>
+  <Card title="User Memories" icon="user">
+    Long-term facts and preferences about users ("ChatGPT-style" memory)
+  </Card>
+  <Card title="Session Summaries" icon="message">
+    Automatically summarizes long conversations for future reference
+  </Card>
+</CardGroup>
 
-**Session Summaries** - Automatically summarizes long conversations for future reference
+For advanced use cases, the storage is accessible programmatically via `agno_agent.storage`.
+
+## Using Memory in Your Code
+
+The memory configuration from the Workbench UI is automatically applied to your agent. Use the `user_id` parameter to access user-specific memories and conversation history:
 
 ```python
 from xpander_sdk import Backend

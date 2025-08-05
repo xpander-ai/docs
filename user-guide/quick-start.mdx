@@ -24,6 +24,10 @@ mode: "wide"
   <Step title="Download and customize your agent code">
    The `init` command is used to download the entire agent code to your local machine, pre-scaffolded with the desired framework (runtime environment - i.e. Agno), as well as the configuration of the agent.
 
+   <Note>
+   Get your Agent ID from the Workbench URL or from the `Connect` tab in the Workbench.
+   </Note>
+
     ```bash
     # Install the xpander CLI
     npm install -g xpander-cli
@@ -35,14 +39,14 @@ mode: "wide"
   </Step>
 
   <Step title="Add your business logic">
-  By editing your agent's code, you can add your own business logic, tools, workflows, or external API calls - giving you full control over how your agent behaves.
-
+  By editing your agent's code, you can add your own business logic, workflows and functions, or external API calls - giving you full control over how your agent behaves.
+<Note>
   The `@on_task` decorator registers your function as an event handler that processes incoming tasks from Slack, WebUI, or webhooks. 
 
   The `@register_tool` decorator makes your custom functions available to the AI agent, allowing it to call your business logic when needed. 
   
      Read more about these decorators in the [Events](/API%20reference/events) and [Tools](/API%20reference/tools) sections of the API Reference.
-  
+  </Note>
     ```python Agent Code
     from xpander_sdk import Backend, on_task, Task, register_tool
     from agno.agent import Agent
@@ -64,9 +68,14 @@ mode: "wide"
   </Step>
 
   <Step title="Test locally">
+    Test your agent in real-time by running it locally. The development server connects to your xpander backend and routes all incoming requests (Slack, WebUI, webhooks) to your local machine for instant feedback and debugging.
+
     ```bash Local Development
-    # Run agent locally for development
+    # Start local development server
     xpander dev
+    
+    # Or run with debug logging
+    xpander dev --debug
     ```
 
     ```text Development Output
@@ -74,8 +83,6 @@ mode: "wide"
     INFO     | Listener started; waiting for events…
     INFO     | Agent 'Support AI Engineer' chat: https://amaranth-mammal.agents.xpander.ai | builder: https://app.xpander.ai/agents/4b4cf37c-53ae-4280-8b96-844ed13bea6c
     ```
-
-    Events from WebUI and Slack are now routed to your local machine for real-time development and testing!
   </Step>
 
   <Step title="Deploy to your environment">

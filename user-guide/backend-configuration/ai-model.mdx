@@ -5,13 +5,15 @@ icon: "brain"
 mode: "wide"
 ---
 
-There are two ways to control the AI model of your agents in xpander.
+There are two ways to control the AI model of your agents running on xpander.
 
-**Centrally Managed** - xpander provides the API keys you configure in the UI (or Pay&Go) and client setup (recommended)
+**Centrally Managed** - xpander-provided API keys to the Model provider and model ID you select in the Agent Workbench (recommended).
 
-**Bring Your Own Model** - Use your own API keys with any LLM provider client directly in the code
+**Bring Your Own Model** - Use your own API keys with any LLM provider client directly in the code.
 
-Once you define in the UI the model provider, and the model name, whenever you run the agent a native class of that provider will be provided to the agent.
+<Note>
+When you configure the model provider and model name in the Agent Workbench UI, xpander automatically provides the appropriate native client class to your agent at runtime, handling all the provider-specific setup and configuration for you.
+</Note>
 
 <CodeGroup>
 
@@ -34,3 +36,17 @@ agno_agent.print_response(message="What's your role?")
 ```
 
 </CodeGroup>
+
+## Key Differences
+
+**Centrally Managed (Recommended):**
+- No API key management in your code
+- Model configuration handled automatically by xpander
+- Simpler setup with just `backend.get_args()`
+- Secure - API keys managed centrally
+
+**Bring Your Own Model:**
+- You provide your own API key directly in the code
+- Manual model configuration with `override` parameter
+- More control but requires API key management
+- Useful when you need to use your own API keys or custom model configurations
