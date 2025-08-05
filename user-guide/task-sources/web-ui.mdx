@@ -1,0 +1,44 @@
+---
+title: "Web Interface"
+description: "Create professional web interfaces for your agents"
+icon: "globe"
+mode: "wide"
+---
+
+Generate beautiful, production-ready web interfaces for your agents without frontend development. Full authentication, thread management, and customization built-in.
+
+<Frame>
+![alt text](/images/web-ui-example.png)
+</Frame>
+
+**Instant UI Generation** - Professional interface in minutes
+
+**Thread Management** - Multiple conversation threads per user
+
+**Built-in Authentication** - SSO, platform auth, or custom rules
+
+```python
+from xpander_sdk import Backend  
+from agno.agent import Agent
+
+backend = Backend()
+web_agent = Agent(**backend.get_args())
+# Web UI automatically generated when deployed
+```
+
+## Configuration
+
+Set up through the "Human Interfaces" tab in agent settings:
+
+- Title, description, and appearance
+- Conversation starters for new users  
+- Authentication method selection
+- Access restrictions and permissions
+
+Deploy generates a shareable URL for your agent's web interface. Can be embedded in existing applications using standard iframe.
+
+## Authentication Options
+
+- **Platform Auth**: Built-in user management with registration/login
+- **SSO Integration**: SAML/OAuth with enterprise providers  
+- **Custom Rules**: Role-based access and restrictions

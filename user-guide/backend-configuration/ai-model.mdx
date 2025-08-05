@@ -1,0 +1,36 @@
+---
+title: "AI Model"
+description: "Choose your LLM provider and manage API keys"
+icon: "brain"
+mode: "wide"
+---
+
+There are two ways to control the AI model of your agents in xpander.
+
+**Centrally Managed** - xpander provides the API keys you configure in the UI (or Pay&Go) and client setup (recommended)
+
+**Bring Your Own Model** - Use your own API keys with any LLM provider client directly in the code
+
+Once you define in the UI the model provider, and the model name, whenever you run the agent a native class of that provider will be provided to the agent.
+
+<CodeGroup>
+
+```python Bring Your Own Model
+from xpander_sdk import Backend
+from agno.agent import Agent, OpenAIChat
+
+backend = Backend()
+agno_agent = Agent(**backend.get_args(override={'model': OpenAIChat(api_key='your-openai-key')}))
+agno_agent.print_response(message="What's your role?")
+```
+
+```python Centrally Managed
+from xpander_sdk import Backend
+from agno.agent import Agent
+
+backend = Backend()
+agno_agent = Agent(**backend.get_args())
+agno_agent.print_response(message="What's your role?")
+```
+
+</CodeGroup>

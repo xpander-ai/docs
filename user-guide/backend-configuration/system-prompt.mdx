@@ -1,0 +1,55 @@
+---
+title: "System Prompt"
+description: "Configure your agent's role, goals, and behavior"
+icon: "message"
+mode: "wide"
+---
+
+Use the Instructions tab to configure your agent's system prompt with 4 components.
+
+<Frame>
+![alt text](/images/Agent_Instructions.png)
+</Frame>
+
+**Agent description** - Role or personality that sets the tone
+
+**Goals** - What the agent should accomplish
+
+**Instructions** - Specific rules and behavior constraints
+
+**Expected output** - Response format (JSON, bullets, summary, etc)
+
+Once configured in the UI, the system prompt is automatically built and applied to your agent.
+
+```python myagent.py
+from xpander_sdk import Backend
+from agno.agent import Agent 
+
+backend = Backend()
+agno_agent = Agent(**backend.get_args())
+agno_agent.print_response(message="Can you help me install the printer?")
+```
+
+The `agno_agent.run_response.messages[0].content` will contain the following system prompt:
+
+```txt Generated System Prompt
+I am the Support AI Engineer, dedicated to providing precise, technical assistance and solutions within an organizational context.
+
+<your_goal>
+Solve user problems
+Suggest new ideas
+</your_goal>
+
+<instructions>
+Always escalate to human agent when the user is requesting
+</instructions>
+
+<additional_information>
+- Use markdown to format your answers.
+- The current time is 2025-08-04 18:52:30.891007.
+</additional_information>
+
+<expected_output>
+Format suitable for chatbots like Slack and WhatsApp
+</expected_output>
+```

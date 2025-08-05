@@ -1,0 +1,61 @@
+---
+title: "Docs Agent (with Mintlify)"
+description: "A ready-to-use AI agent that answers questions using your Mintlify documentation as its live knowledge base."
+icon: "book"
+---
+
+The Docs Agent leverages Tool Calling through a built-in xpander.ai function to search and answer questions from Mintlify-powered documentation websites. This enables instant, accurate Q&A for your docs, right out of the box.
+
+## When to use this template
+
+Use this template when you want to provide instant, well-formatted answers from your documentation - whether for your internal team, your customer community, or shared Slack channels. With the [Slack Agents](/user-guide/task-sources/slack) feature, you can connect this AI Agent to your Slack workspaces or customer channels, delivering documentation answers directly where your users are. 
+
+You can further enhance the agent by adding capabilities such as opening support tickets, scheduling calls, or implementing any custom workflows your organization needs.
+
+## How to Deploy and Use the Docs Agent
+
+<Steps>
+<Step title="Import the Template">
+Click this link to open the Docs Agent template: [Docs Agent Template](https://app.xpander.ai/examples/examples/templates/68161edc-f81a-40c9-9b47-c228428a2ae9)
+
+> If you are not registered on the platform yet, you will be prompted to sign up.
+</Step>
+<Step title="Complete the Import Wizard">
+Go through the template import wizard. Once finished, you'll land in the **Agent Workbench** - a visual tool for configuring, testing, and running AI Agents.
+</Step>
+<Step title="Explore the Agent Configuration">
+Review and explore the different configurations of your new AI Agent, generated from the template.
+</Step>
+<Step title="Test the Agent">
+By default, the agent is set up to answer questions using [docs.xpander.ai](https://docs.xpander.ai). You can start testing it right away using the **Agent preview** section of the Workbench.
+![Screenshot](/static/images/screenshots/docs-agent-test.png)
+
+</Step>
+<Step title="Connect to Your Own Mintlify Docs">
+To make the agent work with your own Mintlify documentation:
+- Go to the **Tools** tab in the Agent Workbench.
+- Click the **Settings** button for the "Search Mintlify Docs" tool.
+- Select the **Input schema** tab.
+- Change the value of the **Subdomain** key to your own Mintlify domain (e.g., `docs.yourcompany.ai`) and click **Save**.
+- Use the Agent tester to prompt the agent and verify it works with your Mintlify docs page.
+
+![Screenshot](/static/images/screenshots/mintlify-subdomain-1.png)
+</Step>
+</Steps>
+
+## Next steps
+
+1. **Connect to Slack**  
+   Integrate your Docs Agent with Slack to provide instant documentation support directly in your team's workspace, community workspace, or joint channels with your customers. See the [Slack Agents](/user-guide/task-sources/slack) documentation for setup instructions.
+
+   ![Screenshot](/static/images/screenshots/connect-to-slack-01.png)
+
+2. **Further customize your agent**  
+   Add tools, integrations, modify instructions, and adjust any configuration using the powerful AI Workbench.
+
+3. **Need to customize with code?**  
+   Click the **Download code** button in the top right of the AI Workbench to export your agent and implement custom logic as needed.
+
+---
+
+Have questions or need help? Join our community on [Slack](https://join.slack.com/t/xpandercommunity/shared_invite/zt-2mt2xkxkz-omM7f~_h2jcuzFudrYtZQQ) or [Discord](https://discord.gg/CUcp4WWh5g)! 

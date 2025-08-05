@@ -1,0 +1,76 @@
+---
+title: "Agent State Basics"
+description: "Learn the fundamentals of agent state management"
+icon: "database"
+---
+
+xpander.ai's agent system uses a sophisticated state management approach that integrates various components. This guide explains the fundamental concepts of agent state and how to get started.
+
+## Core State Components
+
+xpander.ai's agent state consists of several key components:
+
+1. **Agent Configuration**: Core properties, instructions, and settings
+2. **Agent Graph System (AGS)**: Hierarchical constraints defining which operations can be used and in what order
+3. **Execution Context**: Current execution status and parameters
+4. **Memory**: Message history and contextual information
+5. **Tool State**: Current state of attached tools and operations
+
+Understanding these components is essential for building effective agents.
+
+## Initializing Agent State
+
+Start by connecting to an existing agent to access its state:
+
+```python
+from xpander_sdk import Agents
+import os
+
+# Initialize agents module (uses environment variables)
+agents = Agents()
+
+# Connect to an existing agent backend
+agent_id = os.environ.get('XPANDER_AGENT_ID', 'your-agent-id')
+agent_backend = agents.get(agent_id)
+print(f'Agent Backend: {agent_backend.id}')
+```
+
+## Basic Agent Execution
+
+Here's a simple example of running an agent:
+
+```python
+from xpander_sdk import Agents
+import os
+
+# Initialize agents module
+agents = Agents()
+
+# Get your agent backend
+agent_backend = agents.get(agent_id=os.environ.get("XPANDER_AGENT_ID"))
+
+# Create and execute a task
+task = agent_backend.create_task(prompt="Tell me about machine learning")
+
+# Check task status and result
+print(f"Task status: {task.status}")
+print(f"Task result: {task.result}")
+```
+
+## Updating Agent Configuration
+
+Agent configuration is managed through the xpander.ai console:
+
+1. Go to [https://app.xpander.ai](https://app.xpander.ai)
+2. Select your agent
+3. Update instructions, settings, and tools through the UI
+4. Changes are automatically deployed
+
+The SDK provides read-only access to agent properties:
+
+```python
+# View agent properties
+print(f"Agent Name: {agent_backend.name}")
+print(f"Agent ID: {agent_backend.id}")
+print(f"Is Active: {agent_backend.is_active}")
+```

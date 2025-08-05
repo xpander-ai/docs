@@ -1,0 +1,38 @@
+---
+title: "Slack Integration"
+description: "Deploy your agents directly to Slack workspaces"
+icon: "slack"
+mode: "wide"
+---
+
+Deploy agents to any Slack workspace with zero infrastructure. Agents can auto-engage in channels, handle files, and integrate with your existing workflows.
+
+<Frame>
+![alt text](/images/slack-integration.png)
+</Frame>
+
+**Auto-Engage** - Agents respond automatically based on conditions ("When user asks about stock price")
+
+**File Processing** - OCR images, transcribe audio, read PDFs automatically
+
+**Conversation Starters** - Predefined prompts to guide user interactions
+
+```python
+from xpander_sdk import Backend
+from agno.agent import Agent
+
+# Your agent automatically inherits Slack capabilities
+backend = Backend()
+slack_agent = Agent(**backend.get_args())
+```
+
+## Setup Options
+
+Configure Slack integration through the UI, then your agent gains native Slack features:
+
+- Auto-engage based on message content
+- Process multimedia (images, audio, PDFs)
+- Thread management and user context
+- Conversation starters for new users
+
+Visit [slack.xpander.ai](https://slack.xpander.ai/) to connect agents to Slack workspaces or deploy ready-made templates.

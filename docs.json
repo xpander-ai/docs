@@ -24,100 +24,80 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Documentation",
+        "tab": "User Guide",
         "groups": [
           {
-            "group": "Introduction",
-            "pages": ["docs/01-get-started/01-index"]
+            "group": "Getting Started",
+            "pages": [
+              "user-guide/index",
+              "user-guide/quick-start"            ]
           },
           {
-            "group": "Quickstart",
+            "group": "Backend Configuration",
             "pages": [
-              "docs/01-get-started/02-getting-started-00",
-              "docs/01-get-started/02-getting-started-01-workbench",
-              "docs/01-get-started/02-getting-started-02-cli"
+              "user-guide/backend-configuration/ai-model",
+              "user-guide/backend-configuration/system-prompt",
+              "user-guide/backend-configuration/connectors",
+              "user-guide/backend-configuration/agent-memory"
             ]
           },
           {
-            "group": "Backend for Agents",
+            "group": "Task Sources",
             "pages": [
-              "docs/01-get-started/03-instrument-agents",
-              "docs/01-get-started/04-hello-world"
-            ]
-          },
-          {
-            "group": "AI Agent Workbench",
-            "pages": [
-              "docs/02-agent-builder/01-adding-tools-to-agents",
-              "docs/02-agent-builder/02-agent-graph-system",
-              "docs/02-agent-builder/03-activity-view",
-              "docs/02-agent-builder/04-advanced-operation-settings",
-              "docs/02-agent-builder/05-agent-settings",
-              "docs/02-agent-builder/06-multi-agent-teams",
-              "docs/02-agent-builder/07-sequential-agent-teams"
-            ]
-          },
-          {
-            "group": "AI State Management",
-            "pages": [
-              "docs/03-ai-state-management/01-agent-state-basics",
-              "docs/03-ai-state-management/02-thread-management"
-            ]
-          },
-          {
-            "group": "Human Interfaces",
-            "pages": [
-              "docs/05-human-interfaces/02-slack-agents",
-              "docs/05-human-interfaces/03-webui",
-              "docs/05-human-interfaces/04-mcp",
-              "docs/05-human-interfaces/05-webhooks"
+              "user-guide/task-sources/slack",
+              "user-guide/task-sources/web-ui",
+              "user-guide/task-sources/mcp",
+              "user-guide/task-sources/webhooks"
             ]
           }
         ]
       },
       {
-        "tab": "Tutorials",
+        "tab": "Examples",
         "groups": [
           {
-            "group": "Tutorials",
+            "group": "Examples",
             "pages": [
-              "tutorials/index",
-              "tutorials/01-structured-output-agent",
-              "tutorials/02-hello-world-agent",
-              "tutorials/03-smart-support-agent",
-              "tutorials/04-outage-manager-agent",
-              "tutorials/05-supercharge-your-ide-with-mcp",
-              "tutorials/06-travel-expense-assistant",
-              "tutorials/07-github-pr-review-agent",
-              "tutorials/08-aws-cost-report-agent"
+              "Examples/index",
+              "Examples/01-simple-hello-world",
+              "Examples/03-smart-support-agent",
+              "Examples/04-outage-manager-agent",
+              "Examples/05-supercharge-your-ide-with-mcp",
+              "Examples/06-travel-expense-assistant",
+              "Examples/07-github-pr-review-agent",
+              "Examples/08-aws-cost-report-agent"
             ]
-          }
-        ]
-      },
-      {
-        "tab": "Workshops",
-        "groups": [
+          },
+          {
+            "group": "Templates",
+            "pages": [
+              "Examples/templates/01-index",
+              "Examples/templates/02-docs-agent-mintlify",
+              "Examples/templates/03-support-agent",
+              "Examples/templates/04-coding-agent-claude"
+            ]
+          },
           {
             "group": "Workshops",
             "pages": [
-              "workshops/index",
+              "Examples/workshops/index",
               {
                 "group": "A2A Custom Agents",
                 "pages": [
-                  "workshops/a2a-mcp-workshop/index",
-                  "workshops/a2a-mcp-workshop/01-first-coding-agent",
-                  "workshops/a2a-mcp-workshop/02-expand-agent-fleet",
-                  "workshops/a2a-mcp-workshop/03-serverless-manager-agent",
-                  "workshops/a2a-mcp-workshop/04-submit-application"
+                  "Examples/workshops/a2a-mcp-workshop/index",
+                  "Examples/workshops/a2a-mcp-workshop/01-first-coding-agent",
+                  "Examples/workshops/a2a-mcp-workshop/02-expand-agent-fleet",
+                  "Examples/workshops/a2a-mcp-workshop/03-serverless-manager-agent",
+                  "Examples/workshops/a2a-mcp-workshop/04-submit-application"
                 ]
               },
               {
                 "group": "SWE Cloud Agent",
                 "pages": [
-                  "workshops/swe-cloud-agent-workshop/index",
-                  "workshops/swe-cloud-agent-workshop/01-intro-cloud-swe-agents",
-                  "workshops/swe-cloud-agent-workshop/02-load-backend-template",
-                  "workshops/swe-cloud-agent-workshop/03-advanced-customization"
+                  "Examples/workshops/swe-cloud-agent-workshop/index",
+                  "Examples/workshops/swe-cloud-agent-workshop/01-intro-cloud-swe-agents",
+                  "Examples/workshops/swe-cloud-agent-workshop/02-load-backend-template",
+                  "Examples/workshops/swe-cloud-agent-workshop/03-advanced-customization"
                 ]
               }
             ]
@@ -125,53 +105,50 @@
         ]
       },
       {
-        "tab": "Templates",
-        "groups": [
-          {
-            "group": "Templates",
-            "pages": [
-              "templates/01-index",
-              "templates/02-docs-agent-mintlify",
-              "templates/03-support-agent",
-              "templates/04-coding-agent-claude"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "SDK Reference",
+        "tab": "API Reference",
         "groups": [
           {
             "group": "Overview",
-            "pages": ["sdk-reference/07-sdk/index"]
+            "pages": ["API reference/index"]
           },
           {
             "group": "Core Modules",
             "pages": [
-              "sdk-reference/07-sdk/agents/index",
-              "sdk-reference/07-sdk/tasks/index",
-              "sdk-reference/07-sdk/tools/index",
-              "sdk-reference/07-sdk/knowledge/index",
-              "sdk-reference/07-sdk/events/index"
+              "API reference/agents/index",
+              "API reference/tasks/index",
+              "API reference/tools/index",
+              "API reference/knowledge/index",
+              "API reference/events/index"
             ]
           },
           {
             "group": "API Reference",
             "pages": [
-              "sdk-reference/07-sdk/agents/api-reference/index",
-              "sdk-reference/07-sdk/tasks/api-reference/index",
-              "sdk-reference/07-sdk/tools/api-reference/index",
-              "sdk-reference/07-sdk/knowledge/api-reference/index",
-              "sdk-reference/07-sdk/events/api-reference/index",
-              "sdk-reference/07-sdk/configuration/index",
-              "sdk-reference/07-sdk/types",
-              "sdk-reference/07-sdk/exceptions"
+              "API reference/agents/api-reference/index",
+              "API reference/tasks/api-reference/index",
+              "API reference/tools/api-reference/index",
+              "API reference/knowledge/api-reference/index",
+              "API reference/events/api-reference/index",
+              "API reference/configuration/index",
+              "API reference/types",
+              "API reference/exceptions"
             ]
           }
         ]
       },
       {
-        "tab": "Connectors",
+        "tab": "Changelog",
+        "groups": [
+          {
+            "group": "Product Updates",
+            "pages": [
+              "changelog/product-updates"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "AI Connectors",
         "groups": [
           {
             "group": "Overview",
@@ -232,39 +209,29 @@
     "global": {
       "dropdowns": [
         {
-          "dropdown": "Documentation",
+          "dropdown": "User Guide",
           "icon": { "name": "book", "style": "regular" },
-          "href": "https://docs.xpander.ai/docs/01-get-started/02-getting-started-00"
+          "href": "https://docs.xpander.ai/user-guide"
         },
         {
-          "dropdown": "SDK Reference",
-          "icon": { "name": "code", "style": "regular" },
-          "href": "https://docs.xpander.ai/sdk-reference/07-sdk/index"
-        },
-        {
-          "dropdown": "Tutorials",
+          "dropdown": "Examples",
           "icon": { "name": "graduation-cap", "style": "regular" },
-          "href": "https://docs.xpander.ai/tutorials/index"
+          "href": "https://docs.xpander.ai/Examples/index"
         },
         {
-          "dropdown": "Workshops",
-          "icon": { "name": "school", "style": "regular" },
-          "href": "https://docs.xpander.ai/workshops/index"
+          "dropdown": "API Reference",
+          "icon": { "name": "code", "style": "regular" },
+          "href": "https://docs.xpander.ai/API reference/index"
         },
         {
-          "dropdown": "Templates",
-          "icon": { "name": "floppy-disk", "style": "regular" },
-          "href": "https://docs.xpander.ai/templates/index"
-        },
-        {
-          "dropdown": "Connectors",
-          "icon": { "name": "plug", "style": "regular" },
-          "href": "https://docs.xpander.ai/connectors/index"
-        },
-        {
-          "dropdown": "Release notes",
+          "dropdown": "Changelog",
           "icon": { "name": "note", "style": "regular" },
           "href": "https://docs.xpander.ai/changelog/product-updates"
+        },
+        {
+          "dropdown": "AI Connectors",
+          "icon": { "name": "plug", "style": "regular" },
+          "href": "https://docs.xpander.ai/connectors/index"
         }
       ],
       "anchors": [
@@ -280,7 +247,7 @@
         },
         {
           "anchor": "SDK Reference",
-          "href": "https://docs.xpander.ai/sdk-reference/07-sdk/index",
+          "href": "https://docs.xpander.ai/API reference/index",
           "icon": { "name": "code", "style": "regular" }
         },
         {

@@ -1,0 +1,48 @@
+---
+title: "Model Context Protocol"
+description: "Connect MCP clients like Claude Desktop to your agents"
+icon: "bridge"
+mode: "wide"
+---
+
+Connect MCP clients to your agents and tools. Three integration patterns: compose operations across connectors, trigger full agents, or expose individual connectors.
+
+<Frame>  
+![alt text](/images/mcp-diagram.png)
+</Frame>
+
+**MCP Composition** - Pick operations from multiple connectors for fine-grained control
+
+**Agent Triggers** - Run complete agents from Claude Desktop or other MCP clients
+
+**Individual Connectors** - Expose single tools (GitHub, Jira, etc.) to MCP clients
+
+```python
+from xpander_sdk import Backend
+from agno.agent import Agent
+
+backend = Backend()
+agent = Agent(**backend.get_args())
+# MCP URLs generated through UI for each integration type
+```
+
+## Configuration
+
+1. **MCP Composition**: Select specific operations from multiple connectors in MCP Servers section
+2. **Agent MCP**: Add MCP source in agent settings to generate trigger URL  
+3. **Connector MCP**: Enable MCP in individual connector settings
+
+Add to Claude Desktop config:
+
+```json
+{
+  "mcpServers": {
+    "xpander": {
+      "command": "npx",
+      "args": ["xpander-mcp-remote", "https://mcp.xpander.ai/your-url/"]
+    }
+  }
+}
+```
+
+<Warning>MCP URLs contain your API key. Treat as sensitive credentials.</Warning>

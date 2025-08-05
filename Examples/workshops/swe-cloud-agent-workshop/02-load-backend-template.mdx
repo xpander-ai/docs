@@ -1,0 +1,219 @@
+---
+title: "Module 2: SWE task management UI"
+description: "Use a lightweight ChatGPT-Codex style UI to submit a coding task to your SWE agent"
+icon: "desktop"
+---
+
+<Note>
+In this module, we deploy a custom UI that is similar to the capabilities you get with ChatGPT-Codex, connect it to Agent Backend, and we will submit development tasks while we explore how the agent is working.
+</Note>
+
+**Goal**: Build a full-stack coding agent (Frontend and Backend) and task it to write an application and send a PR completely autonomously
+
+## Step 1: GitHub Manual Fork
+
+To submit a PR with your generated app to the apps-by-agents repository, first fork the repo:
+
+1. Go to https://github.com/xpander-ai/apps-by-agents
+2. Fork the repo to your GitHub account
+
+## Step 2: Clone the frontend example app
+
+We’ll start by cloning and installing the pre-built UI:
+
+```bash
+git clone https://github.com/xpander-ai/coding-agent-frontend-example-app.git
+cd coding-agent-frontend-example-app
+npm install
+```
+
+## Step 3: Configure environment variables
+
+Copy the example .env file and populate it
+
+```bash
+mv .env.example .env
+```
+
+## Step 4: Connect the Frontend to the Agent Backend
+
+In the frontend application, go to the `.env` file and fill in the following:
+
+```env
+# API Key - Available in CLI output
+VITE_APP_API_KEY=your_api_key_here
+# Agent ID - Available in CLI output
+VITE_APP_AGENT_ID=your_agent_id_here
+# Organization ID - Available in the CLI output
+VITE_APP_ORGANIZATION_ID=your_organization_id_here
+```
+
+## Step 5: Start the frontend app
+
+Launch the demo app locally:
+
+```bash
+npm run dev
+```
+
+![Step 3 - npm run dev](/images/examples/workshops/swe-npm-run-dev.png)
+
+Then navigate to:
+
+```
+http://localhost:3000
+```
+
+Your AI Agent's task management demo app:
+![Step 3 - Open Browser](/images/examples/workshops/swe-blank-tasks-manager.png)
+
+<Note>
+  If you have already downloaded the Agent code using the xpander cli `xpander init`, ensure that xpander_handler.py is running. Otherwise, events will be routed to the serverless hosting.
+</Note>
+
+## Step 6: Send coding tasks
+
+Your local task management demo app is now connected to the SWE agent you deployed in the last module. Let's start using it.
+
+In the input field, submit one of the example prompts below
+
+<Note>
+In the Task management app Web UI, submit the prompt and mention your forked repo
+
+For example:
+
+"Add a simple, cool, and beautiful todo list app (HTML, CSS, JS) to `my-github-user-name/apps-by-agents` in one-shot, single commit."
+
+Your coding agent will push the app to your forked repo, afterwards you'll create a PR to the original repo.
+</Note>
+
+Feel free to be creative, but specify that it should be an (HTML, CSS, JS) app, and mention the address of your forked repo
+
+<Accordion title="Prompt Examples for apps-by-agents">
+
+### ✅ Todo List App
+```text
+Add a simple, cool, and beautiful todo list app (HTML, CSS, JS) to https://github.com/`<your fork address>` in one-shot, single commit.
+```
+
+### ⏱️ Pomodoro Timer
+
+```text
+Add a minimal Pomodoro timer app (HTML, CSS, JS) to https://github.com/`<your fork address>` in one-shot, single commit.
+```
+
+### 🌦️ Weather Dashboard
+
+```text
+Build a weather dashboard using OpenWeatherMap API (HTML, CSS, JS) and add it to https://github.com/`<your fork address>` in one-shot, single commit.
+```
+
+### 📝 Markdown Editor
+
+```text
+Create a simple markdown editor with live preview (HTML, CSS, JS) and save it in https://github.com/`<your fork address>` in one-shot, single commit.
+```
+
+### 🧮 Calculator App
+
+```text
+Generate a calculator app with keyboard support (HTML, CSS, JS) and store in https://github.com/`<your fork address>` in one-shot, single commit.
+```
+
+### 🌐 Landing Page
+
+```text
+Add a responsive landing page template with Tailwind CSS to https://github.com/`<your fork address>` in one-shot, single commit.
+```
+
+### 💬 Chatbot UI
+
+```text
+Create a basic chatbot UI (HTML, CSS, JS) with a placeholder for messages and append it to https://github.com/`<your fork address>` in one-shot, single commit.
+```
+
+### 🎨 Color Palette Generator
+
+```text
+Build a color palette generator that shows hex codes (HTML, CSS, JS) and commit to https://github.com/`<your fork address>` in one-shot, single commit.
+```
+
+### 📏 Unit Converter
+
+```text
+Develop a unit converter (length, weight, temperature) as a single-page app and push to https://github.com/`<your fork address>` in one-shot, single commit.
+```
+
+### ⌨️ Typing Speed Test
+
+```text
+Add a typing speed test app (HTML, CSS, JS) to https://github.com/`<your fork address>` in one-shot, single commit.
+```
+
+### 🃏 Memory Card Matching Game
+
+```text
+Create a memory card matching game (HTML, CSS, JS) and drop it into https://github.com/`<your fork address>` in one-shot, single commit.
+```
+
+</Accordion>
+
+<Frame>
+  <video autoPlay muted loop playsInline controls allowFullScreen className="w-full aspect-video" src="https://assets.xpanderai.io/examples/workshops/videos/swe-send-task.mp4" />
+</Frame>
+
+---
+
+## Step 7: Track task execution
+
+Click **View codex logs** to view real-time execution details and explore the logs.
+Pay attention to the way Codex manages and runs the agentic loop and the creation process of your app.
+
+> ⏳ **Note**: Task execution takes a few minutes - sit back, relax, and watch the agent work its magic. Codex may split the task into multiple sub-tasks that can take up to 15 minutes. If it takes more than 15 minutes, just let it run in the background and proceed with the rest of the workshop.
+
+<Frame>
+  <video autoPlay muted loop playsInline controls allowFullScreen className="w-full aspect-video" src="https://assets.xpanderai.io/examples/workshops/videos/swe-track-result.mp4" />
+</Frame>
+
+You’ll see:
+
+- **Top**: The original prompt or task
+- **Popup**: Logs and generated output from the agent
+- **Result**: Execution result
+- **Logs & Messages Buttons**: Execution messages logs & codex execution logs
+
+<Accordion title="How does this work?">
+
+  When you submit a task, the app uses the **xpander.ai SDK** (via a **Web Worker**) to create and run the task in the cloud - fully serverless.
+
+  The worker handles:
+  - Creating tasks → [`createTask()` in `workers/xpanderWorker.ts`](https://github.com/xpander-ai/coding-agent-frontend-example-app/blob/main/src/workers/xpanderWorker.ts#L79)
+  - Fetching task details and logs → [`useTask()` and `useLogs()` in `hooks/`](https://github.com/xpander-ai/coding-agent-frontend-example-app/tree/main/src/hooks)
+
+  The UI polls task status and updates in real time using **React Query**.  
+  You can see this in action inside:
+  - [`Dashboard`](https://github.com/xpander-ai/coding-agent-frontend-example-app/blob/main/src/pages/Dashboard.tsx): task list and creation
+  - [`TaskDetails`](https://github.com/xpander-ai/coding-agent-frontend-example-app/blob/main/src/pages/TaskDetails.tsx): real-time updates, logs, messages
+
+  The **Codex tool** streams logs to a centralized **Logstash** tied to your **account**.  
+  Logs are stored for a limited period and made available via the `logs.xpander.ai` micro-service.
+
+  The frontend fetches these logs through polling (every 2s) using the SDK inside a Web Worker.
+
+  💡 A task can include multiple threads - each representing a conversation or execution chain tied to your agent.
+</Accordion>
+
+Successful app creation
+
+![swe coding task result with pr](/images/examples/workshops/swe-coding-task-result-with-pr.png)
+
+<Note>
+Pay attention, your PR is targeting the fork and not xpander's repo
+</Note>
+
+## Summary and next steps
+
+Your SWE task management UI is now live and connected to the SWE agent hosted on xpander.ai.
+Through the UI, you instructed the agent to build an application and push it to the apps-by-agents repo.
+
+→ Proceed to [Module 3: Advanced customization](./03-advanced-customization)

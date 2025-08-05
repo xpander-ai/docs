@@ -135,7 +135,7 @@ icon: "rocket"
 6. Open a Pull Request
 7. Reviewers can instantly preview your changes using Codespaces
 
-See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for detailed guidelines.
+For contribution guidelines, please refer to our community Slack or Discord channels listed in the documentation.
 
 ## 🛠️ Troubleshooting
 

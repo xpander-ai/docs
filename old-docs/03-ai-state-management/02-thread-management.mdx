@@ -1,0 +1,74 @@
+---
+title: 'Thread Management'
+description: 'Learn how to manage conversation threads for multi-turn interactions'
+---
+
+# Thread Management
+
+Thread management in xpander.ai allows you to maintain context across multiple conversations with your agent, enabling continuous, contextual interactions.
+
+## Thread Basics
+
+Every interaction with an agent can either:
+1. Start a new conversation thread (default behavior)
+2. Continue an existing thread by providing a `thread_id`
+
+When you create a task, you can optionally provide a `thread_id` to continue a previous conversation:
+
+```python
+# Start a new conversation (default)
+task = agent_backend.create_task(prompt="Hello, I would like to analyze some data")
+
+# Continue an existing conversation
+task = agent_backend.create_task(
+    prompt="Can you provide more details about the previous analysis?",
+    thread_id="existing-thread-id"
+)
+```
+
+## Retrieving Thread ID
+
+When a task completes, you can access the thread ID for future conversations. The thread ID is managed automatically by the agent backend and maintains conversation context.
+
+## Thread Continuity Example
+
+<Warning>
+Do not use `agent.memory.init_messages()` - it's deprecated and should be replaced with `agent.add_task()`, which handles message initialization automatically and supports thread continuity through the optional `thread_id` parameter.
+</Warning>
+
+<CodeGroup>
+```python Python
+from xpander_sdk import Agents
+import os
+
+# Function to run an agent with thread continuity
+def run_agent_with_thread(prompt, thread_id=None):
+    """Run an agent with optional thread continuity"""
+    
+    # Initialize agents module
+    agents = Agents()
+    agent_backend = agents.get(agent_id=os.environ.get("XPANDER_AGENT_ID"))
+    
+    # Create a task with optional thread_id for continuity
+    task = agent_backend.create_task(
+        prompt=prompt, 
+        thread_id=thread_id
+    )
+    
+    # Check task status and result
+    print(f"Task Status: {task.status}")
+    print(f"Task Result: {task.result}")
+    
+    return task.result
+
+# Example usage: First conversation
+result = run_agent_with_thread("What's the latest news about AI?")
+print(f"Result: {result}")
+# Continue conversation with thread_id for context
+follow_up = run_agent_with_thread(
+    "Tell me more about the ethical implications.", 
+    thread_id="previous-thread-id"
+)
+print(f"Follow-up: {follow_up}")
+```
+</CodeGroup>

@@ -1,0 +1,323 @@
+---
+title: "ToolsRepository Class API Reference"
+description: "Complete API reference for the ToolsRepository class including all methods and properties"
+icon: "wrench"
+mode: "wide"
+---
+
+# ToolsRepository Class
+
+The **ToolsRepository** class manages the collection of available tools, including methods for tool registration, discovery, and invocation.
+
+## Constructor
+
+```python
+ToolsRepository(configuration: Optional[Configuration] = None)
+```
+
+**Parameters:**
+- `configuration` (Optional[Configuration]): SDK configuration. Defaults to environment variables if not provided.
+
+**Example:**
+```python
+from xpander_sdk import ToolsRepository
+
+# Using default configuration (environment variables)
+tools_repo = ToolsRepository()
+
+# Using custom configuration
+from xpander_sdk import Configuration
+config = Configuration(api_key="your-key", organization_id="your-org")
+tools_repo = ToolsRepository(configuration=config)
+```
+
+## Properties
+
+### `functions`
+```python
+functions: List[Tool]
+```
+Returns all available tools, both local and backend-managed.
+
+**Example:**
+```python
+all_tools = tools_repo.functions
+print(f"Available tools: {len(all_tools)}")
+for tool in all_tools:
+    print(f"- {tool.name}: {tool.id}")
+```
+
+## Methods
+
+### `register_tool(tool)`
+
+Registers a local tool (class method).
+
+```python
+@classmethod
+def register_tool(cls, tool: Tool) -> None
+```
+
+**Parameters:**
+- `tool` (Tool): The tool instance to register.
+
+**Example:**
+```python
+from xpander_sdk import register_tool
+
+@register_tool
+def analyze_data(data: dict) -> dict:
+    return {"status": "completed", "data_processed": len(data)}
+```
+
+**Note:** This is typically used as a decorator for function-based tools.
+
+---
+
+### `get_tool_by_id(tool_id)`
+
+Retrieve a tool by its unique identifier.
+
+```python
+def get_tool_by_id(tool_id: str) -> Optional[Tool]
+```
+
+**Parameters:**
+- `tool_id` (str): Unique identifier of the tool.
+
+**Returns:** Tool instance corresponding to the given ID, or None if not found.
+
+**Example:**
+```python
+tool = tools_repo.get_tool_by_id("XpanderEmailServiceSendEmailWithHtmlOrTextContent")
+if tool:
+    print(f"Found tool: {tool.name}")
+else:
+    print("Tool not found")
+```
+
+**Raises:**
+- [`ModuleException`](/API reference/exceptions): If there's an error accessing the tools repository.
+
+---
+
+### `should_sync_local_tools()`
+
+Check if local tools require synchronization with the backend.
+
+```python
+def should_sync_local_tools() -> bool
+```
+
+**Returns:**
+- `bool`: `True` if synchronization needed, otherwise `False`.
+
+**Example:**
+```python
+if tools_repo.should_sync_local_tools():
+    print("Local tools need synchronization")
+    # Perform sync operation
+else:
+    print("Local tools are up to date")
+```
+
+## Usage Examples
+
+### Tool Discovery and Invocation
+
+```python
+from xpander_sdk import ToolsRepository, Agent
+
+async def discover_and_use_tools():
+    # Get tools repository from an agent
+    agent = await Agent.aload("agent-123")
+    tools_repo = agent.tools
+    
+    # List all available tools
+    print(f"Available tools: {len(tools_repo.functions)}")
+    for tool in tools_repo.functions:
+        print(f"- {tool.name} ({tool.id})")
+    
+    # Find specific tool
+    email_tool = tools_repo.get_tool_by_id("XpanderEmailServiceSendEmailWithHtmlOrTextContent")
+    if email_tool:
+        # Use the tool through the agent
+        payload = {
+            "body_params": {
+                "subject": "Test Email",
+                "body_html": "<h1>Hello World</h1>",
+                "to": ["user@example.com"]
+            },
+            "path_params": {},
+            "query_params": {}
+        }
+        
+        result = await agent.ainvoke_tool(tool=email_tool, payload=payload)
+        print(f"Tool execution success: {result.is_success}")
+        if result.is_success:
+            print(f"Result: {result.result}")
+        else:
+            print(f"Error: {result.error}")
+```
+
+### Custom Tool Registration
+
+```python
+from xpander_sdk import register_tool
+import json
+
+@register_tool
+def process_json_data(data: str) -> dict:
+    """Process JSON data and return analysis results."""
+    try:
+        parsed_data = json.loads(data)
+        return {
+            "status": "success",
+            "record_count": len(parsed_data) if isinstance(parsed_data, list) else 1,
+            "keys": list(parsed_data.keys()) if isinstance(parsed_data, dict) else []
+        }
+    except json.JSONDecodeError as e:
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+# Tool is automatically registered and available for agents
+```
+
+### Tool Synchronization Check
+
+```python
+from xpander_sdk import ToolsRepository
+
+def check_tool_sync_status():
+    tools_repo = ToolsRepository()
+    
+    if tools_repo.should_sync_local_tools():
+        print("⚠️  Local tools are out of sync with backend")
+        print("Consider restarting your application or updating tool definitions")
+    else:
+        print("✅ All tools are synchronized")
+    
+    # List local vs backend tools
+    local_tools = [t for t in tools_repo.functions if hasattr(t, '_is_local') and t._is_local]
+    backend_tools = [t for t in tools_repo.functions if not (hasattr(t, '_is_local') and t._is_local)]
+    
+    print(f"Local tools: {len(local_tools)}")
+    print(f"Backend tools: {len(backend_tools)}")
+```
+
+## Tool Class
+
+### Properties
+
+#### `id`
+```python
+id: str
+```
+Unique identifier for the tool.
+
+#### `name`
+```python
+name: str
+```
+Display name of the tool.
+
+#### `configuration`
+```python
+configuration: dict
+```
+Contains tool-specific configurations.
+
+### Methods
+
+#### `ainvoke(agent_id, payload, **kwargs)`
+
+Asynchronously invoke the tool.
+
+```python
+async def ainvoke(
+    agent_id: str, 
+    payload: dict, 
+    **kwargs
+) -> ToolInvocationResult
+```
+
+**Parameters:**
+- `agent_id` (str): Identifier for the agent using the tool.
+- `payload` (dict): Input data for tool execution.
+- `**kwargs`: Additional parameters for the tool invocation.
+
+**Returns:** [`ToolInvocationResult`](/API reference/types#toolinvocationresult) with execution details and success status.
+
+**Example:**
+```python
+result = await tool.ainvoke("agent-456", payload={"param": "value"})
+print(f"Success: {result.is_success}")
+print(f"Result: {result.result}")
+```
+
+#### `invoke(agent_id, payload, **kwargs)`
+
+Synchronously invoke the tool.
+
+```python
+def invoke(
+    agent_id: str, 
+    payload: dict, 
+    **kwargs
+) -> ToolInvocationResult
+```
+
+**Parameters:** Same as `ainvoke()`.
+
+**Returns:** [`ToolInvocationResult`](/API reference/types#toolinvocationresult) with execution details.
+
+#### `set_configuration(config)`
+
+Update the tool's configuration.
+
+```python
+def set_configuration(config: dict) -> None
+```
+
+**Parameters:**
+- `config` (dict): Configuration settings for the tool.
+
+**Example:**
+```python
+tool.set_configuration({"timeout": 30, "retries": 3})
+```
+
+## Related Types
+
+See [SDK Types Reference](/API reference/types) for detailed information on:
+- [`ToolInvocationResult`](/API reference/types#toolinvocationresult): Tool execution result details
+
+## Error Handling
+
+```python
+from xpander_sdk import ToolsRepository
+from xpander_sdk.exceptions import ModuleException
+
+def safe_tool_operations():
+    tools_repo = ToolsRepository()
+    
+    try:
+        tool = tools_repo.get_tool_by_id("non-existent-tool")
+        if tool is None:
+            print("Tool not found")
+    except ModuleException as e:
+        print(f"Error accessing tools repository: {e.description}")
+```
+
+## Related Classes
+
+- [`Agent`](/API reference/agents/API reference/agent): Agents that use tools for task execution
+- [`Configuration`](/API reference/configuration): SDK configuration
+
+## Related Modules
+
+- [Agents Module](/API reference/agents): Agent management and tool usage
+- [Tasks Module](/API reference/tasks): Task execution using tools
+- [Knowledge Bases](/API reference/knowledge): Document management and search

@@ -1,0 +1,504 @@
+---
+title: "Transform Text into Structured Output"
+description: "Build a ready-to-deploy agent to transform text into structured in minutes"
+icon: "book"
+
+---
+
+In this tutorial, we’ll build a simple AI agent in seconds using [xpander.ai](http://xpander.ai/). Specifically, our AI agent will take a user message and transform it into a format that matches a Google Docs template stored on Google Drive.
+
+This tutorial is designed to be straightforward to give you a hands-on introduction to various features offered by xpander.ai. By the end, you’ll learn:
+
+- How to build an AI agent in seconds using xpander’s Planner
+- How to enable an interface connector or external tool for the AI agent
+- Different ways to interact with your AI agent (via xpander’s Chat or SDK)
+- How to use Chat and Visual Tester features to follow the agent’s workflow as it executes a task
+- How to add or remove interface operations and update the agent’s workflow
+- The typical process for triggering your AI agent via xpander’s SDK
+
+So without further ado, let’s dive in\!
+
+## Build an Agent with the Planner
+
+The easiest and fastest way to get started with xpander.ai and build your first AI agent is by using the Planner feature. The Planner feature lets you create a single- or multi-agent system with just a single prompt. The idea is that xpander handles complicated things related to agent’s infrastructure and deployment so that you can solely focus on instructing what your AI agents can do. To begin, head over to [https://app.xpander.ai](https://app.xpander.ai/) and sign in with your credentials.
+
+Once you're logged in, you'll see the landing page of xpander Workbench. To start building your agent with Planner, simply click the “New AI Agent”  or “Create AI Agent” button. This opens up the Planner, where you’ll be prompted to describe the kind of AI agent you want to build. Be as specific as possible, as this helps the Planner generate the right logic for your agent.
+
+![img_1](/images/tutorial-2/xp_img_1.png)
+
+In our use case, we’ll build an AI agent that can take a user message and transform it into a format that matches a Google Docs template stored on Google Drive. Here’s an example of the prompt we can give to the Planner:
+
+> _Build one AI agent that is able to list all the files on Google Drive, find the appropriate Google Docs template for a given input message, and reformat the input message according to the template in the document._
+
+Once you've entered the prompt, click the “Build AI Agent” button. In just a few seconds, the Planner will generate the agent for you. In the end, you should see a ready-to-run AI agent represented in a graph similar to the following:
+
+![img_2](/images/tutorial-2/xp_img_2.png)
+
+## Enabling Interface Connectors and Tools in an Agent
+
+You can see that the AI agent has been created with logic that directly reflects the prompt we gave using Planner. Since we specifically asked the agent to list all files on Google Drive and read the content of a Google Docs file, xpander.ai smartly included Google Drive and Google Docs as the interfaces needed for this task.
+
+Aside of Google Drive and Google Docs, xpander.ai also supports a collection of interfaces and tools from popular SaaS platforms like Reddit, Slack, Notion, OneDrive, and more. These interfaces can be easily integrated with your agent, giving it access to those platforms and enabling you to automate countless use cases.
+
+![img_3](/images/tutorial-2/xp_img_3.png)
+
+Each interface comes with its own set of operations (tools). An operation serves a specific purpose, either retrieving an event ID, reading an event's content, updating an event, or something else.
+
+Your AI agent can call one or more of these operations as part of its workflow to complete a task. For example, in the visualization below, you can see that the Google Docs interface has three distinct operations to choose from. You can view detailed descriptions of each operation directly in the xpander Workbench.
+
+![img_4](/images/tutorial-2/xp_img_4.png)
+
+By looking at the graph visualization, we can see that xpander has intelligently integrated several operations from both Google Docs and Google Drive into our agent. These operations are not random; they are highly relevant operations selected by xpander that can help the agent to complete the task. However, you might also notice a warning icon next to each operation. This means they aren’t usable just yet.
+
+To enable these operations, you need to grant xpander permission to access the connectors (your Google Drive and Google Docs accounts). There are two ways to do this. The easiest is to click directly on the warning icon in the operation box within the graph visualization. Alternatively, you can follow these steps:
+
+1. Go to the sidebar and click “Interfaces.”
+2. Select the relevant interface you want to configure (Google Drive and Google Docs in our case)
+3. Click “Other auth options.”
+
+You’ll then see a pop up page as seen in the screenshot below. Give the interface a name of your choice and proceed with the authentication method that works best for you.
+
+
+![img_5](/images/tutorial-2/xp_img_5.png)
+
+Once access is granted, you’ll see in the graph visualization that the operations are now fully activated and ready to be used by your agent.
+
+![img_6](/images/tutorial-2/xp_img_6.png)
+
+You can also fine-tune your agent’s settings by clicking the gear icon at the top right of the agent box in the graph.
+
+![img_15](/images/tutorial-2/xp_img_15.png)
+
+Within the settings, you’ll find several aspects you can tweak to customize your agent’s behavior, such as memory strategy, model provider, interactions between agents in a multi-agent workflow, agent roles, deployment options, and more.
+
+The default values for each setting are intelligently generated by the Planner based on your prompt description. However, in most cases, you’ll want to customize them to better fit your specific needs and use case. You can refer to [this section of the xpander docs](https://docs.xpander.ai/user-guide/backend-configuration/05-agent-settings) to learn more about these settings.
+
+## Using Chat and Visual Tester to Check Agent’s Workflow
+
+Although the Planner has intelligently built and configured the AI agent’s workflow for us, it’s still important to review and verify how the workflow operates.
+
+There are several ways to check your AI agent’s workflow in xpander: Chat, SDK, and Webhook. Among these, Chat is the quickest and most accessible way to test your agent. Once everything is set up and the necessary interface permissions are granted, you can use the Chat and Visual Tester features in the Workbench to explore how your agent performs.
+
+The Chat and Visual Tester provide an intuitive visual breakdown of how the agent interprets your prompt. You can track the agent’s workflow as well as the input and output of each operation it uses to complete a task. Based on what you see, you can then easily make adjustments, like adding or removing operations, which we’ll cover in the next section. This process significantly reduces the engineering effort needed to build and fine-tune an AI agent.
+
+Let’s say we want to test the agent with the following prompt:
+
+> _Message: "David will have a business meeting with the marketing team at 10:30 AM on April 12, 2025, at the main meeting room in the office. The meeting is expected to last 2 hours."_
+>
+> _Can you reformat the message above according to the template in the 'Meeting Schedule Summary' document? Please write the reformatted text here, but don't write the output in a new Google Docs._
+
+And the Google Docs template we’re working with (stored on Google Drive) looks like this:
+
+![img_7](/images/tutorial-2/xp_img_7.png)
+
+If everything is set up correctly, the AI agent should take the input message from our prompt, transform it according to the structure in the Google Docs template, and return the final result to us.
+
+To test this, put the prompt in the Chat feature and watch how the agent works through each step using the visual workflow tracker.
+
+![img_8](/images/tutorial-2/xp_img_8.png)
+
+In our example, the agent will:
+
+1. Use the "List User Files" operation to list all the files on your Google Drive and find the “Meeting Schedule Summary” document.
+2. Retrieve the document ID of the file.
+3. Use that ID to call the "Retrieve Latest Document Version" operation from Google Docs and get the content of the template.
+4. Use the template’s content as a reference to transform your input message into a structured format.
+5. Finally, return the structured result to you.
+
+You can also click on the dropdown arrow of each operation executed by the agent on the left pane to check its payload, response and error.
+
+## Removing or Adding Interfaces and Updating Agent’s Workflow
+
+From the Visual Tester, we can see that to complete the task, our AI agent only needs two operations, even though four operations were initially provided. If needed, we can remove the unused ones. To do this, hover over the box of the operation you want to remove, then click the trash icon in the top-right corner of the box.
+
+![img_10](/images/tutorial-2/xp_img_10.png)
+
+We can also add new interfaces and operations for the agent to use. For example, let’s say we want the agent’s response to be sent via email. To do this, we can use xpander’s built-in action "Send Email with Content".  As the name suggests, this function allows the agent to send plain text (in our case, the reformatted message) to an email address we specify in the prompt. You can find this function by clicking the “\+” icon in the top-right of the UI and selecting “Built-in actions”.
+
+Aside from adding or removing operations, you can also modify the agent’s workflow by adjusting the connections between operations in the graph.
+
+In our use case, we want the agent to send the message via email after it finishes the reformatting process. To do this, we can create a new connection in the graph by dragging a line from the end node of the “Retrieve Last Document Version” operation to the start node of “Send Email with Content.”
+
+![img_11](/images/tutorial-2/xp_img_11.png)
+
+Once you’ve made changes to the graph, you’ll need to re-deploy the agent before testing it. Just click the “Deploy” button, and you’re ready to go. You can now test the updated workflow with a prompt like the following:
+
+> _Message: "David will have a business meeting with the marketing team at 10:30 AM on April 12, 2025, at the main meeting room in the office. The meeting is expected to last 2 hours.”_
+>
+> _Can you reformat the message above according to the template in the 'Meeting Schedule Summary' document?_
+>
+> _Please send the reformatted message to myemail@zohomail.eu and write the reformatted text here as well._
+
+As you can see in the image below, after reformatting the message using the “Retrieve Latest Document Version” operation, the agent now uses the newly added “Send Email with Content” operation to send the result to the specified email address.
+
+![img_12](/images/tutorial-2/xp_img_12.png)
+
+Once you’ve finished testing and are confident that the agent’s workflow meets your expectations, you can easily share the agent with your team. Just click the “Chat” node at the top of the graph visualization to generate a unique URL for the agent. Anyone with the link can interact with the agent through a Chainlit-powered chat interface.
+
+![img_9](/images/tutorial-2/xp_img_9.png)
+
+## Using xpander’s SDK to Interact with an Agent
+
+Aside from using the Chat feature available in the Workbench, we can also interact with and trigger the agent using the SDK. In this section, we’ll walk through the typical workflow of interacting with an agent using xpander’s Python SDK.
+
+The SDK allows you to further customize the workflow of agents built with xpander. For example, you can create custom tools or functions and integrate them into your agent. You can also connect agents built with other frameworks like LangGraph or SmolAgent into your xpander agent.
+
+To get started, you’ll first need to install the `xpander` library along with any required dependencies using `pip`. Since we’re using OpenAI’s GPT-4o as the agent’s model, we’ll also need to install the `openai` library.
+
+```python
+pip install xpander-sdk
+pip install openai
+```
+
+Before we can interact with our agent via the SDK, we need to set up three configurations:
+
+- The API key for your model provider (OpenAI, Anthropic, Google, etc.)
+- Your xpander API key
+- The ID of the specific agent you want to interact with
+
+To get your xpander API key and agent ID, click the “SDK” node at the top of the graph visualization in Workbench. There, you'll find the agent ID, and by clicking “Assign API Keys”, you’ll see your xpander API key and make sure to link it to the agent ID by ticking the box beside it.
+
+![img_13](/images/tutorial-2/xp_img_13.png)
+
+Once you have all three configurations, you can either store them in a `.env` file and load it with the `dotenv` library, or just assign them directly as variables if you’re using the code privately. Below is an example of how you can initialize the interaction with the agent.
+
+```python
+from xpander_sdk import XpanderClient
+from openai import OpenAI
+
+OPENAI_API_KEY = <YOUR_OPENAI_API_KEY>
+XPANDER_API_KEY = <YOUR_XPANDER_API_> 
+XPANDER_AGENT_ID = <YOUR_XPANDER_AGENT_ID> 
+
+# Initialize clients
+xpander_client = XpanderClient(api_key=XPANDER_API_KEY)
+openai_client = OpenAI(api_key=OPENAI_API_KEY)
+
+# Get your agent
+agent = xpander_client.agents.get(agent_id=XPANDER_AGENT_ID)
+```
+
+We can start interacting with our agent by looking at the available tools it can use to complete a task.
+
+```python
+print(len(agent.get_tools()))
+"""
+Output:
+4
+"""
+
+print([agent.get_tools()[i]["function"]["name"] for i in range(len(agent.get_tools()))])
+
+"""
+Output:
+['GoogleDocsDocMgmtRetrieveLatestDocumentVersion', 'GoogleFileManagementListUserFiles', 'XpanderMessagingServiceSendEmailWithContent', 'xpfinish-agent-execution-finished']
+"""
+```
+
+As you can see, there are four tools available for our agent to use. Three of them are the ones visible in the graph visualization in Workbench, and the fourth is a built-in xpander function that stops the agent’s execution once a task is completed.
+
+Let’s take a closer look at one of the tools available to our agent.
+
+```python
+print(agent.get_tools()[2])
+
+"""
+Output:
+
+{'type': 'function',
+ 'function': {'name': 'XpanderMessagingServiceSendEmailWithContent',
+  'description': 'Transmits an email with formatted HTML content and a clearly defined subject line. This operation requires two critical input fields: the email subject and its HTML body content. The subject establishes the main topic of the email, while the HTML body delivers a rich, multimedia message that is essential for clear communication. If the subject is not provided, then before proceeding, you must retrieve or generate a suitable email title using your content creation process. Likewise, if the HTML body content is missing, ensure that you obtain or generate the detailed message content by referring to your content management guidelines. This operation is integral to messaging workflows that depend on accurate email notifications, confirmations, or updates and must be executed only after verifying that all required information is complete and validated. ',
+  'parameters': {'type': 'object',
+   'properties': {'bodyParams': {'type': 'object',
+     'properties': {'body_html': {'type': 'string',
+       'description': 'body_html'},
+      'subject': {'type': 'string', 'description': 'subject'},
+      'to': {'type': 'array',
+       'description': 'to',
+       'items': {'type': 'string'}}},
+     'required': ['body_html', 'to', 'subject']},
+    'queryParams': {'type': 'object', 'properties': {}, 'required': []},
+    'pathParams': {'type': 'object', 'properties': {}, 'required': []}}
+ """
+```
+
+A tool is typically written as a function and defined by its schema. The schema tells the agent what the function does and what input arguments it expects. It includes the following fields:
+
+- **name**: the name of the function (e.g., `XpanderMessagingServiceSendEmailWithContent`)
+- **description**: explains what the function does and when the agent should use it
+- **parameters**: a JSON schema defining the input arguments required to run the function
+
+Now, let’s start by creating a task for our agent to execute. We can do this using the `add_task()` method, passing in our input prompt as the argument. 
+
+```python
+# Create a task for the agent
+task = agent.add_task("""
+“Message: "David will have a business meeting with the marketing team at 10:30 AM on April 12, 2025, at the main meeting room in the office. The meeting is expected to last 2 hours.”
+
+Can you reformat the message above according to the template in the 'Meeting Schedule Summary' document? Please write the reformatted text here.
+""")
+```
+
+Following the execution workflow of our agent with xpander’s SDK is pretty straightforward. Based on our initial prompt, the agent’s first response can be executed like this:
+
+```python
+response = openai_client.chat.completions.create(
+        model="gpt-4.1",
+        messages=agent.messages,
+        tools=agent.get_tools(),
+        tool_choice=agent.tool_choice,
+        temperature=0.0
+    )
+    
+print(agent.is_finished())
+"""
+Output:
+False
+"""
+
+print(response.model_dump()["choices"][0]["finish_reason"])
+"""
+Output:
+tool_calls
+"""
+
+print(response.model_dump()["choices"][0]["message"]["tool_calls"][0]["function"]
+"""
+Output:
+GoogleFileManagementListUserFiles
+""")
+
+print(response.model_dump()["choices"][0]["message"]["tool_calls"][0]["function"]["arguments"])
+"""
+Output:
+{"bodyParams":{},"queryParams":{"q":"name contains 'Meeting Schedule Summary'","fields":"files(id, name)"}}
+"""
+```
+
+The agent's status and response show that it hasn’t finished executing the task after running the code. Instead, it tries to call the `GoogleFileManagementListUserFiles` tool to list all files on Google Drive and find the ID of the Google Docs we’re looking for. You can also see the query or input arguments provided by the agent to call the corresponding tool.
+
+Next, we’ll add the agent’s response to memory, call the `GoogleFileManagementListUserFiles` tool with xpander, and run it using the input arguments provided in the agent’s response.
+
+```python
+# Add messages to the memory
+agent.add_messages(response.model_dump())
+
+# Run tool calling to get the result
+tool_calls = agent.extract_tool_calls(llm_response=response.model_dump())
+tool_result = agent.run_tools(tool_calls=tool_calls)
+
+for result in tool_result:
+      print(f"Tool: {result.function_name}")
+      print(f"Success: {result.is_success}")
+      if result.is_success:
+          print(f"Result: {result.result}...")
+      else:
+          print(f"Error: {result.error}")
+      print("-" * 40)
+
+"""
+Output:
+Tool: GoogleFileManagementListUserFiles
+Success: True
+Result: {'files': [{'id': 'GFlW5CqQEq_JQ', 'name': 'Meeting Schedule Summary'}]}...
+"""
+```
+
+The result of the tool calling can be used as an input to the next agent call.
+
+```python
+response = openai_client.chat.completions.create(
+        model="gpt-4.1",
+        messages=agent.messages,
+        tools=agent.get_tools(),
+        tool_choice=agent.tool_choice,
+        temperature=0.0
+    )
+ 
+print(agent.is_finished())
+"""
+Output:
+False
+"""
+
+print(response.model_dump()["choices"][0]["message"]["tool_calls"][0]["function"]
+"""
+Output:
+GoogleDocsDocMgmtRetrieveLatestDocumentVersion
+""")
+```
+
+Once again, the agent status shows that it hasn’t completed the task yet and needs to call another tool. This time, it’s the `GoogleDocsDocMgmtRetrieveLatestDocumentVersion` tool, which retrieves the content of the document we’re looking for.
+
+Just like before, we’ll add the agent response to the memory, call the corresponding tool, and run it to get its response.
+
+```python
+# Add messages to the memory
+agent.add_messages(response.model_dump())
+
+# Run tool calling to get the result
+tool_calls = agent.extract_tool_calls(llm_response=response.model_dump())
+tool_result = agent.run_tools(tool_calls=tool_calls)
+
+for result in tool_result:
+      print(f"Tool: {result.function_name}")
+      print(f"Success: {result.is_success}")
+      if result.is_success:
+          print(f"Result: {result.result}...")
+      else:
+          print(f"Error: {result.error}")
+      print("-" * 40)
+
+"""
+Output:
+Tool: GoogleFileManagementListUserFiles
+Success: True
+Result: {'title': 'Meeting Schedule Summary', 'body': {'content': [{'endIndex': 1, 'sectionBreak': {'.....
+"""
+```
+
+Next, let’s proceed to the next agent call after receiving the response from the last tool calling.
+
+```python
+response = openai_client.chat.completions.create(
+        model="gpt-4.1",
+        messages=agent.messages,
+        tools=agent.get_tools(),
+        tool_choice=agent.tool_choice,
+        temperature=0.0
+    )
+ 
+print(agent.is_finished())
+"""
+Output:
+False
+"""
+
+print(response.model_dump()["choices"][0]["message"]["tool_calls"][0]["function"]
+"""
+Output:
+xpfinish-agent-execution-finished
+""")
+```
+
+This time, the agent wants to call `xpfinish-agent-execution-finished` to signal that it has everything it needs to complete the task. As usual, we just need to add the agent response to the memory, call the tool, and run it to get the response.
+
+```python
+# Add messages to the memory
+agent.add_messages(response.model_dump())
+# Run tool calling to get the result
+tool_calls = agent.extract_tool_calls(llm_response=response.model_dump())
+tool_result = agent.run_tools(tool_calls=tool_calls)
+
+for result in tool_result:
+      print(f"Tool: {result.function_name}")
+      print(f"Success: {result.is_success}")
+      if result.is_success:
+          print(f"Result: {result.result}...")
+      else:
+          print(f"Error: {result.error}")
+      print("-" * 40)
+
+"""
+Output:
+Tool: xpfinish-agent-execution-finished
+Success: True
+Result: OK...
+"""
+```
+
+Now we can proceed to the last agent call and save the response to the memory.
+
+```python
+response = openai_client.chat.completions.create(
+        model="gpt-4.1",
+        messages=agent.messages,
+        tools=agent.get_tools(),
+        tool_choice=agent.tool_choice,
+        temperature=0.0
+    )
+    
+# Add messages to the memory
+agent.add_messages(response.model_dump())
+print(agent.is_finished())
+"""
+Output:
+True
+"""
+```
+
+And now we can see that the agent status has changed to finished\! At this point, we can retrieve the final result from our agent by running the following code:
+
+```python
+execution_result = agent.retrieve_execution_result()
+print("status", execution_result.status)
+print("result", execution_result.result)
+
+"""
+Output:
+status ExecutionStatus.COMPLETED
+result Here is the reformatted message according to the 'Meeting Schedule Summary' template:
+
+**Meeting Schedule Summary**
+
+- **Employee name:** David
+- **Event type:** Business Meeting
+- **Participants:** Marketing Team
+- **Date:** April 12, 2025
+- **Time:** 10:30 AM
+- **Duration hours:** 2
+- **Location:** Main meeting room in the office
+"""
+```
+
+Looking at the full step-by-step workflow above, we can simplify the code using a `while` loop. This way, we keep executing the agent until the `is_finished` method returns `True`.
+
+Here’s the final, simplified workflow using a `while` loop:
+
+```python
+# Run the agent until completion
+while not agent.is_finished():
+    # Get LLM response with available tools
+    response = openai_client.chat.completions.create(
+        model="gpt-4.1",
+        messages=agent.messages,
+        tools=agent.get_tools(),
+        tool_choice=agent.tool_choice,
+        temperature=0.0
+    )
+
+    # Add messages to the memory
+    agent.add_messages(response.model_dump())
+
+    # Extract and run tool calls
+    tool_calls = agent.extract_tool_calls(llm_response=response.model_dump())
+    tool_result = agent.run_tools(tool_calls=tool_calls)
+```
+Once the agent has finished its execution, you can also retrieve the thread ID of the agent execution by simply using the following method:
+```python
+  result = agent.retrieve_execution_result()
+  thread_id = result.memory_thread_id 
+```
+
+The thread ID allows your agent to remember the conversation history. This means you can ask follow-up questions related to a previous query by including the Thread ID and adding it as a task, like this:
+
+```python
+  agent.add_task(input = """
+How long is the duration of the meeting mentioned in the previous message?
+""", thread_id = thread_id)
+```
+
+When interacting with xpander’s SDK, you can easily track the agent’s execution, inputs, and responses at each step, just like we did earlier. To do this, head over to the “Activity” view in xpander Workbench after running your code. There, you’ll find two key components:
+
+- **Thread** – A thread is created every time you assign a task or input prompt to an agent. It includes information such as the total number of tokens generated and the creation timestamp.
+- **Log** – This contains a detailed breakdown of your agent’s execution steps. You’ll see the agent’s responses, any tools it called, the payload used for those tool calls, and the responses received after each call.
+
+![img_14](/images/tutorial-2/xp_img_14.png)
+
+## Conclusion
+
+In this tutorial, we walked through how to build a simple AI agent that transforms text into structured output using xpander.ai. Along the way, the agent interacted with popular tools like Google Drive and Google Docs.
+
+We also explored how to interact with the agent through Chat, Visual Testing, and the SDK, as well as how to customize its workflow by adding or removing operations and interfaces.
+
+By now, hopefully you have a solid understanding of how xpander makes it easy to design, test, and deploy AI agents for real-world automation tasks. As you've seen, xpander offers an intuitive and powerful platform to turn your AI ideas into reality in just a matter of minutes.

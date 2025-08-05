@@ -1,0 +1,27 @@
+---
+title: "Agent Memory"
+description: "Configure session storage, user memories, and conversation summaries" 
+icon: "brain-circuit"
+mode: "wide"
+---
+
+<Frame>
+![alt text](/images/storage.png)
+</Frame>
+
+Each agent includes a PostgreSQL database for persistent storage, accessible via `agno_agent.storage`.
+
+**Session Storage** - Automatic conversation history and state persistence (always enabled)
+
+**User Memories** - Long-term facts and preferences about users ("ChatGPT-style" memory)
+
+**Session Summaries** - Automatically summarizes long conversations for future reference
+
+```python
+from xpander_sdk import Backend
+from agno.agent import Agent
+
+backend = Backend()
+agno_agent = Agent(**backend.get_args())  # Memory settings applied from UI
+agno_agent.print_response(message="What did we talk about yesterday?", user_id="user123")
+```

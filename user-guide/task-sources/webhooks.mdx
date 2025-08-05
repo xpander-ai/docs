@@ -1,0 +1,45 @@
+---
+title: "Webhooks"
+description: "Trigger agents from external systems via HTTP"
+icon: "webhook"
+mode: "wide"
+---
+
+Trigger agents programmatically from any system that makes HTTP requests. Each agent gets a unique webhook URL for external integrations.
+
+<Frame>
+![alt text](/images/webhook-config.png)
+</Frame>
+
+**File Processing** - Upload PDFs, images directly via multipart/form-data
+
+**Sync/Async Modes** - Wait for completion or return immediately  
+
+**Secure File URLs** - Automatic presigned URL generation for 30-day access
+
+```python
+from xpander_sdk import Backend
+from agno.agent import Agent
+
+backend = Backend()
+webhook_agent = Agent(**backend.get_args())
+# Webhook URL available in agent interface
+```
+
+## Usage
+
+Access webhook URL from the agent's trigger panel. Required parameters:
+
+- `agent_id`: Your agent identifier
+- `x-api-key`: API key (header or query param)
+- `asynchronous`: Wait for completion (false) or return immediately (true)
+
+```bash
+curl --location "https://webhook.xpander.ai" \
+--header "x-api-key: YOUR_API_KEY" \
+--form "prompt=Process this document" \
+--form "files=@document.pdf" \
+--form "agent_id=YOUR_AGENT_ID"
+```
+
+Supports multiple files per request. Use `multipart/form-data` for files, `application/json` for text-only prompts.

@@ -1,0 +1,219 @@
+---
+title: "Agent Settings Configuration"
+description: "Learn how to configure your agent's core settings for optimal performance"
+icon: "gear"
+---
+
+## Understanding Agent Settings
+
+Agent settings provide global configuration options that control how your agent behaves, what instructions it follows, and how it interacts with other agents. These settings are applied automatically in the agent runtime and can also be accessed or overridden via the SDK.
+
+## Accessing Agent Settings
+
+To access the agent settings:
+
+1. Navigate to your agent in the xpander.ai dashboard
+2. Click the "Settings" icon in the top-right corner
+3. Select from the settings categories in the left sidebar
+
+## Configuration Categories
+
+<Tabs>
+  <Tab title="General">
+    The General settings control basic agent configuration:
+    
+    <Frame>
+    ![General Agent Settings](/static/images/screenshots/2025-03-15-23-49-31.png)
+    </Frame>
+    
+    <Accordion title="Agent Identity">
+    Configure your agent's basic identity:
+    
+    - **Agent Name**: The name displayed in the interface and used in API calls
+    - **Status**: Toggle between Active and Inactive (inactive agents cannot be called)
+    </Accordion>
+    
+    <Accordion title="Model Configuration">
+    Choose the AI model powering your agent:
+    
+    - **Model Provider**: Select the provider (e.g., OpenAI)
+    - **Model Name**: Choose the specific model (e.g., gpt-4.1)
+    
+    <Tip>
+    More powerful models like GPT-4o may produce better results but consume more tokens. Consider your use case carefully when selecting a model.
+    </Tip>
+    </Accordion>
+    
+    <Accordion title="Access Control">
+    Configure who can access and use this agent:
+    
+    - **Personal**: Only you can access this agent
+    - **Organizational**: All team members in your organization can access this agent
+    
+    This setting is particularly important for agents that might access sensitive data or require specific permissions.
+    </Accordion>
+    
+    <Accordion title="Template Creation">
+    Convert your configured agent into a reusable template:
+    
+    1. Enter a template name
+    2. Click "Create Template"
+    
+    Templates allow you to quickly create new agents with the same configuration, saving time when building similar agents.
+    </Accordion>
+  </Tab>
+  
+  <Tab title="Instructions">
+    The Instructions settings define how your agent understands its purpose and behaves:
+    
+    <Frame>
+    ![Agent Instructions Settings](/static/images/screenshots/2025-03-15-23-50-20.png)
+    </Frame>
+    
+    <Accordion title="Role Definition">
+    Define your agent's identity and responsibilities:
+    
+    ```
+    You are the LinkedIn AI Agent, responsible for fetching posts, summarizing profiles, and providing insights based on LinkedIn data.
+    ```
+    
+    A clear role helps the agent understand its purpose and capabilities. Be specific about what domain the agent specializes in.
+    </Accordion>
+    
+    <Accordion title="Goal Setting">
+    Define the primary objective of your agent:
+    
+    ```
+    Your goal is to assist users in gathering and summarizing information from LinkedIn, including posts and profiles, to enhance networking and professional insights.
+    ```
+    
+    Goals provide direction for the agent when deciding how to approach tasks.
+    </Accordion>
+    
+    <Accordion title="Detailed Instructions">
+    Provide specific guidance on how the agent should behave:
+    
+    ```
+    Brand Voice: Maintain a tone that is [e.g., professional, conversational, authoritative, or witty—adjust based on brand identity]. Avoid jargon unless relevant. Target Audience: Always consider the intended audience, such as small business owners, executives, or job seekers.
+    ```
+    
+    Detailed instructions can include:
+    - Tone and style guidelines
+    - Response formatting preferences
+    - Error handling procedures
+    - Ethical considerations
+    - Domain-specific knowledge
+    </Accordion>
+  </Tab>
+  
+  <Tab title="Prompts">
+    The Prompts section helps define example queries your agent should be prepared to handle:
+    
+    <Frame>
+    ![Agent Prompts Settings](/static/images/screenshots/2025-03-15-23-50-47.png)
+    </Frame>
+    
+    <Accordion title="Example Prompts">
+    Add example prompts that represent typical user requests:
+    
+    - "Fetch the latest posts from a specific company."
+    - "Summarize the profile of a user with username 'john_doe'."
+    - "What are the recent posts related to 'AI technology'?"
+    - "Get the profile details of 'Jane Smith' including her skills and experience."
+    - "Show me the reposts of a specific LinkedIn post."
+    
+    <Tip>
+    In multi-agent workflows, these prompts help the router agent determine which specialized agent should handle the request. Choose examples that clearly demonstrate your agent's capabilities.
+    </Tip>
+    </Accordion>
+    
+    <Accordion title="Managing Prompts">
+    - Click the "Add" button to create new example prompts
+    - Click the "X" icon next to a prompt to remove it
+    - Ensure your prompts cover the full range of your agent's capabilities
+    
+    Well-crafted prompts help your agent understand the types of requests it should handle, especially in multi-agent environments.
+    </Accordion>
+  </Tab>
+  
+  <Tab title="Delegation">
+    The Delegation settings define how your agent interacts with other agents in a multi-agent workflow:
+    
+    <Frame>
+    ![Agent Delegation Settings](/static/images/screenshots/2025-03-15-23-51-40.png)
+    </Frame>
+    
+    <Accordion title="Delegation Types">
+    Choose how your agent delegates tasks to other agents:
+    
+    - **Router**: The agent evaluates incoming requests and routes them to the appropriate specialized agent
+    - **Sequence**: The agent is part of a predetermined sequence of agents that process tasks in order
+    
+    <Tip>
+    Delegation is essential in multi-agent layouts. When building complex workflows, you'll need to configure delegation for each agent in the system.
+    </Tip>
+    </Accordion>
+    
+    <Accordion title="Router Configuration">
+    When configured as a Router:
+    
+    1. The agent analyzes incoming requests
+    2. It matches the request with the most appropriate specialized agent based on:
+       - The specialized agent's defined capabilities
+       - Example prompts configured for each agent
+       - Any routing rules you've defined
+    3. It forwards the request to the selected agent
+    4. Optionally, it can process and enhance the response before returning it to the user
+    
+    Routers are ideal for creating "hub and spoke" architectures where a central agent directs traffic to specialized workers.
+    </Accordion>
+    
+    <Accordion title="Sequence Configuration">
+    When configured as part of a Sequence:
+    
+    1. The agent receives tasks in a predefined order
+    2. It processes its portion of the task
+    3. It passes the enhanced output to the next agent in the sequence
+    4. The final agent in the sequence returns the result to the user
+    
+    Sequences are ideal for workflows where tasks need to be processed in specific stages, with each agent adding value in sequence.
+    </Accordion>
+      <Tip>
+    Learn more about delegation and multi-agent teams in the [Multi-Agent Teams](/docs/02-agent-builder/06-multi-agent-teams) section.
+  </Tip>
+  </Tab>
+</Tabs>
+
+## SDK Integration
+
+All agent settings can be accessed and modified programmatically using the xpander.ai SDK:
+
+```python
+from xpander_sdk import Agents
+
+# Initialize agents module
+agents = Agents()
+
+# Get existing agent backend
+agent_backend = agents.get("your-agent-id")
+
+# Agent backend provides access to agent configuration
+# Agents are managed through the xpander.ai console at https://app.xpander.ai
+print(f"Agent Name: {agent_backend.name}")
+print(f"Agent ID: {agent_backend.id}")
+print(f"Is Active: {agent_backend.is_active}")
+
+# All agent configuration is done through the console
+# Visit https://app.xpander.ai to:
+# - Update model settings
+# - Configure agent behavior  
+# - Add example prompts
+# - Set up tools and integrations
+```
+
+## Next Steps
+
+- [Learn about Agent Graph System](/docs/02-agent-builder/02-agent-graph-system)
+- [Add specialized tools to your agents](/docs/02-agent-builder/01-adding-tools-to-agents)
+- [Monitor agent execution in the Activity view](/docs/02-agent-builder/03-activity-view)
+- [Fine-tune operations with advanced settings](/docs/02-agent-builder/04-advanced-operation-settings) 

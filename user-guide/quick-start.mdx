@@ -1,0 +1,94 @@
+---
+title: "Quick Start"
+description: "Get started with Xpander in 5 simple steps - from configuration to production deployment"
+icon: "rocket"
+mode: "wide"
+---
+
+<Steps>
+  <Step title="Configure your agent">
+    Use the Workbench at [app.xpander.ai](https://app.xpander.ai) to set up your agent's framework, instructions, model, tools, and knowledge bases through the intuitive web interface.
+
+    <Frame caption="Agent Workbench to control and test the agent backend">
+    ![Agent Workbench](/images/workbench.png)
+    </Frame>
+  </Step>
+
+  <Step title="Download and customize your agent code">
+    ```bash Install Xpander CLI
+    # Install the Xpander CLI
+    npm install -g xpander-cli
+
+    # Initialize your agent project
+    xpander agent init "your-agent-id"
+    ```
+
+    The init command will download the agent code to your local machine with the selected framework and the backend configuration configured.
+  </Step>
+
+  <Step title="Add your business logic">
+    ```python Agent Code
+    from xpander_sdk import Backend, on_task, Task, register_tool
+    from agno.agent import Agent
+
+    @register_tool  # Register local tools
+    def weather_check(location: str) -> str:
+        """Check weather for a location"""
+        return f"Weather in {location}: Sunny, 25°C"
+
+    @on_task
+    def handle_request(task: Task):
+        backend = Backend(task.configuration)
+        agent = Agent(**backend.get_args())  # Gets remote tools + your local tools
+        
+        result = agent.arun(message=task.to_message())
+        task.result = result.content
+        return task
+    ```
+  </Step>
+
+  <Step title="Test locally">
+    ```bash Local Development
+    # Run agent locally for development
+    xpander dev
+    ```
+
+    ```text Development Output
+    DEBUG    | Events initialised 
+    INFO     | Listener started; waiting for events…
+    INFO     | Agent 'Support AI Engineer' chat: https://amaranth-mammal.agents.xpander.ai | builder: https://app.xpander.ai/agents/4b4cf37c-53ae-4280-8b96-844ed13bea6c
+    ```
+
+    Events from WebUI and Slack are now routed to your local machine for real-time development and testing!
+  </Step>
+
+  <Step title="Deploy to your environment">
+    ```bash Deployment
+    # Deploy the agent to your k8s or xpander serverless 
+    xpander deploy
+    ```
+
+    Your agent is now live with automatic scaling, monitoring, and all human interfaces (Slack, WebUI, webhooks) configured!
+  </Step>
+</Steps>
+
+<Note>
+  You can also start from the CLI and skip the UI, with `xpander agent new` and follow the wizard
+</Note>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="AI Model Configuration" icon="brain" href="/user-guide/backend-configuration/ai-model">
+    Learn more about configuring AI models for your agents
+  </Card>
+  <Card title="Examples" icon="code" href="/Examples">
+    Explore real-world agent examples and templates
+  </Card>
+  <Card title="API Reference" icon="book" href="/API reference">
+    Complete SDK and API documentation
+  </Card>
+  <Card title="Connectors" icon="plug" href="/connectors">
+    Browse available MCP connectors
+  </Card>
+</CardGroup>

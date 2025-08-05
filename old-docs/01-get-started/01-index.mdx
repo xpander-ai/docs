@@ -1,0 +1,89 @@
+---
+title: "What is xpander.ai"
+description: "xpander.ai offers Backend-as-a-Service infrastructure for autonomous agents: memory, tools, multi-user state, various agent triggering options (MCP, A2A, API, Web interfaces), storage, agent-to-agent messaging, designed to support any agent framework and SDK.
+"
+icon: "house"
+---
+
+AI Engineers and builders using xpander.ai to start new autonomous agent developement project or to add backend to their existing agent using the following components:
+
+<CardGroup cols={3}>
+  <Card title="Agentic Tools" icon="plug" color="#0EA5E9" href="/docs/02-agent-builder/01-adding-tools-to-agents">
+    Pre-built connectors to SaaS systems and tool generation from API specs
+  </Card>
+  
+  <Card title="Agent Graph System" icon="diagram-project" color="#0EA5E9" href="/docs/02-agent-builder/02-agent-graph-system">
+    Control autonomous agents with precise boundaries
+  </Card>
+  
+  <Card title="State Management" icon="database" color="#0EA5E9" href="/docs/03-ai-state-management/01-agent-state-basics">
+    Scale AI state machines to handle thousands of concurrent users
+  </Card>
+  
+  <Card title="Human Interfaces" icon="comments" color="#0EA5E9" href="/docs/05-human-interfaces/02-slack-agents">
+    Trigger agents from Slack, Teams, Web UIs, or programmatically
+  </Card>
+
+  <Card title="Rapid Development" icon="bolt" color="#4F46E5">
+    Build and iterate on agents in minutes, not weeks
+  </Card>
+  
+  <Card title="Enterprise-Grade Security" icon="shield" color="#4F46E5">
+    SOC 2 compliant with granular access controls
+  </Card>
+</CardGroup>
+
+## Quick Demo
+
+<Frame className="my-6">
+  <video
+    src="https://github.com/user-attachments/assets/4db1fb71-b898-46f7-9b7c-2ec588b531fb"
+    autoPlay
+    loop
+    muted
+    playsInline
+    controls
+    allowFullScreen
+    className="rounded-lg shadow-xl w-full"
+  />
+</Frame>
+
+# Getting started
+
+
+<Tabs>
+  <Tab title="For Developers">
+    Build AI agents faster by focusing exclusively on agent logic rather than infrastructure
+    
+    ```python Simple Agent Usage
+    from xpander_sdk import Agents
+    
+    # Initialize agent backend
+    agents = Agents()
+    agent_backend = agents.get(agent_id=os.getenv("XPANDER_AGENT_ID"))
+    
+    # Create and execute a task
+    task = agent_backend.create_task(
+        prompt="Analyze this data and provide insights"
+    )
+    
+    # Get results
+    print(f"Task Status: {task.status}")
+    print(f"Task Result: {task.result}")
+    
+    # Or monitor with event streaming
+    for event in task.events():
+        if event.type == "task_finished":
+            print("Task completed!")
+            break
+    ```
+  </Tab>
+  <Tab title="For Enterprise Teams">
+    Provide a managed AI agent development experience across your organization with governance, security, and scalability built-in.
+    
+    - **Centralized Management**: Deploy and monitor all agents from a single dashboard
+    - **Role-Based Access**: Control who can create, modify, and deploy agents
+    - **VPC Deployment**: Run in your own secure environment
+    - **Audit Logging**: Track all agent activities and interactions
+  </Tab>
+</Tabs>
