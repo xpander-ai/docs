@@ -8,14 +8,94 @@ mode: "wide"
 Deploy agents to any Slack workspace with zero infrastructure. Agents can auto-engage in channels, handle files, and integrate with your existing workflows.
 
 <Frame>
-![alt text](/images/slack-integration.png)
+![Slack Agent Chat](/static/images/screenshots/slack-agent-chat.png)
 </Frame>
 
-**Auto-Engage** - Agents respond automatically based on conditions ("When user asks about stock price")
 
-**File Processing** - OCR images, transcribe audio, read PDFs automatically
 
-**Conversation Starters** - Predefined prompts to guide user interactions
+
+Visit [slack.xpander.ai](https://slack.xpander.ai/) to connect agents to Slack workspaces or deploy ready-made templates.
+
+## Key Features & Benefits
+
+<CardGroup cols={2}>
+  <Card title="Auto-Engage" icon="bolt">
+    Agents respond automatically based on conditions ("When user asks about stock price")
+  </Card>
+  <Card title="File Processing" icon="file">
+    OCR images, transcribe audio, read PDFs automatically
+  </Card>
+  <Card title="Zero Infrastructure" icon="server">
+    xpander.ai handles hosting and stitches the integration directly to your custom AI Agents.
+  </Card>
+  <Card title="Versatile Use-Cases" icon="users">
+    Perfect for internal use, customer support, and community management. Automate tasks like ticket creation, scheduling, and more.
+  </Card>
+</CardGroup>
+
+## Definitions
+
+<CardGroup cols={2}>
+  <Card title="Slack Agent" icon="slack">
+    An agent entity that is connected to a Slack workspace of your choice. You can then connect it to a Custom AI Agent on the xpander platform, as well as configure it to auto-engage in channels on specific topics, add conversation starters, and more.
+  </Card>
+  <Card title="Custom AI Agent" icon="robot">
+    The agent entity that the Slack Agent entity connects to. These are AI agents running on the xpander.ai Agent platform, ready for you to build, customize, test, and easily connect to Slack.
+  </Card>
+</CardGroup>
+
+## Setup Guide
+
+<Tabs>
+  <Tab title="Start from Scratch">
+    <Steps>
+      <Step title="Go to Slack Agents section">
+        In the xpander.ai console, navigate to the **[Slack Agents](https://app.xpander.ai/slack_agents)** section.
+        {/* Screenshot: Slack Agents section in xpander.ai UI */}
+      </Step>
+      <Step title="Create your Slack AI Agent">
+        Click **Create Agent** and follow the prompts to set up your new Slack AI Agent.
+        {/* Screenshot: Create Slack Agent form */}
+      </Step>
+      <Step title="Connect to your xpander AI Agent">
+        Link your Slack Agent to an existing xpander AI Agent, or create a new one if needed.
+        {/* Screenshot: Agent connection panel */}
+      </Step>
+      <Step title="Customize or build your agent">
+        You can further customize your agent's behavior, or build a new agent from scratch in xpander.ai for advanced use cases.
+        {/* Screenshot: Agent customization options */}
+      </Step>
+      <Step title="Start using your Slack Agent">
+        Once connected, your Slack Agent is ready to use in your workspace. Interact with it in channels or direct messages to automate tasks and get instant answers.
+        {/* Screenshot: Slack conversation with AI Agent */}
+      </Step>
+    </Steps>
+  </Tab>
+  
+  <Tab title="Deploy Template">
+    <Steps>
+      <Step title="Browse Agent Templates">
+        Go to the [xpander.ai Agent Hub](https://slack.xpander.ai/templates/) to find a list of ready-to-use AI Agents.
+        {/* Screenshot: xpander.ai Agent Hub page */}
+      </Step>
+      <Step title="Select and Deploy">
+        Choose an agent that fits your needs and click "Deploy". This will redirect you to Slack to authorize the installation.
+        {/* Screenshot: Slack authorization screen */}
+      </Step>
+      <Step title="Automatic Setup">
+        Once authorized, xpander.ai automatically deploys a Custom AI Agent template to your account and connects it to your new Slack Agent.
+        {/* Screenshot: Deployed agent template in xpander.ai UI */}
+      </Step>
+      <Step title="Start Using and Customize">
+        Your new agent is ready to use in Slack! You can further customize the underlying Custom AI Agent template from the xpander.ai console.
+        {/* Screenshot: Agent interacting in a Slack channel */}
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+
+Once your Slack integration is configured in the Workbench, your agent code remains simple and clean. The backend automatically handles all Slack-specific functionality:
 
 ```python
 from xpander_sdk import Backend
@@ -26,13 +106,4 @@ backend = Backend()
 slack_agent = Agent(**backend.get_args())
 ```
 
-## Setup Options
-
-Configure Slack integration through the UI, then your agent gains native Slack features:
-
-- Auto-engage based on message content
-- Process multimedia (images, audio, PDFs)
-- Thread management and user context
-- Conversation starters for new users
-
-Visit [slack.xpander.ai](https://slack.xpander.ai/) to connect agents to Slack workspaces or deploy ready-made templates.
+The `backend.get_args()` method includes all your Slack configuration, so your agent can immediately respond to Slack messages, process files, and use conversation history without any additional code.
