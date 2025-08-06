@@ -1,129 +1,57 @@
 ---
-title: "Simple Hello World with Agno Integration"
-description: "The simplest way to create an AI agent using xpander.ai SDK with Agno framework"
-icon: "rocket"
+title: "Simple Hello World with Xpander SDK"
+description: "The simplest way to create an AI agent using Xpander SDK - learn backend integration, configuration management, and stateful memory"
+icon: "sparkles"
 ---
 
-## Overview
+<AccordionGroup>
+<Accordion title="Prerequisites">
 
-This is the simplest possible hello world example using the xpander.ai SDK with Agno framework integration. The Backend class automatically provides all agent settings from the xpander.ai platform, making it incredibly easy to get started.
-
-## Quick Start
-
-### Prerequisites
-
-```bash
+### Virtual Environment Setup
+```bash setup.sh
+python3 -m venv .venv
+source .venv/bin/activate
 pip install "xpander-sdk[agno]"
 ```
 
 ### Environment Setup
-
-Create a `.env` file with your API keys:
+The `.env` file is created when you download your agent code:
 
 ```bash
-XPANDER_API_KEY=your_xpander_api_key
-XPANDER_ORGANIZATION_ID=your_organization_id
-XPANDER_AGENT_ID=your_agent_id
-OPENAI_API_KEY=your_openai_api_key  # or other LLM provider
-
+xpander init
 ```
 
-### Complete Hello World Agent
+This downloads your agent code from the platform with the `.env` file pre-configured with your keys.
 
-Create a file named `hello_world.py`:
+</Accordion>
+</AccordionGroup>
 
-```python
-from xpander_sdk import Backend, on_task, Task
+```python hello_world_example.py
+from dotenv import load_dotenv
+load_dotenv()
+
+from xpander_sdk import Backend
 from agno.agent import Agent
 
-@on_task
-async def on_task(task: Task):
-    # Get all agent settings from xpander.ai platform
-    backend = Backend()
-    
-    # Create Agno agent with platform settings
-    agno_agent = Agent(
-        **backend.agno_backend_args()
-    )
-    
-    # Process the task using Agno
-    result = await agno_agent.arun(message=task.to_message())
-    
-    # Set the result
-    task.result = result.content
-    
-    return task
+# Initialize Xpander Backend
+backend = Backend()
+
+# Create agent with backend configuration
+agno_agent = Agent(**backend.get_args())
+
+# Test stateful conversation
+agno_agent.print_response(message="What's your role?")
+agno_agent.print_response(message="What did I ask you?")
 ```
 
-That's it! Run your agent:
+## How to Run
 
-```bash
-python hello_world.py
+```bash hello_world_example.py
+python hello_world_example.py
 ```
 
-## How It Works
+This example shows Xpander Backend integration providing automatic agent configuration, centralized management through the dashboard, and stateful memory where the agent remembers previous interactions and maintains context across multiple messages.
 
-<Steps>
-  <Step title="Task Reception">
-    The `@on_task` decorator automatically listens for incoming tasks from the xpander.ai platform
-  </Step>
-  <Step title="Backend Integration">
-    `Backend().get_args()` fetches all agent configuration (instructions, tools, knowledge bases) from your xpander.ai agent
-  </Step>
-  <Step title="Agno Processing">
-    The Agno agent processes the task using the platform configuration with your chosen LLM
-  </Step>
-  <Step title="Result Return">
-    The processed result is automatically sent back to the platform
-  </Step>
-</Steps>
+## Production Deployment
 
-## Key Components
-
-### Backend Class
-- **Purpose**: Provides seamless integration with xpander.ai platform
-- **Method**: `get_args(override={})` - Fetches agent settings with optional overrides
-- **Benefits**: No manual configuration needed - everything comes from the platform
-
-### Task Object
-- **Properties**: Contains input data, files, user context, and metadata
-- **Method**: `to_message()` - Converts task to Agno-compatible message format
-- **Result**: Set `task.result` to return processed output
-
-### @on_task Decorator
-- **Function**: Automatically handles task lifecycle and event listening
-- **Requirements**: Function must accept `task` parameter and return the task
-- **Flexibility**: Supports both sync and async functions
-
-## Customization Options
-
-### Override Model Settings
-
-```python
-from agno.models.anthropic import Claude
-
-@on_task
-async def on_task(task: Task):
-    backend = Backend()
-    
-    agno_agent = Agent(
-        **backend.get_args(override={
-            "model": Claude(id="claude-3-sonnet-20240229"),
-            "temperature": 0.7
-        })
-    )
-    
-    result = await agno_agent.arun(message=task.to_message())
-    task.result = result.content
-    
-    return task
-```
-
-## Next Steps
-
-- [Backend Configuration Tools](/user-guide/backend-configuration/connectors)
-- [Knowledge Base Integration](/user-guide/backend-configuration/agent-memory) 
-- [Task Sources & Integrations](/user-guide/task-sources/slack)
-- [Production Deployment](/user-guide/task-sources/webhooks)
-
-This simple pattern gives you the full power of the xpander.ai platform with the flexibility of the Agno framework - all in just a few lines of code!
+For creating and deploying agents to production, see the [Setup and Deployment Guide](/Examples/00-setup-deployment).

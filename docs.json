@@ -59,13 +59,14 @@
             "group": "Examples",
             "pages": [
               "Examples/index",
+              "Examples/00-setup-deployment",
               "Examples/01-simple-hello-world",
-              "Examples/03-smart-support-agent",
-              "Examples/04-outage-manager-agent",
-              "Examples/05-supercharge-your-ide-with-mcp",
-              "Examples/06-travel-expense-assistant",
-              "Examples/07-github-pr-review-agent",
-              "Examples/08-aws-cost-report-agent"
+              "Examples/04-local-model-integration",
+              "Examples/05-custom-tools-integration", 
+              "Examples/06-async-task-handling",
+              "Examples/07-session-management",
+              "Examples/08-knowledge-base-rag",
+              "Examples/09-smart-support-agent"
             ]
           },
           {
