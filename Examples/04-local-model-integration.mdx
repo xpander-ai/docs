@@ -1,0 +1,69 @@
+---
+title: "Local Model Integration with Ollama"
+description: "Learn how to integrate local LLM models using Ollama with Xpander SDK for privacy-focused AI applications"
+icon: "computer"
+---
+
+<AccordionGroup>
+<Accordion title="Prerequisites">
+
+### Virtual Environment Setup
+```bash setup.sh
+python3 -m venv .venv
+source .venv/bin/activate
+pip install "xpander-sdk[agno]"
+```
+
+### Environment Setup
+The `.env` file is created when you download your agent code:
+
+```bash
+xpander init
+```
+
+This downloads your agent code from the platform with the `.env` file pre-configured with your keys.
+
+### Ollama Setup
+Install and start Ollama, then pull a model:
+```bash setup_ollama.sh
+# Install Ollama (follow instructions at https://ollama.ai)
+# Pull a model
+ollama pull gpt-oss:20b
+```
+
+</Accordion>
+</AccordionGroup>
+
+```python local_model_example.py
+from dotenv import load_dotenv
+load_dotenv()
+
+from xpander_sdk import Backend
+from agno.agent import Agent
+from agno.models.ollama import Ollama
+
+# Initialize backend
+backend = Backend()
+
+# Override model with local Ollama
+agno_agent = Agent(**backend.get_args(override={
+    'model': Ollama(id="gpt-oss:20b")
+}))
+
+# Test the local model
+agno_agent.print_response(message="How to install xpander-cli?")
+```
+
+## How to Run
+
+1. Make sure Ollama is running with your chosen model
+2. Run the example:
+```bash local_model_example.py
+python local_model_example.py
+```
+
+This example shows model override capabilities where you can use local Ollama models while maintaining all Xpander backend benefits including configuration management, conversation memory, and storage. The hybrid architecture provides local privacy for inference while keeping cloud-based features for everything else.
+
+## Production Deployment
+
+For creating and deploying agents to production, see the [Setup and Deployment Guide](/Examples/00-setup-deployment).

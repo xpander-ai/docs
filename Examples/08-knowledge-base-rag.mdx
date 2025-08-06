@@ -1,0 +1,79 @@
+---
+title: "Knowledge Base Integration (RAG)"
+description: "Learn how to integrate PDF documents and vector search capabilities with your AI agent for Retrieval-Augmented Generation"
+icon: "book-open"
+---
+
+<AccordionGroup>
+<Accordion title="Prerequisites">
+
+### Virtual Environment Setup
+```bash setup.sh
+python3 -m venv .venv
+source .venv/bin/activate
+pip install "xpander-sdk[agno]"
+```
+
+### Environment Setup
+The `.env` file is created when you download your agent code:
+
+```bash
+xpander init
+```
+
+This downloads your agent code from the platform with the `.env` file pre-configured with your keys.
+
+</Accordion>
+</AccordionGroup>
+
+```python knowledge_base_example.py
+from dotenv import load_dotenv
+load_dotenv()
+
+from xpander_sdk import Backend
+from agno.agent import Agent
+from agno.document.chunking.fixed import FixedSizeChunking
+from agno.knowledge.pdf_url import PDFUrlKnowledgeBase
+from agno.vectordb.pgvector import PgVector
+
+# Initialize backend and agent
+backend = Backend()
+agno_agent = Agent(**backend.get_args())
+
+# Get database connection from agent storage
+db_url = agno_agent.storage.db_url
+
+# Create knowledge base with PDF documents
+knowledge_base = PDFUrlKnowledgeBase(
+    urls=["https://agno-public.s3.amazonaws.com/recipes/ThaiRecipes.pdf"],
+    vector_db=PgVector(
+        table_name="recipes_fixed_size_chunking", 
+        db_url=db_url, 
+        auto_upgrade_schema=True, 
+        schema=agno_agent.storage.schema
+    ),
+    chunking_strategy=FixedSizeChunking(),
+)
+
+# Load documents into vector database
+knowledge_base.load(recreate=True)
+
+# Configure agent with knowledge base
+agno_agent.knowledge = knowledge_base
+agno_agent.search_knowledge = True
+
+# Query the knowledge base
+agno_agent.print_response("How to make Thai curry?", markdown=True)
+```
+
+## How to Run
+
+```bash knowledge_base_example.py
+python knowledge_base_example.py
+```
+
+This example shows automatic PDF document parsing and text extraction, vector embeddings creation for semantic search, and Retrieval-Augmented Generation where the agent searches the knowledge base for relevant information and integrates retrieved content seamlessly into LLM responses for enhanced accuracy.
+
+## Production Deployment
+
+For creating and deploying agents to production, see the [Setup and Deployment Guide](/Examples/00-setup-deployment).

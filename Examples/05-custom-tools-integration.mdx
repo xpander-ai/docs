@@ -1,0 +1,57 @@
+---
+title: "Custom Tools Integration"
+description: "Learn how to create and integrate custom tools with your AI agent using the @register_tool decorator"
+icon: "wrench"
+---
+
+<AccordionGroup>
+<Accordion title="Prerequisites">
+
+### Virtual Environment Setup
+```bash setup.sh
+python3 -m venv .venv
+source .venv/bin/activate
+pip install "xpander-sdk[agno]"
+```
+
+### Environment Setup
+The `.env` file is created when you download your agent code:
+
+```bash
+xpander init
+```
+
+This downloads your agent code from the platform with the `.env` file pre-configured with your keys.
+
+</Accordion>
+</AccordionGroup>
+
+```python custom_tools_example.py
+from dotenv import load_dotenv
+load_dotenv()
+
+from xpander_sdk import Backend, register_tool
+from agno.agent import Agent
+
+@register_tool 
+def weather_check(location: str) -> str:
+    """Check weather for a location"""
+    return f"Weather in {location}: Sunny, 25°C"
+
+backend = Backend()
+agno_agent = Agent(**backend.get_args())
+
+agno_agent.print_response(message="What's the weather in Tel Aviv?")
+```
+
+## How to Run
+
+```bash custom_tools_example.py
+python custom_tools_example.py
+```
+
+This example shows automatic tool discovery where the agent recognizes it needs weather information, calls the custom `weather_check` tool seamlessly during conversation, and uses the tool's response to provide a complete answer. Tools are registered with type hints and docstrings that help the AI understand their purpose and usage.
+
+## Production Deployment
+
+For creating and deploying agents to production, see the [Setup and Deployment Guide](/Examples/00-setup-deployment).

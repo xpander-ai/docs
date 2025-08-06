@@ -1,0 +1,49 @@
+---
+title: "Setup and Deployment Guide"
+description: "Learn how to set up Xpander CLI, create agents, and deploy them to production"
+icon: "rocket"
+---
+
+## Install Xpander CLI
+
+```bash
+npm install -g xpander-cli
+```
+
+## Create New Agent
+
+```bash
+xpander agent new
+```
+
+This will create a new folder with these files:
+
+- `xpander_handler.py` - Your agent's task handler
+- `requirements.txt` - Python dependencies  
+- `.env.example` - Environment template
+- `.env` - Environment from your agent with the keys
+- `Dockerfile` - For containerized deployment
+
+## Set Up Environment
+
+```bash setup.sh
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Check the  `.env` file from the example:
+
+```bash
+XPANDER_API_KEY=your_xpander_key_here
+XPANDER_ORGANIZATION_ID=your_org_id_here
+XPANDER_AGENT_ID=your_agent_id_here
+```
+
+## Deploy Your Agent
+
+```bash
+xpander deploy
+```
+
+Your agent will be deployed to the Xpander platform and ready to receive tasks through the dashboard or API.

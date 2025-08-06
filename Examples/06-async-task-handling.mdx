@@ -1,0 +1,52 @@
+---
+title: "Async Task Handling"
+description: "Learn how to handle asynchronous tasks with Xpander SDK using the @on_task decorator for background processing"
+icon: "clock"
+---
+
+<AccordionGroup>
+<Accordion title="Prerequisites">
+
+### Virtual Environment Setup
+```bash setup.sh
+python3 -m venv .venv
+source .venv/bin/activate
+pip install "xpander-sdk[agno]"
+```
+
+### Environment Setup
+The `.env` file is created when you download your agent code:
+
+```bash
+xpander init
+```
+
+This downloads your agent code from the platform with the `.env` file pre-configured with your keys.
+
+</Accordion>
+</AccordionGroup>
+
+```python async_task_example.py
+from dotenv import load_dotenv
+load_dotenv()
+
+from xpander_sdk import Task, Backend, on_task
+from agno.agent import Agent
+
+@on_task
+async def task_handler(task: Task):
+    backend = Backend()
+    agno_args = await backend.aget_args(task=task)
+    agno_agent = Agent(**agno_args)
+    
+    # Process task asynchronously
+    result = await agno_agent.arun(message=task.to_message())
+    task.result = result.content
+    return task
+```
+
+This example shows non-blocking task processing where multiple tasks can be handled concurrently without blocking other operations. It uses asynchronous backend initialization with `aget_args()` for optimal resource utilization and automatic task-to-message conversion with proper result handling.
+
+## Production Deployment
+
+For creating and deploying agents to production, see the [Setup and Deployment Guide](/Examples/00-setup-deployment).

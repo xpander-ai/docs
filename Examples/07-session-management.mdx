@@ -1,0 +1,71 @@
+---
+title: "Session Management"
+description: "Learn how to manage user sessions and memory for multi-user AI applications with Xpander SDK"
+icon: "users"
+---
+
+<AccordionGroup>
+<Accordion title="Prerequisites">
+
+### Virtual Environment Setup
+```bash setup.sh
+python3 -m venv .venv
+source .venv/bin/activate
+pip install "xpander-sdk[agno]"
+```
+
+### Environment Setup
+The `.env` file is created when you download your agent code:
+
+```bash
+xpander init
+```
+
+This downloads your agent code from the platform with the `.env` file pre-configured with your keys.
+
+</Accordion>
+</AccordionGroup>
+
+```python session_management_example.py
+from dotenv import load_dotenv
+load_dotenv()
+
+from xpander_sdk import Backend
+from agno.agent import Agent
+
+backend = Backend()
+agno_agent = Agent(**backend.get_args())
+
+# Tom's first session
+agno_agent.print_response(
+    message="Tell me a 5 second short story about a robot.", 
+    user_id="tom", 
+    session_id="tom_session1"
+)
+
+# Jerry's session
+agno_agent.print_response(
+    message="How many b in rabbit?", 
+    user_id="jerry", 
+    session_id="jerry_session1"
+)
+
+# Tom recalls his session
+agno_agent.print_response(
+    message="who am I, What did I ask you?", 
+    user_id="tom", 
+    session_id="tom_session1"
+)
+```
+
+## How to Run
+
+```bash session_management_example.py
+python session_management_example.py
+```
+
+This example shows user-specific memory where each user maintains separate conversation history, session isolation with clear boundaries between different contexts, and flexible access patterns. Tasks automatically include user sessions, making it seamless to maintain context in background processing without manual session management.
+
+## Production Deployment
+
+For creating and deploying agents to production, see the [Setup and Deployment Guide](/Examples/00-setup-deployment).
