@@ -5,11 +5,13 @@ icon: "brain"
 mode: "wide"
 ---
 
-There are two ways to control the AI model of your agents running on xpander.
+There are multiple ways to control the AI model of your agents running on xpander.
 
-**Centrally Managed** - xpander-provided API keys to the Model provider and model ID you select in the Agent Workbench (recommended).
+**Centrally Managed** - xpander-provided API keys with the model provider and model ID you select in the Agent Workbench (recommended).
 
-**Bring Your Own Model** - Use your own API keys with any LLM provider client directly in the code.
+**Custom = Bring Your Own Model** - Use your own API keys stored securely in xpander's vault, manageable through the workbench.
+
+**Local Override** - Directly specify API keys in your code for local development and testing.
 
 <Note>
 When you configure the model provider and model name in the Agent Workbench UI, xpander automatically provides the appropriate native client class to your agent at runtime, handling all the provider-specific setup and configuration for you.
@@ -17,36 +19,158 @@ When you configure the model provider and model name in the Agent Workbench UI, 
 
 <CodeGroup>
 
-```python Bring Your Own Model
+```python Centrally Managed
+from xpander_sdk import Backend
+from agno.agent import Agent
+
+# Uses xpander's provided API keys
+backend = Backend()
+agno_agent = Agent(**backend.get_args())
+agno_agent.print_response(message="What's your role?")
+```
+
+```python Custom (Vault-Stored Keys)
+from xpander_sdk import Backend
+from agno.agent import Agent
+
+# Uses your custom API keys stored in xpander's vault
+# Keys are managed through the workbench and automatically loaded
+backend = Backend()
+agno_agent = Agent(**backend.get_args())
+agno_agent.print_response(message="What's your role?")
+```
+
+```python Local Override
 from xpander_sdk import Backend
 from agno.agent import Agent, OpenAIChat
 
+# Override with local API key for development/testing
 backend = Backend()
 agno_agent = Agent(**backend.get_args(override={'model': OpenAIChat(api_key='your-openai-key')}))
 agno_agent.print_response(message="What's your role?")
 ```
 
-```python Centrally Managed
+</CodeGroup>
+
+## How to Use the Vault for Custom Keys
+
+xpander provides a secure vault to store and manage your custom LLM API keys. This allows you to bring your own keys without exposing them in your code, providing a secure and flexible way to manage credentials.
+
+### Storing Keys in the Vault
+
+1. **Navigate to the Workbench**: Go to your agent's settings in the xpander.ai workbench.
+2. **Add Custom Credentials**: In the "AI Model" section, select the "Custom" option and add a new credential. You'll be prompted to provide a name, description, and the API key value.
+3. **Save and Deploy**: Once saved, the key is stored securely in the vault and linked to your agent. Re-deploy your agent for the changes to take effect.
+
+<Info>
+All keys stored in the vault are encrypted and securely managed by xpander. You can update or delete them at any time from the workbench.
+</Info>
+
+### How it Works
+
+When your agent runs on xpander's serverless infrastructure, the `Backend` module automatically detects whether you've configured custom credentials. If so, it securely retrieves the key from the vault and injects it into the LLM client at runtime. This process is completely transparent to your code, allowing you to use `backend.get_args()` without any changes.
+
+For local development, you can still use the `override` parameter to test with different keys without affecting your production configuration. This hybrid approach gives you the best of both worlds: secure key management in production and flexibility during development.
+
+## Deployment Modes
+
+The custom credential system works seamlessly across different deployment modes:
+
+### xpander Serverless
+- Custom keys are securely retrieved from the vault
+- No additional configuration needed in your code
+- Full xpander backend capabilities (storage, memory, tools)
+
+### Local Development  
+- Environment variables take precedence over vault credentials
+- Use `.env` files for local API keys
+- Vault keys are used as fallback if env vars are not set
+
+### Own Infrastructure
+- Choose between environment variables or vault credentials
+- Full flexibility in credential management
+- Maintain security with vault or use local env vars
+
+## Supported Providers
+
+Currently supported LLM providers for custom credentials:
+
+- **OpenAI**: GPT-4, GPT-3.5, and other OpenAI models
+- **Anthropic**: Claude models (Sonnet, Haiku, Opus)
+- **Local Models**: Ollama and other local inference providers
+
+<Warning>
+Make sure your API keys have the necessary permissions for the models you want to use. Some providers require specific scopes or billing setups.
+</Warning>
+
+## Examples by Provider
+
+<CodeGroup>
+
+```python OpenAI with Custom Key
 from xpander_sdk import Backend
-from agno.agent import Agent
+from agno.agent import Agent, OpenAIChat
 
 backend = Backend()
+
+# Option 1: Use vault-stored key (configured in workbench)
 agno_agent = Agent(**backend.get_args())
-agno_agent.print_response(message="What's your role?")
+
+# Option 2: Override for local testing
+agno_agent = Agent(**backend.get_args(override={
+    'model': OpenAIChat(id='gpt-4o', api_key='sk-...')
+}))
+```
+
+```python Anthropic with Custom Key
+from xpander_sdk import Backend
+from agno.agent import Agent, Claude
+
+backend = Backend()
+
+# Option 1: Use vault-stored key (configured in workbench)
+agno_agent = Agent(**backend.get_args())
+
+# Option 2: Override for local testing  
+agno_agent = Agent(**backend.get_args(override={
+    'model': Claude(id='claude-3-5-sonnet-20241022', api_key='sk-ant-...')
+}))
+```
+
+```python Local Ollama Model
+from xpander_sdk import Backend
+from agno.agent import Agent
+from agno.models.ollama import Ollama
+
+backend = Backend()
+
+# Override with local Ollama model
+agno_agent = Agent(**backend.get_args(override={
+    'model': Ollama(id='llama3.1:8b')
+}))
 ```
 
 </CodeGroup>
 
 ## Key Differences
 
-**Centrally Managed (Recommended):**
+**Centrally Managed:**
 - No API key management in your code
 - Model configuration handled automatically by xpander
 - Simpler setup with just `backend.get_args()`
-- Secure - API keys managed centrally
+- Secure - API keys managed centrally by xpander
+- Recommended for production environments
 
-**Bring Your Own Model:**
-- You provide your own API key directly in the code
+**Custom (Vault-Stored):**
+- Your own API keys stored securely in xpander's vault
+- Managed through the workbench interface
+- Code remains clean with `backend.get_args()`
+- Full control over your LLM provider billing
+- Encrypted storage and secure key management
+
+**Local Override:**
+- Direct API key specification in code
 - Manual model configuration with `override` parameter
-- More control but requires API key management
-- Useful when you need to use your own API keys or custom model configurations
+- Best for development, testing, and experimentation
+- Immediate flexibility without workbench changes
+- Not recommended for production use
