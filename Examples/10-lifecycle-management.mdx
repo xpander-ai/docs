@@ -1,0 +1,241 @@
+---
+title: "Application Lifecycle Management"
+description: "Learn how to manage application initialization and cleanup using @on_boot and @on_shutdown decorators"
+icon: "power-off"
+---
+
+<AccordionGroup>
+<Accordion title="Prerequisites">
+
+### Virtual Environment Setup
+```bash setup.sh
+python3 -m venv .venv
+source .venv/bin/activate
+pip install "xpander-sdk[agno]"
+```
+
+### Environment Setup
+The `.env` file is created when you download your agent code:
+
+```bash
+xpander init
+```
+
+This downloads your agent code from the platform with the `.env` file pre-configured with your keys.
+
+</Accordion>
+</AccordionGroup>
+
+```python lifecycle_management.py
+from dotenv import load_dotenv
+load_dotenv()
+
+from xpander_sdk import Backend, on_boot, on_shutdown, on_task
+from agno.agent import Agent
+import asyncio
+
+# Global resources that need lifecycle management
+database_connection = None
+api_cache = {}
+metrics_collector = None
+
+@on_boot
+def validate_environment():
+    """Validate environment variables and configuration."""
+    import os
+    
+    print("🔍 Validating environment...")
+    required_vars = ["XPANDER_API_KEY", "XPANDER_ORGANIZATION_ID"]
+    missing = [var for var in required_vars if not os.getenv(var)]
+    
+    if missing:
+        raise EnvironmentError(f"Missing required variables: {missing}")
+    
+    print("✅ Environment validation passed")
+
+@on_boot
+async def initialize_database():
+    """Initialize database connection."""
+    global database_connection
+    
+    print("🗄️ Connecting to database...")
+    # Simulate async database connection
+    await asyncio.sleep(0.1)
+    database_connection = {"status": "connected", "pool": "mock_pool"}
+    print("✅ Database connection established")
+
+@on_boot
+def setup_cache():
+    """Initialize application cache."""
+    global api_cache
+    
+    print("🧠 Initializing cache...")
+    api_cache = {
+        "user_sessions": {},
+        "api_responses": {},
+        "temp_data": {}
+    }
+    print("✅ Cache initialized")
+
+@on_boot
+async def start_metrics_collection():
+    """Start background metrics collection."""
+    global metrics_collector
+    
+    print("📊 Starting metrics collection...")
+    await asyncio.sleep(0.05)
+    metrics_collector = {"active": True, "start_time": "now"}
+    print("✅ Metrics collection started")
+
+@on_task
+async def handle_data_request(task):
+    """Process data requests using initialized resources."""
+    global database_connection, api_cache
+    
+    print(f"📨 Processing task: {task.id}")
+    
+    # Use database connection
+    if database_connection and database_connection["status"] == "connected":
+        print("🔍 Querying database...")
+        # Simulate database query
+        query_result = f"Data for: {task.input.text[:50]}"
+    else:
+        query_result = "Database unavailable"
+    
+    # Use cache for faster responses
+    cache_key = hash(task.input.text)
+    if cache_key in api_cache["api_responses"]:
+        print("⚡ Using cached response")
+        cached_response = api_cache["api_responses"][cache_key]
+    else:
+        print("🔄 Generating new response")
+        cached_response = f"Processed: {query_result}"
+        api_cache["api_responses"][cache_key] = cached_response
+    
+    # Set task result
+    task.result = {
+        "status": "completed",
+        "data": cached_response,
+        "source": "database" if database_connection else "fallback",
+        "cached": cache_key in api_cache["api_responses"]
+    }
+    
+    print(f"✅ Task {task.id} completed")
+    return task
+
+@on_shutdown
+async def save_cache_to_storage():
+    """Save cache data before shutdown."""
+    global api_cache
+    
+    print("💾 Saving cache data...")
+    if api_cache:
+        # Simulate saving cache to persistent storage
+        await asyncio.sleep(0.1)
+        cache_size = sum(len(str(v)) for v in api_cache.values())
+        print(f"✅ Saved {cache_size} bytes of cache data")
+
+@on_shutdown
+async def close_database_connection():
+    """Close database connections gracefully."""
+    global database_connection
+    
+    print("🗄️ Closing database connections...")
+    if database_connection:
+        # Simulate graceful database shutdown
+        await asyncio.sleep(0.1)
+        database_connection = None
+        print("✅ Database connections closed")
+
+@on_shutdown
+def stop_metrics_collection():
+    """Stop metrics collection and save final report."""
+    global metrics_collector
+    
+    print("📊 Stopping metrics collection...")
+    if metrics_collector and metrics_collector["active"]:
+        # Simulate saving metrics report
+        metrics_collector["active"] = False
+        print("✅ Metrics report saved")
+
+@on_shutdown
+def final_cleanup():
+    """Final cleanup tasks."""
+    global api_cache, metrics_collector
+    
+    print("🧹 Performing final cleanup...")
+    
+    # Clear sensitive data from memory
+    if api_cache:
+        api_cache.clear()
+    
+    # Final cleanup
+    print("✅ All cleanup completed - ready for shutdown")
+
+# Initialize backend and agent
+backend = Backend()
+agno_agent = Agent(**backend.get_args())
+
+# The agent is now ready with proper lifecycle management
+print("🚀 Agent ready with lifecycle management!")
+print("📋 Try asking: 'Process some sample data'")
+
+agno_agent.print_response(message="Process this sample data for analysis")
+```
+
+## How to Run
+
+```bash lifecycle_management.py
+python lifecycle_management.py
+```
+
+## What This Example Demonstrates
+
+### Initialization Phase (`@on_boot`)
+1. **Environment Validation** - Checks required environment variables before starting
+2. **Database Setup** - Establishes database connections asynchronously  
+3. **Cache Initialization** - Sets up in-memory caches for performance
+4. **Metrics Collection** - Starts background monitoring systems
+
+### Task Processing (`@on_task`)
+- Uses resources initialized during boot phase
+- Demonstrates database queries and cache usage
+- Shows how lifecycle management enables shared resources
+
+### Cleanup Phase (`@on_shutdown`)
+1. **Data Persistence** - Saves cache data before shutdown
+2. **Connection Cleanup** - Gracefully closes database connections
+3. **Metrics Finalization** - Stops monitoring and saves reports
+4. **Memory Cleanup** - Clears sensitive data from memory
+
+## Key Features
+
+<CardGroup cols={2}>
+<Card title="Sequential Execution" icon="list-ol">
+Handlers execute in registration order, allowing proper dependency management
+</Card>
+
+<Card title="Mixed Async/Sync" icon="arrows-spin">
+Seamlessly combines synchronous and asynchronous initialization/cleanup tasks
+</Card>
+
+<Card title="Error Handling" icon="shield-exclamation">
+Boot failures prevent startup, shutdown errors are logged but don't block exit
+</Card>
+
+<Card title="Resource Management" icon="database">
+Proper initialization and cleanup of shared resources like databases and caches
+</Card>
+</CardGroup>
+
+## Best Practices Shown
+
+1. **Environment Validation** - Check requirements early in boot process
+2. **Resource Dependencies** - Initialize resources in correct order
+3. **Graceful Cleanup** - Properly close connections and save data on shutdown  
+4. **Error Resilience** - Handle cleanup gracefully even if resources are unavailable
+5. **Memory Management** - Clear sensitive data during shutdown
+
+## Production Deployment
+
+For creating and deploying agents to production, see the [Setup and Deployment Guide](/Examples/00-setup-deployment).
