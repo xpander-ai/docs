@@ -128,7 +128,7 @@ print(f"Task Result: {task.result}")
 
 ## Event-Driven Development
 
-The SDK supports event-driven programming with decorators:
+The SDK supports event-driven programming with decorators for task handling and lifecycle management:
 
 ### Asynchronous Usage
 
@@ -162,6 +162,31 @@ def handle_task(task):
     # Your custom logic here
     task.result = "Task processed successfully"
     return task
+```
+
+### Lifecycle Management
+
+```python
+from xpander_sdk import on_boot, on_shutdown, on_task
+
+# Initialize resources before task processing
+@on_boot
+async def initialize_resources():
+    print("Setting up database and cache...")
+    # Initialization logic here
+
+# Handle tasks with initialized resources
+@on_task
+async def process_task(task):
+    print(f"Processing task: {task.id}")
+    task.result = "Task completed"
+    return task
+
+# Clean up during shutdown
+@on_shutdown
+async def cleanup_resources():
+    print("Cleaning up resources...")
+    # Cleanup logic here
 ```
 
 ## Module Documentation
