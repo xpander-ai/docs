@@ -1,0 +1,1019 @@
+---
+title: "Lifecycle Management"
+description: "Advanced lifecycle management using @on_boot and @on_shutdown decorators for robust agent initialization and cleanup"
+icon: "arrows-rotate"
+---
+
+# Lifecycle Management
+
+**Lifecycle Management** in xpander.ai enables precise control over agent initialization and cleanup processes using the `@on_boot` and `@on_shutdown` decorators. This guide covers advanced patterns for building robust, production-ready agents.
+
+## Overview
+
+Effective lifecycle management ensures:
+
+<CardGroup cols={2}>
+<Card title="Reliable Startup" icon="play">
+Proper resource initialization before task processing begins
+</Card>
+
+<Card title="Graceful Shutdown" icon="stop">
+Clean resource cleanup and data persistence during shutdown
+</Card>
+
+<Card title="Error Resilience" icon="shield">
+Robust error handling throughout the application lifecycle
+</Card>
+
+<Card title="Resource Optimization" icon="gauge-high">
+Efficient resource allocation and deallocation
+</Card>
+</CardGroup>
+
+## Advanced Initialization Patterns
+
+### Sequential Dependency Management
+
+Handle complex initialization sequences with proper dependency ordering:
+
+```python
+from xpander_sdk import Backend, on_boot, on_shutdown, on_task
+import asyncio
+import logging
+from typing import Dict, Any, Optional
+
+# Global resources with dependency tracking
+resources = {
+    "database": None,
+    "cache": None,
+    "api_clients": {},
+    "message_queues": {},
+    "metrics_collector": None
+}
+
+initialization_order = []
+
+@on_boot
+def validate_environment():
+    """Step 1: Validate environment and configuration."""
+    import os
+    
+    initialization_order.append("environment_validation")
+    print("🔍 Step 1: Validating environment...")
+    
+    # Check required environment variables
+    required_vars = [
+        "XPANDER_API_KEY", "XPANDER_ORGANIZATION_ID",
+        "DATABASE_URL", "REDIS_URL", "LOG_LEVEL"
+    ]
+    
+    missing = [var for var in required_vars if not os.getenv(var)]
+    if missing:
+        raise EnvironmentError(f"Missing required variables: {missing}")
+    
+    # Validate configuration files
+    config_files = ["agent_config.json", "mcp_config.json"]
+    for config_file in config_files:
+        if not os.path.exists(config_file):
+            print(f"⚠️ Warning: {config_file} not found, using defaults")
+    
+    print("✅ Environment validation completed")
+
+@on_boot
+async def initialize_database():
+    """Step 2: Initialize database connections."""
+    global resources
+    
+    initialization_order.append("database_initialization")
+    print("🗄️ Step 2: Initializing database...")
+    
+    try:
+        # Simulate database connection with connection pooling
+        await asyncio.sleep(0.2)  # Simulate connection time
+        
+        resources["database"] = {
+            "status": "connected",
+            "pool_size": 10,
+            "connection_string": "postgres://...",
+            "created_at": asyncio.get_event_loop().time()
+        }
+        
+        # Test database connectivity
+        await test_database_connection()
+        
+        print("✅ Database initialization completed")
+        
+    except Exception as e:
+        print(f"❌ Database initialization failed: {e}")
+        raise
+
+async def test_database_connection():
+    """Test database connection and basic operations."""
+    # Simulate database query
+    await asyncio.sleep(0.1)
+    print("  📊 Database connectivity test passed")
+
+@on_boot
+async def setup_cache_layer():
+    """Step 3: Initialize caching layer."""
+    global resources
+    
+    initialization_order.append("cache_setup")
+    print("🧠 Step 3: Setting up cache layer...")
+    
+    try:
+        # Initialize Redis cache
+        resources["cache"] = {
+            "redis_client": "mock_redis_client",
+            "memory_cache": {},
+            "cache_stats": {
+                "hits": 0,
+                "misses": 0,
+                "size": 0
+            },
+            "ttl_default": 3600
+        }
+        
+        # Warm up cache with frequently accessed data
+        await warm_up_cache()
+        
+        print("✅ Cache layer setup completed")
+        
+    except Exception as e:
+        print(f"❌ Cache setup failed: {e}")
+        # Cache is non-critical, continue without it
+        resources["cache"] = None
+        print("⚠️ Continuing without cache layer")
+
+async def warm_up_cache():
+    """Pre-load frequently accessed data into cache."""
+    # Simulate cache warm-up
+    await asyncio.sleep(0.1)
+    if resources["cache"]:
+        resources["cache"]["memory_cache"]["user_preferences"] = {}
+        print("  🔥 Cache warm-up completed")
+
+@on_boot
+async def initialize_external_services():
+    """Step 4: Initialize external API clients and services."""
+    global resources
+    
+    initialization_order.append("external_services")
+    print("🌐 Step 4: Initializing external services...")
+    
+    try:
+        # Initialize API clients
+        api_configs = {
+            "openai": {"timeout": 30, "max_retries": 3},
+            "github": {"timeout": 15, "max_retries": 2},
+            "slack": {"timeout": 10, "max_retries": 3}
+        }
+        
+        for service, config in api_configs.items():
+            await initialize_api_client(service, config)
+        
+        print("✅ External services initialized")
+        
+    except Exception as e:
+        print(f"❌ External services initialization failed: {e}")
+        raise
+
+async def initialize_api_client(service: str, config: Dict[str, Any]):
+    """Initialize individual API client."""
+    await asyncio.sleep(0.05)  # Simulate initialization
+    
+    resources["api_clients"][service] = {
+        "client": f"mock_{service}_client",
+        "config": config,
+        "status": "ready",
+        "last_health_check": asyncio.get_event_loop().time()
+    }
+    
+    print(f"  🔌 {service.title()} API client initialized")
+
+@on_boot
+async def setup_monitoring():
+    """Step 5: Initialize monitoring and metrics collection."""
+    global resources
+    
+    initialization_order.append("monitoring_setup")
+    print("📊 Step 5: Setting up monitoring...")
+    
+    try:
+        resources["metrics_collector"] = {
+            "enabled": True,
+            "metrics": {
+                "requests_total": 0,
+                "requests_failed": 0,
+                "response_time_avg": 0,
+                "active_tasks": 0
+            },
+            "start_time": asyncio.get_event_loop().time()
+        }
+        
+        # Start background metrics collection
+        asyncio.create_task(collect_metrics_periodically())
+        
+        print("✅ Monitoring setup completed")
+        
+    except Exception as e:
+        print(f"❌ Monitoring setup failed: {e}")
+        # Monitoring is non-critical, continue without it
+        resources["metrics_collector"] = None
+        print("⚠️ Continuing without monitoring")
+
+async def collect_metrics_periodically():
+    """Background task for metrics collection."""
+    while resources.get("metrics_collector"):
+        try:
+            await asyncio.sleep(60)  # Collect every minute
+            if resources["metrics_collector"]:
+                # Update metrics
+                resources["metrics_collector"]["metrics"]["uptime"] = (
+                    asyncio.get_event_loop().time() - 
+                    resources["metrics_collector"]["start_time"]
+                )
+        except Exception as e:
+            print(f"⚠️ Metrics collection error: {e}")
+
+@on_boot
+def finalize_initialization():
+    """Step 6: Finalize initialization and log summary."""
+    initialization_order.append("finalization")
+    print("🚀 Step 6: Finalizing initialization...")
+    
+    # Log initialization summary
+    print("\n📋 Initialization Summary:")
+    print(f"  🔗 Steps completed: {len(initialization_order)}")
+    print(f"  🗄️ Database: {'✅' if resources['database'] else '❌'}")
+    print(f"  🧠 Cache: {'✅' if resources['cache'] else '❌'}")
+    print(f"  🌐 API Clients: {len(resources['api_clients'])}")
+    print(f"  📊 Monitoring: {'✅' if resources['metrics_collector'] else '❌'}")
+    
+    print("✅ Agent initialization completed successfully!")
+```
+
+### Conditional Initialization
+
+Implement initialization logic based on environment or configuration:
+
+```python
+import os
+from typing import Set
+
+@on_boot
+async def conditional_initialization():
+    """Initialize components based on environment and configuration."""
+    environment = os.getenv("ENVIRONMENT", "development")
+    enabled_features = set(os.getenv("ENABLED_FEATURES", "").split(","))
+    
+    print(f"🔧 Initializing for environment: {environment}")
+    print(f"🎛️ Enabled features: {enabled_features}")
+    
+    # Environment-specific initialization
+    if environment == "production":
+        await initialize_production_resources()
+    elif environment == "staging":
+        await initialize_staging_resources()
+    else:
+        await initialize_development_resources()
+    
+    # Feature-specific initialization
+    if "mcp_integration" in enabled_features:
+        await initialize_mcp_tools()
+    
+    if "advanced_analytics" in enabled_features:
+        await initialize_analytics_engine()
+    
+    if "auto_scaling" in enabled_features:
+        await initialize_auto_scaling()
+
+async def initialize_production_resources():
+    """Initialize resources for production environment."""
+    print("🏭 Initializing production resources...")
+    
+    # Production-specific configurations
+    resources["database_pool_size"] = 20
+    resources["cache_size"] = "512MB"
+    resources["log_level"] = "INFO"
+    resources["metrics_enabled"] = True
+    
+    # Initialize production monitoring
+    await setup_production_monitoring()
+
+async def initialize_development_resources():
+    """Initialize resources for development environment."""
+    print("🔧 Initializing development resources...")
+    
+    # Development-specific configurations
+    resources["database_pool_size"] = 5
+    resources["cache_size"] = "64MB" 
+    resources["log_level"] = "DEBUG"
+    resources["metrics_enabled"] = False
+    
+    # Enable development tools
+    await setup_development_tools()
+
+async def setup_development_tools():
+    """Setup development-specific tools."""
+    resources["dev_tools"] = {
+        "hot_reload": True,
+        "debug_endpoints": True,
+        "mock_services": True
+    }
+    print("  🛠️ Development tools enabled")
+```
+
+## Advanced Cleanup Patterns
+
+### Graceful Shutdown with Timeouts
+
+Implement robust shutdown procedures with proper timeout handling:
+
+```python
+import signal
+import asyncio
+from contextlib import asynccontextmanager
+
+# Shutdown coordination
+shutdown_event = asyncio.Event()
+active_tasks: Set[asyncio.Task] = set()
+
+@on_shutdown
+async def initiate_graceful_shutdown():
+    """Step 1: Signal shutdown to all components."""
+    print("🛑 Initiating graceful shutdown...")
+    
+    # Set shutdown event
+    shutdown_event.set()
+    
+    # Cancel background tasks gracefully
+    await cancel_background_tasks()
+    
+    print("✅ Shutdown signal sent to all components")
+
+async def cancel_background_tasks():
+    """Cancel all background tasks gracefully."""
+    print("🔄 Cancelling background tasks...")
+    
+    for task in list(active_tasks):
+        if not task.done():
+            task.cancel()
+            try:
+                await asyncio.wait_for(task, timeout=5.0)
+            except (asyncio.CancelledError, asyncio.TimeoutError):
+                print(f"  ⚠️ Task cancelled: {task.get_name()}")
+    
+    print("✅ Background tasks cancelled")
+
+@on_shutdown
+async def save_application_state():
+    """Step 2: Save critical application state."""
+    print("💾 Saving application state...")
+    
+    try:
+        # Save cache data with timeout
+        await asyncio.wait_for(
+            save_cache_to_persistent_storage(),
+            timeout=30.0
+        )
+        
+        # Save metrics with timeout
+        await asyncio.wait_for(
+            save_metrics_data(),
+            timeout=10.0
+        )
+        
+        # Save task queue state
+        await asyncio.wait_for(
+            save_task_queue_state(),
+            timeout=15.0
+        )
+        
+        print("✅ Application state saved")
+        
+    except asyncio.TimeoutError:
+        print("⚠️ State saving timed out, some data may be lost")
+    except Exception as e:
+        print(f"❌ Error saving application state: {e}")
+
+async def save_cache_to_persistent_storage():
+    """Save cache data to persistent storage."""
+    if resources.get("cache") and resources["cache"].get("memory_cache"):
+        cache_data = resources["cache"]["memory_cache"]
+        
+        # Simulate saving to persistent storage
+        await asyncio.sleep(0.2)
+        
+        cache_size = len(str(cache_data))
+        print(f"  💾 Saved {cache_size} bytes of cache data")
+
+async def save_metrics_data():
+    """Save metrics data before shutdown."""
+    if resources.get("metrics_collector"):
+        metrics = resources["metrics_collector"]["metrics"]
+        
+        # Simulate saving metrics
+        await asyncio.sleep(0.1)
+        
+        print(f"  📊 Saved metrics: {len(metrics)} data points")
+
+@on_shutdown
+async def cleanup_external_connections():
+    """Step 3: Clean up external connections."""
+    print("🔌 Cleaning up external connections...")
+    
+    cleanup_tasks = []
+    
+    # Cleanup API clients
+    for service, client_info in resources.get("api_clients", {}).items():
+        cleanup_tasks.append(cleanup_api_client(service, client_info))
+    
+    # Cleanup database connections
+    if resources.get("database"):
+        cleanup_tasks.append(cleanup_database_connections())
+    
+    # Execute cleanup tasks with timeout
+    try:
+        await asyncio.wait_for(
+            asyncio.gather(*cleanup_tasks, return_exceptions=True),
+            timeout=30.0
+        )
+        print("✅ External connections cleaned up")
+    except asyncio.TimeoutError:
+        print("⚠️ Connection cleanup timed out")
+
+async def cleanup_api_client(service: str, client_info: Dict[str, Any]):
+    """Cleanup individual API client."""
+    try:
+        # Simulate client cleanup
+        await asyncio.sleep(0.05)
+        print(f"  🔌 {service.title()} client disconnected")
+    except Exception as e:
+        print(f"  ❌ Error cleaning up {service}: {e}")
+
+async def cleanup_database_connections():
+    """Cleanup database connections."""
+    try:
+        if resources["database"]:
+            # Simulate database cleanup
+            await asyncio.sleep(0.1)
+            resources["database"] = None
+            print("  🗄️ Database connections closed")
+    except Exception as e:
+        print(f"  ❌ Database cleanup error: {e}")
+
+@on_shutdown
+async def final_cleanup():
+    """Step 4: Final cleanup and resource deallocation."""
+    print("🧹 Performing final cleanup...")
+    
+    try:
+        # Clear sensitive data from memory
+        if resources.get("cache"):
+            if "memory_cache" in resources["cache"]:
+                resources["cache"]["memory_cache"].clear()
+        
+        # Clear API client credentials
+        for client_info in resources.get("api_clients", {}).values():
+            if "credentials" in client_info:
+                client_info["credentials"] = None
+        
+        # Generate shutdown report
+        await generate_shutdown_report()
+        
+        print("✅ Final cleanup completed")
+        
+    except Exception as e:
+        print(f"❌ Final cleanup error: {e}")
+
+async def generate_shutdown_report():
+    """Generate and log shutdown report."""
+    if resources.get("metrics_collector"):
+        metrics = resources["metrics_collector"]["metrics"]
+        uptime = asyncio.get_event_loop().time() - resources["metrics_collector"]["start_time"]
+        
+        print("\n📊 Shutdown Report:")
+        print(f"  ⏱️ Uptime: {uptime:.2f} seconds")
+        print(f"  📋 Total requests: {metrics.get('requests_total', 0)}")
+        print(f"  ❌ Failed requests: {metrics.get('requests_failed', 0)}")
+        print(f"  📏 Avg response time: {metrics.get('response_time_avg', 0):.2f}ms")
+
+@on_shutdown  
+def log_shutdown_completion():
+    """Step 5: Log shutdown completion."""
+    print("🏁 Shutdown sequence completed")
+    print("👋 Agent terminated gracefully")
+```
+
+## Error Recovery and Resilience
+
+### Boot Failure Recovery
+
+Handle initialization failures with recovery mechanisms:
+
+```python
+from typing import List, Callable
+import traceback
+
+class InitializationError(Exception):
+    """Custom exception for initialization failures."""
+    pass
+
+class BootRecoveryManager:
+    def __init__(self):
+        self.failed_components: List[str] = []
+        self.recovery_strategies: Dict[str, Callable] = {}
+        self.critical_components = {"database", "api_clients"}
+    
+    def register_recovery_strategy(self, component: str, strategy: Callable):
+        """Register recovery strategy for a component."""
+        self.recovery_strategies[component] = strategy
+    
+    async def attempt_recovery(self, component: str, error: Exception):
+        """Attempt to recover from component failure."""
+        print(f"🔄 Attempting recovery for {component}...")
+        
+        if component in self.recovery_strategies:
+            try:
+                await self.recovery_strategies[component]()
+                print(f"✅ Recovery successful for {component}")
+                return True
+            except Exception as recovery_error:
+                print(f"❌ Recovery failed for {component}: {recovery_error}")
+                return False
+        
+        return False
+    
+    def is_critical_failure(self, component: str) -> bool:
+        """Check if component failure is critical."""
+        return component in self.critical_components
+
+# Global recovery manager
+recovery_manager = BootRecoveryManager()
+
+@on_boot
+async def resilient_database_initialization():
+    """Initialize database with recovery capability."""
+    component = "database"
+    
+    try:
+        await initialize_database()
+        
+    except Exception as e:
+        print(f"❌ Database initialization failed: {e}")
+        recovery_manager.failed_components.append(component)
+        
+        # Attempt recovery
+        recovery_success = await recovery_manager.attempt_recovery(component, e)
+        
+        if not recovery_success and recovery_manager.is_critical_failure(component):
+            print("🚨 Critical component failure - cannot start agent")
+            raise InitializationError(f"Critical component {component} failed to initialize")
+        
+        if not recovery_success:
+            print(f"⚠️ Non-critical component {component} failed - continuing with reduced functionality")
+
+# Recovery strategies
+async def database_recovery_strategy():
+    """Recovery strategy for database failures."""
+    print("  🔄 Trying alternative database connection...")
+    
+    # Try backup database
+    backup_url = os.getenv("BACKUP_DATABASE_URL")
+    if backup_url:
+        await asyncio.sleep(0.2)  # Simulate connection
+        resources["database"] = {
+            "status": "connected",
+            "connection_string": backup_url,
+            "mode": "backup"
+        }
+        print("  ✅ Connected to backup database")
+    else:
+        # Use in-memory fallback
+        resources["database"] = {
+            "status": "connected", 
+            "connection_string": "memory://",
+            "mode": "fallback"
+        }
+        print("  ⚠️ Using in-memory database fallback")
+
+async def cache_recovery_strategy():
+    """Recovery strategy for cache failures."""
+    print("  🔄 Setting up in-memory cache fallback...")
+    
+    resources["cache"] = {
+        "memory_cache": {},
+        "mode": "fallback",
+        "redis_client": None
+    }
+    print("  ✅ In-memory cache fallback active")
+
+# Register recovery strategies
+recovery_manager.register_recovery_strategy("database", database_recovery_strategy)
+recovery_manager.register_recovery_strategy("cache", cache_recovery_strategy)
+```
+
+### Shutdown Error Handling
+
+Handle cleanup errors gracefully:
+
+```python
+import logging
+from contextlib import suppress
+
+# Configure shutdown logging
+shutdown_logger = logging.getLogger("shutdown")
+
+@on_shutdown
+async def error_tolerant_cleanup():
+    """Perform cleanup with comprehensive error handling."""
+    cleanup_results = {
+        "cache_cleanup": False,
+        "database_cleanup": False,
+        "api_cleanup": False,
+        "file_cleanup": False
+    }
+    
+    # Cache cleanup with error suppression
+    with suppress(Exception):
+        await cleanup_cache_safely()
+        cleanup_results["cache_cleanup"] = True
+    
+    # Database cleanup with specific error handling
+    try:
+        await cleanup_database_safely()
+        cleanup_results["database_cleanup"] = True
+    except Exception as e:
+        shutdown_logger.error(f"Database cleanup failed: {e}")
+        # Try emergency database disconnect
+        with suppress(Exception):
+            await emergency_database_disconnect()
+    
+    # API cleanup with retries
+    cleanup_results["api_cleanup"] = await cleanup_apis_with_retry()
+    
+    # File system cleanup
+    with suppress(Exception):
+        await cleanup_temporary_files()
+        cleanup_results["file_cleanup"] = True
+    
+    # Log cleanup summary
+    successful_cleanups = sum(cleanup_results.values())
+    total_cleanups = len(cleanup_results)
+    
+    shutdown_logger.info(f"Cleanup completed: {successful_cleanups}/{total_cleanups} successful")
+    
+    if successful_cleanups < total_cleanups:
+        shutdown_logger.warning("Some cleanup operations failed - check logs for details")
+
+async def cleanup_cache_safely():
+    """Safely cleanup cache with error handling."""
+    if resources.get("cache"):
+        try:
+            # Save important cache data
+            await save_cache_to_persistent_storage()
+            
+            # Clear cache
+            if "memory_cache" in resources["cache"]:
+                resources["cache"]["memory_cache"].clear()
+            
+            print("✅ Cache cleanup completed")
+            
+        except Exception as e:
+            print(f"❌ Cache cleanup error: {e}")
+            # Force clear cache memory
+            resources["cache"] = None
+
+async def cleanup_apis_with_retry(max_retries: int = 3):
+    """Cleanup API clients with retry logic."""
+    success = True
+    
+    for service, client_info in resources.get("api_clients", {}).items():
+        for attempt in range(max_retries):
+            try:
+                await cleanup_api_client(service, client_info)
+                break
+            except Exception as e:
+                print(f"❌ API cleanup attempt {attempt + 1} failed for {service}: {e}")
+                if attempt == max_retries - 1:
+                    success = False
+                    # Force disconnect
+                    client_info["status"] = "disconnected"
+                else:
+                    await asyncio.sleep(1)  # Wait before retry
+    
+    return success
+
+async def emergency_database_disconnect():
+    """Emergency database disconnection."""
+    print("🚨 Emergency database disconnect")
+    resources["database"] = None
+
+async def cleanup_temporary_files():
+    """Clean up temporary files created during execution."""
+    import tempfile
+    import shutil
+    
+    temp_dir = tempfile.gettempdir()
+    agent_temp_pattern = "xpander_agent_*"
+    
+    # Simulate cleanup of temporary files
+    await asyncio.sleep(0.1)
+    print("🗑️ Temporary files cleaned up")
+```
+
+## Advanced Patterns
+
+### State Persistence During Lifecycle
+
+Maintain state consistency across initialization and shutdown:
+
+```python
+import json
+import pickle
+from pathlib import Path
+
+class StatePersistenceManager:
+    def __init__(self, state_file: str = "agent_state.json"):
+        self.state_file = Path(state_file)
+        self.state_data = {}
+    
+    async def load_previous_state(self):
+        """Load state from previous execution."""
+        if self.state_file.exists():
+            try:
+                with open(self.state_file, 'r') as f:
+                    self.state_data = json.load(f)
+                print(f"📥 Loaded previous state: {len(self.state_data)} entries")
+                return self.state_data
+            except Exception as e:
+                print(f"⚠️ Could not load previous state: {e}")
+        
+        return {}
+    
+    async def save_current_state(self):
+        """Save current state to file."""
+        try:
+            # Prepare state data
+            state_to_save = {
+                "timestamp": asyncio.get_event_loop().time(),
+                "resources": self._serialize_resources(),
+                "metrics": resources.get("metrics_collector", {}).get("metrics", {}),
+                "active_sessions": self._get_active_sessions()
+            }
+            
+            with open(self.state_file, 'w') as f:
+                json.dump(state_to_save, f, indent=2)
+            
+            print(f"💾 State saved: {len(state_to_save)} entries")
+            
+        except Exception as e:
+            print(f"❌ State save failed: {e}")
+    
+    def _serialize_resources(self):
+        """Serialize resources for state persistence."""
+        serializable_resources = {}
+        
+        for key, value in resources.items():
+            if key == "database" and value:
+                serializable_resources[key] = {
+                    "status": value.get("status"),
+                    "mode": value.get("mode", "normal")
+                }
+            elif key == "cache" and value:
+                serializable_resources[key] = {
+                    "size": len(value.get("memory_cache", {})),
+                    "stats": value.get("cache_stats", {})
+                }
+            elif isinstance(value, (str, int, float, bool, list, dict)):
+                serializable_resources[key] = value
+        
+        return serializable_resources
+    
+    def _get_active_sessions(self):
+        """Get information about active sessions."""
+        # This would integrate with your session management system
+        return {"count": 0, "last_activity": None}
+
+# Global state manager
+state_manager = StatePersistenceManager()
+
+@on_boot
+async def restore_previous_state():
+    """Restore state from previous execution."""
+    print("📥 Restoring previous state...")
+    
+    previous_state = await state_manager.load_previous_state()
+    
+    if previous_state:
+        # Restore cache data
+        if "resources" in previous_state and "cache" in previous_state["resources"]:
+            await restore_cache_from_state(previous_state["resources"]["cache"])
+        
+        # Restore metrics baseline
+        if "metrics" in previous_state:
+            await restore_metrics_from_state(previous_state["metrics"])
+        
+        print("✅ Previous state restored")
+    else:
+        print("ℹ️ No previous state found - starting fresh")
+
+async def restore_cache_from_state(cache_state: dict):
+    """Restore cache from previous state."""
+    if resources.get("cache"):
+        resources["cache"]["cache_stats"] = cache_state.get("stats", {})
+        print(f"  🧠 Cache stats restored: {cache_state.get('size', 0)} items")
+
+async def restore_metrics_from_state(metrics_state: dict):
+    """Restore metrics baseline from previous state."""
+    if resources.get("metrics_collector"):
+        # Set baseline metrics
+        resources["metrics_collector"]["metrics"].update({
+            "total_historical_requests": metrics_state.get("requests_total", 0)
+        })
+        print(f"  📊 Metrics baseline restored")
+
+@on_shutdown
+async def persist_current_state():
+    """Persist current state before shutdown."""
+    print("💾 Persisting current state...")
+    await state_manager.save_current_state()
+```
+
+### Health Check Integration
+
+Integrate health checks into the lifecycle:
+
+```python
+from typing import Dict, List, Tuple
+import time
+
+class HealthChecker:
+    def __init__(self):
+        self.health_checks: Dict[str, Callable] = {}
+        self.last_check_results: Dict[str, Tuple[bool, str]] = {}
+    
+    def register_health_check(self, name: str, check_func: Callable):
+        """Register a health check function."""
+        self.health_checks[name] = check_func
+    
+    async def run_health_checks(self) -> Dict[str, bool]:
+        """Run all registered health checks."""
+        results = {}
+        
+        for name, check_func in self.health_checks.items():
+            try:
+                is_healthy, message = await check_func()
+                results[name] = is_healthy
+                self.last_check_results[name] = (is_healthy, message)
+                
+                status_icon = "✅" if is_healthy else "❌"
+                print(f"  {status_icon} {name}: {message}")
+                
+            except Exception as e:
+                results[name] = False
+                self.last_check_results[name] = (False, f"Check failed: {e}")
+                print(f"  ❌ {name}: Check failed - {e}")
+        
+        return results
+
+# Global health checker
+health_checker = HealthChecker()
+
+@on_boot
+async def register_health_checks():
+    """Register all health check functions."""
+    print("🏥 Registering health checks...")
+    
+    # Register database health check
+    health_checker.register_health_check("database", check_database_health)
+    health_checker.register_health_check("cache", check_cache_health)
+    health_checker.register_health_check("api_clients", check_api_clients_health)
+    health_checker.register_health_check("disk_space", check_disk_space)
+    health_checker.register_health_check("memory", check_memory_usage)
+    
+    print("✅ Health checks registered")
+
+@on_boot
+async def initial_health_check():
+    """Perform initial health check after initialization."""
+    print("🏥 Performing initial health check...")
+    
+    health_results = await health_checker.run_health_checks()
+    
+    failed_checks = [name for name, healthy in health_results.items() if not healthy]
+    
+    if failed_checks:
+        print(f"⚠️ Health check failures: {failed_checks}")
+        
+        # Determine if failures are critical
+        critical_checks = {"database", "api_clients"}
+        critical_failures = [check for check in failed_checks if check in critical_checks]
+        
+        if critical_failures:
+            raise InitializationError(f"Critical health check failures: {critical_failures}")
+    else:
+        print("✅ All health checks passed")
+
+# Health check functions
+async def check_database_health() -> Tuple[bool, str]:
+    """Check database connectivity and performance."""
+    if not resources.get("database"):
+        return False, "Database not initialized"
+    
+    try:
+        # Simulate database ping
+        start_time = time.time()
+        await asyncio.sleep(0.01)  # Simulate query
+        response_time = (time.time() - start_time) * 1000
+        
+        if response_time > 100:
+            return False, f"Database slow: {response_time:.1f}ms"
+        
+        return True, f"Database healthy: {response_time:.1f}ms"
+        
+    except Exception as e:
+        return False, f"Database error: {e}"
+
+async def check_cache_health() -> Tuple[bool, str]:
+    """Check cache performance and availability."""
+    if not resources.get("cache"):
+        return True, "Cache not configured (optional)"
+    
+    try:
+        cache_stats = resources["cache"].get("cache_stats", {})
+        hit_rate = cache_stats.get("hits", 0) / max(cache_stats.get("hits", 0) + cache_stats.get("misses", 0), 1)
+        
+        return True, f"Cache healthy: {hit_rate:.1%} hit rate"
+        
+    except Exception as e:
+        return False, f"Cache error: {e}"
+
+async def check_api_clients_health() -> Tuple[bool, str]:
+    """Check external API client connectivity."""
+    if not resources.get("api_clients"):
+        return True, "No API clients configured"
+    
+    healthy_clients = 0
+    total_clients = len(resources["api_clients"])
+    
+    for service, client_info in resources["api_clients"].items():
+        if client_info.get("status") == "ready":
+            healthy_clients += 1
+    
+    if healthy_clients == total_clients:
+        return True, f"All {total_clients} API clients healthy"
+    else:
+        return False, f"Only {healthy_clients}/{total_clients} API clients healthy"
+
+async def check_disk_space() -> Tuple[bool, str]:
+    """Check available disk space."""
+    import shutil
+    
+    try:
+        total, used, free = shutil.disk_usage("/")
+        free_percent = (free / total) * 100
+        
+        if free_percent < 10:
+            return False, f"Low disk space: {free_percent:.1f}% free"
+        
+        return True, f"Disk space healthy: {free_percent:.1f}% free"
+        
+    except Exception as e:
+        return False, f"Disk check error: {e}"
+
+async def check_memory_usage() -> Tuple[bool, str]:
+    """Check memory usage."""
+    import psutil
+    
+    try:
+        memory = psutil.virtual_memory()
+        if memory.percent > 90:
+            return False, f"High memory usage: {memory.percent:.1f}%"
+        
+        return True, f"Memory healthy: {memory.percent:.1f}% used"
+        
+    except Exception as e:
+        return False, f"Memory check error: {e}"
+
+@on_shutdown
+async def final_health_report():
+    """Generate final health report before shutdown."""
+    print("🏥 Final health report:")
+    
+    health_results = await health_checker.run_health_checks()
+    
+    healthy_count = sum(health_results.values())
+    total_count = len(health_results)
+    
+    print(f"📊 Health summary: {healthy_count}/{total_count} checks passed")
+```
+
+## Related Documentation
+
+- [MCP Integration Guide](/user-guide/backend-configuration/mcp-integration-guide): Managing MCP tools lifecycle
+- [Performance Best Practices](/user-guide/backend-configuration/performance-best-practices): Performance optimization during lifecycle
+- [Status Management Guide](/user-guide/backend-configuration/status-management): Monitoring agent status
+- [API Reference: Lifecycle Events](/API reference/events/api-reference/lifecycle): @on_boot and @on_shutdown decorators
+- [Examples: Lifecycle Management](/Examples/10-lifecycle-management): Complete lifecycle example

@@ -1,0 +1,1211 @@
+---
+title: "Performance Best Practices"
+description: "Comprehensive guide to optimizing xpander.ai agent performance, including caching strategies, resource management, and scalability patterns"
+icon: "gauge-high"
+---
+
+# Performance Best Practices
+
+Optimizing **xpander.ai agent performance** requires careful consideration of resource management, caching strategies, asynchronous operations, and scalability patterns. This guide provides comprehensive best practices for building high-performance agents.
+
+## Overview
+
+Key performance optimization areas:
+
+<CardGroup cols={2}>
+<Card title="Resource Optimization" icon="memory">
+Efficient memory and CPU usage through smart resource allocation
+</Card>
+
+<Card title="Caching Strategies" icon="database">
+Multi-layered caching for faster response times and reduced external calls
+</Card>
+
+<Card title="Async Operations" icon="bolt">
+Non-blocking operations and parallel task processing
+</Card>
+
+<Card title="Connection Pooling" icon="network-wired">
+Optimized connection management for external services
+</Card>
+</CardGroup>
+
+## Caching Strategies
+
+### Multi-Layer Caching Architecture
+
+Implement sophisticated caching to minimize latency and external API calls:
+
+```python
+from xpander_sdk import Backend, on_boot, on_shutdown, on_task
+import asyncio
+import hashlib
+import time
+import json
+from typing import Any, Dict, Optional, Union
+from dataclasses import dataclass, asdict
+from enum import Enum
+
+class CacheLevel(Enum):
+    MEMORY = "memory"
+    REDIS = "redis"
+    DATABASE = "database"
+    DISK = "disk"
+
+@dataclass
+class CacheEntry:
+    """Structured cache entry with metadata."""
+    data: Any
+    created_at: float
+    expires_at: Optional[float] = None
+    access_count: int = 0
+    last_accessed: float = None
+    size_bytes: int = 0
+    cache_level: CacheLevel = CacheLevel.MEMORY
+    
+    def is_expired(self) -> bool:
+        """Check if cache entry has expired."""
+        return self.expires_at is not None and time.time() > self.expires_at
+    
+    def touch(self):
+        """Update access statistics."""
+        self.access_count += 1
+        self.last_accessed = time.time()
+
+class PerformanceCacheManager:
+    """Advanced multi-layer cache manager."""
+    
+    def __init__(self):
+        self.memory_cache: Dict[str, CacheEntry] = {}
+        self.redis_client = None
+        self.db_cache = None
+        self.cache_stats = {
+            "hits": 0,
+            "misses": 0,
+            "evictions": 0,
+            "memory_usage": 0
+        }
+        self.max_memory_entries = 1000
+        self.default_ttl = 3600  # 1 hour
+    
+    async def get(self, key: str, default: Any = None) -> Any:
+        """Get value from cache with fallback through cache levels."""
+        cache_key = self._hash_key(key)
+        
+        # Level 1: Memory cache
+        if cache_key in self.memory_cache:
+            entry = self.memory_cache[cache_key]
+            if not entry.is_expired():
+                entry.touch()
+                self.cache_stats["hits"] += 1
+                print(f"🚀 Cache HIT (Memory): {key}")
+                return entry.data
+            else:
+                # Remove expired entry
+                del self.memory_cache[cache_key]
+        
+        # Level 2: Redis cache
+        if self.redis_client:
+            try:
+                redis_data = await self._get_from_redis(cache_key)
+                if redis_data is not None:
+                    # Promote to memory cache
+                    await self._promote_to_memory(key, redis_data, CacheLevel.REDIS)
+                    self.cache_stats["hits"] += 1
+                    print(f"🔄 Cache HIT (Redis): {key}")
+                    return redis_data
+            except Exception as e:
+                print(f"⚠️ Redis cache error: {e}")
+        
+        # Level 3: Database cache
+        if self.db_cache:
+            try:
+                db_data = await self._get_from_database(cache_key)
+                if db_data is not None:
+                    # Promote through cache levels
+                    await self._promote_to_memory(key, db_data, CacheLevel.DATABASE)
+                    if self.redis_client:
+                        await self._store_in_redis(cache_key, db_data)
+                    self.cache_stats["hits"] += 1
+                    print(f"🗄️ Cache HIT (Database): {key}")
+                    return db_data
+            except Exception as e:
+                print(f"⚠️ Database cache error: {e}")
+        
+        # Cache miss
+        self.cache_stats["misses"] += 1
+        print(f"❌ Cache MISS: {key}")
+        return default
+    
+    async def set(self, key: str, value: Any, ttl: Optional[int] = None, 
+                  cache_levels: list = None) -> bool:
+        """Set value in specified cache levels."""
+        if cache_levels is None:
+            cache_levels = [CacheLevel.MEMORY, CacheLevel.REDIS]
+        
+        cache_key = self._hash_key(key)
+        ttl = ttl or self.default_ttl
+        expires_at = time.time() + ttl if ttl > 0 else None
+        
+        success = True
+        
+        # Store in memory cache
+        if CacheLevel.MEMORY in cache_levels:
+            await self._store_in_memory(cache_key, value, expires_at)
+        
+        # Store in Redis
+        if CacheLevel.REDIS in cache_levels and self.redis_client:
+            try:
+                success &= await self._store_in_redis(cache_key, value, ttl)
+            except Exception as e:
+                print(f"⚠️ Redis store error: {e}")
+                success = False
+        
+        # Store in database
+        if CacheLevel.DATABASE in cache_levels and self.db_cache:
+            try:
+                success &= await self._store_in_database(cache_key, value, expires_at)
+            except Exception as e:
+                print(f"⚠️ Database store error: {e}")
+                success = False
+        
+        return success
+    
+    async def _store_in_memory(self, key: str, value: Any, expires_at: Optional[float]):
+        """Store value in memory cache with LRU eviction."""
+        # Calculate approximate size
+        size_bytes = len(str(value).encode('utf-8'))
+        
+        # Check if we need to evict entries
+        if len(self.memory_cache) >= self.max_memory_entries:
+            await self._evict_lru_entries()
+        
+        entry = CacheEntry(
+            data=value,
+            created_at=time.time(),
+            expires_at=expires_at,
+            size_bytes=size_bytes,
+            cache_level=CacheLevel.MEMORY
+        )
+        
+        self.memory_cache[key] = entry
+        self.cache_stats["memory_usage"] += size_bytes
+    
+    async def _evict_lru_entries(self, count: int = 100):
+        """Evict least recently used entries."""
+        if not self.memory_cache:
+            return
+        
+        # Sort by last accessed time
+        sorted_entries = sorted(
+            self.memory_cache.items(),
+            key=lambda x: x[1].last_accessed or x[1].created_at
+        )
+        
+        # Evict oldest entries
+        for i in range(min(count, len(sorted_entries))):
+            key, entry = sorted_entries[i]
+            self.cache_stats["memory_usage"] -= entry.size_bytes
+            self.cache_stats["evictions"] += 1
+            del self.memory_cache[key]
+        
+        print(f"🗑️ Evicted {count} cache entries")
+    
+    async def _promote_to_memory(self, key: str, value: Any, source_level: CacheLevel):
+        """Promote cache entry to memory level."""
+        cache_key = self._hash_key(key)
+        await self._store_in_memory(cache_key, value, None)
+        print(f"⬆️ Promoted cache entry from {source_level.value} to memory")
+    
+    def _hash_key(self, key: str) -> str:
+        """Generate consistent hash for cache key."""
+        return hashlib.md5(key.encode()).hexdigest()
+    
+    async def _get_from_redis(self, key: str) -> Any:
+        """Get value from Redis cache."""
+        # Simulate Redis get operation
+        await asyncio.sleep(0.001)
+        return None  # Mock implementation
+    
+    async def _store_in_redis(self, key: str, value: Any, ttl: int = None) -> bool:
+        """Store value in Redis cache."""
+        # Simulate Redis set operation
+        await asyncio.sleep(0.001)
+        return True  # Mock implementation
+    
+    async def _get_from_database(self, key: str) -> Any:
+        """Get value from database cache."""
+        # Simulate database query
+        await asyncio.sleep(0.005)
+        return None  # Mock implementation
+    
+    async def _store_in_database(self, key: str, value: Any, expires_at: float) -> bool:
+        """Store value in database cache."""
+        # Simulate database insert
+        await asyncio.sleep(0.005)
+        return True  # Mock implementation
+    
+    def get_cache_stats(self) -> Dict[str, Any]:
+        """Get comprehensive cache statistics."""
+        hit_rate = self.cache_stats["hits"] / max(
+            self.cache_stats["hits"] + self.cache_stats["misses"], 1
+        )
+        
+        return {
+            **self.cache_stats,
+            "hit_rate": hit_rate,
+            "memory_entries": len(self.memory_cache),
+            "avg_entry_size": (
+                self.cache_stats["memory_usage"] / max(len(self.memory_cache), 1)
+            )
+        }
+
+# Global cache manager
+cache_manager = PerformanceCacheManager()
+
+@on_boot
+async def initialize_performance_caching():
+    """Initialize high-performance caching system."""
+    global cache_manager
+    
+    print("🚀 Initializing performance caching...")
+    
+    # Initialize Redis connection (mock)
+    try:
+        # cache_manager.redis_client = await create_redis_client()
+        print("✅ Redis cache connected")
+    except Exception as e:
+        print(f"⚠️ Redis unavailable: {e}")
+    
+    # Initialize database cache connection
+    try:
+        # cache_manager.db_cache = await create_db_cache_connection()
+        print("✅ Database cache connected")
+    except Exception as e:
+        print(f"⚠️ Database cache unavailable: {e}")
+    
+    print("✅ Performance caching initialized")
+```
+
+### Smart Cache Invalidation
+
+Implement intelligent cache invalidation strategies:
+
+```python
+from typing import Set, List, Pattern
+import re
+
+class SmartCacheInvalidator:
+    """Intelligent cache invalidation manager."""
+    
+    def __init__(self, cache_manager: PerformanceCacheManager):
+        self.cache_manager = cache_manager
+        self.invalidation_patterns: Dict[str, List[Pattern]] = {}
+        self.dependency_graph: Dict[str, Set[str]] = {}
+        self.invalidation_stats = {
+            "pattern_matches": 0,
+            "dependency_cascades": 0,
+            "total_invalidations": 0
+        }
+    
+    def register_invalidation_pattern(self, trigger: str, patterns: List[str]):
+        """Register patterns for cache invalidation."""
+        compiled_patterns = [re.compile(pattern) for pattern in patterns]
+        self.invalidation_patterns[trigger] = compiled_patterns
+        print(f"📝 Registered invalidation patterns for {trigger}: {patterns}")
+    
+    def register_dependency(self, key: str, depends_on: Union[str, List[str]]):
+        """Register cache key dependencies."""
+        if isinstance(depends_on, str):
+            depends_on = [depends_on]
+        
+        if key not in self.dependency_graph:
+            self.dependency_graph[key] = set()
+        
+        self.dependency_graph[key].update(depends_on)
+        print(f"🔗 Registered dependency: {key} depends on {depends_on}")
+    
+    async def invalidate_by_trigger(self, trigger: str, context: Dict[str, Any] = None):
+        """Invalidate cache entries based on trigger patterns."""
+        if trigger not in self.invalidation_patterns:
+            return
+        
+        patterns = self.invalidation_patterns[trigger]
+        invalidated_keys = []
+        
+        # Check all cached keys against patterns
+        for cache_key in list(self.cache_manager.memory_cache.keys()):
+            for pattern in patterns:
+                if pattern.search(cache_key):
+                    await self._invalidate_key(cache_key)
+                    invalidated_keys.append(cache_key)
+                    self.invalidation_stats["pattern_matches"] += 1
+                    break
+        
+        # Handle dependency cascades
+        for key in invalidated_keys:
+            await self._cascade_invalidation(key)
+        
+        self.invalidation_stats["total_invalidations"] += len(invalidated_keys)
+        
+        if invalidated_keys:
+            print(f"🗑️ Invalidated {len(invalidated_keys)} cache entries for trigger: {trigger}")
+    
+    async def _invalidate_key(self, key: str):
+        """Invalidate a specific cache key."""
+        # Remove from memory cache
+        if key in self.cache_manager.memory_cache:
+            entry = self.cache_manager.memory_cache[key]
+            self.cache_manager.cache_stats["memory_usage"] -= entry.size_bytes
+            del self.cache_manager.memory_cache[key]
+        
+        # Remove from Redis (if available)
+        if self.cache_manager.redis_client:
+            try:
+                await self._remove_from_redis(key)
+            except Exception as e:
+                print(f"⚠️ Redis invalidation error: {e}")
+    
+    async def _cascade_invalidation(self, invalidated_key: str):
+        """Handle cascade invalidation based on dependencies."""
+        keys_to_invalidate = set()
+        
+        # Find all keys that depend on the invalidated key
+        for key, dependencies in self.dependency_graph.items():
+            if invalidated_key in dependencies:
+                keys_to_invalidate.add(key)
+        
+        # Recursively invalidate dependent keys
+        for key in keys_to_invalidate:
+            await self._invalidate_key(key)
+            await self._cascade_invalidation(key)
+            self.invalidation_stats["dependency_cascades"] += 1
+    
+    async def _remove_from_redis(self, key: str):
+        """Remove key from Redis cache."""
+        # Simulate Redis delete
+        await asyncio.sleep(0.001)
+
+# Initialize smart invalidation
+invalidator = SmartCacheInvalidator(cache_manager)
+
+# Register common invalidation patterns
+@on_boot
+async def setup_cache_invalidation_patterns():
+    """Setup intelligent cache invalidation patterns."""
+    
+    # User-related data invalidation
+    invalidator.register_invalidation_pattern(
+        "user_update",
+        [r"user_profile_.*", r"user_permissions_.*", r"user_sessions_.*"]
+    )
+    
+    # Configuration changes
+    invalidator.register_invalidation_pattern(
+        "config_update", 
+        [r"config_.*", r"settings_.*", r"feature_flags_.*"]
+    )
+    
+    # API response caching
+    invalidator.register_invalidation_pattern(
+        "api_update",
+        [r"api_response_.*", r"external_data_.*"]
+    )
+    
+    # Register dependencies
+    invalidator.register_dependency("user_dashboard", ["user_profile", "user_permissions"])
+    invalidator.register_dependency("api_aggregated_data", ["api_response_users", "api_response_stats"])
+    
+    print("✅ Cache invalidation patterns configured")
+```
+
+## Async Operations and Concurrency
+
+### Parallel Task Processing
+
+Optimize task processing with intelligent parallelization:
+
+```python
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+from typing import List, Callable, Any
+import time
+
+class ParallelTaskProcessor:
+    """High-performance parallel task processor."""
+    
+    def __init__(self, max_concurrent_tasks: int = 10, thread_pool_size: int = 4):
+        self.max_concurrent_tasks = max_concurrent_tasks
+        self.thread_pool = ThreadPoolExecutor(max_workers=thread_pool_size)
+        self.task_semaphore = asyncio.Semaphore(max_concurrent_tasks)
+        self.performance_metrics = {
+            "total_tasks": 0,
+            "completed_tasks": 0,
+            "failed_tasks": 0,
+            "avg_execution_time": 0,
+            "peak_concurrent_tasks": 0
+        }
+        self.active_tasks = 0
+    
+    async def execute_batch(self, tasks: List[Callable], **kwargs) -> List[Any]:
+        """Execute a batch of tasks in parallel with optimal concurrency."""
+        start_time = time.time()
+        
+        print(f"🚀 Starting batch execution: {len(tasks)} tasks")
+        
+        # Create task coroutines with semaphore control
+        task_coroutines = [
+            self._execute_with_semaphore(task, **kwargs)
+            for task in tasks
+        ]
+        
+        # Execute all tasks concurrently
+        try:
+            results = await asyncio.gather(*task_coroutines, return_exceptions=True)
+            
+            # Process results and update metrics
+            successful_results = []
+            for i, result in enumerate(results):
+                if isinstance(result, Exception):
+                    print(f"❌ Task {i} failed: {result}")
+                    self.performance_metrics["failed_tasks"] += 1
+                else:
+                    successful_results.append(result)
+                    self.performance_metrics["completed_tasks"] += 1
+            
+            execution_time = time.time() - start_time
+            self.performance_metrics["total_tasks"] += len(tasks)
+            self.performance_metrics["avg_execution_time"] = (
+                (self.performance_metrics["avg_execution_time"] * (self.performance_metrics["total_tasks"] - len(tasks)) + 
+                 execution_time) / self.performance_metrics["total_tasks"]
+            )
+            
+            print(f"✅ Batch completed: {len(successful_results)}/{len(tasks)} successful in {execution_time:.2f}s")
+            return successful_results
+            
+        except Exception as e:
+            print(f"❌ Batch execution failed: {e}")
+            raise
+    
+    async def _execute_with_semaphore(self, task: Callable, **kwargs) -> Any:
+        """Execute task with semaphore control and metrics tracking."""
+        async with self.task_semaphore:
+            self.active_tasks += 1
+            self.performance_metrics["peak_concurrent_tasks"] = max(
+                self.performance_metrics["peak_concurrent_tasks"],
+                self.active_tasks
+            )
+            
+            try:
+                # Determine if task is async or sync
+                if asyncio.iscoroutinefunction(task):
+                    result = await task(**kwargs)
+                else:
+                    # Execute CPU-bound task in thread pool
+                    result = await asyncio.get_event_loop().run_in_executor(
+                        self.thread_pool, lambda: task(**kwargs)
+                    )
+                
+                return result
+                
+            finally:
+                self.active_tasks -= 1
+    
+    async def execute_with_timeout(self, task: Callable, timeout: float = 30.0, **kwargs) -> Any:
+        """Execute single task with timeout protection."""
+        try:
+            return await asyncio.wait_for(
+                self._execute_with_semaphore(task, **kwargs),
+                timeout=timeout
+            )
+        except asyncio.TimeoutError:
+            print(f"⏰ Task timed out after {timeout}s")
+            raise
+    
+    async def execute_with_retry(self, task: Callable, max_retries: int = 3, 
+                                retry_delay: float = 1.0, **kwargs) -> Any:
+        """Execute task with exponential backoff retry logic."""
+        last_exception = None
+        
+        for attempt in range(max_retries + 1):
+            try:
+                return await self._execute_with_semaphore(task, **kwargs)
+                
+            except Exception as e:
+                last_exception = e
+                
+                if attempt < max_retries:
+                    delay = retry_delay * (2 ** attempt)
+                    print(f"🔄 Task failed (attempt {attempt + 1}), retrying in {delay}s: {e}")
+                    await asyncio.sleep(delay)
+                else:
+                    print(f"❌ Task failed after {max_retries + 1} attempts: {e}")
+        
+        raise last_exception
+    
+    def get_performance_stats(self) -> Dict[str, Any]:
+        """Get performance statistics."""
+        success_rate = (
+            self.performance_metrics["completed_tasks"] / 
+            max(self.performance_metrics["total_tasks"], 1)
+        )
+        
+        return {
+            **self.performance_metrics,
+            "success_rate": success_rate,
+            "current_active_tasks": self.active_tasks
+        }
+    
+    async def cleanup(self):
+        """Cleanup resources."""
+        self.thread_pool.shutdown(wait=True)
+
+# Global task processor
+task_processor = ParallelTaskProcessor()
+
+@on_task
+async def optimized_task_handler(task):
+    """Optimized task handler using parallel processing."""
+    
+    # Check if task can be processed in parallel
+    if hasattr(task.input, 'subtasks') and task.input.subtasks:
+        # Process subtasks in parallel
+        subtask_functions = [
+            create_subtask_function(subtask) 
+            for subtask in task.input.subtasks
+        ]
+        
+        results = await task_processor.execute_batch(subtask_functions)
+        
+        # Combine results
+        task.result = combine_subtask_results(results)
+        
+    else:
+        # Process single task with retry and timeout
+        result = await task_processor.execute_with_retry(
+            process_single_task,
+            max_retries=2,
+            timeout=30.0,
+            task_input=task.input
+        )
+        task.result = result
+    
+    return task
+
+def create_subtask_function(subtask_data):
+    """Create a function for processing a subtask."""
+    async def process_subtask():
+        # Simulate subtask processing
+        await asyncio.sleep(0.1)
+        return f"Processed: {subtask_data}"
+    
+    return process_subtask
+
+def combine_subtask_results(results: List[Any]) -> str:
+    """Combine multiple subtask results."""
+    return f"Combined results: {len(results)} subtasks completed"
+
+async def process_single_task(task_input) -> str:
+    """Process a single task."""
+    # Simulate task processing
+    await asyncio.sleep(0.2)
+    return f"Processed task: {task_input.text[:50]}"
+```
+
+### Connection Pooling and Resource Management
+
+Optimize external service connections:
+
+```python
+import aiohttp
+import asyncio
+from typing import Dict, Optional
+import ssl
+
+class ConnectionPoolManager:
+    """Advanced connection pool manager for external services."""
+    
+    def __init__(self):
+        self.http_sessions: Dict[str, aiohttp.ClientSession] = {}
+        self.db_pools: Dict[str, Any] = {}
+        self.connection_stats = {
+            "http_connections": 0,
+            "db_connections": 0,
+            "total_requests": 0,
+            "failed_requests": 0
+        }
+    
+    async def get_http_session(self, service: str, 
+                              max_connections: int = 100,
+                              timeout: int = 30) -> aiohttp.ClientSession:
+        """Get or create HTTP session with optimized settings."""
+        if service not in self.http_sessions:
+            # Create SSL context for secure connections
+            ssl_context = ssl.create_default_context()
+            ssl_context.check_hostname = False
+            ssl_context.verify_mode = ssl.CERT_NONE
+            
+            # Configure connection pool
+            connector = aiohttp.TCPConnector(
+                limit=max_connections,
+                limit_per_host=20,
+                ttl_dns_cache=300,
+                use_dns_cache=True,
+                ssl=ssl_context,
+                enable_cleanup_closed=True
+            )
+            
+            # Configure timeout
+            timeout_config = aiohttp.ClientTimeout(total=timeout)
+            
+            # Create session with optimized settings
+            session = aiohttp.ClientSession(
+                connector=connector,
+                timeout=timeout_config,
+                headers={
+                    "User-Agent": "xpander-agent/1.0",
+                    "Connection": "keep-alive"
+                }
+            )
+            
+            self.http_sessions[service] = session
+            self.connection_stats["http_connections"] += 1
+            
+            print(f"🔗 Created HTTP session for {service} (max_conn: {max_connections})")
+        
+        return self.http_sessions[service]
+    
+    async def make_http_request(self, service: str, method: str, url: str,
+                               cache_key: Optional[str] = None,
+                               **kwargs) -> Dict[str, Any]:
+        """Make HTTP request with caching and error handling."""
+        
+        # Check cache first
+        if cache_key:
+            cached_response = await cache_manager.get(cache_key)
+            if cached_response:
+                return cached_response
+        
+        session = await self.get_http_session(service)
+        
+        try:
+            self.connection_stats["total_requests"] += 1
+            
+            async with session.request(method, url, **kwargs) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    
+                    # Cache successful response
+                    if cache_key:
+                        await cache_manager.set(cache_key, data, ttl=300)
+                    
+                    return {
+                        "success": True,
+                        "data": data,
+                        "status": response.status
+                    }
+                else:
+                    self.connection_stats["failed_requests"] += 1
+                    return {
+                        "success": False,
+                        "error": f"HTTP {response.status}",
+                        "status": response.status
+                    }
+                    
+        except Exception as e:
+            self.connection_stats["failed_requests"] += 1
+            print(f"❌ HTTP request failed: {e}")
+            return {
+                "success": False,
+                "error": str(e),
+                "status": None
+            }
+    
+    async def cleanup_connections(self):
+        """Cleanup all connections."""
+        print("🧹 Cleaning up connection pools...")
+        
+        # Close HTTP sessions
+        for service, session in self.http_sessions.items():
+            await session.close()
+            print(f"  🔌 Closed HTTP session: {service}")
+        
+        self.http_sessions.clear()
+        
+        # Close database pools
+        for service, pool in self.db_pools.items():
+            try:
+                await pool.close()
+                print(f"  🗄️ Closed DB pool: {service}")
+            except Exception as e:
+                print(f"  ❌ Error closing DB pool {service}: {e}")
+        
+        self.db_pools.clear()
+
+# Global connection manager
+connection_manager = ConnectionPoolManager()
+
+@on_boot
+async def initialize_connection_pools():
+    """Initialize optimized connection pools."""
+    print("🔗 Initializing connection pools...")
+    
+    # Pre-create sessions for known services
+    services = ["openai", "github", "slack", "external_api"]
+    
+    for service in services:
+        await connection_manager.get_http_session(service)
+    
+    print("✅ Connection pools initialized")
+
+@on_shutdown
+async def cleanup_connection_pools():
+    """Cleanup connection pools on shutdown."""
+    await connection_manager.cleanup_connections()
+```
+
+## Memory and Resource Optimization
+
+### Memory-Efficient Data Structures
+
+Use optimized data structures and memory management:
+
+```python
+import sys
+from collections import deque, defaultdict
+from typing import Any, Iterator
+import gc
+import psutil
+import os
+
+class MemoryOptimizedDataStore:
+    """Memory-efficient data store with automatic cleanup."""
+    
+    def __init__(self, max_memory_mb: int = 256):
+        self.max_memory_bytes = max_memory_mb * 1024 * 1024
+        self.data_store = {}
+        self.access_order = deque()
+        self.size_tracking = defaultdict(int)
+        self.total_size = 0
+        
+    def store(self, key: str, value: Any, category: str = "default") -> bool:
+        """Store data with automatic memory management."""
+        value_size = sys.getsizeof(value)
+        
+        # Check if adding this value would exceed memory limit
+        if self.total_size + value_size > self.max_memory_bytes:
+            self._evict_data(value_size)
+        
+        # Store the data
+        if key in self.data_store:
+            # Update existing entry
+            old_size = sys.getsizeof(self.data_store[key]["value"])
+            self.total_size -= old_size
+            self.size_tracking[self.data_store[key]["category"]] -= old_size
+        
+        self.data_store[key] = {
+            "value": value,
+            "category": category,
+            "size": value_size
+        }
+        
+        self.total_size += value_size
+        self.size_tracking[category] += value_size
+        
+        # Update access order
+        if key in self.access_order:
+            self.access_order.remove(key)
+        self.access_order.append(key)
+        
+        return True
+    
+    def get(self, key: str) -> Any:
+        """Get data and update access order."""
+        if key not in self.data_store:
+            return None
+        
+        # Update access order
+        self.access_order.remove(key)
+        self.access_order.append(key)
+        
+        return self.data_store[key]["value"]
+    
+    def _evict_data(self, required_space: int):
+        """Evict least recently used data to free memory."""
+        freed_space = 0
+        
+        while freed_space < required_space and self.access_order:
+            # Remove least recently used item
+            lru_key = self.access_order.popleft()
+            if lru_key in self.data_store:
+                entry = self.data_store[lru_key]
+                freed_space += entry["size"]
+                self.total_size -= entry["size"]
+                self.size_tracking[entry["category"]] -= entry["size"]
+                del self.data_store[lru_key]
+        
+        print(f"🗑️ Evicted {freed_space} bytes from memory store")
+        
+        # Force garbage collection
+        gc.collect()
+    
+    def get_memory_stats(self) -> Dict[str, Any]:
+        """Get memory usage statistics."""
+        return {
+            "total_size_mb": self.total_size / (1024 * 1024),
+            "max_size_mb": self.max_memory_bytes / (1024 * 1024),
+            "usage_percentage": (self.total_size / self.max_memory_bytes) * 100,
+            "entry_count": len(self.data_store),
+            "category_breakdown": dict(self.size_tracking)
+        }
+
+class SystemResourceMonitor:
+    """Monitor and optimize system resource usage."""
+    
+    def __init__(self):
+        self.process = psutil.Process(os.getpid())
+        self.resource_thresholds = {
+            "memory_percent": 85,
+            "cpu_percent": 80,
+            "open_files": 900  # Usually max is 1024
+        }
+    
+    async def check_resource_usage(self) -> Dict[str, Any]:
+        """Check current resource usage."""
+        try:
+            memory_info = self.process.memory_info()
+            cpu_percent = self.process.cpu_percent()
+            open_files = len(self.process.open_files())
+            
+            # System memory
+            system_memory = psutil.virtual_memory()
+            
+            stats = {
+                "process_memory_mb": memory_info.rss / (1024 * 1024),
+                "process_memory_percent": self.process.memory_percent(),
+                "system_memory_percent": system_memory.percent,
+                "cpu_percent": cpu_percent,
+                "open_files": open_files,
+                "threads": self.process.num_threads()
+            }
+            
+            # Check for resource warnings
+            warnings = []
+            if stats["system_memory_percent"] > self.resource_thresholds["memory_percent"]:
+                warnings.append(f"High memory usage: {stats['system_memory_percent']:.1f}%")
+            
+            if cpu_percent > self.resource_thresholds["cpu_percent"]:
+                warnings.append(f"High CPU usage: {cpu_percent:.1f}%")
+            
+            if open_files > self.resource_thresholds["open_files"]:
+                warnings.append(f"Many open files: {open_files}")
+            
+            stats["warnings"] = warnings
+            return stats
+            
+        except Exception as e:
+            return {"error": str(e)}
+    
+    async def optimize_resources(self):
+        """Perform resource optimization."""
+        print("🔧 Optimizing system resources...")
+        
+        # Force garbage collection
+        collected = gc.collect()
+        if collected > 0:
+            print(f"  🗑️ Garbage collected {collected} objects")
+        
+        # Check resource usage after optimization
+        stats = await self.check_resource_usage()
+        
+        if stats.get("warnings"):
+            for warning in stats["warnings"]:
+                print(f"  ⚠️ {warning}")
+        else:
+            print("  ✅ Resource usage within normal limits")
+        
+        return stats
+
+# Global instances
+memory_store = MemoryOptimizedDataStore(max_memory_mb=256)
+resource_monitor = SystemResourceMonitor()
+
+@on_boot
+async def initialize_resource_monitoring():
+    """Initialize resource monitoring."""
+    print("📊 Initializing resource monitoring...")
+    
+    # Start periodic resource monitoring
+    asyncio.create_task(periodic_resource_monitoring())
+    
+    print("✅ Resource monitoring initialized")
+
+async def periodic_resource_monitoring():
+    """Periodically monitor and optimize resources."""
+    while True:
+        try:
+            await asyncio.sleep(60)  # Check every minute
+            
+            stats = await resource_monitor.check_resource_usage()
+            
+            # Log resource usage
+            print(f"📊 Resource usage - Memory: {stats.get('process_memory_mb', 0):.1f}MB, "
+                  f"CPU: {stats.get('cpu_percent', 0):.1f}%, "
+                  f"Files: {stats.get('open_files', 0)}")
+            
+            # Auto-optimize if resources are high
+            if (stats.get("system_memory_percent", 0) > 80 or 
+                stats.get("cpu_percent", 0) > 70):
+                await resource_monitor.optimize_resources()
+                
+        except Exception as e:
+            print(f"⚠️ Resource monitoring error: {e}")
+
+@on_shutdown
+async def final_resource_cleanup():
+    """Final resource cleanup before shutdown."""
+    print("🧹 Final resource cleanup...")
+    
+    # Clear memory store
+    memory_store.data_store.clear()
+    memory_store.access_order.clear()
+    
+    # Force final garbage collection
+    collected = gc.collect()
+    print(f"🗑️ Final garbage collection: {collected} objects")
+    
+    # Final resource check
+    final_stats = await resource_monitor.check_resource_usage()
+    print(f"📊 Final resource usage: {final_stats.get('process_memory_mb', 0):.1f}MB")
+```
+
+## Performance Monitoring and Metrics
+
+### Real-time Performance Tracking
+
+Implement comprehensive performance monitoring:
+
+```python
+import time
+from dataclasses import dataclass, field
+from typing import Dict, List
+from collections import defaultdict
+import statistics
+
+@dataclass
+class PerformanceMetric:
+    """Individual performance metric."""
+    name: str
+    value: float
+    timestamp: float = field(default_factory=time.time)
+    category: str = "general"
+    tags: Dict[str, str] = field(default_factory=dict)
+
+class PerformanceTracker:
+    """Advanced performance tracking and analytics."""
+    
+    def __init__(self):
+        self.metrics: List[PerformanceMetric] = []
+        self.metric_buckets = defaultdict(list)
+        self.start_time = time.time()
+        self.operation_timers: Dict[str, float] = {}
+        
+    def record_metric(self, name: str, value: float, category: str = "general", **tags):
+        """Record a performance metric."""
+        metric = PerformanceMetric(
+            name=name,
+            value=value,
+            category=category,
+            tags=tags
+        )
+        
+        self.metrics.append(metric)
+        self.metric_buckets[name].append(value)
+        
+        # Keep only recent metrics (last 1000 per metric)
+        if len(self.metric_buckets[name]) > 1000:
+            self.metric_buckets[name] = self.metric_buckets[name][-1000:]
+    
+    def start_timer(self, operation: str) -> str:
+        """Start timing an operation."""
+        timer_key = f"{operation}_{time.time()}"
+        self.operation_timers[timer_key] = time.time()
+        return timer_key
+    
+    def end_timer(self, timer_key: str, operation: str = None) -> float:
+        """End timing and record the duration."""
+        if timer_key not in self.operation_timers:
+            return 0.0
+        
+        duration = time.time() - self.operation_timers[timer_key]
+        del self.operation_timers[timer_key]
+        
+        # Record the timing metric
+        operation_name = operation or timer_key.split('_')[0]
+        self.record_metric(f"{operation_name}_duration", duration, "timing")
+        
+        return duration
+    
+    def get_metric_statistics(self, metric_name: str) -> Dict[str, float]:
+        """Get statistical analysis of a metric."""
+        values = self.metric_buckets.get(metric_name, [])
+        
+        if not values:
+            return {}
+        
+        return {
+            "count": len(values),
+            "min": min(values),
+            "max": max(values),
+            "mean": statistics.mean(values),
+            "median": statistics.median(values),
+            "stdev": statistics.stdev(values) if len(values) > 1 else 0,
+            "p95": sorted(values)[int(0.95 * len(values))] if len(values) >= 20 else max(values),
+            "p99": sorted(values)[int(0.99 * len(values))] if len(values) >= 100 else max(values)
+        }
+    
+    def get_performance_report(self) -> Dict[str, Any]:
+        """Generate comprehensive performance report."""
+        uptime = time.time() - self.start_time
+        
+        # Aggregate metrics by category
+        category_stats = defaultdict(list)
+        for metric in self.metrics[-1000:]:  # Last 1000 metrics
+            category_stats[metric.category].append(metric.value)
+        
+        report = {
+            "uptime_seconds": uptime,
+            "total_metrics_recorded": len(self.metrics),
+            "categories": {}
+        }
+        
+        # Generate stats for each category
+        for category, values in category_stats.items():
+            if values:
+                report["categories"][category] = {
+                    "count": len(values),
+                    "avg": statistics.mean(values),
+                    "min": min(values),
+                    "max": max(values)
+                }
+        
+        # Add specific metric statistics
+        report["metric_details"] = {}
+        for metric_name in self.metric_buckets.keys():
+            report["metric_details"][metric_name] = self.get_metric_statistics(metric_name)
+        
+        return report
+    
+    def performance_decorator(self, operation_name: str):
+        """Decorator for automatic performance tracking."""
+        def decorator(func):
+            if asyncio.iscoroutinefunction(func):
+                async def async_wrapper(*args, **kwargs):
+                    timer_key = self.start_timer(operation_name)
+                    try:
+                        result = await func(*args, **kwargs)
+                        self.record_metric(f"{operation_name}_success", 1, "operations")
+                        return result
+                    except Exception as e:
+                        self.record_metric(f"{operation_name}_error", 1, "operations")
+                        raise
+                    finally:
+                        duration = self.end_timer(timer_key, operation_name)
+                        print(f"⏱️ {operation_name} completed in {duration:.3f}s")
+                
+                return async_wrapper
+            else:
+                def sync_wrapper(*args, **kwargs):
+                    timer_key = self.start_timer(operation_name)
+                    try:
+                        result = func(*args, **kwargs)
+                        self.record_metric(f"{operation_name}_success", 1, "operations")
+                        return result
+                    except Exception as e:
+                        self.record_metric(f"{operation_name}_error", 1, "operations")
+                        raise
+                    finally:
+                        duration = self.end_timer(timer_key, operation_name)
+                        print(f"⏱️ {operation_name} completed in {duration:.3f}s")
+                
+                return sync_wrapper
+        
+        return decorator
+
+# Global performance tracker
+perf_tracker = PerformanceTracker()
+
+@on_boot
+async def initialize_performance_monitoring():
+    """Initialize performance monitoring."""
+    print("📊 Initializing performance monitoring...")
+    
+    # Record initialization metrics
+    perf_tracker.record_metric("agent_startup", 1, "lifecycle")
+    
+    # Start periodic reporting
+    asyncio.create_task(periodic_performance_reporting())
+    
+    print("✅ Performance monitoring initialized")
+
+async def periodic_performance_reporting():
+    """Generate periodic performance reports."""
+    while True:
+        try:
+            await asyncio.sleep(300)  # Report every 5 minutes
+            
+            report = perf_tracker.get_performance_report()
+            
+            print("\n📊 Performance Report:")
+            print(f"  ⏱️ Uptime: {report['uptime_seconds']:.0f}s")
+            print(f"  📋 Total metrics: {report['total_metrics_recorded']}")
+            
+            # Report on key metrics
+            for metric_name, stats in report["metric_details"].items():
+                if "duration" in metric_name and stats["count"] > 0:
+                    print(f"  🕐 {metric_name}: avg={stats['mean']:.3f}s, p95={stats['p95']:.3f}s")
+            
+        except Exception as e:
+            print(f"⚠️ Performance reporting error: {e}")
+
+# Usage examples with performance tracking
+@perf_tracker.performance_decorator("task_processing")
+async def process_task_with_tracking(task):
+    """Example task processing with automatic performance tracking."""
+    # Simulate task processing
+    await asyncio.sleep(0.1)
+    
+    # Record custom metrics
+    perf_tracker.record_metric("task_size", len(task.input.text), "tasks")
+    perf_tracker.record_metric("memory_usage", memory_store.total_size, "resources")
+    
+    return f"Processed: {task.input.text}"
+
+@on_shutdown
+async def generate_final_performance_report():
+    """Generate final performance report."""
+    print("📊 Final Performance Report:")
+    
+    final_report = perf_tracker.get_performance_report()
+    
+    # Print summary
+    print(f"  📋 Total runtime: {final_report['uptime_seconds']:.1f}s")
+    print(f"  📊 Metrics recorded: {final_report['total_metrics_recorded']}")
+    
+    # Save detailed report
+    try:
+        import json
+        with open("performance_report.json", "w") as f:
+            json.dump(final_report, f, indent=2)
+        print("  💾 Detailed report saved to performance_report.json")
+    except Exception as e:
+        print(f"  ⚠️ Could not save report: {e}")
+```
+
+## Related Documentation
+
+- [MCP Integration Guide](/user-guide/backend-configuration/mcp-integration-guide): Optimizing MCP tool performance
+- [Lifecycle Management](/user-guide/backend-configuration/lifecycle-management): Resource lifecycle optimization
+- [Status Management](/user-guide/backend-configuration/status-management): Performance monitoring integration
+- [API Reference: Tasks](/API reference/tasks): Task processing optimization
+- [Examples: Lifecycle Management](/Examples/10-lifecycle-management): Performance patterns in practice

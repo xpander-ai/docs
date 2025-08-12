@@ -1,0 +1,584 @@
+---
+title: "MCP Integration Guide"
+description: "Complete guide to integrating Model Context Protocol (MCP) servers with xpander.ai agents, including MultiMCPTools usage"
+icon: "puzzle-piece"
+---
+
+# MCP Integration Guide
+
+The **Model Context Protocol (MCP)** enables seamless integration between AI agents and external tools, systems, and data sources. This guide covers advanced MCP integration patterns using xpander.ai, including the powerful `MultiMCPTools` class for complex multi-server scenarios.
+
+## Overview
+
+MCP integration in xpander.ai provides three key capabilities:
+
+<CardGroup cols={3}>
+<Card title="Server Composition" icon="puzzle-piece">
+Combine tools from multiple MCP servers into unified interfaces
+</Card>
+
+<Card title="Multi-Agent Access" icon="network-wired">
+Share MCP resources across multiple agents with proper isolation
+</Card>
+
+<Card title="Dynamic Loading" icon="bolt">
+Load and configure MCP servers at runtime based on task requirements
+</Card>
+</CardGroup>
+
+## MultiMCPTools Integration
+
+The `MultiMCPTools` class from the Agno framework provides advanced MCP server management for xpander.ai agents.
+
+### Basic Setup
+
+```python
+from agno.tools.mcp import MultiMCPTools
+from xpander_sdk import Backend, on_boot, on_task
+import os
+
+class MCPEnabledAgent:
+    def __init__(self):
+        self.mcp_tools = None
+        self.backend = Backend()
+    
+    @on_boot
+    async def initialize_mcp_tools(self):
+        """Initialize MCP tools during agent startup."""
+        self.mcp_tools = MultiMCPTools(
+            commands=[
+                "awslabs.cost-explorer-mcp-server",
+                "github-mcp-server",
+                "filesystem-mcp-server"
+            ],
+            env={
+                "AWS_ACCESS_KEY_ID": os.environ["AWS_ACCESS_KEY_ID"],
+                "AWS_SECRET_ACCESS_KEY": os.environ["AWS_SECRET_ACCESS_KEY"],
+                "GITHUB_TOKEN": os.environ["GITHUB_TOKEN"]
+            }
+        )
+        await self.mcp_tools.__aenter__()
+        print("✅ MCP tools initialized")
+```
+
+### Advanced Configuration
+
+For complex scenarios, configure MCP servers with specific parameters:
+
+```python
+@on_boot
+async def setup_advanced_mcp_tools(self):
+    """Advanced MCP tools setup with custom configurations."""
+    self.mcp_tools = MultiMCPTools(
+        commands=[
+            # AWS Cost Explorer with specific region
+            {
+                "command": "awslabs.cost-explorer-mcp-server",
+                "env": {
+                    "AWS_REGION": "us-east-1",
+                    "AWS_ACCESS_KEY_ID": os.environ["AWS_ACCESS_KEY_ID"],
+                    "AWS_SECRET_ACCESS_KEY": os.environ["AWS_SECRET_ACCESS_KEY"]
+                }
+            },
+            # Database MCP server with connection pooling
+            {
+                "command": "postgresql-mcp-server",
+                "env": {
+                    "DATABASE_URL": os.environ["DATABASE_URL"],
+                    "MAX_CONNECTIONS": "10",
+                    "CONNECTION_TIMEOUT": "30"
+                }
+            },
+            # File system access with restricted paths
+            {
+                "command": "filesystem-mcp-server",
+                "args": ["--allowed-dirs", "/data,/tmp"],
+                "env": {
+                    "MAX_FILE_SIZE": "10MB"
+                }
+            }
+        ],
+        # Global environment variables
+        env={
+            "LOG_LEVEL": "INFO",
+            "MCP_TIMEOUT": "60"
+        },
+        # Connection settings
+        timeout=30,
+        max_retries=3
+    )
+    
+    try:
+        await self.mcp_tools.__aenter__()
+        print("✅ Advanced MCP tools initialized")
+    except Exception as e:
+        print(f"❌ MCP initialization failed: {e}")
+        raise
+```
+
+## Integration Patterns
+
+### Pattern 1: Agent-Scoped MCP Tools
+
+Each agent manages its own set of MCP tools:
+
+```python
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+from xpander_utils.sdk.adapters import AgnoAdapter
+
+class SpecializedAgent:
+    def __init__(self, agent_backend: AgnoAdapter, mcp_commands: list):
+        self.backend = agent_backend
+        self.mcp_commands = mcp_commands
+        self.agent = None
+    
+    async def initialize(self):
+        """Initialize agent with specific MCP tools."""
+        mcp_tools = MultiMCPTools(
+            commands=self.mcp_commands,
+            env=os.environ
+        )
+        await mcp_tools.__aenter__()
+        
+        self.agent = Agent(
+            model=OpenAIChat(id="gpt-4o"),
+            tools=[mcp_tools, *self.backend.get_tools()],
+            instructions=[
+                "Use MCP tools to access external systems",
+                "Always validate data before processing",
+                "Handle MCP errors gracefully"
+            ],
+            add_history_to_messages=True,
+            search_previous_sessions_history=True
+        )
+
+# Usage for different specialized agents
+aws_agent = SpecializedAgent(
+    backend, 
+    ["awslabs.cost-explorer-mcp-server", "awslabs.s3-mcp-server"]
+)
+
+github_agent = SpecializedAgent(
+    backend,
+    ["github-mcp-server", "git-mcp-server"]
+)
+```
+
+### Pattern 2: Shared MCP Resource Pool
+
+Share MCP resources across multiple agents:
+
+```python
+class MCPResourceManager:
+    _instance = None
+    _mcp_pools = {}
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+    
+    async def get_mcp_pool(self, pool_name: str, commands: list, env: dict):
+        """Get or create an MCP tool pool."""
+        if pool_name not in self._mcp_pools:
+            mcp_tools = MultiMCPTools(commands=commands, env=env)
+            await mcp_tools.__aenter__()
+            self._mcp_pools[pool_name] = mcp_tools
+            print(f"✅ Created MCP pool: {pool_name}")
+        
+        return self._mcp_pools[pool_name]
+    
+    async def cleanup_pools(self):
+        """Cleanup all MCP pools."""
+        for pool_name, mcp_tools in self._mcp_pools.items():
+            try:
+                await mcp_tools.__aexit__(None, None, None)
+                print(f"✅ Cleaned up MCP pool: {pool_name}")
+            except Exception as e:
+                print(f"❌ Error cleaning up {pool_name}: {e}")
+
+# Global MCP manager
+mcp_manager = MCPResourceManager()
+
+@on_boot
+async def setup_shared_mcp_resources():
+    """Setup shared MCP resource pools."""
+    # AWS tools pool
+    await mcp_manager.get_mcp_pool(
+        "aws_tools",
+        ["awslabs.cost-explorer-mcp-server", "awslabs.s3-mcp-server"],
+        {
+            "AWS_ACCESS_KEY_ID": os.environ["AWS_ACCESS_KEY_ID"],
+            "AWS_SECRET_ACCESS_KEY": os.environ["AWS_SECRET_ACCESS_KEY"]
+        }
+    )
+    
+    # Development tools pool
+    await mcp_manager.get_mcp_pool(
+        "dev_tools",
+        ["github-mcp-server", "jira-mcp-server"],
+        {
+            "GITHUB_TOKEN": os.environ["GITHUB_TOKEN"],
+            "JIRA_TOKEN": os.environ["JIRA_TOKEN"]
+        }
+    )
+
+@on_shutdown
+async def cleanup_mcp_resources():
+    """Cleanup MCP resources on shutdown."""
+    await mcp_manager.cleanup_pools()
+```
+
+### Pattern 3: Dynamic MCP Loading
+
+Load MCP servers based on task requirements:
+
+```python
+class DynamicMCPAgent:
+    def __init__(self, backend: AgnoAdapter):
+        self.backend = backend
+        self.active_mcp_tools = {}
+        self.agent = None
+    
+    async def load_mcp_for_task(self, task_type: str, requirements: dict):
+        """Dynamically load MCP tools based on task requirements."""
+        if task_type in self.active_mcp_tools:
+            return self.active_mcp_tools[task_type]
+        
+        mcp_config = self._get_mcp_config_for_task(task_type, requirements)
+        mcp_tools = MultiMCPTools(**mcp_config)
+        await mcp_tools.__aenter__()
+        
+        self.active_mcp_tools[task_type] = mcp_tools
+        print(f"✅ Loaded MCP tools for task: {task_type}")
+        return mcp_tools
+    
+    def _get_mcp_config_for_task(self, task_type: str, requirements: dict):
+        """Get MCP configuration based on task type."""
+        configs = {
+            "aws_analysis": {
+                "commands": ["awslabs.cost-explorer-mcp-server"],
+                "env": {
+                    "AWS_ACCESS_KEY_ID": requirements.get("aws_key"),
+                    "AWS_SECRET_ACCESS_KEY": requirements.get("aws_secret")
+                }
+            },
+            "code_review": {
+                "commands": ["github-mcp-server", "git-mcp-server"],
+                "env": {
+                    "GITHUB_TOKEN": requirements.get("github_token")
+                }
+            },
+            "data_processing": {
+                "commands": ["postgresql-mcp-server", "filesystem-mcp-server"],
+                "env": {
+                    "DATABASE_URL": requirements.get("db_url")
+                }
+            }
+        }
+        return configs.get(task_type, {"commands": [], "env": {}})
+
+@on_task
+async def handle_dynamic_mcp_task(task):
+    """Handle tasks with dynamic MCP loading."""
+    task_type = task.input.metadata.get("task_type", "general")
+    requirements = task.input.metadata.get("mcp_requirements", {})
+    
+    # Load appropriate MCP tools
+    mcp_tools = await agent.load_mcp_for_task(task_type, requirements)
+    
+    # Create agent with loaded tools
+    if not agent.agent:
+        agent.agent = Agent(
+            model=OpenAIChat(id="gpt-4o"),
+            tools=[mcp_tools, *agent.backend.get_tools()],
+            instructions=[f"Handle {task_type} tasks efficiently"]
+        )
+    
+    # Process the task
+    response = await agent.agent.arun(
+        task.input.text,
+        user_id=task.input.user.id,
+        session_id=task.memory_thread_id
+    )
+    
+    task.result = response.content
+    return task
+```
+
+## Error Handling and Resilience
+
+Implement robust error handling for MCP operations:
+
+```python
+import asyncio
+from typing import Optional
+
+class ResilientMCPAgent:
+    def __init__(self, backend: AgnoAdapter):
+        self.backend = backend
+        self.mcp_tools: Optional[MultiMCPTools] = None
+        self.fallback_tools = []
+    
+    @on_boot
+    async def initialize_with_fallback(self):
+        """Initialize MCP tools with fallback mechanisms."""
+        primary_config = {
+            "commands": [
+                "awslabs.cost-explorer-mcp-server",
+                "github-mcp-server"
+            ],
+            "env": os.environ
+        }
+        
+        try:
+            # Try primary MCP configuration
+            self.mcp_tools = MultiMCPTools(**primary_config)
+            await asyncio.wait_for(
+                self.mcp_tools.__aenter__(),
+                timeout=30.0
+            )
+            print("✅ Primary MCP tools initialized")
+            
+        except asyncio.TimeoutError:
+            print("⚠️ MCP initialization timeout, using fallback")
+            await self._setup_fallback_tools()
+            
+        except Exception as e:
+            print(f"❌ MCP initialization failed: {e}")
+            await self._setup_fallback_tools()
+    
+    async def _setup_fallback_tools(self):
+        """Setup fallback tools when MCP fails."""
+        # Use xpander built-in tools as fallback
+        self.fallback_tools = self.backend.get_tools()
+        print("✅ Fallback tools configured")
+    
+    async def execute_with_retry(self, task_input: str, max_retries: int = 3):
+        """Execute task with MCP retry logic."""
+        for attempt in range(max_retries):
+            try:
+                if self.mcp_tools:
+                    # Try with MCP tools
+                    agent = Agent(
+                        model=OpenAIChat(id="gpt-4o"),
+                        tools=[self.mcp_tools, *self.backend.get_tools()]
+                    )
+                else:
+                    # Use fallback tools
+                    agent = Agent(
+                        model=OpenAIChat(id="gpt-4o"),
+                        tools=self.fallback_tools
+                    )
+                
+                response = await agent.arun(task_input)
+                return response.content
+                
+            except Exception as e:
+                print(f"Attempt {attempt + 1} failed: {e}")
+                if attempt == max_retries - 1:
+                    # Final attempt with fallback only
+                    agent = Agent(
+                        model=OpenAIChat(id="gpt-4o"),
+                        tools=self.fallback_tools
+                    )
+                    response = await agent.arun(task_input)
+                    return f"Completed with limited tools: {response.content}"
+                
+                await asyncio.sleep(2 ** attempt)  # Exponential backoff
+```
+
+## Best Practices
+
+### Security Considerations
+
+```python
+import json
+from typing import Dict, Any
+
+class SecureMCPConfiguration:
+    @staticmethod
+    def validate_env_vars(required_vars: list, env: dict) -> bool:
+        """Validate required environment variables."""
+        missing = [var for var in required_vars if not env.get(var)]
+        if missing:
+            raise ValueError(f"Missing required environment variables: {missing}")
+        return True
+    
+    @staticmethod
+    def sanitize_mcp_config(config: Dict[str, Any]) -> Dict[str, Any]:
+        """Sanitize MCP configuration for security."""
+        sanitized = config.copy()
+        
+        # Remove sensitive keys from logs
+        if "env" in sanitized:
+            sanitized["env"] = {
+                k: "***" if any(secret in k.lower() for secret in 
+                              ["key", "token", "password", "secret"]) else v
+                for k, v in sanitized["env"].items()
+            }
+        
+        return sanitized
+    
+    @staticmethod
+    def load_secure_config(config_path: str) -> dict:
+        """Load MCP configuration securely."""
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+        
+        # Validate configuration structure
+        required_fields = ["commands", "env"]
+        for field in required_fields:
+            if field not in config:
+                raise ValueError(f"Missing required field: {field}")
+        
+        return config
+
+# Usage
+@on_boot
+async def setup_secure_mcp():
+    """Setup MCP with security validations."""
+    config = SecureMCPConfiguration.load_secure_config("mcp_config.json")
+    
+    # Validate environment variables
+    SecureMCPConfiguration.validate_env_vars(
+        ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"],
+        config["env"]
+    )
+    
+    # Log sanitized configuration
+    sanitized_config = SecureMCPConfiguration.sanitize_mcp_config(config)
+    print(f"Loading MCP config: {sanitized_config}")
+    
+    mcp_tools = MultiMCPTools(**config)
+    await mcp_tools.__aenter__()
+```
+
+### Performance Optimization
+
+```python
+import time
+from functools import wraps
+
+def mcp_performance_monitor(func):
+    """Decorator to monitor MCP operation performance."""
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        start_time = time.time()
+        try:
+            result = await func(*args, **kwargs)
+            execution_time = time.time() - start_time
+            print(f"✅ {func.__name__} completed in {execution_time:.2f}s")
+            return result
+        except Exception as e:
+            execution_time = time.time() - start_time
+            print(f"❌ {func.__name__} failed after {execution_time:.2f}s: {e}")
+            raise
+    return wrapper
+
+class PerformanceOptimizedMCPAgent:
+    def __init__(self, backend: AgnoAdapter):
+        self.backend = backend
+        self.mcp_connection_pool = {}
+        self.operation_cache = {}
+    
+    @mcp_performance_monitor
+    async def get_cached_mcp_result(self, operation: str, params: dict):
+        """Get cached MCP operation result."""
+        cache_key = f"{operation}_{hash(str(sorted(params.items())))}"
+        
+        if cache_key in self.operation_cache:
+            print(f"🚀 Using cached result for {operation}")
+            return self.operation_cache[cache_key]
+        
+        # Execute operation and cache result
+        result = await self._execute_mcp_operation(operation, params)
+        self.operation_cache[cache_key] = result
+        
+        # Implement cache expiration
+        asyncio.create_task(self._expire_cache_entry(cache_key, 300))  # 5 min
+        
+        return result
+    
+    async def _expire_cache_entry(self, cache_key: str, ttl: int):
+        """Expire cache entry after TTL seconds."""
+        await asyncio.sleep(ttl)
+        self.operation_cache.pop(cache_key, None)
+        print(f"🗑️ Expired cache entry: {cache_key}")
+```
+
+## Monitoring and Debugging
+
+```python
+import logging
+from datetime import datetime
+
+class MCPDebugger:
+    def __init__(self, log_level: str = "INFO"):
+        self.logger = logging.getLogger("MCP_Debug")
+        self.logger.setLevel(getattr(logging, log_level))
+        
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        )
+        handler.setFormatter(formatter)
+        self.logger.addHandler(handler)
+    
+    def log_mcp_operation(self, operation: str, params: dict, result: any = None, error: Exception = None):
+        """Log MCP operation details."""
+        timestamp = datetime.now().isoformat()
+        
+        if error:
+            self.logger.error(f"MCP Operation Failed - {operation} at {timestamp}")
+            self.logger.error(f"Parameters: {params}")
+            self.logger.error(f"Error: {error}")
+        else:
+            self.logger.info(f"MCP Operation Success - {operation} at {timestamp}")
+            self.logger.debug(f"Parameters: {params}")
+            self.logger.debug(f"Result: {result}")
+    
+    async def debug_mcp_connection(self, mcp_tools: MultiMCPTools):
+        """Debug MCP connection status."""
+        try:
+            # Test connection by listing available tools
+            available_tools = await mcp_tools.list_tools()
+            self.logger.info(f"✅ MCP Connection Active - {len(available_tools)} tools available")
+            
+            for tool in available_tools:
+                self.logger.debug(f"Available tool: {tool}")
+                
+        except Exception as e:
+            self.logger.error(f"❌ MCP Connection Test Failed: {e}")
+
+# Usage in agent
+debugger = MCPDebugger("DEBUG")
+
+@on_task
+async def debug_enabled_task_handler(task):
+    """Task handler with MCP debugging."""
+    try:
+        debugger.log_mcp_operation("task_start", {"task_id": task.id})
+        
+        # Debug MCP connection
+        await debugger.debug_mcp_connection(mcp_tools)
+        
+        # Execute task with logging
+        result = await execute_task_with_mcp(task)
+        
+        debugger.log_mcp_operation("task_complete", {"task_id": task.id}, result)
+        return result
+        
+    except Exception as e:
+        debugger.log_mcp_operation("task_error", {"task_id": task.id}, error=e)
+        raise
+```
+
+## Related Documentation
+
+- [Lifecycle Management Guide](/user-guide/backend-configuration/lifecycle-management): Managing MCP tools lifecycle
+- [Performance Optimization](/user-guide/backend-configuration/performance-best-practices): Optimizing MCP operations
+- [Status Management](/user-guide/backend-configuration/status-management): Monitoring MCP tool status
+- [MCP Task Sources](/user-guide/task-sources/mcp): Basic MCP integration
+- [Examples: AWS Cost Report Agent](/Examples/*08-aws-cost-report-agent): Complete MCP integration example
