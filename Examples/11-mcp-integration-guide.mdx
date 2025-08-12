@@ -1,0 +1,538 @@
+---
+title: "MCP Integration Guide"
+description: "Comprehensive guide for integrating Model Context Protocol (MCP) tools with xpander-sdk, including MultiMCPTools usage, lifecycle decorators, and best practices"
+---
+
+# MCP Integration Guide
+
+This guide provides comprehensive documentation for integrating Model Context Protocol (MCP) tools with xpander-sdk using MultiMCPTools and lifecycle decorators. Learn how to leverage MCP's powerful tooling capabilities while maintaining proper resource management and agent execution flow.
+
+<Info>
+This guide covers features introduced in xpander-sdk version 2.0.32, addressing requirements outlined in XPander issue #401 for improved MCP integration patterns.
+</Info>
+
+## Overview of MCP Architecture
+
+Model Context Protocol (MCP) provides a standardized way for AI applications to connect with external data sources and tools. The xpander-sdk integrates with MCP through the `MultiMCPTools` class from the `agno` library, which manages multiple MCP servers simultaneously.
+
+### Key Components
+
+- **MultiMCPTools**: Main interface for managing multiple MCP servers
+- **Lifecycle Decorators**: `@on_boot`, `@on_task`, `@on_shutdown` for proper resource management
+- **AgentExecutionStatus**: Status management for agent tasks
+- **OutputFormat**: Flexible output formatting options
+
+### Architecture Benefits
+
+- **Efficient Resource Management**: Initialize expensive MCP connections once at boot
+- **Multi-Server Support**: Connect to multiple MCP servers simultaneously
+- **Proper Lifecycle Management**: Clean startup, execution, and shutdown phases
+- **Status Tracking**: Monitor agent execution states throughout the process
+
+## Step-by-Step Implementation Example
+
+Here's a complete implementation showing the recommended MCP integration pattern:
+
+```python
+#!/usr/bin/env python
+"""Xpander handler with MCP tools initialization"""
+
+from xpander_sdk import Task, Backend, on_task, on_boot, OutputFormat, AgentExecutionStatus
+from pydantic import BaseModel
+import os
+from agno.agent import Agent
+from agno.tools.mcp import MultiMCPTools
+from agno.models.openai import OpenAIChat
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Global MCP tools instance
+mcp_tools = None
+
+@on_boot
+async def initialize_mcp():
+    """Initialize MCP tools on boot"""
+    global mcp_tools
+    print("🚀 Initializing MCP tools on boot...")
+    
+    mcp_tools = MultiMCPTools(
+        commands=[
+            "uvx awslabs.eks-mcp-server@latest",
+            "uvx awslabs.core-mcp-server@latest", 
+            "npx -y @upstash/context7-mcp",
+        ],
+        env={
+            "AWS_ACCESS_KEY_ID": os.environ.get("AWS_ACCESS_KEY_ID", ""),
+            "AWS_SECRET_ACCESS_KEY": os.environ.get("AWS_SECRET_ACCESS_KEY", ""),
+            "AWS_REGION": os.environ.get("AWS_REGION", "us-west-2"),
+        },
+        timeout_seconds=300
+    )
+    
+    await mcp_tools.__aenter__()
+    print("✅ MCP tools initialized successfully on boot!")
+
+@on_task
+async def my_agent_handler(task: Task):
+    """Handle incoming task with MCP tools"""
+    try:
+        backend = Backend(configuration=task.configuration)
+        agno_args = await backend.aget_args(task=task, override={
+            "model": OpenAIChat(id="gpt-5-nano")
+        })
+
+        # Use pre-initialized MCP tools
+        if mcp_tools:
+            agno_args["tools"].append(mcp_tools)
+            print("🔧 Processing task with MCP tools")
+
+        agent = Agent(**agno_args)
+        agent.debug_mode = True
+
+        # Run the agent with proper status management
+        await task.aset_status(status=AgentExecutionStatus.Executing)
+        result = await agent.arun(message=task.to_message())
+
+        # Handle different output formats
+        if (task.output_format == OutputFormat.Json or agno_args.get("use_json_mode")) and isinstance(result.content, BaseModel):
+            textual_result = result.content.model_dump_json()
+        else:
+            textual_result = result.content
+
+        task.result = textual_result
+        await task.aset_status(status=AgentExecutionStatus.Completed, result=textual_result)
+        return task
+
+    except Exception as e:
+        print(f"❌ Task handler error: {e}")
+        task.result = f"Error: {str(e)}"
+        return task
+```
+
+### Implementation Breakdown
+
+#### 1. Boot-time Initialization (`@on_boot`)
+
+The `@on_boot` decorator ensures MCP tools are initialized once when the service starts:
+
+- **Global Instance**: Maintains a single `mcp_tools` instance across all tasks
+- **Multiple Servers**: Configures multiple MCP servers with different capabilities
+- **Environment Configuration**: Passes necessary environment variables to MCP servers
+- **Async Context Management**: Uses `__aenter__()` for proper resource initialization
+
+#### 2. Task Processing (`@on_task`)
+
+The `@on_task` decorator handles individual task execution:
+
+- **Backend Configuration**: Retrieves task-specific configuration
+- **Tool Integration**: Adds pre-initialized MCP tools to the agent
+- **Status Management**: Updates task status throughout execution
+- **Output Handling**: Supports multiple output formats (JSON, text)
+
+#### 3. Agent Status Management
+
+Proper status tracking ensures visibility into agent execution:
+
+```python
+# Set status to executing before processing
+await task.aset_status(status=AgentExecutionStatus.Executing)
+
+# Process the task
+result = await agent.arun(message=task.to_message())
+
+# Set final status with result
+await task.aset_status(status=AgentExecutionStatus.Completed, result=textual_result)
+```
+
+## Integrating MCP Tools with xpander-sdk Agents
+
+### Basic Integration Pattern
+
+```python
+# 1. Initialize MultiMCPTools in @on_boot
+@on_boot
+async def setup_mcp():
+    global mcp_tools
+    mcp_tools = MultiMCPTools(
+        commands=["your-mcp-server-command"],
+        env={"REQUIRED_ENV_VAR": "value"}
+    )
+    await mcp_tools.__aenter__()
+
+# 2. Use in @on_task handler
+@on_task
+async def handle_task(task: Task):
+    backend = Backend(configuration=task.configuration)
+    agno_args = await backend.aget_args(task=task)
+    
+    # Add MCP tools to agent
+    if mcp_tools:
+        agno_args["tools"].append(mcp_tools)
+    
+    agent = Agent(**agno_args)
+    return await agent.arun(message=task.to_message())
+```
+
+### Advanced Configuration
+
+For more complex scenarios, you can conditionally configure MCP tools based on task requirements:
+
+```python
+@on_task
+async def advanced_handler(task: Task):
+    backend = Backend(configuration=task.configuration)
+    agno_args = await backend.aget_args(task=task)
+    
+    # Conditionally add tools based on task type
+    if task.task_type == "aws-operations" and mcp_tools:
+        agno_args["tools"].append(mcp_tools)
+        print("🔧 Added AWS MCP tools for AWS operations task")
+    
+    # Override model based on task complexity
+    if task.complexity == "high":
+        agno_args["model"] = OpenAIChat(id="gpt-4")
+    
+    agent = Agent(**agno_args)
+    agent.debug_mode = task.debug_enabled
+    
+    return await agent.arun(message=task.to_message())
+```
+
+## Managing Agent Status and Outputs
+
+### AgentExecutionStatus Enum
+
+The SDK provides several status options for tracking agent execution:
+
+- `AgentExecutionStatus.Pending`: Task queued but not started
+- `AgentExecutionStatus.Executing`: Task currently being processed
+- `AgentExecutionStatus.Completed`: Task completed successfully
+- `AgentExecutionStatus.Failed`: Task completed with errors
+- `AgentExecutionStatus.Cancelled`: Task cancelled before completion
+
+### OutputFormat Options
+
+The SDK supports flexible output formatting:
+
+```python
+# JSON output format
+if task.output_format == OutputFormat.Json:
+    if isinstance(result.content, BaseModel):
+        textual_result = result.content.model_dump_json()
+    else:
+        textual_result = json.dumps(result.content)
+
+# Plain text format (default)
+else:
+    textual_result = str(result.content)
+```
+
+### Error Handling and Status Updates
+
+Implement comprehensive error handling with proper status updates:
+
+```python
+@on_task
+async def robust_handler(task: Task):
+    try:
+        await task.aset_status(status=AgentExecutionStatus.Executing)
+        
+        # Your agent logic here
+        result = await agent.arun(message=task.to_message())
+        
+        await task.aset_status(
+            status=AgentExecutionStatus.Completed, 
+            result=result.content
+        )
+        return task
+        
+    except Exception as e:
+        await task.aset_status(
+            status=AgentExecutionStatus.Failed, 
+            result=f"Error: {str(e)}"
+        )
+        task.result = f"Error: {str(e)}"
+        return task
+```
+
+## Best Practices
+
+### Boot-time vs Per-task Initialization
+
+**Boot-time Initialization (Recommended)**
+- ✅ Efficient resource usage
+- ✅ Faster task processing
+- ✅ Shared connections across tasks
+- ✅ Better error handling during startup
+
+```python
+@on_boot
+async def initialize_resources():
+    global mcp_tools
+    mcp_tools = MultiMCPTools(commands=["..."])
+    await mcp_tools.__aenter__()
+```
+
+**Per-task Initialization (Not Recommended)**
+- ❌ Slower task processing
+- ❌ Resource overhead
+- ❌ Potential connection limits
+- ❌ More complex error handling
+
+### Resource Management
+
+Always implement proper cleanup using shutdown hooks:
+
+```python
+@on_shutdown
+async def cleanup_resources():
+    """Clean up MCP tools on shutdown"""
+    global mcp_tools
+    if mcp_tools:
+        try:
+            await mcp_tools.__aexit__(None, None, None)
+            print("🧹 MCP tools cleaned up successfully")
+        except Exception as e:
+            print(f"⚠️ Error during MCP cleanup: {e}")
+```
+
+### Environment Variable Management
+
+Use a structured approach for environment configuration:
+
+```python
+def get_mcp_environment():
+    """Get MCP environment configuration with validation"""
+    required_vars = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
+    env_config = {}
+    
+    for var in required_vars:
+        value = os.environ.get(var)
+        if not value:
+            raise ValueError(f"Required environment variable {var} not set")
+        env_config[var] = value
+    
+    # Optional vars with defaults
+    env_config["AWS_REGION"] = os.environ.get("AWS_REGION", "us-west-2")
+    
+    return env_config
+
+@on_boot
+async def initialize_mcp():
+    global mcp_tools
+    try:
+        env_config = get_mcp_environment()
+        mcp_tools = MultiMCPTools(
+            commands=["uvx awslabs.eks-mcp-server@latest"],
+            env=env_config,
+            timeout_seconds=300
+        )
+        await mcp_tools.__aenter__()
+    except ValueError as e:
+        print(f"❌ MCP initialization failed: {e}")
+        raise
+```
+
+### Debugging and Monitoring
+
+Enable comprehensive logging for troubleshooting:
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+@on_boot
+async def initialize_mcp():
+    global mcp_tools
+    logger.info("🚀 Starting MCP initialization...")
+    
+    try:
+        mcp_tools = MultiMCPTools(
+            commands=["uvx awslabs.eks-mcp-server@latest"],
+            env=get_mcp_environment(),
+            timeout_seconds=300
+        )
+        
+        await mcp_tools.__aenter__()
+        logger.info("✅ MCP tools initialized successfully")
+        
+    except Exception as e:
+        logger.error(f"❌ MCP initialization failed: {e}")
+        raise
+
+@on_task
+async def my_agent_handler(task: Task):
+    logger.info(f"🔄 Processing task {task.id} with MCP tools")
+    
+    try:
+        # Task processing logic
+        result = await agent.arun(message=task.to_message())
+        logger.info(f"✅ Task {task.id} completed successfully")
+        return task
+        
+    except Exception as e:
+        logger.error(f"❌ Task {task.id} failed: {e}")
+        raise
+```
+
+## Backwards Compatibility and Migration
+
+### From Legacy Patterns
+
+If you're migrating from previous MCP integration patterns, follow these steps:
+
+#### Old Pattern (Not Recommended)
+```python
+# ❌ Old pattern - per-task initialization
+@on_task
+async def old_handler(task: Task):
+    # Creating MCP tools for each task
+    mcp = MultiMCPTools(commands=["..."])
+    await mcp.__aenter__()
+    
+    # Use tools
+    # ... task processing
+    
+    await mcp.__aexit__(None, None, None)
+```
+
+#### New Pattern (Recommended)
+```python
+# ✅ New pattern - boot-time initialization
+mcp_tools = None
+
+@on_boot
+async def initialize_mcp():
+    global mcp_tools
+    mcp_tools = MultiMCPTools(commands=["..."])
+    await mcp_tools.__aenter__()
+
+@on_task
+async def new_handler(task: Task):
+    # Use pre-initialized tools
+    if mcp_tools:
+        agno_args["tools"].append(mcp_tools)
+    # ... rest of task processing
+```
+
+### Version Compatibility
+
+- **xpander-sdk >= 2.0.32**: Full support for lifecycle decorators and MCP integration
+- **agno library**: Ensure you have the latest version with MultiMCPTools support
+- **MCP servers**: Compatible with MCP specification v1.0+
+
+### Migration Checklist
+
+- [ ] Update xpander-sdk to version 2.0.32 or later
+- [ ] Refactor MCP initialization to use `@on_boot` decorator
+- [ ] Add proper cleanup with `@on_shutdown` decorator
+- [ ] Update error handling to use AgentExecutionStatus
+- [ ] Test with multiple concurrent tasks
+- [ ] Verify resource cleanup on service shutdown
+
+## Validation Checklist
+
+Use this checklist to verify your MCP integration is properly implemented:
+
+### ✅ Initialization
+- [ ] MCP tools are initialized in `@on_boot` decorator
+- [ ] Global variable is properly declared
+- [ ] Environment variables are validated
+- [ ] Timeout is configured appropriately (300+ seconds recommended)
+- [ ] Initialization success is logged
+
+### ✅ Task Processing
+- [ ] Tasks use `@on_task` decorator
+- [ ] MCP tools are added to agent arguments
+- [ ] Status is set to `Executing` before processing
+- [ ] Final status is set with result
+- [ ] Error handling includes status updates
+
+### ✅ Resource Management
+- [ ] `@on_shutdown` decorator implements cleanup
+- [ ] MCP tools are properly closed on shutdown
+- [ ] Error handling during cleanup is implemented
+- [ ] No resource leaks under normal operation
+
+### ✅ Output Handling
+- [ ] Multiple output formats are supported
+- [ ] JSON serialization works for Pydantic models
+- [ ] Text fallback is implemented
+- [ ] Results are properly assigned to task
+
+### ✅ Error Handling
+- [ ] All async operations are wrapped in try-catch
+- [ ] Task status reflects error state
+- [ ] Error messages are descriptive
+- [ ] Logging provides troubleshooting information
+
+## Quick Test Plan
+
+### Basic Functionality Test
+
+```python
+# Test 1: Verify MCP initialization
+# Expected: MCP tools initialize without errors
+# Check: Logs show "✅ MCP tools initialized successfully"
+
+# Test 2: Process simple task
+# Expected: Task completes with MCP tools available
+# Check: Task result contains expected output
+
+# Test 3: Handle task error
+# Expected: Error is caught and task status reflects failure
+# Check: Task status is AgentExecutionStatus.Failed
+```
+
+### Load Testing
+
+```python
+# Test multiple concurrent tasks
+import asyncio
+
+async def test_concurrent_tasks():
+    tasks = []
+    for i in range(10):
+        task = Task(message=f"Test task {i}")
+        tasks.append(my_agent_handler(task))
+    
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    
+    # Verify all tasks completed successfully
+    for i, result in enumerate(results):
+        if isinstance(result, Exception):
+            print(f"Task {i} failed: {result}")
+        else:
+            print(f"Task {i} completed: {result.status}")
+```
+
+### Resource Cleanup Test
+
+```python
+# Test shutdown cleanup
+# 1. Initialize MCP tools
+# 2. Process some tasks
+# 3. Trigger shutdown
+# 4. Verify resources are cleaned up
+# Expected: No hanging processes or connections
+```
+
+## Related References
+
+- **XPander Issue #401**: Original requirements for improved MCP integration
+- **xpander-sdk v2.0.32**: Release notes and changelog
+- **MCP Specification**: Official Model Context Protocol documentation
+- **agno MultiMCPTools**: Library documentation for MCP tools management
+
+---
+
+<Tip>
+Remember to test your MCP integration thoroughly in a development environment before deploying to production. Pay special attention to resource management and error handling patterns.
+</Tip>
+
+<Warning>
+Always validate that your MCP servers are accessible and properly configured before initializing MultiMCPTools. Failed initialization during boot will prevent your service from starting.
+</Warning>
