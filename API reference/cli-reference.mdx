@@ -56,6 +56,7 @@ xpander agent new --name "bot" --folder "." --framework "agno"  # Non-interactiv
 xpander agent list                    # List all your agents (newest first)
 xpander agent edit [agent]            # Edit agent configuration in browser
 xpander agent delete [agent]          # Permanently delete agent from cloud
+xpander agent invoke [agent] "message" # Test agent with a message via webhook
 ```
 
 **Purpose:** Create, configure, and manage your AI agents in xpander.ai's control plane. These operations affect the agent definitions stored in xpander.ai's cloud.
@@ -65,6 +66,7 @@ xpander agent delete [agent]          # Permanently delete agent from cloud
 - Optional `[agent]` parameters show selection list if omitted
 - `edit` opens the agent configuration in your browser
 - `delete` requires confirmation to prevent accidental deletion
+- `invoke` tests deployed agents via webhook with real-time responses
 
 ## 🏗️ Local Development - Framework Templates
 
@@ -107,6 +109,40 @@ xpander secrets-sync                  # Upload .env variables to deployed agents
 - `xpander_handler.py` - Your agent logic
 - `.env` - Environment variables
 
+## 🧪 Agent Testing - Invoke Command
+
+Test your deployed agents directly via webhook with real-time responses:
+
+```bash
+xpander agent invoke                  # Interactive agent selection + message prompt
+xpander agent invoke "Hello world"   # Interactive agent selection with message
+xpander agent invoke my-agent "Hi"   # Test specific agent by name
+xpander agent invoke --agent-name my-agent "Hi"    # Old syntax (backward compatible)
+xpander agent invoke --agent-id <id> "Hi"          # Test specific agent by ID
+```
+
+**Purpose:** Test deployed agents instantly without building chat UIs or API clients. Perfect for development, debugging, and validation.
+
+**Key Features:**
+- **Real-time responses** - Get immediate webhook responses with timing
+- **Smart agent resolution** - Resolves agent names to IDs automatically
+- **Agent caching** - Caches agent list for 24 hours for faster performance
+- **Interactive selection** - Shows agent list if no agent specified
+- **Multiple input methods** - Support for agent names, IDs, and interactive selection
+- **Clean output format** - Formatted responses with response time tracking
+
+**Examples:**
+```bash
+# Quick testing workflow
+x a invoke "test my new feature"      # Pick agent, test quickly
+x a invoke notebook-agent "analyze data.csv"  # Direct agent testing
+x a invoke --agent-id abc123 "status check"   # Test by exact ID
+
+# Development workflow
+x a d my-agent                        # Deploy updated code
+x a invoke my-agent "test changes"    # Immediately test changes
+```
+
 ## Command Shortcuts Reference
 
 ```bash
@@ -118,6 +154,7 @@ x c                         # xpander configure
 x a n                       # xpander agent new
 x a e [agent]               # xpander agent edit (shows list if no agent)
 x a del [agent]             # xpander agent delete (shows list if no agent)
+x a invoke [agent] "msg"    # xpander agent invoke (shows list if no agent)
 
 # Local Development
 x a i [agent]               # xpander agent init (shows list if no agent)
