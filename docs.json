@@ -30,8 +30,7 @@
             "group": "Getting Started",
             "pages": [
               "user-guide/index",
-              "user-guide/quick-start",
-              "cli-reference"
+              "user-guide/quick-start"
             ]
           },
           {
@@ -136,6 +135,12 @@
               "API reference/configuration/index",
               "API reference/types",
               "API reference/exceptions"
+            ]
+          },
+          {
+            "group": "CLI Reference",
+            "pages": [
+              "API reference/cli-reference"
             ]
           }
         ]
