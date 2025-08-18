@@ -42,6 +42,11 @@ x a d my-agent              # Deploy specific agent
 # Monitor logs
 x a l                       # Shows list to select from  
 x a l my-agent              # Stream logs for specific agent
+
+# Test agent with messages
+x a invoke "Hello, test message"    # Interactive agent selection
+x a invoke my-agent "Hello"         # Test specific agent by name
+x a invoke --agent-id <id> "Hello"  # Test specific agent by ID
 ```
 
 ## Typical Workflow
@@ -52,7 +57,8 @@ x a n                       # 2. Create new agent
 x a i my-agent              # 3. Download agent files locally
 # Edit your agent code...
 x a d my-agent              # 4. Deploy updated agent
-x a l my-agent              # 5. Monitor logs
+x a invoke my-agent "test"  # 5. Test deployed agent
+x a l my-agent              # 6. Monitor logs
 ```
 
 ## Next Steps
