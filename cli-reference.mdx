@@ -1,0 +1,168 @@
+---
+title: "CLI Reference"
+description: "Complete reference for all Xpander CLI commands and options"
+icon: "terminal"
+---
+
+## Installation
+
+**Requirements:** Node.js 20+, Python 3.12+
+
+```bash
+npm install -g xpander-cli
+xpander configure
+```
+
+## Quick Start
+
+**1. Login (opens browser, saves profile automatically)**
+```bash
+xpander login
+x l                         # shortcut
+```
+
+**2. Create and initialize an agent**
+```bash
+xpander agent new           # Create new agent
+xpander agent init <agent>  # Initialize agent locally
+# Or non-interactive:
+x a n --name "bot" --folder "." --framework "agno"
+```
+
+**3. Deploy and monitor**
+```bash
+xpander agent deploy <agent>    # Deploy agent
+xpander agent logs <agent>      # View logs
+x a d <agent>                   # deploy shortcut
+x a l <agent>                   # logs shortcut
+```
+
+## Shortcuts
+
+All commands support shortcuts for faster usage:
+
+```bash
+# Authentication
+x l                         # xpander login
+x c                         # xpander configure
+
+# Agent Management
+x a n                       # xpander agent new
+x a i <agent>               # xpander agent init
+x a e <agent>               # xpander agent edit
+x a del <agent>             # xpander agent delete
+
+# Agent Container Management  
+x a d <agent>               # xpander agent deploy
+x a l <agent>               # xpander agent logs
+
+```
+
+## Command Reference
+
+### Authentication
+
+```bash
+xpander login                         # Login to Xpander (opens browser)
+xpander configure                     # Configure API credentials manually
+xpander profile --list                # List all profiles
+xpander profile --switch <name>       # Switch profiles
+```
+
+### Agent Management
+
+```bash
+xpander agent new                     # Create new agent (interactive)
+xpander agent new --name "bot" --folder "." --framework "agno"  # Non-interactive
+xpander agent list                    # List all agents
+xpander agent init <agent>            # Initialize agent in current directory
+xpander agent edit <agent>            # Edit agent configuration
+xpander agent delete <agent>          # Delete agent
+```
+
+### Agent Container Management
+
+```bash
+xpander agent deploy <agent>          # Deploy agent to cloud
+xpander agent logs <agent>            # View live agent logs
+xpander agent restart <agent>         # Restart deployed agent
+xpander agent stop <agent>            # Stop deployed agent
+```
+
+### Other
+
+```bash
+xpander agent dev <agent>             # Run agent locally for development
+xpander secrets-sync                  # Sync .env to deployed agent
+```
+
+## Deployment
+
+**Deploy creates new Docker version + runs it instantly:**
+
+```bash
+xpander agent deploy <agent>    # Upload code → build image → deploy
+x a d <agent>                   # shortcut
+```
+
+**Required files in your agent folder:**
+- `Dockerfile` - Container definition
+- `requirements.txt` - Python dependencies  
+- `xpander_handler.py` - Your agent logic
+- `.env` - Environment variables
+
+**Available Frameworks:** `agno`, `agno-team`, `base`
+
+Each deploy creates a NEW version and immediately runs it - powerful for instant updates!
+
+## Advanced Workflows
+
+### CI/CD Pipeline
+
+```yaml
+name: Deploy with Xpander
+on:
+  push:
+    branches: [ main ]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    - run: npm install -g xpander-cli
+    - run: |
+        xpander deploy --agent-id "${{ secrets.XPANDER_AGENT_ID }}" --api-key "${{ secrets.XPANDER_API_KEY }}" --confirm
+```
+
+### Multi-Organization Setup
+
+```bash
+# Login to different profiles/orgs
+xpander login --profile production
+xpander login --profile staging
+
+# Use specific organization
+xpander agent list --profile staging
+xpander deploy --profile production
+```
+
+### Non-Interactive Mode
+
+```bash
+# Skip all prompts
+xpander agent new --name "bot" --framework "agno" --folder "."
+xpander init abc123 --framework "agno" --folder "."
+```
+
+**Auth Priority:** `--api-key` > `XPANDER_API_KEY` > `~/.xpander/credentials`
+
+## Need Help?
+
+- **Join our Slack**: https://join.slack.com/t/xpandercommunity/shared_invite/zt-2mt2xkxkz-omM7f~_h2jcuzFudrYtZQQ
+- **Schedule free AI agent consultation**: https://e.xpander.ai/meetings/xpander/book-a-demo-website

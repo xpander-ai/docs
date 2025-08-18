@@ -30,7 +30,9 @@
             "group": "Getting Started",
             "pages": [
               "user-guide/index",
-              "user-guide/quick-start"            ]
+              "user-guide/quick-start",
+              "cli-reference"
+            ]
           },
           {
             "group": "Backend Configuration",
