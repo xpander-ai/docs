@@ -1,0 +1,62 @@
+---
+title: "CLI Quick Start"
+description: "Get started with the Xpander CLI in minutes"
+icon: "rocket"
+---
+
+## What is the Xpander CLI?
+
+The xpander.ai CLI helps you build and manage AI agents with three core functions:
+
+1. **🎛️ Control Plane** - Create and manage agents in xpander.ai's cloud
+2. **🏗️ Local Development** - Download framework templates to your machine  
+3. **☁️ Cloud Deployment** - Deploy agents as Docker containers and monitor them
+
+## Quick Setup
+
+**Requirements:** Node.js 20+, Python 3.12+
+
+```bash
+# Install CLI
+npm install -g xpander-cli
+
+# Login (opens browser)
+xpander login
+```
+
+## Essential Commands
+
+```bash
+# Create new agent
+x a n                       # Interactive creation
+x a n --name "bot" --folder "." --framework "agno"  # Non-interactive
+
+# Download agent to work locally  
+x a i                       # Shows list to select from
+x a i my-agent              # Download specific agent
+
+# Deploy to cloud
+x a d                       # Shows list to select from
+x a d my-agent              # Deploy specific agent
+
+# Monitor logs
+x a l                       # Shows list to select from  
+x a l my-agent              # Stream logs for specific agent
+```
+
+## Typical Workflow
+
+```bash
+x l                         # 1. Login to xpander.ai
+x a n                       # 2. Create new agent
+x a i my-agent              # 3. Download agent files locally
+# Edit your agent code...
+x a d my-agent              # 4. Deploy updated agent
+x a l my-agent              # 5. Monitor logs
+```
+
+## Next Steps
+
+- **📖 Full CLI Reference** - [Complete command documentation](/API%20reference/cli-reference)
+- **🎯 Join our Slack** - [Get help from the community](https://join.slack.com/t/xpandercommunity/shared_invite/zt-2mt2xkxkz-omM7f~_h2jcuzFudrYtZQQ)
+- **📚 Examples** - [See agent examples and templates](/Examples/index)

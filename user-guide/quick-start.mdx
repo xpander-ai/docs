@@ -25,15 +25,21 @@ mode: "wide"
    The `init` command is used to download the entire agent code to your local machine, pre-scaffolded with the desired framework (runtime environment - i.e. Agno), as well as the configuration of the agent.
 
    <Note>
-   Get your Agent ID from the Workbench URL or from the `Task sources` tab in the Workbench.
+   You can use the agent ID, agent name, or run without specifying an agent to get an interactive selection list.
    </Note>
 
     ```bash
     # Install the xpander CLI
     npm install -g xpander-cli
 
-    # Initialize your agent project
-    xpander agent init "your-agent-id"
+    # Initialize your agent project (choose one):
+    xpander agent init                    # Option 1: Interactive selection list
+    # OR
+    xpander agent init "my-agent"         # Option 2: Use agent name
+    # OR  
+    xpander agent init "abc123"           # Option 3: Use agent ID
+    # OR
+    x a i                                 # Option 4: Shortcut with selection list
     ```
 
   </Step>
@@ -45,7 +51,7 @@ mode: "wide"
 
   The `@register_tool` decorator makes your custom functions available to the AI agent, allowing it to call your business logic when needed. 
   
-     Read more about these decorators in the [Events](/API reference/events/index) and [Tools](/API reference/tools/index) sections of the API Reference.
+     Read more about these decorators in the [Events](/API%20reference/events/index) and [Tools](/API%20reference/tools/index) sections of the API Reference.
   </Note>
     ```python Agent Code
     from xpander_sdk import Backend, on_task, Task, register_tool
@@ -95,6 +101,63 @@ mode: "wide"
   </Step>
 </Steps>
 
+## CLI Command Reference
+
+The xpander.ai CLI supports both full commands and shortcuts for faster usage:
+
+### 🎛️ Control Plane Commands
+Manage agents in xpander.ai's cloud platform:
+
+```bash
+xpander login               # Authenticate with xpander.ai (opens browser)
+x l                         # ↑ shortcut
+
+xpander agent new           # Create new agent interactively  
+x a n                       # ↑ shortcut
+x a n --name "bot" --folder "." --framework "agno"  # Non-interactive
+
+xpander agent edit [agent]  # Edit agent configuration (browser)
+x a e [agent]               # ↑ shortcut
+
+xpander agent delete [agent] # Delete agent permanently
+x a del [agent]             # ↑ shortcut
+```
+
+### 🏗️ Local Development Commands  
+Download framework templates and test locally:
+
+```bash
+xpander agent init [agent]  # Download agent files to current folder
+x a i [agent]               # ↑ shortcut
+
+xpander agent dev [agent]   # Run agent locally for testing
+x a dev [agent]             # ↑ shortcut
+```
+
+### ☁️ Cloud Deployment Commands
+Deploy containers and monitor in the cloud:
+
+```bash
+xpander agent deploy [agent] # Deploy agent as Docker container
+x a d [agent]               # ↑ shortcut
+
+xpander agent logs [agent]  # Stream real-time logs from cloud
+x a l [agent]               # ↑ shortcut
+
+xpander agent restart [agent] # Restart deployed container
+x a restart [agent]         # ↑ shortcut
+
+xpander agent stop [agent]  # Stop running container
+x a stop [agent]            # ↑ shortcut
+```
+
+<Tip>
+Commands with `[agent]` show a selection list if no agent is specified. Agent lists are sorted by creation date (newest first).
+</Tip>
+
+<Note>
+For complete CLI documentation including advanced workflows, CI/CD integration, and all command options, see the [Full CLI Reference](/API%20reference/cli-reference).
+</Note>
 
 ## Next Steps
 
