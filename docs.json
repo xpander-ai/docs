@@ -30,7 +30,8 @@
             "group": "Getting Started",
             "pages": [
               "user-guide/index",
-              "user-guide/quick-start"
+              "user-guide/quick-start",
+              "user-guide/self-hosted-deployment"
             ]
           },
           {
