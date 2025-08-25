@@ -1,0 +1,216 @@
+---
+title: "GitHub Webhook Automation"
+description: "Complete autonomous pipeline for GitHub issue processing"
+icon: "github"
+mode: wide
+---
+
+<Info>
+**Goal**: Complete autonomous pipeline for GitHub issue processing
+
+**Expected Output**: Agent automatically handles new GitHub issues end-to-end
+</Info>
+
+## Why Webhook Filtering Matters
+
+GitHub sends webhooks on every issue event (opened, closed, commented, etc.). We only want "opened" issues, and we want to transform the raw JSON payload into AI-ready format instead of overwhelming the agent with unnecessary data.
+
+<Steps>
+  <Step title="Create Repository & Configure GitHub Webhook">
+    **Task**: Set up webhook to send issue events to your agent
+
+    ### Create Repository
+    1. Create new repository in GitHub
+    2. Commit something to it (README, initial files)
+
+    ### Add Webhook
+    1. Go to `https://github.com/<your-org>/<your-repo>/settings/hooks`
+    2. Add webhook with this URL: (You can also find it in the Agent Task Sources)
+
+    ```txt webhook-url.txt
+    https://webhook.xpander.ai?agent_id=<your-agent-id>&x-api-key=<your-api-key>&asynchronous=true
+    ```
+
+    3. Select **"Issues" events only** and click on "Test Webhook"
+
+    <Frame>
+      ![GitHub Webhook Configuration](/images/workshops/swe-agent/github-webhook.png)
+    </Frame>
+
+    4. Verify in activity view that webhook events arrive
+
+    <Frame>
+      ![Webhook Activity View](/images/workshops/swe-agent/webhook-xpander.png)
+    </Frame>
+  </Step>
+
+  <Step title="Add GitHub Issues Tool">
+    **Task**: Enable agent to comment on and manage GitHub issues
+
+    ### Configure GitHub Issues Connector
+    1. Xpander platform → **Connectors**
+    2. Add **GitHub Issues** connector and authenticate
+    3. **Add to your agent**
+
+    <Frame>
+      ![GitHub Issues Connector](/images/workshops/swe-agent/github-issues.png)
+    </Frame>
+
+    <Frame>
+      ![GitHub Issues Integration](/images/workshops/swe-agent/github-issues-2.png)
+    </Frame>
+
+    4. **Click save and deploy**
+  </Step>
+
+  <Step title="Configure Collaborative Instructions">
+    **Task**: Make agent communicate transparently during issue resolution
+
+    Add this instruction to your agent:
+
+    ```txt collaborative-instructions.txt
+    When receiving an issue from GitHub, you must begin by replying to the issue with your plan. Do not start coding before commenting on the issue. Once you have commented, proceed to solve the issue by writing code and creating a pull request. Finally, comment on your workflow in the issue, even if you encountered problems.
+    ```
+
+    **Save and Deploy**
+
+    ### Test the Integration
+    Create an issue on GitHub, or use the chat to ask the agent to comment on some GitHub issue.
+  </Step>
+
+  <Step title="Advanced Webhook Filtering (Bonus)">
+    **Goal**: Transform raw GitHub webhooks into AI-ready format
+
+    **Expected Output**: Agent receives clean, filtered issue data instead of raw JSON
+
+    ### Why This Matters
+    - GitHub sends webhooks for every issue action (opened, closed, edited, etc.)
+    - Raw webhook payloads contain 100+ fields your agent doesn't need  
+    - We want to filter for "opened" issues only and extract just the essential data
+
+    When you running the agnet locally, the events from GitHub or Slack (or any other task source) will arrive the local endpoint on your machine. You can transform the object.
+
+    ### Download and Customize Agent Code
+
+    To implement custom webhook filtering, you'll need to download your agent's code and modify the handler:
+
+    ```bash download-agent.bash
+    # Download your agent code
+    xpander agent init "SWE Agent" --template "agno" --folder "swe-agent"
+    cd swe-agent
+    ```
+
+    ### Edit the Webhook Handler
+
+    Find and edit the `xpander_handler.py` file to add webhook filtering:
+
+    ```python xpander_handler.py
+    from dotenv import load_dotenv
+    load_dotenv()
+
+
+    from xpander_sdk import Task, Backend, on_task, OutputFormat
+    from pydantic import BaseModel
+    from agno.agent import Agent
+
+    ## new code
+    import json
+
+    def process_github_event(event):
+        if isinstance(event, str):
+            event = json.loads(event)
+
+        if event.get("action") == "opened" and "issue" in event:
+            return f"{event['issue'].get('body')} | {event['issue'].get('html_url')}"
+
+        return False
+    ## END
+
+    @on_task
+    async def my_agent_handler(task: Task):
+        backend = Backend(configuration=task.configuration)
+        agno_args = await backend.aget_args(task=task)
+        agno_agent = Agent(**agno_args)
+
+        ## new code
+        github_payload = process_github_event(task.input.text)
+        if github_payload is not False:
+            task.input.text = github_payload
+        ## END
+
+        result = await agno_agent.arun(message=task.to_message())
+        
+        if task.output_format == OutputFormat.Json and isinstance(result.content, BaseModel):
+            result.content = result.content.model_dump_json()
+        
+        task.result = result.content
+        return task
+    ```
+
+    ### Test Locally
+
+    ```bash test-locally.bash
+    # Set up environment in the swe-agent directory
+    python3 -m venv .venv && source .venv/bin/activate
+    pip install -r requirements.txt
+
+    # Start development mode
+    xpander agent dev
+    ```
+
+    ### Test Webhook Filtering
+
+    While running locally, re-deliver a GitHub webhook to test filtering:
+
+    <Frame>
+      ![Webhook Re-delivery](/images/workshops/swe-agent/github-retrigger.png)
+    </Frame>
+
+    ### Deploy to Production (Optional)
+
+    ```bash deploy-production.bash
+    xpander deploy --yes
+    ```
+  </Step>
+</Steps>
+
+<Success>
+GitHub webhook configured for Issues events, agent can comment on GitHub issues, follows collaborative workflow (comment → code → PR → update), and webhook filtering processes only relevant events.
+</Success>
+
+## Test the Complete Pipeline
+
+**Create a GitHub issue** and watch your autonomous development pipeline in action:
+
+1. **Issue Created** → Webhook triggered
+2. **Agent Analyzes** → Comments with plan
+3. **Code Development** → Claude Code integration
+4. **PR Creation** → Automated solution
+5. **Team Notification** → Slack updates (if configured)
+
+## What You've Accomplished
+
+🎉 **Workshop Complete!**
+
+### Your Autonomous Development Pipeline:
+
+```
+GitHub Issue → Filtered Webhook → Agent Analysis → 
+Issue Comment → Code Development → PR Creation → Team Notification
+```
+
+### What You've Created
+
+You've just built something genuinely impressive – a complete autonomous development pipeline. Your agent can now handle GitHub issues from start to finish, coordinating with Claude Code for the actual development work, commenting on issues to keep everyone informed, and creating pull requests with complete solutions.
+
+But that's just the beginning. You've also created a multi-agent system with persistent memory, custom tools, knowledge bases, and team integration through Slack. This isn't just a chatbot – it's a sophisticated development partner that can scale infinitely.
+
+## Where to Go From Here
+
+Your agent is ready for real-world use, but you can take it even further. Consider scaling it across multiple repositories, adding specialized tools for your specific workflows, integrating with project management systems, or building domain-specific knowledge bases. You could even create teams of specialized agents working together.
+
+**You now have a 24/7 AI developer that never gets tired, never forgets context, and can handle the complete software development lifecycle.**
+
+<Note>
+**Production Ready**: Your agent is now capable of handling real development workflows. Consider implementing rate limiting, error handling, and monitoring for production use cases.
+</Note>

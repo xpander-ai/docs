@@ -1,0 +1,239 @@
+---
+title: "Local Configuration & Custom Capabilities"
+description: "Connect locally, add custom tools, and enable knowledge-based responses"
+icon: "gear"
+mode: wide
+---
+
+<Info>
+**Goal**: Connect locally, add custom tools, and enable knowledge-based responses
+
+**Expected Output**: Agent with persistent memory, GitHub tools, and expert-level documentation access
+</Info>
+
+<Steps>
+  <Step title="SDK Integration">
+    Add this code to your `app.py` file:
+
+    ```python app.py
+    import os
+    from dotenv import load_dotenv
+    from xpander_sdk import Backend
+    from agno.agent import Agent
+
+    # Load environment variables
+    load_dotenv()
+
+    # Initialize the backend and agent
+    backend = Backend()
+    swe_agent = Agent(**backend.get_args())
+    print("✅ SWE Agent initialized!")
+    ```
+
+    Run the script to test your setup:
+
+    ```bash run-app.bash
+    python app.py
+    ```
+
+    Add this inspection code to see what your agent can do:
+
+    ```python app.py
+    # Add this to your app.py file after the initialization
+    print("🔧 Available Tools:")
+    for tool in swe_agent.tools:
+        print(f"   • {tool.__name__}")
+        
+    print(f"\n💾 Database: {swe_agent.storage.db_url}")
+    print(f"📋 Instructions: {len(swe_agent.instructions)} rules loaded")
+    ```
+
+    Run again to see your agent's capabilities:
+
+    ```bash run-app.bash
+    python app.py
+    ```
+  </Step>
+
+  <Step title="Test Session Memory">
+    **Goal**: Verify persistent memory across interactions
+
+    **Key differentiator**: PostgreSQL storage vs ChatGPT's forgetting conversations
+
+    Create a new file to test memory persistence:
+
+    ```python test_memory.py
+    from app import swe_agent
+
+    # Test 1: Ask for code
+    swe_agent.print_response("Write a Python function to validate email addresses", stream=True)
+
+    # Test 2: Verify memory
+    swe_agent.print_response("What did I just ask you to do?", stream=True)
+    ```
+
+    Run the memory test:
+
+    ```bash run-memory-test.bash
+    python test_memory.py
+    ```
+
+    Screenshot
+
+    <Frame>
+      ![test_memory](/images/workshops/swe-agent/test-memory.png)
+    </Frame>
+
+  </Step>
+
+  <Step title="Add Custom Tool - GitHub Operations">
+    **Goal**: Extend agent capabilities with GitHub API integration
+
+    **Expected Output**: Agent can star repositories on command
+
+    First, get a GitHub personal access token from https://github.com/settings/tokens (create a "Classic" token with `public_repo` scope).
+
+    Add the GitHub token to your `.env` file:
+
+    ```bash .env
+    # Add this line to your existing .env file
+    GITHUB_TOKEN=your-github-token-here
+    ```
+
+    Create a new file for the GitHub tool:
+
+    ```python github_tool.py
+    from xpander_sdk import register_tool
+    from xpander_sdk import Backend
+    from agno.agent import Agent
+
+    import requests
+    import os
+    from dotenv import load_dotenv
+
+    load_dotenv()
+
+    @register_tool
+    def star_github_repo(repo_full_name: str) -> dict:
+        """Star a GitHub repository
+        
+        Args:
+            repo_full_name: Repository in format 'owner/repo'
+        """
+        token = os.environ.get("GITHUB_TOKEN")
+        if not token:
+            return {"error": "No GitHub token configured"}
+        
+        response = requests.put(
+            f"https://api.github.com/user/starred/{repo_full_name}",
+            headers={"Authorization": f"token {token}"}
+        )
+        return {"success": response.status_code == 204, "repo": repo_full_name}
+
+    backend = Backend()
+    swe_agent = Agent(**backend.get_args())
+
+    # Test the custom tool
+    swe_agent.print_response("Please star the xpander-ai/xpander.ai repository", stream=True)
+    ```
+
+    Run the GitHub tool test:
+
+    ```bash test-github-tool.bash
+    python github_tool.py
+    ```
+  </Step>
+
+  <Step title="Add Knowledge Base - Expert Documentation">
+    **Goal**: Give agent access to authoritative sources for expert-level responses
+
+    **Expected Output**: Agent can answer questions using official documentation
+
+    ```python knowledge-base.py
+    import requests
+    from agno.document.chunking.fixed import FixedSizeChunking
+    from agno.knowledge.pdf import PDFKnowledgeBase
+    from agno.vectordb.pgvector import PgVector
+    from app import swe_agent
+
+    def download_pdf(url, filename):
+        """Download PDF from URL to local file"""
+        response = requests.get(url)
+        response.raise_for_status()
+        with open(filename, 'wb') as f:
+            f.write(response.content)
+        return filename
+
+    # URLs to download - updated with correct paper
+    pdf_urls = [
+        "https://githubtraining.github.io/training-manual/legacy-manual.pdf"
+    ]
+
+    # Download PDFs and create PDFConfig list
+    pdf_configs = []
+    for i, url in enumerate(pdf_urls):
+        filename = f"document_{i+1}.pdf"
+        try:
+            pdf_path = download_pdf(url, filename)
+            pdf_configs.append({"path": pdf_path})
+            print(f"Downloaded: {pdf_path}")
+        except Exception as e:
+            print(f"Failed to download {url}: {e}")
+
+    # Create knowledge base from all downloaded PDFs
+    knowledge_base = PDFKnowledgeBase(
+        path=pdf_configs,  # List of PDFConfig dictionaries
+        vector_db=PgVector(
+            table_name="swe_documentation",
+            db_url=swe_agent.storage.db_url,
+            auto_upgrade_schema=True,
+            schema=swe_agent.storage.schema
+        ),
+        chunking_strategy=FixedSizeChunking(chunk_size=1000)
+    )
+
+    # Load documents
+    knowledge_base.load(recreate=False)
+
+    # Enable knowledge base for the agent
+    swe_agent.knowledge = knowledge_base
+    swe_agent.search_knowledge = True
+
+    print(f"✅ Knowledge base loaded with {len(pdf_configs)} PDFs!")
+
+    # Test knowledge-enhanced responses
+    swe_agent.print_response("What's the official way to do git cherry-pick according to GitHub?", stream=True)
+    ```
+
+    Run the knowledge base setup and test:
+
+    ```bash test-knowledge-base.bash
+    python knowledge_base.py
+    ```
+
+    <Note>
+    The first run will download and process the PDF, which may take a few minutes. Subsequent runs will be faster as the knowledge base is cached.
+    </Note>
+  </Step>
+</Steps>
+
+<Success>
+Agent has persistent memory across sessions, custom GitHub tools work correctly, knowledge base provides authoritative answers, and multi-agent system coordinates with Claude Code.
+</Success>
+
+## What We've Accomplished
+
+You now have a sophisticated agent with:
+
+1. **Persistent Memory**: Unlike ChatGPT, your agent remembers conversations across sessions
+2. **Custom Tools**: GitHub API integration for repository operations
+3. **Knowledge Base**: Access to expert documentation for authoritative responses
+4. **Multi-Agent Coordination**: Can delegate complex tasks to Claude Code
+
+## Next Steps
+
+In the next module, we'll connect your agent to Slack for seamless team collaboration and autonomous development workflows.
+
+<Note>
+**Pro Tip**: The knowledge base and custom tools you've added make your agent significantly more powerful than basic LLM chatbots. It can now provide expert-level responses and perform real actions in your development environment.
+</Note>

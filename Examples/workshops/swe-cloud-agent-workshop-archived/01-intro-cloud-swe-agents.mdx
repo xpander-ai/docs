@@ -1,0 +1,300 @@
+---
+title: "Module 1: Deploy and test your SWE agent"
+icon: "server"
+---
+
+<Note>
+  In this module, we'll explore the **SWE (Software Engineering) Agent** template on the xpander.ai platform, connect it to GitHub, download the code locally, and test it.
+</Note>
+
+**Goal**: Learn how to develop an autonomous coding agent and configure it to work with coding tools such as OpenAI Codex and how it can use different tools
+
+## Step 1: Template Import
+
+To avoid manual configuration work around adding tools, setting instructions, etc., a SWE agent template is ready to be deployed on the platform.
+After clicking the Template import button, you will register or log in to xpander.ai and be redirected to the template deployment screen.
+
+<a 
+  href="https://app.xpander.ai/examples/templates/14c5e651-a207-4a60-8dd6-143e147df890?utm=swe-workshop-sf-july25" 
+  target="_blank" 
+  style={{
+    display: 'inline-block',
+    backgroundColor: '#6b33f2',
+    color: 'white',
+    padding: '6px 12px',
+    borderRadius: '9999px',
+    textDecoration: 'none',
+    fontWeight: '500',
+    fontSize: '13px',
+    lineHeight: '0.3',
+    boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+  }}
+>
+  Import Codex SWE Agent to your xpander.ai Account
+</a>
+
+Follow the import steps as seen in the video:
+
+1. In the agent import wizard, select "New GitHub Pull Requests interface"
+2. The exclamation mark (⚠️) on the GitHub tools indicates that the Connector for Github has not been authorized yet. Click on one of them to see the connector settings.
+3. In the popup window, connect to GitHub with OAuth2.
+
+You are now seeing the AI Workbench - a user interface used to design, deploy, test and observe agents.
+
+<Frame>
+![post-template](/images/examples/workshops/post-template.png)
+</Frame>
+
+Give the Agent permissions to use GitHub
+
+Click on "Authorization required" in the tools view of the agent and complete the OAuth flow.
+
+<Frame>
+  <video muted loop playsInline controls allowFullScreen className="w-full aspect-video" src="https://assets.xpanderai.io/examples/workshops/videos/swe-authorize-github.mp4" />
+</Frame>
+
+Change the view to **Agent Graph** to see the visual representation of your agent or multi-agent team, including its different triggering capabilities and its available tools.
+
+Check out the available tools your agent has. It can interact with GitHub - listing, creating, updating, and commenting on pull requests. More importantly, it can code using the built-in Coding agent, built on an enhanced version of Codex CLI.
+
+<Frame>
+![Serverless coding agent](/images/examples/workshops/serverless-coding-agent.png)
+</Frame>
+
+
+<Warning>If the GitHub tools on the graph are displaying a red exclamation mark, it's because you still need to authorize the GitHub connector. Click on the exclamation mark and go through the Auth process with OAuth2</Warning>
+
+
+<Accordion title="Codex CLI built into the agent?">
+
+  The **Coding Agent** runs on **GPT-4.1** and handles high-level reasoning, task planning, and decision-making.  
+  It uses tools to complete actions - one of them being the **Codex tool**.
+
+  The **Codex tool** is a containerized, sandboxed version of the **Codex CLI**, running with the agent’s own **Git credentials**.  
+  It's powered by the **codex-mini-latest** model, optimized for fast, focused code generation.
+
+  The agent sends coding tasks to this tool - for example, “add tests for this function” - and the Codex tool writes or modifies the code.  
+  Combined with the **GitHub integration**, the agent can autonomously list, create, update, and comment on pull requests.
+
+</Accordion>
+
+## Step 2: Test your agent using the visual AI Workbench
+
+Let’s walk through a real GitHub workflow using your agent
+
+---
+### Test 1: The agent's capabilities
+
+In the left tab of the AI Workbench (Tester tab), submit this prompt:
+
+```text
+What can you do ?
+```
+
+<Frame>
+![Step 1 capabilities](/images/examples/workshops/swe-capabilities.png)
+</Frame>
+
+---
+
+### Test 2: List Pull Requests
+
+In the left tab of the AI Workbench (Tester tab), submit this prompt:
+
+```text
+List all pull requests (open or closed) in "xpander-ai/apps-by-agents"
+```
+
+<Tip>
+Change the view to **Full View** and expand the API calls to see the generated parameters from the AI model to the different APIs and the payload returned to the AI model.
+</Tip>
+
+<Frame>
+![Full view](/images/examples/workshops/full-view-action.png)
+</Frame>
+
+---
+
+### Test 3: Summarize the Latest PR
+
+```text
+In xpander-ai/apps-by-agents, explain the most recent pull request and what the code changes do.
+```
+
+<Tip>
+Click on "Channels" and go to "Chat" and open Markdown rich Web Interface built-in for your agent
+</Tip>
+
+<Frame>
+![Step 3 PR Summary](/images/examples/workshops/pr-summary.png)
+</Frame>
+
+## Step 3: Load the agent locally (Optional)
+
+Click on the CLI icon at the top left, and run the code snippet that is shown
+
+<Frame>
+![alt text](/images/examples/workshops/cli-icon.png)
+</Frame>
+
+```bash
+npm i -g xpander-cli
+xpander login
+xpander initialize <<your-agent-id>>
+```
+
+<Warning>
+xpander-cli requires Node.js v22 or higher and CLI version 0.0.31 or above. If you install the CLI but it shows an old version, your system is likely using a cached or outdated install
+
+<Accordion title="Follow these steps to fix it">
+Step 1: Use Node.js v22+
+
+If you have nvm (Node Version Manager) installed:
+
+```bash
+nvm install 22
+nvm use 22
+nvm alias default 22
+```
+
+If you don’t have nvm
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+```
+
+Alternatively, if you prefer not to use nvm, make sure your Node.js version is at least 22:
+
+```bash
+node -v  # Should return v22.x.x or higher
+```
+
+Step 2: Remove any old xpander-cli installs
+
+```bash
+npm uninstall -g xpander-cli
+which xpander  # Should return nothing
+```
+
+If it still shows a path, delete the old binary:
+
+```bash
+rm -f $(which xpander)
+```
+
+Step 3: Install the latest CLI
+
+```bash
+npm install -g xpander-cli
+xpander --version  # Should show 0.0.31 or higher
+```
+</Accordion>
+
+</Warning>
+
+Example output
+
+```log
+❯ xpander login --new
+🚀 Welcome to Xpander!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Hi David! You've successfully logged in.
+
+  Profile: default
+  Organization ID: ********
+  API Key: ********
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 Quick Start Tips:
+  • Initialize your first agent: xpander agent init
+  • Visit the platform: https://app.xpander.ai
+  • Switch profiles: xpander profile --switch <name>
+
+✓ Profile saved to ~/.xpander
+
+❯ xpander initialize *****
+✨ Initializing agent
+────────────────────────────────────────────────────────────
+✔ Agents loaded successfully
+? Select an agent to initialize: Coding Agent (*****)
+ℹ Agent Coding Agent retrieved successfully
+✔ Agent initialized successfully
+
+❯ ls
+agent_instructions.json Dockerfile              myAgent.py              requirements.txt        xpander_config.json     xpander_handler.py
+```
+
+<Tip>
+You can now pull a list of the agents with
+
+```bash
+xpander agent list
+```
+
+Example output
+
+```log
+❯ xpander agent list
+🤖 Your Agents
+──────────────────────────────────────────────────
+┌────────────────────────┬───────────┬────────────────────────────────────────────────────────────────────┐
+│ Name                   │ Created   │ Link                                                               │
+├────────────────────────┼───────────┼────────────────────────────────────────────────────────────────────┤
+│ Coding Agent           │ 6/30/2025 │ https://app.xpander.ai/agents/c1620615-9686-4177-96dc-1de7cc281b3f │
+├────────────────────────┼───────────┼────────────────────────────────────────────────────────────────────┤
+│ AI RSS and Google News │ 6/30/2025 │ https://app.xpander.ai/agents/7887dffd-d30a-4185-b5d6-3d85681df845 │
+└────────────────────────┴───────────┴────────────────────────────────────────────────────────────────────┘
+──────────────────────────────────────────────────
+Total agents: 2
+```
+</Tip>
+
+## Step 4: Run the agent locally (Optional)
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Then run `python xpander_handler.py` to register your machine to receive events to the agent, open the chat URL and send some message then monitor terminal.
+
+You should see something similar to the following log.
+
+```log
+❯ python xpander_handler.py
+14:14:02 | Listener started; waiting for events...
+14:14:03 | Worker registered – id=ff22f89c-d8f9-49b8-8c08-ebd589952ad8
+14:14:03 | Agent 'Coding Agent' chat: https://amaranth-whale.agents.xpander.ai | builder: https://app.xpander.ai/agents/c1620615-9686-4177-96dc-1de7cc281b3f
+14:15:21 | 🚀 Initializing MyAgent...
+14:15:22 | 📋 Agent: Coding Agent
+14:15:22 | 🔧 Tools: 8 available
+14:15:22 | 💡 Example prompts: 5
+14:15:22 |    e.g. "List open PRs in xpander-ai/xpander-sdk."
+14:15:22 | ✅ Ready!
+14:15:22 | 
+📨 Incoming message: hi
+👤 From user: ******
+📧 Email: ****
+14:15:22 | 📝 Task: hi
+14:15:26 |   📊 Step tokens: 4253
+14:15:31 |   ✅ xpfinish-agent-execution-finished
+14:15:31 | ✅ Done! Duration: 8.8s | Total tokens: 4253
+14:15:31 | Agent result: Hi David! How can I help you today? If you have any questions or need assistance, just let me know!
+```
+
+<Note>
+  Keep the xpander_handler.py running for the remainder of the workshop.
+</Note>
+
+<Check>
+We now have the backend ready. The UI can help us control the agent tools, the model, the events that are coming, the authentication, and all the infrastructure needed for the agent.
+</Check>
+
+##  What's Next?
+
+Your Coding Agent is now live and connected - it can generate code with Codex and interact with GitHub.
+
+→ Proceed to [Module 2: Frontend Build & Testing](./02-load-backend-template) to connect a minimal OpenAI Codex-style UI to interact with your agent, track its tasks, etc.
