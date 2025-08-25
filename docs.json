@@ -85,22 +85,13 @@
             "pages": [
               "Examples/workshops/index",
               {
-                "group": "A2A Custom Agents",
+                "group": "SWE Agent Workshop",
                 "pages": [
-                  "Examples/workshops/a2a-mcp-workshop/index",
-                  "Examples/workshops/a2a-mcp-workshop/01-first-coding-agent",
-                  "Examples/workshops/a2a-mcp-workshop/02-expand-agent-fleet",
-                  "Examples/workshops/a2a-mcp-workshop/03-serverless-manager-agent",
-                  "Examples/workshops/a2a-mcp-workshop/04-submit-application"
-                ]
-              },
-              {
-                "group": "SWE Cloud Agent",
-                "pages": [
-                  "Examples/workshops/swe-cloud-agent-workshop/index",
-                  "Examples/workshops/swe-cloud-agent-workshop/01-intro-cloud-swe-agents",
-                  "Examples/workshops/swe-cloud-agent-workshop/02-load-backend-template",
-                  "Examples/workshops/swe-cloud-agent-workshop/03-advanced-customization"
+                  "Examples/workshops/swe-agent-workshop/index",
+                  "Examples/workshops/swe-agent-workshop/01-initial-setup",
+                  "Examples/workshops/swe-agent-workshop/02-local-configuration",
+                  "Examples/workshops/swe-agent-workshop/03-slack-integration",
+                  "Examples/workshops/swe-agent-workshop/04-github-automation"
                 ]
               }
             ]
