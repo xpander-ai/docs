@@ -31,11 +31,17 @@ mode: wide
   </Step>
 
   <Step title="Test Your Agent">
-    Test your agent with this prompt:
+    Test your agent with these prompts:
+
+    ```txt test-prompt.txt
+    Write hello world in different languages
+    ```
 
     ```txt test-prompt.txt
     Ask Claude to write hello world in different languages
     ```
+
+    Notice that the first prompt the agent didn't call the Claude Tool, and in the second call it called the Claude tool
 
     <Frame>
       ![First Agent Test](/images/workshops/swe-agent/first-prompt.png)
