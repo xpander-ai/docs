@@ -31,13 +31,14 @@ GitHub sends webhooks on every issue event (opened, closed, commented, etc.). We
     https://webhook.xpander.ai?agent_id=<your-agent-id>&x-api-key=<your-api-key>&asynchronous=true
     ```
 
-    3. Select **"Issues" events only** and click on "Test Webhook"
-
+    3. Under "Which events would you like to trigger this webhook" select "Let me select individual events." -> Check the Issues box and click Add Webhook at the bottom. At that point, a test webhook will be sent from Github to your agent
     <Frame>
       ![GitHub Webhook Configuration](/images/workshops/swe-agent/github-webhook.png)
     </Frame>
 
-    4. Verify in activity view that webhook events arrive
+    4. Go to "Recent Deliveries" and check the status is 200.
+
+    5. In the xpander.ai Agent console, verify in activity view that webhook events arrive
 
     <Frame>
       ![Webhook Activity View](/images/workshops/swe-agent/webhook-xpander.png)
@@ -56,11 +57,14 @@ GitHub sends webhooks on every issue event (opened, closed, commented, etc.). We
       ![GitHub Issues Connector](/images/workshops/swe-agent/github-issues.png)
     </Frame>
 
+    4. Once authenticated, select the tools from the connector. 
+  
     <Frame>
       ![GitHub Issues Integration](/images/workshops/swe-agent/github-issues-2.png)
     </Frame>
-
-    4. **Click save and deploy**
+    5. Select `Create Comment on Issue` and `List all comments for issues`
+  
+    6. **Click deploy**
   </Step>
 
   <Step title="Configure Collaborative Instructions">
@@ -79,6 +83,11 @@ GitHub sends webhooks on every issue event (opened, closed, commented, etc.). We
   </Step>
 
   <Step title="Advanced Webhook Filtering (Bonus)">
+  
+    <Note>
+    **Taking Control**: This bonus section shows how to move from serverless managed execution to running your own containerized agent code, giving you full control as an AI engineer.
+    </Note>
+  
     **Goal**: Transform raw GitHub webhooks into AI-ready format
 
     **Expected Output**: Agent receives clean, filtered issue data instead of raw JSON
@@ -88,9 +97,9 @@ GitHub sends webhooks on every issue event (opened, closed, commented, etc.). We
     - Raw webhook payloads contain 100+ fields your agent doesn't need  
     - We want to filter for "opened" issues only and extract just the essential data
 
-    When you running the agnet locally, the events from GitHub or Slack (or any other task source) will arrive the local endpoint on your machine. You can transform the object.
+    When you are running the agent locally, the events from GitHub or Slack (or any other task source) will be routed to the local endpoint on your machine (in the xpander_handler.py `task` object). Before invoking the AI Agent, you can transform the incoming payload. Let's convert all GitHub webhooks into AI-Optimized payloads and filter out non-GitHub Issues events! 
 
-    ### Download and Customize Agent Code
+    ### How to do it? Download and Customize Agent Code
 
     To implement custom webhook filtering, you'll need to download your agent's code and modify the handler:
 
@@ -100,7 +109,7 @@ GitHub sends webhooks on every issue event (opened, closed, commented, etc.). We
     cd swe-agent
     ```
 
-    ### Edit the Webhook Handler
+    ### Edit the Agent Handler
 
     Find and edit the `xpander_handler.py` file to add webhook filtering:
 
