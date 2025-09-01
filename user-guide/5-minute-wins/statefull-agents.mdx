@@ -42,7 +42,15 @@ myAgent.local_test()
 ```
 
 <Note>
-The Backend instance includes a PostgreSQL database with read/write permissions. When loaded into Agno, it automatically creates the database schema. AI Engineers can customize the database structure as needed.
+The Backend instance includes a PostgreSQL database with read/write permissions, system prompt, model settings, and Tools/MCP integrations. When loaded into Agno, it automatically creates the database schema. All settings can be overridden in code using the `override` parameter:
+
+```python
+# Override model example
+backend = Backend()
+agent = Agent(**backend.get_args(override={
+    'model': Ollama(id="gpt-oss:20b")
+}))
+```
 </Note>
 
 Create a virtual environment, install dependencies, export your API key and run the Agent.
@@ -83,7 +91,25 @@ Access your PostgreSQL database with `myAgent.storage.db_url` or view all messag
 
 ## Deploy Updates
 
-After testing, deploy your custom version:
+After testing, update `xpander_handler.py` to use your `MyAgent` instance instead of the default `agno_agent` object.
+
+Example:
+
+```python xpander_handler.py
+from myAgent import MyAgent
+
+@on_task
+async def my_agent_handler(task: Task):
+    backend = Backend(configuration=task.configuration)
+    agno_args = await backend.aget_args(task=task)
+    
+    my_agent = MyAgent(**agno_args)
+    result = await my_agent.arun(message=task.to_message())
+
+    return task
+```
+
+And deploy your custom version:
 
 ```bash
 xpander agent deploy
