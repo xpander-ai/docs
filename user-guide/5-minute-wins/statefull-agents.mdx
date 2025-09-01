@@ -7,19 +7,28 @@ mode: "wide"
 
 ## Create your agent
 
-```bash
+```bash new-agent.sh
 xpander agent new --name "state-full-agent" --framework agno --folder .
 ```
 
 This creates a serverless backend instance with base template files:
+
 - `Dockerfile` - Container configuration
 - `requirements.txt` - Python dependencies  
-- `xpander_handler.py` - Traffic routing
+- `xpander_handler.py` - Agent Event Listener
 - `.env` - API key and agent ID configuration
+
+The serverless agent is immediately available for testing:
+
+```bash invoke-agent.sh
+xpander agent invoke "state-full-agent" "hi"
+```
+
+Or use the Web UI at `https://app.xpander.ai/agents/agent-id`
 
 ## Write the agent code
 
-Create `myAgent.py`:
+The default serverless agent uses a basic template. Create `myAgent.py` to customize behavior:
 
 ```python myAgent.py
 from dotenv import load_dotenv
@@ -67,13 +76,6 @@ export OPENAI_API_KEY="your-key"
 ```bash
 python myAgent.py
 ```
-</Step>
-
-<Step title="Test serverless agent">
-```bash
-xpander agent invoke "state-full-agent" "hi"
-```
-Or use the Web UI at `https://app.xpander.ai/agent-id`
 </Step>
 </Steps>
 
