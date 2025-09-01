@@ -1,7 +1,7 @@
 ---
 title: "Self-Deploy to K8s Cluster"
 description: "Deploy xpander.ai to your own Kubernetes infrastructure in minutes using Helm charts for full control and enterprise security."
-icon: "kubernetes"
+icon: "dharmachakra"
 mode: "wide"
 ---
 
@@ -10,54 +10,27 @@ mode: "wide"
 **What you'll get:** xpander.ai running on your own Kubernetes cluster with full data control
 </Info>
 
-Deploy the entire xpander.ai platform to your Kubernetes infrastructure. Keep all data within your network while leveraging the full power of the platform.
-
-<Frame>
-![Kubernetes Architecture](/static/images/screenshots/k8s-architecture.png)
-</Frame>
+Deploy the xpander.ai engine to your Kubernetes infrastructure. Keep all data within your network while leveraging the full power of the platform.
 
 ## Quick K8s Deployment
 
 <Steps>
   <Step title="Create Environment" titleIcon="cloud">
-    First, create a self-hosted environment in the xpander.ai Console:
+    Create a self-hosted environment in the xpander.ai Console:
     
     1. Go to [app.xpander.ai/environments](https://app.xpander.ai/environments)
     2. Click **"Add Environment"**
-    3. Enter details:
-       - **Name**: "Production" or "K8s Cluster"  
-       - **URL**: Your server FQDN (e.g., `xpander.my-company.com`)
-    4. **Save** your Organization ID and Environment ID
-    
-    <Tip>The platform auto-generates your complete Helm installation commands!</Tip>
-  </Step>
-  
-  <Step title="Prepare Cluster" titleIcon="server">
-    Ensure your Kubernetes cluster meets requirements:
-    
-    **Prerequisites checklist:**
-    - ✅ Kubernetes 1.20+
-    - ✅ Helm 3.12+
-    - ✅ Ingress Controller (NGINX recommended)
-    - ✅ Storage Class for persistent volumes
-    - ✅ Outbound HTTPS access to xpander.ai IPs:
-      ```
-      166.117.85.46
-      15.197.85.80
-      ```
-    
-    <Note>Only outbound connections required - no inbound traffic from xpander.ai!</Note>
+    3. Enter your server FQDN (e.g., `xpander.my-company.com`)
+
+    <Tip>The platform provides your complete Helm installation commands!</Tip>
   </Step>
   
   <Step title="Install with Helm" titleIcon="download">
-    Add the Helm repository and install:
+    Run the provided Helm command from the UI. This is just an example. Make sure you provide your OpenAI/Anthropic keys.
     
     ```bash
-    # Add xpander Helm repository
+    # Add repository and install (example - use your generated commands)
     helm repo add xpander https://charts.xpander.ai
-    helm repo update
-    
-    # Install with your generated values (example)
     helm upgrade --install xpander xpander/xpander \
       --namespace xpander --create-namespace \
       --set ingress.enabled=true \
@@ -67,296 +40,67 @@ Deploy the entire xpander.ai platform to your Kubernetes infrastructure. Keep al
       --set secrets.static.deploymentManagerApiKey=your-key
     ```
     
-    <Success>Your exact commands are provided in the xpander.ai Console!</Success>
   </Step>
-  
-  <Step title="Add AI Service Keys" titleIcon="key">
-    Configure AI models by adding API keys:
     
-    **Quick method (CLI):**
-    ```bash
-    helm upgrade xpander xpander/xpander \
-      --namespace xpander --reuse-values \
-      --set agent-worker.env.AGENTS_OPENAI_API_KEY=sk-your-openai-key \
-      --set agent-worker.env.ANTHROPIC_API_KEY=sk-ant-your-anthropic-key
-    ```
-    
-    **Production method (Kubernetes secret):**
-    ```bash
-    kubectl create secret generic ai-service-keys \
-      --namespace xpander \
-      --from-literal=openai-api-key=sk-your-openai-key \
-      --from-literal=anthropic-api-key=sk-ant-your-anthropic-key
-    ```
-  </Step>
-  
-  <Step title="Verify Deployment" titleIcon="check">
-    Check that all components are running:
+  <Step title="Verify" titleIcon="check">
+    Check deployment:
     
     ```bash
     kubectl -n xpander get pods
-    ```
-    
-    **Expected pods:**
-    ```
-    xpander-agent-controller-xxx    1/1  Running
-    xpander-ai-gateway-xxx          1/1  Running  
-    xpander-agent-worker-xxx        1/1  Running
-    xpander-mcp-xxx                 1/1  Running
-    xpander-redis-0                 1/1  Running
-    xpander-postgres-0              1/1  Running
-    ```
-    
-    **Test health endpoints:**
-    ```bash
     curl http://agent-controller.xpander.my-company.com/health
-    curl http://ai-gateway.xpander.my-company.com/health
-    curl http://mcp.xpander.my-company.com/health
     ```
+    
+    All pods should show `Running` status.
   </Step>
 </Steps>
 
 ## What You Deployed
 
-🎉 **Complete xpander.ai platform** on your infrastructure:
-
 <CardGroup cols={2}>
-  <Card title="Agent Controller" icon="brain">
-    Core orchestration engine managing agents and tasks
+  <Card title="xpander self-deployed engine" icon="server">
+    Agent controller, AI gateway, MCP server, and worker nodes
   </Card>
-  <Card title="AI Gateway" icon="robot">
-    Handles all AI model interactions and tool routing
+  <Card title="Your Data Stays Private" icon="shield">
+    All conversations and business logic remain in your cluster
   </Card>
-  <Card title="MCP Service" icon="plug">
-    Model Context Protocol server for external integrations
+  <Card title="Outbound Only" icon="arrow-right">
+    No inbound connections - only connects out to the xpander.ai cloud
   </Card>
-  <Card title="Agent Worker" icon="gear">
-    Executes agent tasks and custom business logic
+  <Card title="Ready to Use" icon="rocket">
+    Easily deploy all your existing or new agents and MCP servers to your self-hosted environment
   </Card>
 </CardGroup>
 
-## Network Architecture & Security
+## Prerequisites
 
 <AccordionGroup>
-  <Accordion title="Data Flow (Your Control)">
-    **What stays in your cluster:**
-    - All agent data and conversations
-    - Custom business logic and code  
-    - User information and context
-    - API responses from your tools
-    
-    **What goes to xpander.ai:**
-    - Registration metadata only
-    - Agent configuration changes
-    - Platform events and telemetry
-    
-    <Success>Your sensitive data never leaves your infrastructure!</Success>
-  </Accordion>
-  
-  <Accordion title="Required Network Access">
-    **Outbound only** - your cluster connects to:
-    ```
-    166.117.85.46:443 (HTTPS)
-    15.197.85.80:443 (HTTPS)
-    ```
-    
-    **Firewall configuration:**
-    - **Direction**: Outbound/Egress only
-    - **Protocol**: HTTPS (port 443)
-    - **Source**: Your Kubernetes cluster
-    - **Destination**: xpander.ai control plane
-    
-    No inbound connections required!
-  </Accordion>
-  
-  <Accordion title="Generated Hostnames">
-    When you set a `domain`, these endpoints are created:
-    - `agent-controller.{domain}` - Main API
-    - `ai-gateway.{domain}` - AI service gateway
-    - `mcp.{domain}` - MCP server endpoint
-    
-    **TLS**: Automatically configured with cert-manager or manual certificates
-  </Accordion>
-</AccordionGroup>
-
-## Production Configuration
-
-<AccordionGroup>
-  <Accordion title="Values File Template">
-    Create `xpander-values.yaml` for production:
-    
-    ```yaml
-    domain: "xpander.production.com"
-    
-    global:
-      organizationId: "your-org-id"
-      environmentId: "your-env-id"
-      env:
-        LOG_LEVEL: "info"
-        ENVIRONMENT: "production"
-    
-    secrets:
-      static:
-        deploymentManagerApiKey: "your-deployment-key"
-    
-    agent-worker:
-      envFromSecretKeys:
-        AGENTS_OPENAI_API_KEY:
-          secretName: "ai-service-keys"
-          key: "openai-api-key"
-        ANTHROPIC_API_KEY:
-          secretName: "ai-service-keys" 
-          key: "anthropic-api-key"
-    
-    ingress:
-      enabled: true
-      tls:
-        enabled: true
-        source: "cert-manager"
-      annotations:
-        cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    
-    resources:
-      agentController:
-        limits:
-          cpu: "1000m"
-          memory: "1Gi"
-      
-    redis:
-      storage:
-        size: "32Gi"
-        storageClass: "fast-ssd"
-    ```
-    
-    Then deploy with: `helm upgrade --install xpander xpander/xpander --values xpander-values.yaml`
-  </Accordion>
-  
-  <Accordion title="High Availability Setup">
-    **Multi-replica configuration:**
-    ```yaml
-    agentController:
-      replicas: 3
-    aiGateway:
-      replicas: 3
-    agentWorker:
-      replicas: 5
-    
-    redis:
-      cluster:
-        enabled: true
-        nodes: 3
-    
-    postgres:
-      replication:
-        enabled: true
-        replicas: 2
-    ```
-    
-    **Node affinity** for spreading across zones:
-    ```yaml
-    global:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                topologyKey: topology.kubernetes.io/zone
-    ```
-  </Accordion>
-  
-  <Accordion title="Monitoring & Observability">
-    **Prometheus metrics** are exposed on `/metrics` endpoints:
-    ```yaml
-    monitoring:
-      enabled: true
-      serviceMonitor:
-        enabled: true
-      
-    grafana:
-      dashboards:
-        enabled: true
-    ```
-    
-    **Log aggregation** with structured JSON logs:
-    ```yaml
-    global:
-      env:
-        LOG_FORMAT: "json"
-        LOG_LEVEL: "info"
-    ```
-  </Accordion>
-</AccordionGroup>
-
-## Quick Troubleshooting
-
-<AccordionGroup>
-  <Accordion title="Pod Issues">
-    **Check pod status:**
-    ```bash
-    kubectl -n xpander get pods
-    kubectl -n xpander describe pod <pod-name>
-    ```
-    
-    **Common fixes:**
-    - **Pending**: Check storage class and PVC configuration
-    - **ImagePullBackOff**: Verify Helm repo is up to date
-    - **CrashLoopBackOff**: Check environment variables and secrets
-  </Accordion>
-  
-  <Accordion title="Ingress Problems">
-    **Verify ingress configuration:**
-    ```bash
-    kubectl -n xpander get ingress
-    kubectl -n xpander describe ingress
-    ```
-    
-    **Common fixes:**
-    - **503 errors**: Check service endpoints are ready
-    - **Certificate issues**: Verify cert-manager configuration
-    - **DNS**: Ensure domain points to your ingress controller
-  </Accordion>
-  
-  <Accordion title="Health Check Failures">
-    **Test health endpoints:**
-    ```bash
-    # Via port forward
-    kubectl -n xpander port-forward svc/xpander-agent-controller 9016:9016
-    curl http://localhost:9016/health
-    
-    # Check logs
-    kubectl -n xpander logs deployment/xpander-agent-controller
-    ```
-    
-    **Common issues**: Missing API keys, network connectivity, database connection
+  <Accordion title="Required before you start">
+    - **Kubernetes 1.20+** with kubectl access
+    - **Helm 3.12+** installed
+    - **Ingress Controller** (NGINX recommended)
+    - **Storage Class** for persistent volumes
+    - **Outbound HTTPS** access to `166.117.85.46` and `15.197.85.80`
   </Accordion>
 </AccordionGroup>
 
 ## Next Steps
 
-Your self-hosted xpander.ai is ready! Now you can:
+Your self-hosted xpander.ai is ready! Now build:
 
-1. **[Visual Agent Builder to Code](/user-guide/5-minute-wins/visual-agent-to-code)** - Build agents using your deployment
-2. **[OpenAPI Spec to MCP Tool](/user-guide/5-minute-wins/openapi-to-mcp)** - Deploy custom MCP servers to your cluster
-3. **[Connect to Slack](/user-guide/5-minute-wins/slack-agent-setup)** - Set up team integrations
-4. **Monitor & Scale** - Set up observability and auto-scaling
+- **[Visual Agent Builder to Code](/user-guide/5-minute-wins/visual-agent-to-code)** - Create agents on your infrastructure
+- **[OpenAPI Spec to MCP Tool](/user-guide/5-minute-wins/openapi-to-mcp)** - Deploy MCP servers to your cluster
+- **[Connect to Slack](/user-guide/5-minute-wins/slack-agent-setup)** - Team integrations
 
-## Maintenance Commands
+## Troubleshooting
 
-```bash
-# Update to latest version
-helm repo update
-helm upgrade xpander xpander/xpander --namespace xpander --reuse-values
-
-# Backup data
-kubectl -n xpander exec xpander-postgres-0 -- pg_dumpall > backup.sql
-
-# Scale components
-kubectl -n xpander scale deployment xpander-agent-worker --replicas=10
-
-# Check resource usage
-kubectl -n xpander top pods
-```
-
----
-
-**Total time:** ⏱️ 5 minutes | **Difficulty:** 🟠 Advanced | **Value:** 🚀 Full platform control + enterprise security
+<AccordionGroup>
+  <Accordion title="Pods not starting">
+    Check storage and permissions: `kubectl -n xpander describe pod <pod-name>`
+  </Accordion>
+  <Accordion title="Can't access endpoints">
+    Verify ingress and DNS: `kubectl -n xpander get ingress`
+  </Accordion>
+  <Accordion title="Need help">
+    Full deployment guide: [Self-Hosted Deployment](/user-guide/self-hosted-deployment)
+  </Accordion>
+</AccordionGroup>

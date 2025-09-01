@@ -12,9 +12,6 @@ mode: "wide"
 
 Turn any OpenAPI/Swagger specification into a fully functional MCP server with AI-optimized tools. Perfect for connecting private APIs and custom services to your MCP clients.
 
-<Frame>
-![MCP Server Configuration](/static/images/screenshots/mcp-server-selection.png)
-</Frame>
 
 ## Quick OpenAPI-to-MCP Process
 
@@ -22,9 +19,10 @@ Turn any OpenAPI/Swagger specification into a fully functional MCP server with A
   <Step title="Upload OpenAPI Specification" titleIcon="upload">
     Go to the [Connectors page](https://app.xpander.ai/connectors) in the xpander.ai console.
     
-    1. Click **"New Custom Interface"** or **"Generate Connector"**
+    1. Click **"+ Create new connector"** 
     2. Upload your OpenAPI/Swagger specification file (JSON or YAML)
     3. Provide a name and description for your connector
+    4. Don't forget the server URL, especially if your original spec doesn't have one.
     
     <Tip>Your OpenAPI spec gets automatically analyzed by the connector generator agent!</Tip>
   </Step>
@@ -43,7 +41,6 @@ Turn any OpenAPI/Swagger specification into a fully functional MCP server with A
     - Basic authentication
     - No authentication
     
-    <Note>Authentication is automatically detected from your OpenAPI spec security definitions</Note>
   </Step>
   
   <Step title="Review Generated Tools" titleIcon="wrench">
@@ -54,7 +51,6 @@ Turn any OpenAPI/Swagger specification into a fully functional MCP server with A
     - **Response formatting** for better AI consumption
     - **Error handling** built-in
     
-    Review and adjust tool descriptions if needed for better AI understanding.
   </Step>
   
   <Step title="Create MCP Server" titleIcon="server">
@@ -62,31 +58,20 @@ Turn any OpenAPI/Swagger specification into a fully functional MCP server with A
     
     1. Click **"New MCP Server"**
     2. Give your MCP server a descriptive name
+    3. Go to the **Tools** tab, and click **+ Add tools**
     3. **Select tools** from your newly generated connector
-    4. Mix and match with other connectors if desired
-    5. Copy the generated MCP server URL
+    4. Click **Update changes**
+    5. Go to the **Connect** tab to get your MCP Server URL, and one-line commands to hook up your MCP server to your favorite MCP client.
     
     <Success>Your MCP server is now live and ready!</Success>
   </Step>
   
   <Step title="Connect MCP Clients" titleIcon="link">
-    Add your MCP server to your favorite MCP client:
+    Add your MCP server to your favorite MCP client using the connection details provided:
     
-    **For Claude Desktop** (`~/Library/Application Support/Claude/claude_desktop_config.json`):
-    ```json
-    {
-      "globalShortcut": "Alt+Space",
-      "mcpServers": {
-        "my-api": {
-          "command": "npx",
-          "args": [
-            "xpander-mcp-remote",
-            "https://mcp.xpander.ai/your-mcp-url/"
-          ]
-        }
-      }
-    }
-    ```
+    <Frame>
+    ![MCP Server Connect](/static/images/screenshots/mcp-server-connect.png)
+    </Frame>
     
     **For other MCP clients**: Use the provided URL and authentication details.
   </Step>
@@ -103,8 +88,8 @@ Turn any OpenAPI/Swagger specification into a fully functional MCP server with A
   <Card title="Automatic Authentication" icon="shield">
     API keys and auth handled transparently in the background
   </Card>
-  <Card title="Schema Validation" icon="check-circle">
-    Request/response validation based on your OpenAPI specification
+  <Card title="Schema Validation" icon="shield-check">
+    Request/response validation based your OpenAPI specification
   </Card>
   <Card title="Instant Availability" icon="bolt">
     Ready to use in Claude Desktop and other MCP clients immediately
@@ -169,36 +154,6 @@ Turn any OpenAPI/Swagger specification into a fully functional MCP server with A
   </Accordion>
 </AccordionGroup>
 
-## Advanced Configuration
-
-<AccordionGroup>
-  <Accordion title="Tool Selection & Filtering">
-    **Pick specific endpoints:**
-    - Don't want all API endpoints as tools? Select only the ones you need
-    - Combine tools from multiple APIs in one MCP server
-    - Create different MCP servers for different use cases
-    
-    **Example**: Create a "Content Tools" MCP server with blog creation from your CMS API + image generation from your media API
-  </Accordion>
-  
-  <Accordion title="Parameter Hardcoding">
-    **Secure API keys:**
-    - Hard-code API keys in tool configurations  
-    - Override default parameters (like API versions)
-    - Set rate limits and timeouts
-    
-    **Tool Instructions tab**: Add context about when/how to use specific tools effectively
-  </Accordion>
-  
-  <Accordion title="Response Filtering">
-    **Optimize for AI consumption:**
-    - Filter out unnecessary response fields to reduce token usage
-    - Remove PII data before it reaches the AI
-    - Focus on key data points that matter for your use case
-    
-    **Example**: For a user API, show only name and role, hide email and phone numbers
-  </Accordion>
-</AccordionGroup>
 
 ## Next Step: Self-Deploy Your MCP Server
 
@@ -232,7 +187,3 @@ Your MCP server runs on xpander.ai's cloud, but you can also deploy it to your o
     - Test individual tools in the xpander.ai console first
   </Accordion>
 </AccordionGroup>
-
----
-
-**Total time:** ⏱️ 5 minutes | **Difficulty:** 🟡 Intermediate | **Value:** 🚀 Any API becomes AI-accessible
