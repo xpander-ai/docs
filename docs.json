@@ -38,7 +38,7 @@
             "group": "5 Minute Wins",
             "pages": [
               "user-guide/5-minute-wins/index",
-              "user-guide/5-minute-wins/statefull-agents",
+              "user-guide/5-minute-wins/stateful-agents",
               "user-guide/5-minute-wins/slack-agent-setup",
               "user-guide/5-minute-wins/visual-agent-to-code",
               "user-guide/5-minute-wins/openapi-to-mcp",
