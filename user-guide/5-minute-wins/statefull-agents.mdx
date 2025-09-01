@@ -1,0 +1,92 @@
+---
+title: "Stateful Agent Container"
+description: "Build and deploy AI agents with persistent memory using PostgreSQL database for conversation context retention"
+icon: "brain"
+mode: "wide"
+---
+
+## Create your agent
+
+```bash
+xpander agent new --name "state-full-agent" --framework agno --folder .
+```
+
+This creates a serverless backend instance with base template files:
+- `Dockerfile` - Container configuration
+- `requirements.txt` - Python dependencies  
+- `xpander_handler.py` - Traffic routing
+- `.env` - API key and agent ID configuration
+
+## Write the agent code
+
+Create `myAgent.py`:
+
+```python myAgent.py
+from dotenv import load_dotenv
+load_dotenv()
+
+from agno.agent import Agent
+from xpander_sdk import Backend
+
+class MyAgent(Agent):
+    def __init__(self, **kwargs):
+        agent_backend = Backend()
+        super().__init__(**agent_backend.get_args(), **kwargs)
+
+    def local_test(self):
+        self.print_response("How many people live in Canada?")
+        self.print_response("And what's their favorite food?")
+
+myAgent = MyAgent()
+myAgent.local_test()
+```
+
+<Note>
+The Backend instance includes a PostgreSQL database with read/write permissions. When loaded into Agno, it automatically creates the database schema. AI Engineers can customize the database structure as needed.
+</Note>
+
+Create a virtual environment, install dependencies, export your API key and run the Agent.
+<Steps>
+<Step title="Setup environment">
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+export OPENAI_API_KEY="your-key"
+```
+</Step>
+
+<Step title="Run locally">
+```bash
+python myAgent.py
+```
+</Step>
+
+<Step title="Test serverless agent">
+```bash
+xpander agent invoke "state-full-agent" "hi"
+```
+Or use the Web UI at `https://app.xpander.ai/agent-id`
+</Step>
+</Steps>
+
+## Output
+
+The agent remembers the conversation context between questions:
+
+<Frame>
+![Stateful Agent Output](/images/output-statefull.png)
+</Frame>
+
+<Tip>
+Access your PostgreSQL database with `myAgent.storage.db_url` or view all messages using `get_messages_for_session()`.
+</Tip>
+
+## Deploy Updates
+
+After testing, deploy your custom version:
+
+```bash
+xpander agent deploy
+```
+
+This replaces the serverless agent with your dedicated container. Traffic routes through `xpander_handler.py`.
