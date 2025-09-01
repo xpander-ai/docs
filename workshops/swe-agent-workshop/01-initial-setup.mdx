@@ -1,0 +1,121 @@
+---
+title: "Initial Setup"
+description: "Create and test your SWE agent with Claude Code integration"
+icon: "rocket"
+mode: wide
+---
+
+<Info>
+**Goal**: Create and test your SWE agent with Claude Code integration
+
+**Expected Output**: Working agent that can coordinate with Claude Code for development tasks
+</Info>
+
+<Steps>
+  <Step title="Load Agent Template">
+    1. **Load the SWE Agent template** (pre-configured with Claude Code Tool and System Prompt): https://app.xpander.ai/templates/d5175e28-6608-484b-9d4f-69ce14e699b0
+
+    2. **Login with GitHub** (watch setup video):
+
+    <Frame>
+    <video
+      muted
+      loop
+      playsInline
+      controls
+      allowFullScreen
+      className="w-full aspect-video"
+      src="https://assets.xpanderai.io/vidoes/workshops/august-2025/01-github-connect.mp4"
+    />
+    </Frame>
+  </Step>
+
+  <Step title="Test Your Agent">
+    Test your agent with these prompts:
+
+    ```txt test-prompt.txt
+    Write hello world in different languages
+    ```
+
+    ```txt test-prompt.txt
+    Ask Claude to write hello world in different languages
+    ```
+
+    Notice that the first prompt the agent didn't call the Claude Tool, and in the second call it called the Claude tool
+
+    <Frame>
+      ![First Agent Test](/images/workshops/swe-agent/first-prompt.png)
+    </Frame>
+
+    <Success>
+    Agent responds with code in multiple languages, function logs show coordination with Claude Code, and you understand both Inline and Background modes.
+    </Success>
+  </Step>
+
+  <Step title="Setup Local Environment">
+    Create a new project folder and set up your Python environment:
+
+    ```bash setup-project.bash
+    mkdir swe-agent-workshop
+    cd swe-agent-workshop
+    python3 -m venv .venv
+    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+    ```
+
+    Install required dependencies:
+
+    ```bash install-dependencies.bash
+    pip install "xpander-sdk[agno]" openai requests pypdf pgvector -q
+    npm install -g xpander-cli
+    ```
+
+    Create your main Python file:
+
+    ```bash create-files.bash
+    touch app.py
+    touch .env
+    ```
+  </Step>
+
+  <Step title="Agent Authentication">
+    Login to xpander and get your agent credentials:
+
+    ```bash agent-login.bash
+    xpander login
+
+    # Get your agent details - copy the Agent ID and API Key from output
+    xpander agent get "SWE Agent"
+    ```
+
+    Add your credentials to the `.env` file:
+
+    ```bash .env
+    XPANDER_AGENT_ID=your-agent-id-here
+    XPANDER_API_KEY=your-api-key-here
+    OPENAI_API_KEY=your-openai-api-key # (If running in an in-person workshop, ask the workshop team)
+    ```
+
+    <Note>
+    Replace the placeholder values with your actual credentials from the previous command output.
+    </Note>
+  </Step>
+
+  <Step title="Test via CLI">
+    ```bash test-agent.bash
+    # Run the agent via CLI
+    xpander agent invoke "SWE Agent" "Can you write bubble sort algorithm in Python?"
+    ```
+  </Step>
+</Steps>
+
+## What Just Happened?
+
+You've just witnessed something pretty amazing. Your SWE agent isn't actually writing code itself – it's acting like a smart project manager that knows exactly when to bring in the right specialist for the job.
+
+Think of it this way: when you asked for "hello world in different languages," your agent understood the request, then tapped Claude Code (which has direct access to GitHub and can create pull requests) to handle the actual coding work. Your agent then coordinated the response back to you.
+
+This is multi-agent collaboration in action. Instead of one agent trying to do everything, you have specialized agents working together. Your SWE agent handles strategy and coordination, while Claude Code handles the technical implementation. This means you can scale development work far beyond what any single agent could handle – and it's all happening seamlessly behind the scenes.
+
+## Next Steps
+
+Your agent is now ready for local configuration where we'll add persistent memory, custom tools, knowledge bases, and SDK integration.

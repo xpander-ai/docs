@@ -81,28 +81,38 @@
               "Examples/08-knowledge-base-rag",
               "Examples/09-smart-support-agent"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "Templates",
+        "groups": [
           {
             "group": "Templates",
             "pages": [
-              "Examples/templates/01-index",
-              "Examples/templates/02-docs-agent-mintlify",
-              "Examples/templates/03-support-agent",
-              "Examples/templates/04-coding-agent-claude"
+              "templates/index",
+              "templates/02-docs-agent-mintlify",
+              "templates/03-support-agent",
+              "templates/04-coding-agent-claude"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "Workshops",
+        "groups": [
           {
             "group": "Workshops",
             "pages": [
-              "Examples/workshops/index",
+              "workshops/index",
               {
                 "group": "SWE Agent Workshop",
                 "pages": [
-                  "Examples/workshops/swe-agent-workshop/index",
-                  "Examples/workshops/swe-agent-workshop/01-initial-setup",
-                  "Examples/workshops/swe-agent-workshop/02-local-configuration",
-                  "Examples/workshops/swe-agent-workshop/03-slack-integration",
-                  "Examples/workshops/swe-agent-workshop/04-github-automation"
+                  "workshops/swe-agent-workshop/index",
+                  "workshops/swe-agent-workshop/01-initial-setup",
+                  "workshops/swe-agent-workshop/02-local-configuration",
+                  "workshops/swe-agent-workshop/03-slack-integration",
+                  "workshops/swe-agent-workshop/04-github-automation"
                 ]
               }
             ]
@@ -227,8 +237,18 @@
         },
         {
           "dropdown": "Examples",
-          "icon": { "name": "graduation-cap", "style": "regular" },
+          "icon": { "name": "lightbulb", "style": "regular" },
           "href": "https://docs.xpander.ai/Examples/index"
+        },
+        {
+          "dropdown": "Templates",
+          "icon": { "name": "floppy-disk", "style": "regular" },
+          "href": "https://docs.xpander.ai/templates"
+        },
+        {
+          "dropdown": "Workshops",
+          "icon": { "name": "school", "style": "regular" },
+          "href": "https://docs.xpander.ai/workshops"
         },
         {
           "dropdown": "API Reference",
