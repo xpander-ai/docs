@@ -107,7 +107,8 @@ async def my_agent_handler(task: Task):
     
     my_agent = MyAgent(**agno_args)
     result = await my_agent.arun(message=task.to_message())
-
+    
+    task.result = result.content
     return task
 ```
 
