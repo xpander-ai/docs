@@ -3,6 +3,31 @@ title: 'Product Updates'
 mode: 'wide'
 ---
 
+<Update label="2025-09-01" description="Environment Settings Support">
+
+## New Features:
+
+- **Environment Settings Control:** Complete environment-level control system allowing organizations to disable chat, event streaming, and agentic tasks on a per-environment basis for self-deployed agents.
+- **Supabase Environment Settings API:** New `GET_ENV_SETTINGS` Supabase function to retrieve environment settings by agent ID with proper authorization controls.
+- **Deployment Manager API Endpoint:** New `/agents/{agent_id}/env_settings` endpoint exposing environment settings through the deployment manager service.
+- **AI-Powered Thread Naming System:** Automatic thread name generation using GPT-4 mini with structured output, creating concise 2-3 word descriptive titles for chat conversations.
+- **Chat Thread Names Storage:** New database table and models for persistent storage of AI-generated thread names linked to tasks and conversations.
+
+## Improvements:
+
+- **Enhanced Chat Experience:** Environment-aware chat initialization with clear error messages directing users to environment settings when chat is disabled.
+- **Conditional Event Streaming:** Smart event streaming that respects environment settings, preventing unnecessary event traffic to restricted environments while maintaining cloud compatibility.
+- **Thread Management Overhaul:** Replaced generic "New Chat" labels with AI-generated descriptive names, improving conversation navigation and user experience.
+- **Background Processing:** Thread name generation occurs asynchronously without blocking chat flow, ensuring optimal performance.
+- **Tester Mode Features:** New `tester=true` query parameter for enhanced debugging visibility of tool calls and sub-agent execution steps.
+- **Cross-Service Integration:** Standardized environment settings retrieval across agent-controller, agents, and hosted-assistants-webui services with consistent error handling.
+
+## Bug Fixes:
+
+- **Task Execution Protection:** Added validation guards to prevent agentic task execution in restricted environments with clear error messaging and environment settings guidance.
+
+</Update>
+
 <Update label="2025-08-04" description="SDK v2.0.0">
 
 ## New Features:
