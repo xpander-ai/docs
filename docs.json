@@ -79,7 +79,9 @@
               "Examples/06-async-task-handling",
               "Examples/07-session-management",
               "Examples/08-knowledge-base-rag",
-              "Examples/09-smart-support-agent"
+              "Examples/09-smart-support-agent",
+              "Examples/10-lifecycle-management",
+              "Examples/11-langchain-langgraph-integration"
             ]
           }
         ]
