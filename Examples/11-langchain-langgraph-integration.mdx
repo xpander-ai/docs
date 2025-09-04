@@ -1,0 +1,348 @@
+---
+title: "LangChain + LangGraph Integration"
+description: "Learn how to integrate xpander.ai with LangChain and LangGraph to build powerful ReAct agents with access to 2000+ pre-built tools"
+icon: "link-horizontal"
+---
+
+# LangChain + LangGraph Integration with xpander.ai
+
+This guide demonstrates how to integrate **LangChain** and **LangGraph** with **xpander.ai** to create powerful ReAct agents with access to over 2000 pre-built tools and services.
+
+<Tip>
+🚀 **Quick Start Template**: [Import this template](https://app.xpander.ai/templates/13de363d-c947-41d9-a25a-3e94d2fad90f) directly into xpander.ai
+</Tip>
+
+## What You'll Build
+
+By the end of this tutorial, you'll have a LangChain ReAct agent that can:
+- 🔍 **Search the web** using Tavily Search with advanced filtering
+- 📧 **Send emails** with rich formatting and attachments
+- 🧠 **Use intelligent reasoning** through LangGraph's ReAct pattern
+- 🎯 **Follow custom instructions** from your xpander agent configuration
+- ⚡ **Optimize token usage** with xpander's output schema filtering
+
+## Prerequisites
+
+Before starting, make sure you have:
+- **xpander.ai account**: [Sign up here](https://app.xpander.ai) 
+- Python 3.8 or higher
+- OpenAI API key
+- Basic knowledge of Python and LangChain
+
+## Step 1: Installation
+
+First, install the required dependencies:
+
+```bash
+pip install "xpander-sdk" "langchain[openai]" langgraph python-dotenv
+```
+
+## Step 2: Environment Setup
+
+Create a `.env` file in your project directory:
+
+```env
+# Required - OpenAI API
+OPENAI_API_KEY="your_openai_api_key_here"
+
+# Required - xpander.ai Platform Configuration  
+XPANDER_API_KEY="your_xpander_api_key"
+XPANDER_ORGANIZATION_ID="your_organization_id"
+XPANDER_AGENT_ID="your_agent_id"
+```
+
+### Where to find your xpander credentials:
+
+1. **API Key**: Go to [xpander Settings → API Keys](https://app.xpander.ai/settings)
+2. **Organization ID**: Found in your organization settings or browser URL
+3. **Agent ID**: Create or select an agent in the xpander platform
+
+<Warning>
+Make sure to add `.env` to your `.gitignore` file to avoid committing sensitive credentials.
+</Warning>
+
+## Step 3: Set Up Your xpander Agent
+
+In the xpander.ai platform:
+
+1. Create a new agent or use an existing one
+2. Add tools to your agent:
+   - **Tavily Search** - for web search capabilities
+   - **Send Email** - for email functionality
+   - Any other tools you need from the 2000+ available
+3. Configure tool output filtering to optimize performance
+4. Set up agent instructions and goals
+
+## Step 4: Create the Integration
+
+Create a new Python file `langchain_xpander_agent.py`:
+
+```python
+import os
+from dotenv import load_dotenv
+from langchain_openai import ChatOpenAI
+from langgraph.prebuilt import create_react_agent
+from langchain_core.messages import SystemMessage
+from xpander_sdk import Agents
+
+# Load environment variables
+load_dotenv()
+
+def validate_environment():
+    """Validate that all required environment variables are set"""
+    required_vars = [
+        "OPENAI_API_KEY",
+        "XPANDER_API_KEY", 
+        "XPANDER_ORGANIZATION_ID",
+        "XPANDER_AGENT_ID"
+    ]
+    
+    for var in required_vars:
+        if not os.getenv(var):
+            raise KeyError(f"Missing required environment variable: {var}")
+    
+    print("✅ All required environment variables are set!")
+
+def create_system_prompt(instructions):
+    """Convert xpander agent instructions to system prompt"""
+    parts = []
+    
+    if hasattr(instructions, 'general') and instructions.general:
+        parts.append(f"System: {instructions.general}")
+    
+    if hasattr(instructions, 'goal_str') and instructions.goal_str:
+        parts.append(f"Goals:\n{instructions.goal_str}")
+    
+    if hasattr(instructions, 'instructions') and instructions.instructions:
+        instr_list = "\n".join([f"- {instr}" for instr in instructions.instructions])
+        parts.append(f"Instructions:\n{instr_list}")
+    
+    return "\n\n".join(parts)
+
+def main():
+    # Validate environment
+    validate_environment()
+    
+    # Initialize xpander agent
+    print("🔧 Loading xpander agent configuration...")
+    xpander_agent = Agents().get(agent_id=os.getenv("XPANDER_AGENT_ID"))
+    
+    print(f"📦 Loaded agent with {len(xpander_agent.tools.functions)} tools")
+    print(f"🤖 Using model: {xpander_agent.model_name}")
+    
+    # Initialize the language model
+    llm = ChatOpenAI(model=xpander_agent.model_name, temperature=0)
+    
+    # Create system prompt from xpander agent instructions
+    system_prompt = create_system_prompt(xpander_agent.instructions)
+    print(f"📋 System Prompt:\n{system_prompt}\n")
+    
+    # Create a ReAct agent with xpander tools
+    agent = create_react_agent(
+        llm, 
+        xpander_agent.tools.functions
+    )
+    
+    print(f"🚀 LangChain ReAct agent created successfully!")
+    
+    # Test the agent
+    test_query = "search for information about xpander.ai and summarize what you find"
+    print(f"\n📋 Test Query: {test_query}")
+    print("🤔 Agent thinking...\n")
+    
+    # Stream the agent's response
+    for chunk in agent.stream({
+        "messages": [
+            ("system", system_prompt),
+            ("user", test_query)
+        ]
+    }):
+        # Extract and display the agent's response
+        if "agent" in chunk and chunk["agent"].get("messages"):
+            messages = chunk["agent"]["messages"]
+            for message in messages:
+                if hasattr(message, 'content') and message.content:
+                    print(f"🤖 Agent: {message.content}")
+
+if __name__ == "__main__":
+    main()
+```
+
+## Step 5: Advanced Features
+
+### Custom Agent Instructions
+
+You can enhance your agent by adding custom instructions in the xpander platform:
+
+```python
+# The agent will automatically use instructions configured in xpander
+# Examples of what you can configure:
+# - Role: "You are a helpful research assistant"
+# - Goals: "Help users find accurate information and provide summaries"
+# - Instructions: ["Always verify information", "Provide sources", "Be concise"]
+```
+
+### Multi-Tool Workflows
+
+Your agent can chain multiple tools together:
+
+```python
+# Example query that uses multiple tools
+complex_query = """
+Search for the latest AI developments, 
+then send an email summary to team@company.com
+"""
+
+response = agent.invoke({
+    "messages": [
+        ("system", system_prompt),
+        ("user", complex_query)
+    ]
+})
+```
+
+### Output Schema Filtering
+
+xpander's advanced [output schema filtering](https://docs.xpander.ai/user-guide/backend-configuration/connectors#tool-scheme-advanced-tab) helps you:
+
+- **Reduce token usage** by removing unnecessary data
+- **Remove PII** and sensitive information  
+- **Focus AI attention** on relevant response parts
+- **Prevent data exposure** of irrelevant fields
+
+Configure this in your xpander agent's tool settings.
+
+## Step 6: Running Your Agent
+
+Execute your agent:
+
+```bash
+python langchain_xpander_agent.py
+```
+
+You should see output similar to:
+
+```
+✅ All required environment variables are set!
+🔧 Loading xpander agent configuration...
+📦 Loaded agent with 2 tools
+🤖 Using model: gpt-4
+📋 System Prompt:
+System: You are a helpful AI assistant...
+
+🚀 LangChain ReAct agent created successfully!
+📋 Test Query: search for information about xpander.ai and summarize what you find
+🤔 Agent thinking...
+
+🤖 Agent: I'll search for information about xpander.ai for you...
+```
+
+## Available Tools
+
+This example includes powerful pre-configured tools:
+
+| Tool | Description | Key Features |
+|------|-------------|--------------|
+| 🔍 **Tavily Search** | Advanced web search | Configurable search depth, Result filtering, Answer generation, Topic-specific search |
+| 📧 **Send Email** | Email capabilities | Rich text support, Attachment handling, Template support |
+
+## Customization Options
+
+### Adding More Tools
+
+1. Go to your xpander agent configuration
+2. Browse the tool library (2000+ available tools)
+3. Add tools to your agent
+4. They'll automatically be available in your LangChain agent
+
+### Using Different Models
+
+```python
+# Use different OpenAI models
+llm = ChatOpenAI(model="gpt-4o", temperature=0.7)
+
+# Or use other providers supported by LangChain
+from langchain_anthropic import ChatAnthropic
+llm = ChatAnthropic(model="claude-3-sonnet-20240229")
+```
+
+### Custom Message Handling
+
+```python
+def process_agent_response(response):
+    """Custom processing of agent responses"""
+    for message in response["messages"]:
+        if message.type == "ai":
+            print(f"🤖 AI: {message.content}")
+        elif message.type == "tool":
+            print(f"🔧 Tool Result: {message.content}")
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**Environment Variable Errors**
+```
+KeyError: Missing required environment variable: XPANDER_API_KEY
+```
+→ Ensure all required variables are set in your `.env` file
+
+**Tool Configuration Errors**  
+```
+Error: 2 validation errors for TavilySearchService...
+```
+→ Check your tool configuration in the xpander platform
+
+**Authentication Errors**
+```
+401 Unauthorized
+```
+→ Verify your API keys are correct and have proper permissions
+
+### Performance Tips
+
+1. **Use Output Filtering**: Configure tool output schemas to reduce token usage
+2. **Set Tool Dependencies**: Ensure proper execution order in xpander platform
+3. **Optimize System Prompts**: Keep instructions clear and concise
+4. **Monitor Usage**: Track API usage in both OpenAI and xpander dashboards
+
+## What's Next?
+
+Now that you have a working LangChain + LangGraph integration:
+
+1. **🔧 Add More Tools**: Explore xpander's 2000+ tool library
+2. **⚙️ Configure Advanced Features**: Set up output filtering and dependencies  
+3. **🏗️ Build Complex Workflows**: Create multi-step agent processes
+4. **📊 Monitor Performance**: Use xpander's analytics dashboard
+5. **🚀 Deploy to Production**: Use xpander's cloud infrastructure
+
+## Additional Resources
+
+- 📚 **Documentation**: [docs.xpander.ai](https://docs.xpander.ai)
+- 💬 **Discord Community**: [Join our Discord](https://discord.gg/CUcp4WWh5g)  
+- 🐛 **GitHub Issues**: Report bugs and request features
+- ✉️ **Support**: Contact support through the xpander platform
+
+## Related Examples
+
+<CardGroup cols={2}>
+  <Card
+    title="Custom Tools Integration"
+    icon="wrench"
+    href="/Examples/05-custom-tools-integration"
+  >
+    Create and integrate custom tools with your AI agent
+  </Card>
+  <Card
+    title="Smart Support Agent"
+    icon="headset" 
+    href="/Examples/09-smart-support-agent"
+  >
+    Build an intelligent documentation support agent
+  </Card>
+</CardGroup>
+
+---
+
+Ready to build production-grade AI agents with LangChain and xpander? [Start building today](https://app.xpander.ai) 🚀
