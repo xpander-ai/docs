@@ -8,7 +8,7 @@ mode: "wide"
 ## Create your agent
 
 ```bash new-agent.sh
-xpander agent new --name "state-full-agent" --framework agno --folder .
+xpander agent new --name "stateful-agent" --framework agno --folder .
 ```
 
 This creates a serverless backend instance with base template files:
@@ -21,7 +21,7 @@ This creates a serverless backend instance with base template files:
 The serverless agent is immediately available for testing:
 
 ```bash invoke-agent.sh
-xpander agent invoke "state-full-agent" "hi"
+xpander agent invoke "stateful-agent" "hi"
 ```
 
 Or use the Web UI at `https://app.xpander.ai/agents/agent-id`
