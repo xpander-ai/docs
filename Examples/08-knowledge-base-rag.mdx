@@ -40,17 +40,17 @@ from agno.vectordb.pgvector import PgVector
 backend = Backend()
 agno_agent = Agent(**backend.get_args())
 
-# Get database connection from agent storage
-db_url = agno_agent.storage.db_url
+# Get database connection from agent
+db = agno_agent.get_db()
 
 # Create knowledge base with PDF documents
 knowledge_base = PDFUrlKnowledgeBase(
     urls=["https://agno-public.s3.amazonaws.com/recipes/ThaiRecipes.pdf"],
     vector_db=PgVector(
         table_name="recipes_fixed_size_chunking", 
-        db_url=db_url, 
+        db_url=db.db_url, 
         auto_upgrade_schema=True, 
-        schema=agno_agent.storage.schema
+        schema=db.db_schema
     ),
     chunking_strategy=FixedSizeChunking(),
 )
