@@ -1,110 +1,187 @@
 ---
 title: "Introduction"
-description: "xpander.ai is a backend-as-a-service platform for building and deploying AI agents while making infrastructure invisible. Developers focus on business logic and agent frameworks, while xpander handles memory, storage, MCP tools, CI/CD, human triggers, testing, and provides a visual workbench."
+description: "Production AI agents platform. Choose managed agents that users interact with directly, or embedded agents to power your own applications with AI. Infrastructure included - Runtime, PostgreSQL, CI/CD, event triggers, MCP Gateways and 2000+ AI Tools."
 icon: "sparkles"
-mode: "wide"
 ---
 
-Teams use xpander.ai to **build Agents as products**. That means they don’t just create one-off automations or single-use scripts. Instead, they use xpander to build AI Agents that are:
+# Two Ways to Build Agents
 
-- **Reusable** – packaged with functionality that can be leveraged across use cases and teams.  
-- **Deployed** – running reliably in production, not just in notebooks.  
-- **Integrated** – accessible via APIs, MCP and A2A, Slack, and more.
-- **Maintained** – versioned, monitored, and continuously improved like any software product.  
-- **Scoped for others** – usable across teams or externally, with clear access and governance in place.
+Both approaches run on xpander's infrastructure - either **serverless cloud** or **your VPC with AgentOS** (xpander's K8s environment).
 
-Some examples include:
+**The key difference:** How will users interact with your agent?
 
 <CardGroup cols={2}>
-  <Card title="Simple Tool Calling Agents" icon="wrench">
-    Agents with tools and instructions
+  <Card title="☁️ Managed Agents" href="#managed-agents">
+    **The agent IS your product**
+
+    Visual setup, instant deployment. Users interact directly - no frontend needed
+  <br></br>
+    **Perfect when you need:**
+    • IT helpdesk that knows your company wiki
+    • Sales bot that qualifies leads 24/7
+    • DevOps assistant with AWS/GCP access
+    • HR bot handling employee FAQs
   </Card>
-  <Card title="Knowledge Agents" icon="book" >
-    Agents with knowledge bases and storage
-  </Card>
-  <Card title="Reasoning Agents" icon="lightbulb" >
-    Agents with memory and reasoning capabilities
-  </Card>
-  <Card title="Autonomous Agents" icon="robot" >
-    Agents that don't require user interactions and powered by scheduled tasks and events
-  </Card>
-  <Card title="Multi-Agent Systems" icon="users" >
-    Complex multi-agent systems that work together on achieving tasks
-  </Card>
-  <Card title="AI Employees" icon="brain" >
-    Production-grade agents designed to behave like software-powered teammates and can include all of the above
+  <Card title="🔧 Embedded Agents" href="#embedded-agents">
+    **The agent powers YOUR product**
+
+    Your app, your UI. xpander handles the AI heavy lifting
+  <br></br>
+    **Perfect when building:**
+    • SaaS that needs AI copilot features
+    • Trading platform with custom analysis
+    • Healthcare app with compliance rules
+    • Enterprise system with legacy APIs
   </Card>
 </CardGroup>
 
-## Code Examples
 
-<CodeGroup>
+## ☁️ Managed Agents
 
-```python agent_without_backend.py
-from agno.agent import Agent
-from agno.models.openai import OpenAIChat
+**Your complete AI agent, ready to use.** Configure everything visually in the Workbench:
 
-agno_agent = Agent(model=OpenAIChat(api_key="your-openai-key"))
-agno_agent.print_response(message="What's your role?")
-agno_agent.print_response(message="What did I ask you?")
-```
+- ✅ Select AI models (pre-configured or bring your own keys)
+- ✅ Add tools and MCP servers from the repository
+- ✅ Set up memory, knowledge bases, and instructions
+- ✅ Connect directly to Slack, webhooks, or web chat
+- ✅ Built on **Agno-AGI** framework (additional frameworks on roadmap)
 
-```python agent_with_backend.py
+<Info>
+**What you get:** A fully functional AI agent that users interact with directly. No frontend to build, no infrastructure to manage - just configure and interact with the agent via Slack, Webhook, WebUI or scheduled tasks.
+</Info>
+
+<Frame>
+  ![managed-agent-example](/images/agent-example.png)
+</Frame>
+
+### Real-world managed agent examples
+
+<CardGroup cols={2}>
+  <Card title="IT Support Bot" icon="headset">
+    Deploy to Slack to answer employee questions, reset passwords, check system status
+  </Card>
+  <Card title="Customer Service Agent" icon="comments">
+    Handle support tickets via web chat, search docs, escalate complex issues
+  </Card>
+  <Card title="Sales Assistant" icon="chart-line">
+    Qualify leads through webhooks, update CRM, schedule follow-ups
+  </Card>
+  <Card title="DevOps Helper" icon="terminal">
+    Monitor deployments, run diagnostics, alert on issues via scheduled tasks
+  </Card>
+  <Card title="Knowledge Base Q&A" icon="book">
+    Answer questions from your docs, accessible via web UI or Slack
+  </Card>
+  <Card title="Onboarding Assistant" icon="user-plus">
+    Guide new employees through processes, answer FAQs, collect information
+  </Card>
+</CardGroup>
+
+## 🔧 Embedded Agents
+
+**Build your own product with AI capabilities.** Use xpander as the AI backend for your application.
+
+- ✅ Integrate with any Python agent framework (LangChain, CrewAI, AutoGen)
+- ✅ Add custom business logic and tools with `@register_tool`
+- ✅ Control your own frontend and user experience
+- ✅ Deploy to xpander's infrastructure or your K8s cluster
+- ✅ **Framework agnostic** - works with any Python application
+
+<Info>
+**What you get:** An AI backend for YOUR application. You build the UI, xpander handles the AI processing, memory, and scaling.
+</Info>
+
+### Real-world embedded agent examples
+
+<CardGroup cols={2}>
+  <Card title="SaaS Platform" icon="globe">
+    Your web app's frontend sends user requests to xpander agents for AI processing
+  </Card>
+  <Card title="Mobile App" icon="mobile">
+    iOS/Android app uses xpander SDK to add conversational AI features
+  </Card>
+  <Card title="Enterprise Portal" icon="building">
+    Custom internal system with xpander handling the AI logic
+  </Card>
+  <Card title="E-commerce Site" icon="cart-shopping">
+    Your checkout flow uses embedded agents for product recommendations
+  </Card>
+  <Card title="Healthcare App" icon="heart-pulse">
+    Patient portal with HIPAA-compliant AI assistant powered by xpander
+  </Card>
+  <Card title="Educational Platform" icon="graduation-cap">
+    Learning app where xpander agents provide tutoring and feedback
+  </Card>
+</CardGroup>
+
+### How to build embedded agents
+
+**1. Test your agent locally:**
+```python local_test.py
 from xpander_sdk import Backend
 from agno.agent import Agent
 
+# Get all your workbench configuration
 backend = Backend()
-agno_agent = Agent(**backend.get_args())
-agno_agent.print_response(message="What's your role?")
-agno_agent.print_response(message="What did I ask you?")
+agent = Agent(**backend.get_args())
+
+# Test the agent locally
+agent.print_response("What can you help me with?")
 ```
 
-</CodeGroup>
+**2. Your application creates tasks (frontend/API layer):**
 
+```python your_app.py
+from xpander_sdk import Tasks
+import asyncio
 
-<CodeGroup>
+async def handle_user_request(user_id: str, message: str):
+    # Your app creates a task for xpander to process
+    task = await Tasks().acreate(
+        agent_id="your-agent-id",
+        prompt=message,
+        metadata={"user_id": user_id}  # Pass any context
+    )
 
-```txt agent_without_backend.py
-$ python without_backend.py
+    # Wait for xpander to process it
+    while task.status not in ["completed", "failed"]:
+        await asyncio.sleep(1)
+        task = await task.areload()
 
-User: What's your role?
-
-Agent: I serve as an AI developed by OpenAI, designed to assist with a 
-wide range of inquiries and tasks. My role involves providing information, 
-answering questions, generating creative content, assisting with 
-problem-solving, and offering general guidance across various topics.
-
-User: What did I ask you?
-
-Agent: I'm sorry, but I don't have the ability to recall past 
-interactions or questions you might have asked. Can you please 
-remind me or ask your question again?
+    # Return result to your users
+    return task.result
 ```
 
-```txt agent_with_backend.py
-$ python with_backend.py
+**3. Optionally, customize task processing (backend):**
+```python xpander_handler.py
+from xpander_sdk import on_task, Backend, register_tool
+from agno.agent import Agent
 
-User: What's your role?
+@register_tool
+def query_inventory(sku: str) -> dict:
+    """Your custom business logic"""
+    # Connect to YOUR database, APIs, etc.
+    return {"sku": sku, "quantity": 100}
 
-Agent: I am the Support AI Engineer. My primary role is to provide 
-precise, technical assistance and solutions to resolve user problems 
-within an organizational context. If you have a technical issue or 
-need support, please let me know how I can assist you!
+@on_task
+async def handle_task(task: Task):
+    backend = Backend(configuration=task.configuration)
+    agent = Agent(**backend.get_args())
 
-User: What did I ask you?
-
-Agent: You asked, "What's your role?"
+    # Process with your custom tools available
+    result = await agent.arun(message=task.to_message())
+    task.result = result.content
+    return task
 ```
 
-</CodeGroup>
+<Note>
+**Without the `@on_task` handler:** Tasks created via SDK are processed by managed agents automatically.
+**With the `@on_task` handler:** Your custom container code processes the tasks. Run `xpander deploy` to deploy your container.
 
-## What the Backend Provides
-
-The Backend automatically provides memory, custom instructions, model settings, tools, and storage - all configured through xpander.ai's platform.
-
-All agents in xpander.ai have a complete agent lifecycle with CI/CD pipelines, event triggers that can be configured with Slack, WebUI, MCP, and webhooks - all without infrastructure setup and available out of the box. The Workbench allows you to customize the agent backend and test the agent in real-time.
-
-
+**Both agent types can be deployed to:**
+- **Serverless cloud:** xpander's managed infrastructure (default)
+- **Your VPC:** Install AgentOS in your K8s cluster for complete data control
+</Note>
 
 ## Dive Deeper
 
