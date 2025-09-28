@@ -39,13 +39,21 @@ async def task_handler(task: Task):
     agno_args = await backend.aget_args(task=task)
     agno_agent = Agent(**agno_args)
     
-    # Process task asynchronously
-    result = await agno_agent.arun(message=task.to_message())
+    # Get files and images for comprehensive processing
+    files = task.get_files()    # PDF files as Agno File objects
+    images = task.get_images()  # Image files as Agno Image objects
+    
+    # Process task asynchronously with file support
+    result = await agno_agent.arun(
+        input=task.to_message(),  # Includes text + file content
+        files=files,              # PDF files
+        images=images            # Image files
+    )
     task.result = result.content
     return task
 ```
 
-This example shows non-blocking task processing where multiple tasks can be handled concurrently without blocking other operations. It uses asynchronous backend initialization with `aget_args()` for optimal resource utilization and automatic task-to-message conversion with proper result handling.
+This example shows non-blocking task processing where multiple tasks can be handled concurrently without blocking other operations. It uses asynchronous backend initialization with `aget_args()` for optimal resource utilization, automatic file categorization and handling for Agno integration, and task-to-message conversion with proper result handling.
 
 ## Production Deployment
 

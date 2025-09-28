@@ -105,8 +105,16 @@ async def my_agent_handler(task: Task):
     backend = Backend(configuration=task.configuration)
     agno_args = await backend.aget_args(task=task)
     
+    # Get files and images from task for comprehensive processing
+    files = task.get_files()    # PDF files as Agno File objects
+    images = task.get_images()  # Image files as Agno Image objects
+    
     my_agent = MyAgent(**agno_args)
-    result = await my_agent.arun(message=task.to_message())
+    result = await my_agent.arun(
+        input=task.to_message(),  # Includes text + file content
+        files=files,              # PDF files
+        images=images            # Image files
+    )
     
     task.result = result.content
     return task

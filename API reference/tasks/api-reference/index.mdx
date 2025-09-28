@@ -291,6 +291,86 @@ for event in task.events():
         break
 ```
 
+---
+
+### `get_files()`
+
+Get PDF files from task input, formatted for Agno integration.
+
+```python
+def get_files() -> list[Any]
+```
+
+**Returns:** List of Agno File objects (when Agno is available) or URL strings. Returns empty list if no PDF files are present.
+
+**Example:**
+```python
+files = task.get_files()
+result = await agno_agent.arun(
+    input=task.to_message(),
+    files=files
+)
+```
+
+---
+
+### `get_images()`
+
+Get image files from task input, formatted for Agno integration.
+
+```python
+def get_images() -> list[Any]
+```
+
+**Returns:** List of Agno Image objects (when Agno is available) or URL strings. Returns empty list if no image files are present.
+
+**Example:**
+```python
+images = task.get_images()
+result = await agno_agent.arun(
+    input=task.to_message(),
+    images=images
+)
+```
+
+---
+
+### `get_human_readable_files()`
+
+Get human-readable files from task input with their content.
+
+```python
+def get_human_readable_files() -> list[dict[str, str]]
+```
+
+**Returns:** List of dictionaries with 'url' and 'content' keys. Returns empty list if no human-readable files are present.
+
+**Example:**
+```python
+readable_files = task.get_human_readable_files()
+for file_data in readable_files:
+    print(f"File: {file_data['url']}")
+    print(f"Content: {file_data['content']}")
+```
+
+---
+
+### `to_message()`
+
+Convert task input to a formatted message string.
+
+```python
+def to_message() -> str
+```
+
+**Returns:** Formatted message string including text, file URLs, and readable file content.
+
+**Example:**
+```python
+message = task.to_message()
+result = await agno_agent.arun(input=message)
+```
+
 ## Usage Examples
 
 ### Complete Task Lifecycle Management
@@ -401,6 +481,55 @@ async def monitor_multiple_tasks():
     
     # Start monitoring all tasks
     await asyncio.gather(*[monitor_task(task) for task in running_tasks])
+```
+
+### File Handling with Agno Integration
+
+```python
+from xpander_sdk import Tasks, Backend
+from agno.agent import Agent
+
+async def process_task_with_files():
+    # Create task with various file types
+    tasks = Tasks()
+    task = await tasks.acreate(
+        agent_id="agent-123",
+        prompt="Analyze the attached documents and images",
+        file_urls=[
+            "https://example.com/report.pdf",      # PDF document
+            "https://example.com/chart.png",       # Image file
+            "https://example.com/data.csv",        # Human-readable file
+            "https://example.com/logo.jpg"         # Another image
+        ]
+    )
+    
+    # Get files categorized by type for Agno integration
+    files = task.get_files()    # PDF files as Agno File objects
+    images = task.get_images()  # Image files as Agno Image objects
+    readable_files = task.get_human_readable_files()  # Text files with content
+    
+    print(f"Task {task.id} has:")
+    print(f"  {len(files)} PDF files")
+    print(f"  {len(images)} image files")
+    print(f"  {len(readable_files)} readable files")
+    
+    # Initialize Agno agent with xpander backend
+    backend = Backend()
+    agno_agent = Agent(**backend.get_args())
+    
+    # Pass files and images directly to Agno
+    result = await agno_agent.arun(
+        input=task.to_message(),  # Includes text + file URLs + readable content
+        files=files,              # PDF files as Agno File objects
+        images=images            # Image files as Agno Image objects
+    )
+    
+    print(f"Analysis result: {result.content}")
+    
+    # Access individual readable file contents if needed
+    for file_data in readable_files:
+        print(f"\nFile: {file_data['url']}")
+        print(f"Content preview: {file_data['content'][:200]}...")
 ```
 
 ## Related Classes

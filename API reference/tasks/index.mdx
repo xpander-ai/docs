@@ -138,6 +138,55 @@ updated_task = tasks.update(
 )
 ```
 
+### File Handling for Agno Integration
+
+Demonstrate how to work with tasks that have file attachments and integrate them with Agno agents.
+
+#### Working with Files and Images
+
+```python
+# Create a task with various file types
+task = await tasks.acreate(
+    agent_id="agent-123",
+    prompt="Analyze the attached documents and images",
+    file_urls=[
+        "https://example.com/report.pdf",      # PDF document
+        "https://example.com/chart.png",       # Image file
+        "https://example.com/data.csv",        # Human-readable file
+        "https://example.com/logo.jpg"         # Another image
+    ]
+)
+
+# Get files categorized by type for Agno integration
+files = task.get_files()    # Returns Agno File objects for PDFs
+images = task.get_images()  # Returns Agno Image objects for images
+readable_files = task.get_human_readable_files()  # Returns content of text files
+
+print(f"Found {len(files)} PDF files")
+print(f"Found {len(images)} image files")
+print(f"Found {len(readable_files)} readable files")
+```
+
+#### Agno Integration Example
+
+```python
+from xpander_sdk import Backend
+from agno.agent import Agent
+
+# Initialize Agno agent with xpander backend
+backend = Backend()
+agno_agent = Agent(**backend.get_args())
+
+# Pass files and images directly to Agno
+result = await agno_agent.arun(
+    input=task.to_message(),  # Includes text + file URLs + readable content
+    files=files,              # PDF files as Agno File objects
+    images=images            # Image files as Agno Image objects
+)
+
+print(f"Analysis result: {result.content}")
+```
+
 ---
 
 Continue to the [Tasks API Reference](/API reference/tasks/API reference) for detailed documentation on classes and methods.
