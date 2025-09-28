@@ -205,7 +205,7 @@ class AgnoAgent:
             self.agent = Agent(
             model=OpenAIChat(id="gpt-4.1"),
             tools=[self.mcp_tools, *self.agent_backend.get_tools()],
-            add_history_to_messages=True,
+            add_history_to_context=True,
             search_previous_sessions_history=True,
             read_chat_history=True,
             instructions=[
@@ -217,7 +217,7 @@ class AgnoAgent:
             markdown=True,
             success_criteria="The response should contain the actual data of the requested resource",
             add_state_in_messages=True,
-            add_datetime_to_instructions=True
+            add_datetime_to_context=True
             )
                     
         if(cli):

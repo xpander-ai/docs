@@ -44,7 +44,7 @@ mode: wide
     for tool in swe_agent.tools:
         print(f"   • {tool.__name__}")
         
-    print(f"\n💾 Database: {swe_agent.storage.db_url}")
+    print(f"\n💾 Database: {swe_agent.get_db().db_url}")
     print(f"📋 Instructions: {len(swe_agent.instructions)} rules loaded")
     ```
 
@@ -185,9 +185,9 @@ mode: wide
         path=pdf_configs,  # List of PDFConfig dictionaries
         vector_db=PgVector(
             table_name="swe_documentation",
-            db_url=swe_agent.storage.db_url,
+            db_url=swe_agent.get_db().db_url,
             auto_upgrade_schema=True,
-            schema=swe_agent.storage.schema
+            schema=swe_agent.get_db().db_schema
         ),
         chunking_strategy=FixedSizeChunking(chunk_size=1000)
     )
