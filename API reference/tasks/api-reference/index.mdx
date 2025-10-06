@@ -29,6 +29,12 @@ status: AgentExecutionStatus
 ```
 Current execution status of the task.
 
+### `internal_status`
+```python
+internal_status: Optional[str]
+```
+Optional internal status field that customers can use to report their own status alongside the standard task status. Limited to 255 characters.
+
 ### `input`
 ```python
 input: AgentExecutionInput
@@ -421,9 +427,54 @@ async def update_task_status():
     # Add custom result
     task.result = "Custom processing completed"
     
+    # Set custom internal status for tracking
+    task.internal_status = "Data validation completed"
+    
     # Save changes
     updated_task = await task.asave()
     print(f"Task updated: {updated_task.status}")
+    print(f"Internal status: {updated_task.internal_status}")
+```
+
+### Internal Status Tracking
+
+The `internal_status` field provides custom status tracking with a 255 character limit.
+
+```python
+from xpander_sdk import Tasks
+
+async def track_internal_status():
+    tasks = Tasks()
+    
+    # Create task and set initial internal status
+    task = await tasks.acreate(
+        agent_id="agent-123",
+        prompt="Process customer orders"
+    )
+    
+    # Update internal status as work progresses
+    task.internal_status = "Validating order data"
+    await task.asave()
+    
+    # Continue updating internal status
+    task.internal_status = "Processing payments"
+    await task.asave()
+    
+    # Final internal status
+    task.internal_status = "Orders processed and shipped"
+    await task.asave()
+    
+    print(f"Task Status: {task.status}")           # e.g., "executing"
+    print(f"Internal Status: {task.internal_status}")  # "Orders processed and shipped"
+    
+    # Validate character limit (255 characters max)
+    long_status = "Processing data" * 20  # This would exceed 255 characters
+    if len(long_status) > 255:
+        task.internal_status = long_status[:255]  # Truncate to fit limit
+    else:
+        task.internal_status = long_status
+    
+    await task.asave()
 ```
 
 ### Error Handling with Tasks

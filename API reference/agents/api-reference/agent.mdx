@@ -41,6 +41,12 @@ tools: ToolsRepository
 ```
 Object managing tools related to this agent.
 
+### `deployment_type`
+```python
+deployment_type: AgentDeploymentType
+```
+Deployment type for the agent (Serverless or Container). Determines the execution environment for agent tasks.
+
 ## Methods
 
 ### `aload()
@@ -103,6 +109,20 @@ complex_task = await agent.acreate_task(
 # Access agent's tools repository
 for tool in agent.tools.function:
     print(f"Tool: {tool.name}")
+```
+
+### Check Agent Deployment Configuration
+
+```python
+from xpander_sdk import AgentDeploymentType
+
+# Check agent deployment type
+if agent.deployment_type == AgentDeploymentType.Serverless:
+    print("Agent configured for serverless deployment")
+elif agent.deployment_type == AgentDeploymentType.Container:
+    print("Agent configured for container deployment")
+
+print(f"Deployment type: {agent.deployment_type}")
 ```
 
 ## Related Classes

@@ -46,6 +46,33 @@ if task.status == AgentExecutionStatus.Completed:
 
 ---
 
+### `AgentDeploymentType`
+
+Enumeration of supported deployment types for agents.
+
+```python
+class AgentDeploymentType:
+    Serverless = "serverless"
+    Container = "container"
+```
+
+**Values:**
+- `Serverless`: Agent runs in a serverless environment, ideal for lightweight tasks
+- `Container`: Agent runs in a containerized environment, suitable for resource-intensive operations
+
+**Usage:**
+```python
+from xpander_sdk import AgentDeploymentType
+
+# Check agent deployment type
+if agent.deployment_type == AgentDeploymentType.Serverless:
+    print("Agent configured for serverless deployment")
+elif agent.deployment_type == AgentDeploymentType.Container:
+    print("Agent configured for container deployment")
+```
+
+---
+
 ### `OutputFormat`
 
 Enumeration of supported output formats for task results.
@@ -360,6 +387,7 @@ task = await agent.acreate_task(
 from xpander_sdk.modules.tasks.models.task import AgentExecutionStatus
 from xpander_sdk.models.shared import OutputFormat
 from xpander_sdk.modules.tasks.sub_modules.task import TaskUpdateEvent
+from xpander_sdk.modules.agents.models.agent import AgentDeploymentType
 ```
 
 ### All Types
