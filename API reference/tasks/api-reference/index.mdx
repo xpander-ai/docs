@@ -438,7 +438,7 @@ async def update_task_status():
 
 ### Internal Status Tracking
 
-The `internal_status` field provides custom status tracking with a 255 character limit.
+The `internal_status` field provides optional custom context information with a 255 character limit. It's set once before the task is saved or returned.
 
 ```python
 from xpander_sdk import Tasks
@@ -446,35 +446,35 @@ from xpander_sdk import Tasks
 async def track_internal_status():
     tasks = Tasks()
     
-    # Create task and set initial internal status
+    # Create task
     task = await tasks.acreate(
         agent_id="agent-123",
         prompt="Process customer orders"
     )
     
-    # Update internal status as work progresses
-    task.internal_status = "Validating order data"
-    await task.asave()
+    # Your processing logic here
+    order_count = 0
+    # ... process customer orders ...
+    order_count = 25  # Example: processed 25 orders
     
-    # Continue updating internal status
-    task.internal_status = "Processing payments"
-    await task.asave()
+    # Set result
+    task.result = f"Successfully processed {order_count} customer orders"
     
-    # Final internal status
-    task.internal_status = "Orders processed and shipped"
-    await task.asave()
+    # Optional: Set internal status once before saving (max 255 characters)
+    task.internal_status = f"Order processing completed: {order_count} orders validated and shipped"
+    await task.asave()  # internal_status is persisted here
     
-    print(f"Task Status: {task.status}")           # e.g., "executing"
-    print(f"Internal Status: {task.internal_status}")  # "Orders processed and shipped"
+    print(f"Task Status: {task.status}")           # e.g., "completed"
+    print(f"Internal Status: {task.internal_status}")  # "Order processing completed: 25 orders validated and shipped"
     
-    # Validate character limit (255 characters max)
-    long_status = "Processing data" * 20  # This would exceed 255 characters
-    if len(long_status) > 255:
-        task.internal_status = long_status[:255]  # Truncate to fit limit
+    # Example: Handle character limit validation (255 characters max)
+    detailed_status = f"Comprehensive order processing completed with validation, payment processing, and shipping for {order_count} orders including special handling for priority customers"
+    if len(detailed_status) > 255:
+        task.internal_status = detailed_status[:255]  # Truncate to fit limit
     else:
-        task.internal_status = long_status
+        task.internal_status = detailed_status
     
-    await task.asave()
+    await task.asave()  # Save the final internal status
 ```
 
 ### Error Handling with Tasks

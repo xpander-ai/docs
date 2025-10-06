@@ -46,9 +46,13 @@ def handle_task(task):
     print(f"Task input: {task.input.text}")
     
     # Your custom logic here
+    # ... processing logic ...
+    
+    # Optional: Set internal status once before returning/saving
+    task.internal_status = "Custom processing completed successfully"
     task.result = "Task processed successfully"
     
-    return task
+    return task  # internal_status is saved when task is returned
 ```
 
 ### Asynchronous Handler
@@ -67,7 +71,10 @@ async def handle_task_async(task):
     # Your custom async logic here
     task.result = "Async task processed successfully"
     
-    return task
+    # Optional: Set internal status once before returning (max 255 characters)
+    task.internal_status = "Async processing completed"
+    
+    return task  # internal_status is persisted when task is returned
 ```
 
 ### Task Processing with Error Handling
@@ -105,10 +112,13 @@ from xpander_sdk import on_task
 def handle_multimodal_task(task):
     print(f"Processing task: {task.id}")
     
+    processed_items = []
+    
     # Handle text input
     if task.input.text:
         print(f"Text input: {task.input.text}")
         # Process text
+        processed_items.append("text")
     
     # Handle file inputs
     if task.input.files:
@@ -116,8 +126,80 @@ def handle_multimodal_task(task):
         for file_url in task.input.files:
             print(f"Processing file: {file_url}")
             # Process each file
+            processed_items.append("file")
     
     task.result = "Multimodal processing completed"
+    
+    # Optional: Set internal status once with summary before returning
+    task.internal_status = f"Processed {len(processed_items)} items: {', '.join(processed_items)}"
+    
+    return task  # internal_status is saved when task is returned
+```
+
+### Using Optional Internal Status for Context Information
+
+```python
+from xpander_sdk import on_task
+
+@on_task
+async def handle_task_with_context(task):
+    """Example showing optional internal_status for context information."""
+    print(f"Processing task: {task.id}")
+    
+    # internal_status is completely optional - you can omit it entirely
+    # When used, it's limited to 255 characters and set once before saving
+    
+    try:
+        # Validation phase
+        if not task.input.text:
+            task.result = "No input text provided"
+            # Optional: Set internal status once before returning
+            task.internal_status = "Validation failed: no input provided"
+            return task
+        
+        # Main processing logic
+        word_count = len(task.input.text.split())
+        result = f"Processed text with {word_count} words"
+        
+        # Set final result
+        task.result = result
+        
+        # Optional: Set internal status once with additional context
+        task.internal_status = f"Text analysis completed: {word_count} words processed"
+        
+    except Exception as e:
+        task.result = f"Processing failed: {str(e)}"
+        # Optional: Set internal status once for error context
+        task.internal_status = f"Error during text processing: {str(e)[:200]}"
+    
+    return task  # internal_status is persisted when task is returned
+
+# Note: You can also ignore internal_status completely - it's optional!
+@on_task
+def simple_handler_without_internal_status(task):
+    """Simple handler that doesn't use internal_status at all."""
+    task.result = "Processed without internal status tracking"
+    return task  # No internal_status - perfectly valid!
+```
+
+### Using Internal Status with Explicit Saving
+
+```python
+from xpander_sdk import on_task
+
+@on_task
+async def handle_task_with_saving(task):
+    """Example showing internal_status with explicit task saving."""
+    
+    # Process the task
+    task.result = "Processing completed"
+    
+    # Optional: Set internal status once before saving
+    task.internal_status = "Custom processing pipeline completed"
+    
+    # Save the task with the internal status
+    await task.asave()  # internal_status is persisted here
+    
     return task
 ```
 
@@ -158,6 +240,7 @@ task.input.user           # User: User details (if provided)
 
 # Task status and results
 task.status               # AgentExecutionStatus: Current status
+task.internal_status      # Optional[str]: Custom status (max 255 chars, optional)
 task.result               # str: Task result (set by your handler)
 
 # Timestamps
@@ -219,6 +302,33 @@ def validating_handler(task):
     # Process valid input
     task.result = "Processing completed"
     return task
+```
+
+### 5. Use Internal Status Optionally for Context Information
+```python
+@on_task
+def context_tracking_handler(task):
+    # Validation logic
+    if not task.input.text:
+        task.result = "Error: No input provided"
+        task.status = AgentExecutionStatus.Failed
+        # Optional: Set internal status once before returning (max 255 chars)
+        task.internal_status = "Validation failed: no input provided"
+        return task
+    
+    # ... processing logic ...
+    processed_items = len(task.input.text.split())
+    task.result = "Processing completed"
+    
+    # Optional: Set internal status once with additional context before returning
+    task.internal_status = f"Successfully processed {processed_items} items"
+    return task  # internal_status is saved when task is returned
+
+# Or completely omit internal_status - it's optional!
+@on_task
+def minimal_handler(task):
+    task.result = "Processed"
+    return task  # No internal_status needed - perfectly valid!
 ```
 
 ## Related Types
