@@ -1,0 +1,190 @@
+---
+title: 'Pricing'
+description: 'Understand Xpander usage-based pricing and cost structure'
+icon: 'dollar-sign'
+---
+
+## Overview
+
+Xpander uses **usage-based pricing** with generous free tiers. You only pay for what you use beyond the free limits.
+
+<Info>
+  Monitor your usage in real-time from the [Xpander Console](https://app.xpander.ai).
+</Info>
+
+## Free Tier
+
+Every account includes free resources each month to help you get started:
+
+- **100 threads** - enough for development and testing
+- **10 files** - upload documents for your agents
+- **100 function calls** - test tool integrations
+- **100 interactions** - API requests to your agents
+- **1M input tokens** - prompt your agents extensively
+- **100K output tokens** - receive agent responses
+- **1 cloud agent container** - run one always-on agent
+- **1 cloud MCP container** - host one custom tool server
+
+<Tip>
+  Many small projects stay within the free tier. No credit card required to start.
+</Tip>
+
+## How Packs Work
+
+When you exceed the free tier, you purchase **packs** - bundles of resources at fixed prices:
+
+1. **Usage accrues** throughout the month
+2. **Free tier is consumed first**
+3. **Packs are automatically purchased** to cover additional usage
+4. **You're billed monthly** for the total packs used
+
+**Example:** If you use 5,000 threads:
+
+- First 100 threads: Free
+- Remaining 4,900 threads: Requires 5 packs (1,000 threads per $10 pack) = $50
+
+## Pricing Table
+
+| Resource | Free Tier | Pack Size | Pack Price |
+|----------|-----------|-----------|------------|
+| **Threads** | 100/month | 1,000 threads | $10.00 |
+| **Files (≤50MB)** | 10/month | 100 files | $10.00 |
+| **Function Calls** | 100/month | 100,000 calls | $10.00 |
+| **Interactions** | 100/month | 200,000 interactions | $10.00 |
+| **LLM Input Tokens** | 1M/month | 1M tokens | $2.50 |
+| **LLM Output Tokens** | 100K/month | 1M tokens | $10.00 |
+| **Serverless Agents** | 0 | 10 agents | $50.00 |
+| **Cloud Agents** | 1 container | 1 container (1vCPU/1GB) | $20.00 |
+| **Cloud MCPs** | 1 container | 1 container | $20.00 |
+| **Builder Seats** | 0 | 1 seat | $49.00 |
+
+<Note>
+  Pricing is based on pack purchases. When your usage exceeds the free tier, you purchase packs in the quantities shown above.
+</Note>
+
+## Popular Use Cases
+
+### Hobby Developer (Free)
+
+Perfect for personal projects and learning.
+
+| Resource | Usage | Cost |
+|----------|-------|------|
+| Threads | 50 | $0 |
+| Files | 5 | $0 |
+| Function Calls | 80 | $0 |
+| Interactions | 90 | $0 |
+| Cloud Agent | 1 | $0 |
+| **Monthly Total** | | **$0** |
+
+### Startup Team ($109/month)
+
+Small team building production agents.
+
+| Resource | Usage | Billable | Packs | Cost |
+|----------|-------|----------|-------|------|
+| Threads | 2,000 | 1,900 | 2 | $20 |
+| Function Calls | 5,000 | 4,900 | 1 | $10 |
+| Interactions | 10,000 | 9,900 | 1 | $10 |
+| Builder Seats | 3 | 3 | 3 | $147 |
+| Cloud MCPs | 1 | 0 | 0 | $0 |
+| **Monthly Total** | | | | **$187** |
+
+### Growing Business ($425/month)
+
+Medium-scale deployment with multiple agents.
+
+| Resource | Usage | Billable | Packs | Cost |
+|----------|-------|----------|-------|------|
+| Threads | 10,000 | 9,900 | 10 | $100 |
+| Files | 150 | 140 | 2 | $20 |
+| Function Calls | 50,000 | 49,900 | 1 | $10 |
+| Interactions | 100,000 | 99,900 | 1 | $10 |
+| Serverless Agents | 15 | 15 | 2 | $100 |
+| Builder Seats | 5 | 5 | 5 | $245 |
+| Cloud Agents | 2 | 1 | 1 | $20 |
+| **Monthly Total** | | | | **$505** |
+
+### Enterprise ($1,910/month)
+
+Large-scale deployment with many agents and team members.
+
+| Resource | Usage | Billable | Packs | Cost |
+|----------|-------|----------|-------|------|
+| Threads | 5,000 | 4,900 | 5 | $50 |
+| Files | 58 | 48 | 1 | $10 |
+| Function Calls | 1,000 | 900 | 1 | $10 |
+| Interactions | 1,000 | 900 | 1 | $10 |
+| Serverless Agents | 166 | 166 | 17 | $850 |
+| Builder Seats | 20 | 20 | 20 | $980 |
+| **Monthly Total** | | | | **$1,910** |
+
+## Resource Definitions
+
+**Threads** - Conversation sessions or task executions with your agents.
+
+**Files** - Documents uploaded to agents (max 50MB per file).
+
+**Function Calls** - Tool executions like API calls, database queries, or custom functions.
+
+**Interactions** - Individual messages or API requests to your agents.
+
+**LLM Tokens** - Input tokens (prompts) and output tokens (responses) processed by language models.
+
+**Serverless Agents** - Event-driven agents that scale automatically on-demand.
+
+**Cloud Agents** - Always-on containerized agents with dedicated compute (1 vCPU, 1GB RAM).
+
+**Cloud MCPs** - Always-on Model Context Protocol containers for custom tools.
+
+**Builder Seats** - Platform access for team members who build and manage agents. End users don't need seats.
+
+## Budget Controls
+
+Set spending limits in the [Xpander Console](https://app.xpander.ai/settings/billing):
+
+1. Go to Settings > Billing
+2. Set monthly budget caps
+3. Configure alerts at 50%, 75%, 90%
+4. Review usage analytics
+
+## Enterprise
+
+For custom requirements including on-premise deployment, SLAs, volume discounts, and dedicated infrastructure:
+
+**[Contact Sales](https://xpander.ai/contact)**
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="How is billing calculated?">
+    Monthly, based on actual usage. You're charged for packs needed to cover usage beyond free tiers.
+  </Accordion>
+
+  <Accordion title="Is there a free trial?">
+    Yes! All accounts include free tiers. Build and test without payment information until you exceed limits.
+  </Accordion>
+
+  <Accordion title="What happens when I hit my budget cap?">
+    You'll get notifications and operations may be throttled or paused. Adjust caps anytime in settings.
+  </Accordion>
+
+  <Accordion title="Can I bring my own LLM keys?">
+    Yes! BYOL (Bring Your Own License) is supported for major providers to reduce token costs.
+  </Accordion>
+
+  <Accordion title="How do I monitor usage?">
+    Real-time monitoring available in [Settings > Usage](https://app.xpander.ai/settings/usage) with detailed breakdowns.
+  </Accordion>
+</AccordionGroup>
+
+## Get Started
+
+<CardGroup cols={2}>
+  <Card title="Quick Start" icon="rocket" href="/user-guide/quick-start">
+    Build your first agent in 5 minutes
+  </Card>
+  <Card title="Console" icon="browser" href="https://app.xpander.ai">
+    Monitor usage and billing
+  </Card>
+</CardGroup>
