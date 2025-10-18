@@ -171,54 +171,18 @@ helm upgrade --install xpander xpander/xpander \
 
 ## Architecture
 
+For a detailed overview of the on-premises architecture and how components interact, see:
+
+**[On-Premises Architecture Guide](https://blog.xpander.ai/on-premises-architecture)**
+
 The Helm chart deploys the following components:
 
-```mermaid
-graph TB
-    Cloud["☁️ xpander.ai Cloud<br/>Metadata • Registrations • Events"]
-    
-    subgraph "Self-Hosted"
-        AC["Agent Controller"]
-        AG["AI Gateway"] 
-        MCP["MCP"]
-        AW["Agent Worker"]
-        
-        Redis["Redis<br/>Cache & State"]
-        PG["PostgreSQL<br/>Data & Persistence"]
-    end
-    
-    %% Registration flows (metadata only)
-    AC -.->|"metadata & events"| Cloud
-    AG -.->|"registers in"| AC
-    MCP -.->|"registers in"| AC
-    AW -.->|"registers in"| AC
-    
-    %% Data flows (stays within infrastructure)
-    AC <-->|"API calls"| AG
-    AC <-->|"state"| Redis
-    AC <-->|"data"| PG
-    
-    AW <-->|"tasks"| AC
-    AW <-->|"data"| PG
-    
-    MCP <-->|"protocol"| AC
-    MCP <-->|"cache"| Redis
-    
-    classDef cloud fill:#e3f2fd,stroke:#1976d2,stroke-width:3px
-    classDef controller fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
-    classDef gateway fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
-    classDef mcp fill:#fff3e0,stroke:#f57c00,stroke-width:2px
-    classDef worker fill:#fce4ec,stroke:#c2185b,stroke-width:2px
-    classDef database fill:#ffebee,stroke:#d32f2f,stroke-width:2px
-    classDef infra fill:#f5f5f5,stroke:#666,stroke-width:2px,stroke-dasharray: 5 5
-    
-    class Cloud cloud
-    class AC controller
-    class AG gateway
-    class MCP mcp
-    class AW worker
-    class Redis,PG database
-```
+- **Agent Controller** - Main API endpoint and orchestration
+- **AI Gateway** - AI service gateway for LLM providers
+- **MCP** - Model Context Protocol service
+- **Agent Worker** - Task execution runtime
+- **Redis** - Cache and state management
+- **PostgreSQL** - Data persistence
 
 ### Generated Hostnames
 
