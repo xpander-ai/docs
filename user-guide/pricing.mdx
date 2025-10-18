@@ -50,14 +50,22 @@ Usage beyond free tiers is billed monthly in packs (fixed bundles of resources a
 | Cloud MCPs | 1 | 1 container | $20 |
 | Builder Seats | 0 | 1 seat | $49 |
 
-### How It Works
+### How Packs Work
+
+Packs are bundles of resources you purchase when you exceed free tier limits. **You only buy what you need** - if your usage fits within one pack, you only pay for one pack.
+
+**Example calculations:**
+
+- **150 threads used:** 100 free + 50 billable = 1 pack needed (pack contains 1,000) = **$10**
+- **440 threads used:** 100 free + 340 billable = 1 pack needed (pack contains 1,000) = **$10**
+- **5,000 threads used:** 100 free + 4,900 billable = 5 packs needed (4,900 ÷ 1,000 = 4.9, rounded up) = **$50**
+
+**How it works:**
 
 1. Your usage accumulates throughout the month
-2. Free tier consumption is applied first
+2. Free tier is consumed first
 3. Additional usage is covered by automatic pack purchases
 4. You're billed monthly for total packs consumed
-
-**Example:** Using 5,000 threads consumes 100 free threads, then requires 5 packs (4,900 ÷ 1,000) = $50.
 
 ## Pricing Examples
 
@@ -81,7 +89,7 @@ Agent that pulls data from 3 sources, analyzes trends, and emails a report to 10
 
 ---
 
-### Database Q&A Agent ($20/month)
+### Database Q&A Agent ($10/month)
 
 AI agent that answers questions from your database. 5 teammates ask 1 question daily (5 messages × 30 days = 150 messages/month). Each query performs 2 database lookups.
 
@@ -93,11 +101,11 @@ AI agent that answers questions from your database. 5 teammates ask 1 question d
 
 **Monthly usage:**
 
-- 150 threads (100 free + 1 pack = $10)
-- 300 function calls (100 free + 1 pack = $10)
-- 150 interactions (100 free + 1 pack = $10)
+- 150 threads: 100 free + 50 billable = 1 pack ($10)
+- 300 function calls: 100 free + 200 billable (fits in 100K pack, no extra charge)
+- 150 interactions: 100 free + 50 billable (fits in 200K pack, no extra charge)
 
-**Monthly cost:** **$20** or **$0.67/day** for your whole team
+**Monthly cost:** **$10** or **$0.33/day** for your whole team
 
 ---
 
@@ -122,7 +130,7 @@ Build a structured dataset of 500 JSON records for model training. Agent runs on
 
 ---
 
-### Slack Assistant for Small Team ($109/month)
+### Slack Assistant for Small Team ($59/month)
 
 10 employees use a Slack bot for quick lookups (check PTO balance, find docs, create tickets). Average 2 questions per person per day.
 
@@ -134,12 +142,12 @@ Build a structured dataset of 500 JSON records for model training. Agent runs on
 
 **Monthly usage (22 workdays):**
 
-- 440 threads (100 free + 4 packs = $40)
-- 440 function calls (100 free + 1 pack = $10)
-- 440 interactions (100 free + 1 pack = $10)
+- 440 threads: 100 free + 340 billable = 1 pack ($10)
+- 440 function calls: 100 free + 340 billable (fits in 100K pack, no extra charge)
+- 440 interactions: 100 free + 340 billable (fits in 200K pack, no extra charge)
 - 1 builder seat = $49
 
-**Monthly cost:** **$109** or **$10.90 per employee** for unlimited questions
+**Monthly cost:** **$59** or **$5.90 per employee** for unlimited questions
 
 ---
 
