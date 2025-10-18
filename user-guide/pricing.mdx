@@ -53,6 +53,26 @@ Usage beyond free tiers is billed monthly in packs—fixed bundles of resources 
 
 ## Pricing Examples
 
+### Weekly Report Generator (Free)
+
+Agent that pulls data from 3 sources, analyzes trends, and emails a report to 10 people every Monday.
+
+**What happens weekly:**
+
+- 1 scheduled execution = 1 thread
+- Fetch from 3 APIs + analyze + send email = 5 function calls
+- 1 scheduled trigger = 1 interaction
+
+**Monthly usage (4 weeks):**
+
+- 4 threads (within 100 free)
+- 20 function calls (within 100 free)
+- 4 interactions (within 100 free)
+
+**Monthly cost:** **$0** - completely free
+
+---
+
 ### Database Q&A Agent ($20/month)
 
 AI agent that answers questions from your database. 5 teammates ask 1 question daily (5 messages × 30 days = 150 messages/month). Each query performs 2 database lookups.
@@ -91,26 +111,6 @@ Build a structured dataset of 500 JSON records for model training. Agent runs on
 - 1 interaction (within 100 free)
 
 **Total cost:** **$10 one-time** to generate your entire training dataset
-
----
-
-### Weekly Report Generator (Free)
-
-Agent that pulls data from 3 sources, analyzes trends, and emails a report to 10 people every Monday.
-
-**What happens weekly:**
-
-- 1 scheduled execution = 1 thread
-- Fetch from 3 APIs + analyze + send email = 5 function calls
-- 1 scheduled trigger = 1 interaction
-
-**Monthly usage (4 weeks):**
-
-- 4 threads (within 100 free)
-- 20 function calls (within 100 free)
-- 4 interactions (within 100 free)
-
-**Monthly cost:** **$0** - completely free
 
 ---
 
@@ -216,8 +216,6 @@ Self-service installation via Helm Chart or Docker starts at $500 with 5 builder
 4. **Renew** - Purchase additional packs when needed
 5. **Overage** - Usage beyond prepaid allocation is billed at renewal
 
-[Learn more about self-hosted deployment](self-hosted-deployment.mdx)
-
 ## Budget Caps
 
 Control spending by setting monthly limits in [Settings > Billing](https://app.xpander.ai/settings/billing). Operations are throttled or paused when your budget cap is reached.
@@ -226,7 +224,7 @@ Control spending by setting monthly limits in [Settings > Billing](https://app.x
 
 For organizations requiring custom SLAs, volume discounts, dedicated infrastructure, or managed on-premise deployments:
 
-**[Contact Sales](https://xpander.ai/contact)**
+**[Talk to the Team](https://pages.xpander.ai/talk-to-the-team)**
 
 ## Frequently Asked Questions
 
