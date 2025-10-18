@@ -1,238 +1,230 @@
 ---
 title: 'Pricing'
-description: 'Understand Xpander usage-based pricing and cost structure'
+description: 'Flexible, usage-based pricing that scales with your AI initiatives'
 icon: 'dollar-sign'
 ---
 
-## Overview
+## Pay Only for What You Use
 
-Xpander uses **usage-based pricing** with generous free tiers. You only pay for what you use beyond the free limits.
+Xpander offers **consumption-based pricing** with no upfront commitments or minimum fees. Start small and scale as your agent applications grow—you only pay for the resources you consume.
 
 <Info>
-  Monitor your usage in real-time from the [Xpander Console](https://app.xpander.ai).
+  Track your usage in real-time from the [Xpander Console](https://app.xpander.ai).
 </Info>
 
-## Free Tier
+## Free Tier Included
 
-Every account includes free resources each month to help you get started:
+Every account includes generous monthly limits at no cost:
 
-- **100 threads** - enough for development and testing
-- **10 files** - upload documents for your agents
-- **100 function calls** - test tool integrations
-- **100 interactions** - API requests to your agents
-- **1M input tokens** - prompt your agents extensively
-- **100K output tokens** - receive agent responses
-- **1 cloud agent container** - run one always-on agent
-- **1 cloud MCP container** - host one custom tool server
+- **100 threads** - Conversation sessions with your agents
+- **10 files** - Document uploads (up to 50MB each)
+- **100 function calls** - Tool executions and API calls
+- **100 interactions** - Agent API requests
+- **1M input tokens** - LLM prompt processing
+- **100K output tokens** - LLM response generation
+- **1 cloud agent** - Always-on containerized agent
+- **1 cloud MCP** - Model Context Protocol server
 
-<Tip>
-  Many small projects stay within the free tier. No credit card required to start.
-</Tip>
+## Cloud Pricing
 
-## How Packs Work
+Usage beyond free tiers is billed monthly in packs—fixed bundles of resources at set prices.
 
-When you exceed the free tier, you purchase **packs** - bundles of resources at fixed prices:
+| Resource | Pack Size | Pack Price |
+|----------|-----------|------------|
+| Threads | 1,000 | $10 |
+| Files (≤50MB) | 100 | $10 |
+| Function Calls | 100,000 | $10 |
+| Interactions | 200,000 | $10 |
+| LLM Input Tokens | 1M | $2.50 |
+| LLM Output Tokens | 1M | $10 |
+| Serverless Agents | 10 | $50 |
+| Cloud Agents | 1 container (1vCPU/1GB) | $20 |
+| Cloud MCPs | 1 container | $20 |
+| Builder Seats | 1 seat | $49 |
 
-1. **Usage accrues** throughout the month
-2. **Free tier is consumed first**
-3. **Packs are automatically purchased** to cover additional usage
-4. **You're billed monthly** for the total packs used
+### How It Works
 
-**Example:** If you use 5,000 threads:
+1. Your usage accumulates throughout the month
+2. Free tier consumption is applied first
+3. Additional usage is covered by automatic pack purchases
+4. You're billed monthly for total packs consumed
 
-- First 100 threads: Free
-- Remaining 4,900 threads: Requires 5 packs (1,000 threads per $10 pack) = $50
+**Example:** Using 5,000 threads consumes 100 free threads, then requires 5 packs (4,900 ÷ 1,000) = $50.
 
-## Pricing Table
+## Pricing Examples
 
-| Resource | Free Tier | Pack Size | Pack Price |
-|----------|-----------|-----------|------------|
-| **Threads** | 100/month | 1,000 threads | $10.00 |
-| **Files (≤50MB)** | 10/month | 100 files | $10.00 |
-| **Function Calls** | 100/month | 100,000 calls | $10.00 |
-| **Interactions** | 100/month | 200,000 interactions | $10.00 |
-| **LLM Input Tokens** | 1M/month | 1M tokens | $2.50 |
-| **LLM Output Tokens** | 100K/month | 1M tokens | $10.00 |
-| **Serverless Agents** | 0 | 10 agents | $50.00 |
-| **Cloud Agents** | 1 container | 1 container (1vCPU/1GB) | $20.00 |
-| **Cloud MCPs** | 1 container | 1 container | $20.00 |
-| **Builder Seats** | 0 | 1 seat | $49.00 |
+### Customer Support Automation
 
-<Note>
-  Pricing is based on pack purchases. When your usage exceeds the free tier, you purchase packs in the quantities shown above.
-</Note>
+Deploy an AI support agent handling 50K monthly tickets with automated responses, ticket routing, and knowledge base queries.
 
-## Popular Use Cases
-
-### Hobby Developer (Free)
-
-Perfect for personal projects and learning.
+**Monthly volume:** 2,000 threads, 80 function calls, 2,500 interactions
 
 | Resource | Usage | Cost |
 |----------|-------|------|
-| Threads | 50 | $0 |
-| Files | 5 | $0 |
-| Function Calls | 80 | $0 |
-| Interactions | 90 | $0 |
-| Cloud Agent | 1 | $0 |
-| **Monthly Total** | | **$0** |
+| Threads | 2,000 | $10 (1 pack after free tier) |
+| Function Calls | 80 | $0 (within free tier) |
+| Interactions | 2,500 | $10 (1 pack after free tier) |
+| Cloud Agent | 1 | $0 (free tier) |
+| **Monthly Total** | | **$20** |
 
-### Startup Team ($109/month)
+---
 
-Small team building production agents.
+### Slack Team Assistant
 
-| Resource | Usage | Billable | Packs | Cost |
-|----------|-------|----------|-------|------|
-| Threads | 2,000 | 1,900 | 2 | $20 |
-| Function Calls | 5,000 | 4,900 | 1 | $10 |
-| Interactions | 10,000 | 9,900 | 1 | $10 |
-| Builder Seats | 3 | 3 | 3 | $147 |
-| Cloud MCPs | 1 | 0 | 0 | $0 |
-| **Monthly Total** | | | | **$187** |
+Internal AI assistant for 25 employees integrated with Google Workspace, Linear, and GitHub—handling scheduling, task creation, and information retrieval.
 
-### Growing Business ($425/month)
+**Monthly volume:** 5,000 threads, 15,000 function calls, 20,000 interactions
 
-Medium-scale deployment with multiple agents.
+| Resource | Usage | Cost |
+|----------|-------|------|
+| Threads | 5,000 | $50 (5 packs) |
+| Function Calls | 15,000 | $10 (1 pack) |
+| Interactions | 20,000 | $10 (1 pack) |
+| Serverless Agents | 8 | $50 (1 pack) |
+| Builder Seats | 2 | $98 (2 seats) |
+| **Monthly Total** | | **$218** |
 
-| Resource | Usage | Billable | Packs | Cost |
-|----------|-------|----------|-------|------|
-| Threads | 10,000 | 9,900 | 10 | $100 |
-| Files | 150 | 140 | 2 | $20 |
-| Function Calls | 50,000 | 49,900 | 1 | $10 |
-| Interactions | 100,000 | 99,900 | 1 | $10 |
-| Serverless Agents | 15 | 15 | 2 | $100 |
-| Builder Seats | 5 | 5 | 5 | $245 |
-| Cloud Agents | 2 | 1 | 1 | $20 |
-| **Monthly Total** | | | | **$505** |
+---
 
-### Enterprise ($1,910/month)
+### Document Processing Pipeline
 
-Large-scale deployment with many agents and team members.
+Automated pipeline processing 15,000 PDFs monthly—extracting data, updating databases, and generating reports.
 
-| Resource | Usage | Billable | Packs | Cost |
-|----------|-------|----------|-------|------|
-| Threads | 5,000 | 4,900 | 5 | $50 |
-| Files | 58 | 48 | 1 | $10 |
-| Function Calls | 1,000 | 900 | 1 | $10 |
-| Interactions | 1,000 | 900 | 1 | $10 |
-| Serverless Agents | 166 | 166 | 17 | $850 |
-| Builder Seats | 20 | 20 | 20 | $980 |
-| **Monthly Total** | | | | **$1,910** |
+**Monthly volume:** 18,000 threads, 15,000 files, 80,000 function calls
+
+| Resource | Usage | Cost |
+|----------|-------|------|
+| Threads | 18,000 | $180 (18 packs) |
+| Files | 15,000 | $150 (150 packs) |
+| Function Calls | 80,000 | $10 (1 pack) |
+| Cloud Agents | 3 | $40 (2 containers after free) |
+| Builder Seats | 2 | $98 (2 seats) |
+| **Monthly Total** | | **$478** |
+
+---
+
+### Multi-Agent Sales Platform
+
+Enterprise sales automation with specialized agents for lead qualification, email outreach, calendar scheduling, and CRM synchronization—serving 100 sales reps.
+
+**Monthly volume:** 40,000 threads, 200,000 function calls, 150,000 interactions
+
+| Resource | Usage | Cost |
+|----------|-------|------|
+| Threads | 40,000 | $400 (40 packs) |
+| Function Calls | 200,000 | $20 (2 packs) |
+| Interactions | 150,000 | $10 (1 pack) |
+| Serverless Agents | 35 | $200 (4 packs) |
+| Cloud Agents | 8 | $140 (7 containers after free) |
+| Builder Seats | 5 | $245 (5 seats) |
+| **Monthly Total** | | **$1,015** |
 
 ## Resource Definitions
 
-**Threads** - Conversation sessions or task executions with your agents.
+**Threads** - Conversation sessions or task executions with your agents
 
-**Files** - Documents uploaded to agents (max 50MB per file).
+**Files** - Documents uploaded to agents (max 50MB per file)
 
-**Function Calls** - Tool executions like API calls, database queries, or custom functions.
+**Function Calls** - Tool executions including API calls, database queries, and custom functions
 
-**Interactions** - Individual messages or API requests to your agents.
+**Interactions** - Individual messages or API requests to your agents
 
-**LLM Tokens** - Input tokens (prompts) and output tokens (responses) processed by language models.
+**LLM Tokens** - Computational units processed by language models (separated into input and output)
 
-**Serverless Agents** - Event-driven agents that scale automatically on-demand.
+**Serverless Agents** - Event-driven agents that scale automatically on-demand
 
-**Cloud Agents** - Always-on containerized agents with dedicated compute (1 vCPU, 1GB RAM).
+**Cloud Agents** - Always-on containerized agents with dedicated compute (1 vCPU, 1GB RAM per container)
 
-**Cloud MCPs** - Always-on Model Context Protocol containers for custom tools.
+**Cloud MCPs** - Always-on Model Context Protocol servers for custom tool integrations
 
-**Builder Seats** - Platform access for team members who build and manage agents. End users don't need seats.
+**Builder Seats** - Platform access for team members who develop and manage agents (end users don't require seats)
 
-## Budget Controls
+## On-Premise Deployment
 
-Set spending limits in the [Xpander Console](https://app.xpander.ai/settings/billing):
+Self-host Xpander on your infrastructure with a **prepaid usage model** designed for enterprise security and compliance requirements.
 
-1. Go to Settings > Billing
-2. Set monthly budget caps
-3. Configure alerts at 50%, 75%, 90%
-4. Review usage analytics
+### Minimum Package: $519
 
-## On-Premise Pricing
+Self-service installation via Helm Chart or Docker starts at $500 with 5 builder seats included.
 
-On-premise deployments use a **prepaid usage model** with different pricing than cloud:
-
-### Self-Service On-Premise
-
-**Minimum:** $500 upfront (includes 5 builder seats)
-
-Helm Chart and self-hosted Docker installations are available as self-service. Purchase usage upfront and renew when needed. If you exceed your prepaid usage, overage is charged at renewal.
-
-| Resource | Prepaid Pack | Pack Price |
-|----------|--------------|------------|
-| **Threads** | 1,000 threads | $100.00 |
-| **Files (≤50MB)** | 100 files | $10.00 |
-| **Function Calls** | 100,000 calls | $100.00 |
-| **Interactions** | 200,000 interactions | $100.00 |
-| **LLM Input Tokens** | 1M tokens | $2.50 |
-| **LLM Output Tokens** | 1M tokens | $10.00 |
-| **Serverless Agents** | 10 agents | $100.00 |
-| **Cloud Agents** | 1 container (1vCPU/1GB) | $30.00 |
-| **Cloud MCPs** | 1 container | $30.00 |
-| **Builder Seats** | 1 seat | $49.00 |
-
-### Minimum On-Premise Package ($519)
-
-The starter on-premise package includes:
-
-| Resource | Quantity | Cost |
-|----------|----------|------|
+| Resource | Quantity | Price |
+|----------|----------|-------|
 | Threads | 1,000 | $100 |
 | Files | 100 | $10 |
 | Function Calls | 100,000 | $100 |
 | Interactions | 200,000 | $100 |
 | Serverless Agents | 10 | $100 |
-| Cloud Agents | 1 | $30 |
-| Cloud MCPs | 1 | $30 |
-| Builder Seats | 1 | $49 |
-| **Total** | | **$519** |
+| Cloud Agents | 1 container | $30 |
+| Cloud MCPs | 1 container | $30 |
+| Builder Seats | 1 seat | $49 |
 
-**Key Difference:** On-premise pricing differs from cloud pricing. Resources are purchased in advance and overage is billed at renewal.
+### Prepaid Pack Pricing
+
+| Resource | Pack Size | Pack Price |
+|----------|-----------|------------|
+| Threads | 1,000 | $100 |
+| Files (≤50MB) | 100 | $10 |
+| Function Calls | 100,000 | $100 |
+| Interactions | 200,000 | $100 |
+| LLM Input Tokens | 1M | $2.50 |
+| LLM Output Tokens | 1M | $10 |
+| Serverless Agents | 10 | $100 |
+| Cloud Agents | 1 container (1vCPU/1GB) | $30 |
+| Cloud MCPs | 1 container | $30 |
+| Builder Seats | 1 seat | $49 |
 
 ### How On-Premise Billing Works
 
-1. **Purchase upfront** - Buy usage packs in advance ($500 minimum)
-2. **Deploy and use** - Install via Helm Chart or Docker
-3. **Monitor usage** - Track consumption in your deployment
-4. **Renewal** - Purchase additional packs when needed
-5. **Overage billing** - If you exceed prepaid usage, overage is charged at next renewal
+1. **Purchase upfront** - Buy prepaid usage packs ($500 minimum)
+2. **Deploy** - Install via Helm Chart or self-hosted Docker
+3. **Consume** - Use resources throughout your billing period
+4. **Renew** - Purchase additional packs when needed
+5. **Overage** - Usage beyond prepaid allocation is billed at renewal
 
-Learn more: [Self-Hosted Deployment Guide](self-hosted-deployment.mdx)
+[Learn more about self-hosted deployment](self-hosted-deployment.mdx)
 
-## Enterprise
+## Budget Caps
 
-For custom requirements including custom SLAs, volume discounts, dedicated infrastructure, and managed on-premise:
+Control spending by setting monthly limits in [Settings > Billing](https://app.xpander.ai/settings/billing). Operations are throttled or paused when your budget cap is reached.
+
+## Enterprise Solutions
+
+For organizations requiring custom SLAs, volume discounts, dedicated infrastructure, or managed on-premise deployments:
 
 **[Contact Sales](https://xpander.ai/contact)**
 
-## FAQ
+## Frequently Asked Questions
 
 <AccordionGroup>
-  <Accordion title="How is billing calculated?">
-    Monthly, based on actual usage. You're charged for packs needed to cover usage beyond free tiers.
+  <Accordion title="How does billing work?">
+    Billing is calculated monthly based on actual resource consumption. You're charged for packs needed to cover usage beyond included free tiers.
   </Accordion>
 
-  <Accordion title="Is there a free trial?">
-    Yes! All accounts include free tiers. Build and test without payment information until you exceed limits.
+  <Accordion title="Do I need a credit card to start?">
+    No. All accounts include free tiers so you can build and test agents without payment information.
   </Accordion>
 
-  <Accordion title="What happens when I hit my budget cap?">
-    You'll get notifications and operations may be throttled or paused. Adjust caps anytime in settings.
+  <Accordion title="What happens when I reach my budget cap?">
+    Agent operations are throttled or paused to prevent overages. You can adjust your cap anytime in settings.
   </Accordion>
 
-  <Accordion title="Can I bring my own LLM keys?">
-    Yes! BYOL (Bring Your Own License) is supported for major providers to reduce token costs.
+  <Accordion title="Can I use my own LLM API keys?">
+    Yes. Xpander supports BYOL (Bring Your Own License) for major LLM providers to reduce token costs.
   </Accordion>
 
-  <Accordion title="How do I monitor usage?">
-    Real-time monitoring available in [Settings > Usage](https://app.xpander.ai/settings/usage) with detailed breakdowns.
+  <Accordion title="What's the difference between serverless and cloud agents?">
+    Serverless agents scale automatically on-demand for variable workloads. Cloud agents are always-on with dedicated compute for production workloads requiring guaranteed availability.
+  </Accordion>
+
+  <Accordion title="How do I estimate my costs?">
+    Review the pricing examples above that match your use case. Monitor real-time usage in the Console to track consumption patterns.
   </Accordion>
 </AccordionGroup>
 
 ## Get Started
 
 <CardGroup cols={2}>
-  <Card title="Quick Start" icon="rocket" href="/user-guide/quick-start">
+  <Card title="Quick Start" icon="rocket" href="quick-start">
     Build your first agent in 5 minutes
   </Card>
   <Card title="Console" icon="browser" href="https://app.xpander.ai">
