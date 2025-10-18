@@ -53,71 +53,106 @@ Usage beyond free tiers is billed monthly in packs—fixed bundles of resources 
 
 ## Pricing Examples
 
-### Customer Support Automation
+### Database Q&A Agent ($20/month)
 
-Deploy an AI support agent handling 50K monthly tickets with automated responses, ticket routing, and knowledge base queries.
+AI agent that answers questions from your database. 5 teammates ask 1 question daily (5 messages × 30 days = 150 messages/month). Each query performs 2 database lookups.
 
-**Monthly volume:** 2,000 threads, 80 function calls, 2,500 interactions
+**What happens each day:**
 
-| Resource | Usage | Cost |
-|----------|-------|------|
-| Threads | 2,000 | $10 (1 pack after free tier) |
-| Function Calls | 80 | $0 (within free tier) |
-| Interactions | 2,500 | $10 (1 pack after free tier) |
-| Cloud Agent | 1 | $0 (free tier) |
-| **Monthly Total** | | **$20** |
+- 5 messages from different teammates = 5 threads
+- Each message triggers 2 database queries = 10 function calls
+- 5 API requests to the agent = 5 interactions
 
----
+**Monthly usage:**
 
-### Slack Team Assistant
+- 150 threads (100 free + 1 pack = $10)
+- 300 function calls (100 free + 1 pack = $10)
+- 150 interactions (100 free + 1 pack = $10)
 
-Internal AI assistant for 25 employees integrated with Google Workspace, Linear, and GitHub—handling scheduling, task creation, and information retrieval.
-
-**Monthly volume:** 5,000 threads, 15,000 function calls, 20,000 interactions
-
-| Resource | Usage | Cost |
-|----------|-------|------|
-| Threads | 5,000 | $50 (5 packs) |
-| Function Calls | 15,000 | $10 (1 pack) |
-| Interactions | 20,000 | $10 (1 pack) |
-| Serverless Agents | 8 | $50 (1 pack) |
-| Builder Seats | 2 | $98 (2 seats) |
-| **Monthly Total** | | **$218** |
+**Monthly cost:** **$20** or **$0.67/day** for your whole team
 
 ---
 
-### Document Processing Pipeline
+### One-Time Training Data Generator ($10)
 
-Automated pipeline processing 15,000 PDFs monthly—extracting data, updating databases, and generating reports.
+Build a structured dataset of 500 JSON records for model training. Agent runs once, processes 500 items with 30 validation actions per item.
 
-**Monthly volume:** 18,000 threads, 15,000 files, 80,000 function calls
+**What happens:**
 
-| Resource | Usage | Cost |
-|----------|-------|------|
-| Threads | 18,000 | $180 (18 packs) |
-| Files | 15,000 | $150 (150 packs) |
-| Function Calls | 80,000 | $10 (1 pack) |
-| Cloud Agents | 3 | $40 (2 containers after free) |
-| Builder Seats | 2 | $98 (2 seats) |
-| **Monthly Total** | | **$478** |
+- 1 agent session = 1 thread
+- 500 items × 30 validations = 15,000 function calls
+- 1 API invocation = 1 interaction
+- No history needed (stateless processing)
+
+**Total usage:**
+
+- 1 thread (within 100 free)
+- 15,000 function calls (100 free + 1 pack = $10)
+- 1 interaction (within 100 free)
+
+**Total cost:** **$10 one-time** to generate your entire training dataset
 
 ---
 
-### Multi-Agent Sales Platform
+### Weekly Report Generator (Free)
 
-Enterprise sales automation with specialized agents for lead qualification, email outreach, calendar scheduling, and CRM synchronization—serving 100 sales reps.
+Agent that pulls data from 3 sources, analyzes trends, and emails a report to 10 people every Monday.
 
-**Monthly volume:** 40,000 threads, 200,000 function calls, 150,000 interactions
+**What happens weekly:**
 
-| Resource | Usage | Cost |
-|----------|-------|------|
-| Threads | 40,000 | $400 (40 packs) |
-| Function Calls | 200,000 | $20 (2 packs) |
-| Interactions | 150,000 | $10 (1 pack) |
-| Serverless Agents | 35 | $200 (4 packs) |
-| Cloud Agents | 8 | $140 (7 containers after free) |
-| Builder Seats | 5 | $245 (5 seats) |
-| **Monthly Total** | | **$1,015** |
+- 1 scheduled execution = 1 thread
+- Fetch from 3 APIs + analyze + send email = 5 function calls
+- 1 scheduled trigger = 1 interaction
+
+**Monthly usage (4 weeks):**
+
+- 4 threads (within 100 free)
+- 20 function calls (within 100 free)
+- 4 interactions (within 100 free)
+
+**Monthly cost:** **$0** - completely free
+
+---
+
+### Slack Assistant for Small Team ($109/month)
+
+10 employees use a Slack bot for quick lookups (check PTO balance, find docs, create tickets). Average 2 questions per person per day.
+
+**What happens daily:**
+
+- 20 questions = 20 threads
+- Each question hits 1 internal API = 20 function calls
+- 20 Slack messages = 20 interactions
+
+**Monthly usage (22 workdays):**
+
+- 440 threads (100 free + 4 packs = $40)
+- 440 function calls (100 free + 1 pack = $10)
+- 440 interactions (100 free + 1 pack = $10)
+- 1 builder seat = $49
+
+**Monthly cost:** **$109** or **$10.90 per employee** for unlimited questions
+
+---
+
+### Document Processor ($50/month)
+
+Process 200 customer contracts monthly, extract key terms, update CRM. Each contract is 1 PDF with 5 data points to extract.
+
+**What happens per contract:**
+
+- 1 document upload = 1 file + 1 thread
+- Extract 5 data points + update CRM = 6 function calls
+- 1 processing request = 1 interaction
+
+**Monthly usage (200 contracts):**
+
+- 200 files (10 free + 2 packs = $20)
+- 200 threads (100 free + 1 pack = $10)
+- 1,200 function calls (100 free + 1 pack = $10)
+- 200 interactions (100 free + 1 pack = $10)
+
+**Monthly cost:** **$50** or **$0.25 per contract** processed
 
 ## Resource Definitions
 
