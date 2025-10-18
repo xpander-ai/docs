@@ -148,9 +148,60 @@ Set spending limits in the [Xpander Console](https://app.xpander.ai/settings/bil
 3. Configure alerts at 50%, 75%, 90%
 4. Review usage analytics
 
+## On-Premise Pricing
+
+On-premise deployments use a **prepaid usage model** with different pricing than cloud:
+
+### Self-Service On-Premise
+
+**Minimum:** $500 upfront (includes 5 builder seats)
+
+Helm Chart and self-hosted Docker installations are available as self-service. Purchase usage upfront and renew when needed. If you exceed your prepaid usage, overage is charged at renewal.
+
+| Resource | Prepaid Pack | Pack Price |
+|----------|--------------|------------|
+| **Threads** | 1,000 threads | $100.00 |
+| **Files (≤50MB)** | 100 files | $10.00 |
+| **Function Calls** | 100,000 calls | $100.00 |
+| **Interactions** | 200,000 interactions | $100.00 |
+| **LLM Input Tokens** | 1M tokens | $2.50 |
+| **LLM Output Tokens** | 1M tokens | $10.00 |
+| **Serverless Agents** | 10 agents | $100.00 |
+| **Cloud Agents** | 1 container (1vCPU/1GB) | $30.00 |
+| **Cloud MCPs** | 1 container | $30.00 |
+| **Builder Seats** | 1 seat | $49.00 |
+
+### Minimum On-Premise Package ($519)
+
+The starter on-premise package includes:
+
+| Resource | Quantity | Cost |
+|----------|----------|------|
+| Threads | 1,000 | $100 |
+| Files | 100 | $10 |
+| Function Calls | 100,000 | $100 |
+| Interactions | 200,000 | $100 |
+| Serverless Agents | 10 | $100 |
+| Cloud Agents | 1 | $30 |
+| Cloud MCPs | 1 | $30 |
+| Builder Seats | 1 | $49 |
+| **Total** | | **$519** |
+
+**Key Difference:** On-premise pricing differs from cloud pricing. Resources are purchased in advance and overage is billed at renewal.
+
+### How On-Premise Billing Works
+
+1. **Purchase upfront** - Buy usage packs in advance ($500 minimum)
+2. **Deploy and use** - Install via Helm Chart or Docker
+3. **Monitor usage** - Track consumption in your deployment
+4. **Renewal** - Purchase additional packs when needed
+5. **Overage billing** - If you exceed prepaid usage, overage is charged at next renewal
+
+Learn more: [Self-Hosted Deployment Guide](self-hosted-deployment.mdx)
+
 ## Enterprise
 
-For custom requirements including on-premise deployment, SLAs, volume discounts, and dedicated infrastructure:
+For custom requirements including custom SLAs, volume discounts, dedicated infrastructure, and managed on-premise:
 
 **[Contact Sales](https://xpander.ai/contact)**
 
