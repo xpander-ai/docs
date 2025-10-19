@@ -16,9 +16,9 @@ Every account includes monthly limits at no cost:
 - **100 interactions** - Agent API requests
 - **1M input tokens** - LLM prompt processing
 - **100K output tokens** - LLM response generation
-- **5 free serverless agents** - Event-driven agents that scale on-demand
-- **1 free cloud agent container** - Full 1 vCPU and 1GB RAM, always-on
-- **1 free cloud MCP container** - Full 1 vCPU and 1GB RAM, always-on
+- **5 free managed agents** - Event-driven agents that scale on-demand
+- **1 free embedded agent container** - Full container with 1 vCPU and 1GB RAM, always-on
+- **1 free cloud MCP container** - always-on MCP Container
 
 <Info>
   Track your usage in real-time from the [Xpander Console](https://app.xpander.ai).
@@ -37,18 +37,18 @@ The free tier works without a credit card. When you exceed free tier limits, you
 
 Usage beyond free tiers is billed monthly in packs (fixed bundles of resources at set prices).
 
-| Resource | Free Tier | Pack Size | Pack Price |
-|----------|-----------|-----------|------------|
-| Threads | 100 | 1,000 | $10 |
-| Files (≤50MB) | 10 | 100 | $10 |
-| Function Calls | 100 | 100,000 | $10 |
-| Interactions | 100 | 200,000 | $10 |
-| LLM Input Tokens | 1M | 1M | $2.50 |
-| LLM Output Tokens | 100K | 1M | $10 |
-| Serverless Agents | 5 | 10 | $50 |
-| Cloud Agents | 1 | 1 container (1vCPU/1GB) | $20 |
-| Cloud MCPs | 1 | 1 container | $20 |
-| Builder Seats | 0 | 1 seat | $49 |
+| Resource          | Free Tier | Pack Size               | Pack Price |
+| ----------------- | --------- | ----------------------- | ---------- |
+| Threads           | 100       | 1,000                   | $10        |
+| Files (≤50MB)     | 10        | 100                     | $10        |
+| Function Calls    | 100       | 100,000                 | $10        |
+| Interactions      | 100       | 200,000                 | $10        |
+| LLM Input Tokens  | 1M        | 1M                      | $2.50      |
+| LLM Output Tokens | 100K      | 1M                      | $10        |
+| Managed Agents    | 5         | 10                      | $50        |
+| Embedded Agents   | 1         | 1 container (1vCPU/1GB) | $20        |
+| Cloud MCPs        | 1         | 1 container             | $20        |
+| Builder Seats     | 5         | 1 seat                  | $49        |
 
 ### How Packs Work
 
@@ -182,15 +182,15 @@ Process 200 customer contracts monthly, extract key terms, update CRM. Each cont
 
 **LLM Tokens** - Computational units processed by language models (separated into input and output)
 
-**Serverless Agents** - Event-driven agents that scale automatically on-demand
+**Managed Agents** - Event-driven agents that scale automatically on-demand
 
-**Cloud Agents** - Always-on containerized agents with dedicated compute (1 vCPU, 1GB RAM per container)
+**Embedded Agents** - Always-on containerized agents with dedicated compute (1 vCPU, 1GB RAM per container)
 
 **Cloud MCPs** - Always-on Model Context Protocol servers for custom tool integrations
 
 **Builder Seats** - Platform access for team members who develop and manage agents (end users don't require seats)
 
-## On-Premise Deployment
+## Self-Deployment
 
 Self-host Xpander on your infrastructure with a **prepaid usage model** designed for enterprise security and compliance requirements.
 
@@ -198,20 +198,20 @@ Self-service installation via Helm Chart or Docker starts at **$500 minimum** wi
 
 ### Prepaid Pack Pricing
 
-| Resource | Pack Size | Pack Price |
-|----------|-----------|------------|
-| Threads | 1,000 | $100 |
-| Files (≤50MB) | 100 | $10 |
-| Function Calls | 100,000 | $100 |
-| Interactions | 200,000 | $100 |
-| LLM Input Tokens | 1M | $2.50 |
-| LLM Output Tokens | 1M | $10 |
-| Serverless Agents | 10 | $100 |
-| Cloud Agents | 1 container (1vCPU/1GB) | $30 |
-| Cloud MCPs | 1 container | $30 |
-| Builder Seats | 1 seat | $49 |
+| Resource          | Pack Size               | Pack Price |
+| ----------------- | ----------------------- | ---------- |
+| Threads           | 1,000                   | $100       |
+| Files (≤50MB)     | 100                     | $10        |
+| Function Calls    | 100,000                 | $100       |
+| Interactions      | 200,000                 | $100       |
+| LLM Input Tokens  | 1M                      | $2.50      |
+| LLM Output Tokens | 1M                      | $10        |
+| Managed Agents    | 10                      | $100       |
+| Embedded Agents   | 1 container (1vCPU/1GB) | $30        |
+| Cloud MCPs        | 1 container             | $30        |
+| Builder Seats     | 1 seat                  | $49        |
 
-### How On-Premise Billing Works
+### How Self-Hosted Billing Works
 
 1. **Purchase upfront** - Buy prepaid usage packs ($500 minimum)
 2. **Deploy** - Install via Helm Chart or self-hosted Docker
@@ -248,8 +248,8 @@ For organizations requiring custom SLAs, volume discounts, dedicated infrastruct
     Yes. Xpander supports BYOL (Bring Your Own License) for major LLM providers to reduce token costs.
   </Accordion>
 
-  <Accordion title="What's the difference between serverless and cloud agents?">
-    Serverless agents scale automatically on-demand for variable workloads. Cloud agents are always-on with dedicated compute for production workloads requiring guaranteed availability.
+  <Accordion title="What's the difference between Managed and Embedded agents?">
+    Managed agents scale automatically on-demand for variable workloads. Embedded agents are isolated containers that are always-on with dedicated compute for production workloads requiring guaranteed availability.
   </Accordion>
 
   <Accordion title="How do I estimate my costs?">
