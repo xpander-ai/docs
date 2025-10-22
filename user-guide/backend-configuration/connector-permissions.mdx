@@ -1,0 +1,525 @@
+---
+title: 'Connector Permissions Configuration'
+description: 'Learn how to configure authentication for connectors using API Keys, OAuth, and AWS Cross-Account IAM Roles'
+icon: 'lock'
+---
+
+## Overview
+
+Xpander connectors support three primary authentication methods to integrate with external services. Each method offers different security models and use cases:
+
+<CardGroup cols={3}>
+<Card title='API Keys' icon='key'>
+Simple token-based authentication for service accounts
+</Card>
+
+<Card title='OAuth 2.0' icon='shield-check'>
+Secure delegated access with user consent
+</Card>
+
+<Card title='AWS IAM Roles' icon='aws'>
+Cross-account access using temporary credentials
+</Card>
+</CardGroup>
+
+## Authentication Modes
+
+Before configuring a connector, choose the appropriate authentication mode:
+
+- **Integration User Authentication** - All agents using this connector share the same predefined credentials (useful for shared services)
+- **End-User Authentication** - Each user authenticates individually when the agent accesses their data (supported on Slack agents)
+- **No Authentication** - For connectors that don't require authentication
+
+<Note>
+End-user authentication is currently only available for Slack-based agents, where each Slack user can authenticate with their own credentials.
+</Note>
+
+## API Key Authentication
+
+API key authentication is the simplest method, using static tokens or keys to authenticate requests.
+
+### When to Use API Keys
+
+- Service-to-service integrations
+- Read-only access to public data
+- Legacy systems without OAuth support
+- Internal APIs with token-based auth
+
+### Configuration Steps
+
+1. Go to the **Connectors** section in your xpander.ai dashboard
+2. Select your desired connector from the available integrations
+3. Click **Other auth options**
+4. Enter a **connector name** (e.g., 'my-github-connector')
+5. Select **Integration User** as the authentication mode
+6. Select **API Key** as the authentication method
+7. Enter your API key in the provided field
+8. Choose the **Auth Type**:
+   - **Bearer** - Token sent in Authorization header as 'Bearer {token}'
+   - **Basic** - Credentials encoded in Base64 format
+   - **Custom** - Define your own header format
+9. Save the configuration
+
+<Frame>
+![API Key Configuration](/images/connectors/github-issues-manager/img_3.png)
+</Frame>
+
+### Security Best Practices
+
+<Warning>
+Store API keys securely and never commit them to version control. Rotate keys regularly and use the minimum required permissions.
+</Warning>
+
+- Use dedicated service account keys when possible
+- Restrict API key permissions to only what's needed
+- Set expiration dates where supported
+- Monitor key usage for anomalies
+- Rotate keys on a regular schedule
+
+## OAuth 2.0 Authentication
+
+OAuth provides secure, delegated access without sharing credentials. Users grant permission through a consent screen, and xpander manages token refresh automatically.
+
+### When to Use OAuth
+
+- User-specific data access (calendars, emails, documents)
+- Applications requiring full read/write permissions
+- Services that enforce OAuth for security
+- Multi-tenant scenarios where each user owns their data
+
+### Configuration Steps
+
+#### Built-in xpander.ai OAuth
+
+The simplest way to use OAuth is through xpander's built-in authentication:
+
+1. Go to the **Connectors** section in the sidebar
+2. Select your connector (e.g., Google Calendar, GitHub, Slack)
+3. Click **Sign in with {Service}**
+4. Grant xpander.ai permission to access your account
+5. Your integration is now ready to use
+
+<Note>
+This method is recommended for most users. Xpander securely manages OAuth tokens, handles refresh automatically, and never exposes credentials.
+</Note>
+
+<Frame>
+![OAuth Flow](/images/oauth.png)
+</Frame>
+
+#### Custom OAuth Configuration
+
+For custom OAuth applications or self-hosted services:
+
+1. Create an OAuth application in your service provider's developer console
+2. Set the redirect URI to: `https://app.xpander.ai/oauth/callback`
+3. Note your **Client ID** and **Client Secret**
+4. In xpander.ai, go to **Connectors** → **Other auth options**
+5. Enter your connector name
+6. Select **Integration User** or **End-User** authentication
+7. Select **OAuth 2.0** as the authentication method
+8. Enter your Client ID and Client Secret
+9. Configure the OAuth endpoints (authorize, token, refresh)
+10. Define the required scopes
+11. Save and complete the OAuth flow
+
+### OAuth Scopes
+
+Request only the minimum scopes necessary for your use case:
+
+```json Example Scopes
+{
+  "Google Calendar": [
+    "https://www.googleapis.com/auth/calendar.readonly",
+    "https://www.googleapis.com/auth/calendar.events"
+  ],
+  "GitHub": [
+    "repo",
+    "read:user"
+  ],
+  "Slack": [
+    "channels:read",
+    "chat:write"
+  ]
+}
+```
+
+## AWS Cross-Account IAM Roles
+
+For AWS service integrations, use cross-account IAM roles to grant Xpander temporary, scoped access to your AWS resources without sharing long-term credentials.
+
+### When to Use IAM Roles
+
+- Accessing AWS services (S3, CloudWatch, Lambda, DynamoDB, etc.)
+- Enterprise security requirements
+- Compliance needs requiring temporary credentials
+- Multi-account AWS organizations
+
+### How It Works
+
+1. You create an IAM role in your AWS account
+2. Configure a trust policy allowing Xpander's service account to assume the role
+3. The trust policy includes an external ID for additional security
+4. Xpander assumes the role when needed, receiving temporary credentials
+5. These credentials automatically expire after a short period
+
+### CLI Configuration
+
+Run these commands in AWS CLI, replacing `<YOUR_ACCOUNT_ID>` with your AWS account ID:
+
+#### 1. Create the Trust Policy
+
+```bash
+cat > trust-policy.json <<'EOF'
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::211125312782:role/api-caller-sa"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "StringEquals": {
+          "sts:ExternalId": "cca29b9b-f718-43a3-8802-84e812a019e1"
+        }
+      }
+    }
+  ]
+}
+EOF
+```
+
+<Note>
+The external ID `cca29b9b-f718-43a3-8802-84e812a019e1` is a security feature that prevents the [confused deputy problem](https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html). Always use this exact value when configuring Xpander access.
+</Note>
+
+#### 2. Create the IAM Role
+
+```bash
+aws iam create-role \
+  --role-name XpanderAccessRole \
+  --assume-role-policy-document file://trust-policy.json \
+  --description "Grants Xpander cross-account access to AWS services"
+```
+
+#### 3. Add Permissions
+
+Customize the permissions based on which AWS services you need to access:
+
+```bash
+cat > xpander-access-policy.json <<'EOF'
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket",
+        "cloudwatch:GetMetricStatistics",
+        "cloudwatch:ListMetrics",
+        "lambda:GetFunction",
+        "lambda:ListFunctions",
+        "logs:GetLogEvents",
+        "logs:DescribeLogStreams"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+
+aws iam put-role-policy \
+  --role-name XpanderAccessRole \
+  --policy-name XpanderAccessPolicy \
+  --policy-document file://xpander-access-policy.json
+```
+
+<Warning>
+The example above uses `"Resource": "*"` for simplicity. In production, restrict resources to specific ARNs:
+
+```json
+"Resource": [
+  "arn:aws:s3:::my-bucket/*",
+  "arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/*"
+]
+```
+</Warning>
+
+#### 4. Get Your Role ARN
+
+```bash
+aws iam get-role --role-name XpanderAccessRole --query "Role.Arn" --output text
+```
+
+Copy the output ARN, which looks like:
+
+```
+arn:aws:iam::<YOUR_ACCOUNT_ID>:role/XpanderAccessRole
+```
+
+#### 5. Connect in Xpander
+
+1. In xpander.ai, go to **Connections** → **Add new** → **AWS**
+2. Choose **Assume Role** as the authentication method
+3. Paste your Role ARN
+4. Save the configuration
+
+<Frame>
+![AWS IAM Role Configuration](/images/aws-iam-config.png)
+</Frame>
+
+### Console Configuration (Alternative)
+
+If you prefer using the AWS Console instead of CLI:
+
+<Accordion title="AWS Console Setup Steps">
+
+1. Log in to the [AWS IAM Console](https://console.aws.amazon.com/iam/)
+2. Go to **Roles** → **Create role**
+3. Select **Another AWS account** as the trusted entity type
+4. Enter Xpander's AWS Account ID: `211125312782`
+5. Check **Require external ID** and enter: `cca29b9b-f718-43a3-8802-84e812a019e1`
+6. Click **Next: Permissions**
+7. Create or select an existing policy with the required permissions
+8. Click **Next: Tags** (optional)
+9. Click **Next: Review**
+10. Enter **Role name**: `XpanderAccessRole`
+11. Click **Create role**
+12. Copy the Role ARN and configure it in xpander.ai
+
+</Accordion>
+
+### Permission Examples by Service
+
+<AccordionGroup>
+
+<Accordion title="S3 Access">
+
+For reading and writing S3 objects:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-bucket",
+        "arn:aws:s3:::my-bucket/*"
+      ]
+    }
+  ]
+}
+```
+
+</Accordion>
+
+<Accordion title="CloudWatch Logs">
+
+For reading CloudWatch logs:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:DescribeLogGroups",
+        "logs:DescribeLogStreams",
+        "logs:GetLogEvents",
+        "logs:FilterLogEvents"
+      ],
+      "Resource": "arn:aws:logs:*:*:log-group:/aws/*"
+    }
+  ]
+}
+```
+
+</Accordion>
+
+<Accordion title="Lambda Functions">
+
+For invoking and managing Lambda functions:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "lambda:InvokeFunction",
+        "lambda:GetFunction",
+        "lambda:ListFunctions"
+      ],
+      "Resource": "arn:aws:lambda:*:*:function:*"
+    }
+  ]
+}
+```
+
+</Accordion>
+
+<Accordion title="DynamoDB Tables">
+
+For reading and writing DynamoDB data:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+      ],
+      "Resource": "arn:aws:dynamodb:*:*:table/my-table"
+    }
+  ]
+}
+```
+
+</Accordion>
+
+</AccordionGroup>
+
+### Security Best Practices
+
+<CardGroup cols={2}>
+<Card title='Principle of Least Privilege' icon='shield'>
+Grant only the minimum permissions required for your use case
+</Card>
+
+<Card title='Use Conditions' icon='filter'>
+Add IAM conditions to restrict access by IP, time, or other factors
+</Card>
+
+<Card title='Monitor with CloudTrail' icon='magnifying-glass'>
+Enable CloudTrail to audit all role assumptions and API calls
+</Card>
+
+<Card title='Set Session Duration' icon='clock'>
+Configure appropriate session duration (default is 1 hour)
+</Card>
+</CardGroup>
+
+## Verifying Your Configuration
+
+After configuring a connector, verify it's working:
+
+1. Go to **Agent Configuration** → **Tools** → **Add Tools**
+2. Select **Connectors**
+3. Choose your configured connector
+4. Select the operations you want to enable
+5. Test the connection by running a simple query
+
+If authentication fails, check:
+
+- API keys are valid and not expired
+- OAuth tokens have appropriate scopes
+- IAM role trust policy includes correct external ID
+- Permissions are sufficient for the operations you're attempting
+
+## Troubleshooting
+
+<AccordionGroup>
+
+<Accordion title="API Key Authentication Errors">
+
+**Common Issues:**
+
+- **401 Unauthorized**: API key is invalid or expired
+- **403 Forbidden**: API key lacks required permissions
+- **Invalid Format**: Check if Bearer/Basic format is correct
+
+**Solutions:**
+
+1. Regenerate the API key in your service provider
+2. Verify the key hasn't been revoked
+3. Check key permissions and scopes
+4. Ensure correct Auth Type (Bearer vs Basic)
+
+</Accordion>
+
+<Accordion title="OAuth Connection Problems">
+
+**Common Issues:**
+
+- **Token expired**: Refresh token may be invalid
+- **Insufficient scopes**: Missing required permissions
+- **Redirect URI mismatch**: OAuth app configuration incorrect
+
+**Solutions:**
+
+1. Re-authenticate through xpander.ai
+2. Check requested scopes match what's granted
+3. Verify redirect URI in OAuth app settings
+4. Clear cached tokens and retry
+
+</Accordion>
+
+<Accordion title="AWS IAM Role Issues">
+
+**Common Issues:**
+
+- **Access Denied**: Trust policy or permissions incorrect
+- **External ID mismatch**: Wrong external ID in trust policy
+- **Role not assumable**: Principal ARN incorrect
+
+**Solutions:**
+
+1. Verify trust policy includes correct Xpander ARN
+2. Confirm external ID: `cca29b9b-f718-43a3-8802-84e812a019e1`
+3. Check attached policies have required permissions
+4. Test with AWS STS assume-role CLI command
+5. Review CloudTrail logs for detailed error messages
+
+```bash
+aws sts assume-role \
+  --role-arn arn:aws:iam::YOUR_ACCOUNT:role/XpanderAccessRole \
+  --role-session-name test \
+  --external-id cca29b9b-f718-43a3-8802-84e812a019e1
+```
+
+</Accordion>
+
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title='Browse Connectors' icon='plug' href='/connectors/index'>
+Explore available pre-built connectors
+</Card>
+
+<Card title='Configure Tools' icon='wrench' href='/user-guide/backend-configuration/connectors'>
+Learn about tool configuration and dependencies
+</Card>
+
+<Card title='Build Custom Tools' icon='code' href='/Examples/05-custom-tools-integration'>
+Create your own custom tools and integrations
+</Card>
+
+<Card title='MCP Integration' icon='server' href='/user-guide/task-sources/mcp'>
+Connect via Model Context Protocol
+</Card>
+</CardGroup>
+
+## Related Resources
+
+- [Tools & Connectors Overview](/user-guide/backend-configuration/connectors)
+- [AWS IAM Best Practices](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html)
+- [OAuth 2.0 Security Best Practices](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics)
+- [API Key Management Guidelines](https://cloud.google.com/docs/authentication/api-keys)
