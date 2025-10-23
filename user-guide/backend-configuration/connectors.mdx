@@ -4,7 +4,7 @@ description: "Add capabilities to your agents using Tools (APIs as function call
 icon: "plug"
 ---
 
-Xpander provides two ways to add capabilities to your agents:
+xpander provides two ways to add capabilities to your agents:
 
 <CardGroup cols={2}>
 <Card title="Tools" icon="wrench">
@@ -152,7 +152,7 @@ Temporary cross-account credentials
 3. Grant permissions
 4. Done
 
-Xpander manages tokens and handles refresh automatically.
+xpander manages tokens and handles refresh automatically.
 
 <Frame>
 ![OAuth Flow](/images/oauth.png)
@@ -160,7 +160,7 @@ Xpander manages tokens and handles refresh automatically.
 
 ### AWS Cross-Account IAM Roles
 
-Use IAM roles to grant Xpander temporary access to AWS services (S3, CloudWatch, Lambda, etc.) without sharing long-term credentials.
+Use IAM roles to grant xpander temporary access to AWS services (S3, CloudWatch, Lambda, etc.) without sharing long-term credentials.
 
 #### Setup (CLI)
 
@@ -198,9 +198,9 @@ The external ID prevents the [confused deputy problem](https://docs.aws.amazon.c
 
 ```bash
 aws iam create-role \
-  --role-name XpanderAccessRole \
+  --role-name xpanderAccessRole \
   --assume-role-policy-document file://trust-policy.json \
-  --description "Grants Xpander cross-account access to AWS services"
+  --description "Grants xpander cross-account access to AWS services"
 ```
 
 ##### 3. Add Permissions
@@ -226,8 +226,8 @@ cat > xpander-access-policy.json <<'EOF'
 EOF
 
 aws iam put-role-policy \
-  --role-name XpanderAccessRole \
-  --policy-name XpanderAccessPolicy \
+  --role-name xpanderAccessRole \
+  --policy-name xpanderAccessPolicy \
   --policy-document file://xpander-access-policy.json
 ```
 
@@ -238,12 +238,12 @@ In production, restrict `Resource` to specific ARNs: `"Resource": ["arn:aws:s3::
 ##### 4. Get Role ARN
 
 ```bash
-aws iam get-role --role-name XpanderAccessRole --query "Role.Arn" --output text
+aws iam get-role --role-name xpanderAccessRole --query "Role.Arn" --output text
 ```
 
-Output: `arn:aws:iam::<YOUR_ACCOUNT_ID>:role/XpanderAccessRole`
+Output: `arn:aws:iam::<YOUR_ACCOUNT_ID>:role/xpanderAccessRole`
 
-##### 5. Connect in Xpander
+##### 5. Connect in xpander
 
 1. Go to **Connections** → **Add new** → **AWS**
 2. Choose **Assume Role**
