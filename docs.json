@@ -52,7 +52,6 @@
               "user-guide/backend-configuration/ai-model",
               "user-guide/backend-configuration/system-prompt",
               "user-guide/backend-configuration/connectors",
-              "user-guide/backend-configuration/connector-permissions",
               "user-guide/backend-configuration/agent-memory"
             ]
           },
