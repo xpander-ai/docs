@@ -1,14 +1,28 @@
 ---
-title: "Tools & Connectors"  
-description: "There are multiple ways to supply agentic tools to your agents running in xpander.
-"
+title: "Tools & Connectors"
+description: "Add capabilities to your agents using Tools (APIs as function calling) and MCP servers"
 icon: "plug"
 ---
 
+xpander provides two ways to add capabilities to your agents:
 
-## Pre-built Agent-Ready Connectors
+<CardGroup cols={2}>
+<Card title="Tools" icon="wrench">
+APIs exposed as function calling with advanced filtering, authentication, and Agentic RAG
+</Card>
 
-Browse and select from hundreds of pre-built tools in the Workbench, covering popular SaaS platforms like GitHub, Google Workspace, Jira, Asana, Notion, and more. These connectors are:
+<Card title="MCP Servers" icon="server">
+Connect to Model Context Protocol servers for standardized tool integration
+</Card>
+</CardGroup>
+
+## Tools
+
+Tools are APIs that xpander exposes to your agents as function calling capabilities. Your agent can invoke these functions during conversations to access external data and services.
+
+### Pre-built Tools Library
+
+Browse and select from hundreds of pre-built tools in the Workbench, covering popular SaaS platforms like GitHub, Google Workspace, Jira, Asana, Notion, and more.
 
 <CardGroup cols={3}>
 <Card title="Ready to Use" icon="play">
@@ -16,7 +30,7 @@ No configuration required, just select and enable
 </Card>
 
 <Card title="Production-tested" icon="shield-check">
-Built and maintained by the xpander connector generator agent.
+Built and maintained by the xpander connector generator agent
 </Card>
 
 <Card title="Regularly Updated" icon="arrow-rotate-right">
@@ -25,29 +39,12 @@ Keep pace with API changes and new features
 </CardGroup>
 
 <Note>
-You can also generate your own connectors by providing an OpenAPI/Swagger specification. This allows you to create private connectors for your internal APIs or custom home-grown tools.
+You can also generate your own tools by providing an OpenAPI/Swagger specification. This allows you to create private tools for your internal APIs or custom home-grown services.
 </Note>
 
-## MCP (Model Context Protocol) Integration
+### Custom Tools with SDK
 
-Connect tools to your agents using the [Model Context Protocol](https://modelcontextprotocol.io):
-### 🔌 Remote MCPs
-Use a **remote MCP** to connect your agent to an MCP server hosted externally - either in your own infrastructure or by a SaaS provider.
-
-**How it works**: You provide a URL to a running MCP server and select which tools to attach to the agent. xpander will connect to it at runtime and allow your agent to call the selected tools.
-
-### 🧱 Local MCPs
-Use a **local MCP** to run the MCP server directly alongside your agent within the xpander cloud environment.
-
-**How it works**: You define the command that runs the MCP server process. xpander launches it as part of the agent's lifecycle, connects to it automatically, and provides the tools from the MCP server to the agent.
-
-
-
-## Custom Tools
-
-Register your own functions directly in the agent's code using the `@register_tool` decorator for complete control over tool behavior and integration.
-
-Once you configure any of these options in the UI or code, the tools become available to your agent automatically through the backend configuration.
+Register your own functions directly in your agent's code using the `@register_tool` decorator for complete control over tool behavior and integration.
 
 <CodeGroup>
 
@@ -55,7 +52,7 @@ Once you configure any of these options in the UI or code, the tools become avai
 from xpander_sdk import Backend, register_tool
 from agno.agent import Agent
 
-@register_tool # Register local tools
+@register_tool
 def weather_check(location: str) -> str:
     """Check weather for a location"""
     return f"Weather in {location}: Sunny, 25°C"
@@ -65,29 +62,276 @@ agno_agent = Agent(**backend.get_args())
 agno_agent.print_response(message="What's the weather in SFO?")
 ```
 
-```python Pre-built Connectors
+```python Pre-built Tools
 from xpander_sdk import Backend
 from agno.agent import Agent
 
 backend = Backend()
-agno_agent = Agent(**backend.get_args()) 
+agno_agent = Agent(**backend.get_args())
 agno_agent.print_response(message="Check my calendar")
 ```
 </CodeGroup>
 
-The agent now has access to both pre-built connectors (configured in the Workbench) and your custom tools. The `agno_agent.tools` property contains all available functions, seamlessly combining cloud-managed connectors with your local custom tools.
+The agent has access to both pre-built tools (configured in the Workbench) and your custom tools. The `agno_agent.tools` property contains all available functions, seamlessly combining cloud-managed tools with your local custom tools.
+
+### Advanced Tool Capabilities
+
+Each tool in the Workbench can be configured with powerful optimization features. Click the Settings button next to any tool to access:
+
+<CardGroup cols={3}>
+<Card title="Scheme Editor" icon="sliders">
+Edit input and output schemas to customize tool behavior
+</Card>
+
+<Card title="Agentic RAG" icon="filter">
+Semantic querying for large payloads before loading into memory
+</Card>
+
+<Card title="Filtering & PII" icon="shield">
+Cherry-pick fields and remove sensitive data
+</Card>
+</CardGroup>
+
+**Key capabilities:**
+- **Input Schema** - Hard-code parameters, set defaults, or restrict what the agent can control
+- **Output Schema** - Filter response fields, remove PII, reduce token usage
+- **Agentic RAG** - When APIs return large datasets (1M records), agents can semantically query and retrieve only relevant items before loading into memory
+
+See the [Tool Scheme Advanced Tab](#tool-scheme-advanced-tab) section below for detailed configuration options.
 
 ## Authentication
 
-xpander provides flexible authentication options for your connectors. You can choose between:
+### Authentication Methods
 
-- **Integration user authentication** - Agents that use this connector use the same predefined credentials (useful for shared services)
-- **End-user authentication** - Each user authenticates individually when the agent needs to access their data (supported on Slack agents)
-- **No authentication** - Use connectors that don't require authentication
+<CardGroup cols={3}>
+<Card title='API Keys' icon='key'>
+Token-based authentication
+</Card>
+
+<Card title='OAuth 2.0' icon='shield-check'>
+Delegated access with user consent
+</Card>
+
+<Card title='AWS IAM Roles' icon='aws'>
+Temporary cross-account credentials
+</Card>
+</CardGroup>
+
+### Authentication Modes
+
+- **Integration User** - Shared credentials for all agents
+- **End-User** - Individual user authentication (Slack agents only)
+- **No Authentication** - For public connectors
+
+### API Key Authentication
+
+#### Configuration
+
+1. Go to **Connectors** → select your connector
+2. Click **Other auth options**
+3. Enter a connector name
+4. Select **Integration User** mode
+5. Choose **API Key** method
+6. Enter your API key
+7. Select Auth Type:
+   - **Bearer** - `Authorization: Bearer {token}`
+   - **Basic** - Base64 encoded credentials
+   - **Custom** - Define your own header
+8. Save
 
 <Frame>
-![alt text](/images/oauth.png)
+![API Key Configuration](/images/connectors/github-issues-manager/img_3.png)
 </Frame>
+
+### OAuth 2.0 Authentication
+
+#### Built-in OAuth (Recommended)
+
+1. Go to **Connectors** → select your connector
+2. Click **Sign in with {Service}**
+3. Grant permissions
+4. Done
+
+xpander manages tokens and handles refresh automatically.
+
+<Frame>
+![OAuth Flow](/images/oauth.png)
+</Frame>
+
+### AWS Cross-Account IAM Roles
+
+Use IAM roles to grant xpander temporary access to AWS services (S3, CloudWatch, Lambda, etc.) without sharing long-term credentials.
+
+#### Setup (CLI)
+
+Replace `<YOUR_ACCOUNT_ID>` with your AWS account ID:
+
+##### 1. Create the Trust Policy
+
+```bash
+cat > trust-policy.json <<'EOF'
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::211125312782:role/api-caller-sa"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "StringEquals": {
+          "sts:ExternalId": "cca29b9b-f718-43a3-8802-84e812a019e1"
+        }
+      }
+    }
+  ]
+}
+EOF
+```
+
+<Note>
+The external ID prevents the [confused deputy problem](https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html). Always use this exact value.
+</Note>
+
+##### 2. Create the IAM Role
+
+```bash
+aws iam create-role \
+  --role-name xpanderAccessRole \
+  --assume-role-policy-document file://trust-policy.json \
+  --description "Grants xpander cross-account access to AWS services"
+```
+
+##### 3. Add Permissions
+
+```bash
+cat > xpander-access-policy.json <<'EOF'
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket",
+        "cloudwatch:GetMetricStatistics",
+        "lambda:GetFunction",
+        "logs:GetLogEvents"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+
+aws iam put-role-policy \
+  --role-name xpanderAccessRole \
+  --policy-name xpanderAccessPolicy \
+  --policy-document file://xpander-access-policy.json
+```
+
+<Warning>
+In production, restrict `Resource` to specific ARNs: `"Resource": ["arn:aws:s3:::my-bucket/*"]`
+</Warning>
+
+##### 4. Get Role ARN
+
+```bash
+aws iam get-role --role-name xpanderAccessRole --query "Role.Arn" --output text
+```
+
+Output: `arn:aws:iam::<YOUR_ACCOUNT_ID>:role/xpanderAccessRole`
+
+##### 5. Connect in xpander
+
+1. Go to **Connections** → **Add new** → **AWS**
+2. Choose **Assume Role**
+3. Paste Role ARN
+4. Save
+
+<Frame>
+![AWS IAM Role Configuration](/images/aws-iam-config.png)
+</Frame>
+
+#### Common Permission Policies
+
+<AccordionGroup>
+
+<Accordion title="S3">
+
+```json
+{
+  "Effect": "Allow",
+  "Action": ["s3:GetObject", "s3:PutObject", "s3:ListBucket"],
+  "Resource": ["arn:aws:s3:::my-bucket", "arn:aws:s3:::my-bucket/*"]
+}
+```
+
+</Accordion>
+
+<Accordion title="CloudWatch Logs">
+
+```json
+{
+  "Effect": "Allow",
+  "Action": ["logs:DescribeLogGroups", "logs:GetLogEvents"],
+  "Resource": "arn:aws:logs:*:*:log-group:/aws/*"
+}
+```
+
+</Accordion>
+
+<Accordion title="Lambda">
+
+```json
+{
+  "Effect": "Allow",
+  "Action": ["lambda:InvokeFunction", "lambda:GetFunction"],
+  "Resource": "arn:aws:lambda:*:*:function:*"
+}
+```
+
+</Accordion>
+
+</AccordionGroup>
+
+## MCP (Model Context Protocol)
+
+In addition to Tools, you can connect your agents to MCP servers to provide additional capabilities. MCP servers are a standardized way to expose tools and resources using the [Model Context Protocol](https://modelcontextprotocol.io).
+
+<CardGroup cols={2}>
+<Card title="Remote MCPs" icon="cloud">
+Connect to MCP servers hosted externally - in your infrastructure or by SaaS providers
+</Card>
+
+<Card title="Local MCPs" icon="server">
+Run MCP servers directly alongside your agent in the xpander cloud environment
+</Card>
+</CardGroup>
+
+### Remote MCPs
+
+Use remote MCPs to connect your agent to an MCP server hosted externally.
+
+**How it works:**
+1. Provide a URL to a running MCP server
+2. Select which tools from the MCP server to attach to your agent
+3. xpander connects to it at runtime and makes the tools available to your agent
+
+### Local MCPs
+
+Use local MCPs to run an MCP server process directly alongside your agent.
+
+**How it works:**
+1. Define the command that runs the MCP server process
+2. xpander launches it as part of the agent's lifecycle
+3. The server runs in the xpander cloud environment
+4. Tools from the MCP server are automatically available to your agent
+
+<Note>
+To create and manage MCP servers, compose tools from multiple connectors, or use agents as MCP servers, see the [MCP Task Source](/user-guide/task-sources/mcp) documentation.
+</Note>
 
 ## Tool Dependencies
 
@@ -186,19 +430,25 @@ Individual tool details and configurations are available in the Workbench by cli
     </Accordion>
   </Tab>
   
-  <Tab title="Advanced">
-  
-    For tools that return large amounts of data, the Advanced tab provides real-time filtering capabilities. This allows the AI model to perform in-place queries on large API payloads without consuming excessive tokens.
-    
+  <Tab title="Advanced (Agentic RAG)">
+
+    The Advanced tab enables **Agentic RAG for Large Payloads** - a powerful feature that allows your agent to semantically query large API responses before loading data into memory.
+
     <Frame>
     ![Advanced Filtering Options](/static/images/screenshots/2025-03-15-22-59-29.png)
     </Frame>
-    
+
+    **How it works:**
+    1. Backend API returns large payload (e.g., 1M user records, thousands of log entries)
+    2. Agent provides a semantic query at runtime (e.g., "users in engineering department", "errors from last hour")
+    3. xpander filters the payload using semantic search
+    4. Only relevant items are loaded into agent memory
+
     This is especially useful when working with:
     - Large datasets with hundreds or thousands of records
     - APIs that return verbose responses with many fields
     - Data that requires complex filtering logic
-    
-    The AI model can specify search criteria at runtime, and only matching results will be returned, dramatically reducing token usage and improving response times.
+
+    The agent can specify search criteria at runtime, and only matching results will be returned, dramatically reducing token usage and improving response quality.
   </Tab>
 </Tabs>
