@@ -27,13 +27,15 @@ Returns `204 No Content` or `202 Accepted` on successful deletion.
 
 ```bash
 curl -X DELETE -H "x-api-key: YOUR_API_KEY" \
-  https://api.xpander.ai/v1/tasks/333897e5-1c35-4598-a6ad-af5e0c101c84
+  https://api.xpander.ai/v1/tasks/60ce6693-9c4d-45a0-a675-76cd8cbefbac
 ```
 
 ## Example Response
 
-```
-HTTP/1.1 204 No Content
+```json
+{
+  "message": "Task deleted successfully"
+}
 ```
 
-The endpoint returns `204 No Content` on successful deletion.
+Or returns HTTP status `204 No Content` with no body on successful deletion.
