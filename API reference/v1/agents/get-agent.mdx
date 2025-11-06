@@ -81,29 +81,47 @@ Get complete details about an agent including configuration, deployment status, 
 
 ```bash
 curl -X GET -H "x-api-key: YOUR_API_KEY" \
-  https://api.xpander.ai/v1/agents/2c126a59-b625-4e4a-a008-cb3eb76cc3b2
+  https://api.xpander.ai/v1/agents/0045cf07-8af6-4c69-8d13-0a13c631a5d0
 ```
 
 ## Example Response
 
 ```json
 {
-  "id": "2c126a59-b625-4e4a-a008-cb3eb76cc3b2",
-  "name": "Outreach Manager",
+  "id": "0045cf07-8af6-4c69-8d13-0a13c631a5d0",
+  "unique_name": "lavender-wolverine",
+  "name": "DevOps AI Agent",
   "icon": "🚀",
+  "avatar": "male-avatar",
   "status": "ACTIVE",
-  "organization_id": "91fbe9bc-REDACTED",
-  "deployment_type": "serverless",
-  "created_at": "2025-08-03T09:12:15.736958Z",
-  "instructions": {
-    "role": ["Always operate with a professional and clear communication style"],
-    "goal": ["Effectively coordinate outreach tasks"],
-    "general": "I am the Outreach Manager, an AI agent dedicated to managing and executing outreach campaigns..."
-  },
-  "model_provider": "openai",
-  "model_name": "gpt-4o",
+  "organization_id": "91fbe9bc-35b3-41e8-b59d-922fb5a0f031",
+  "deployment_type": "container",
   "framework": "agno",
-  "using_nemo": null,
-  "is_coordinate_mode": true
+  "model_provider": "openai",
+  "model_name": "gpt-4.1",
+  "type": "manager",
+  "delegation_type": "router",
+  "created_at": "2025-08-22T01:45:30.341088Z",
+  "instructions": {
+    "role": [
+      "users can't access your files so upload the files and use markdwon when comment with public link. ",
+      "Don't stop until complete all tools are valid.",
+      "generate_diagram can fail , retry with different code "
+    ],
+    "goal": [],
+    "general": "AI DevOps"
+  },
+  "tools": [
+    {
+      "id": "XpanderEmailServiceSendEmailWithHtmlOrTextContent",
+      "name": "Send Email with HTML Content",
+      "method": "post",
+      "path": "/operation/XpanderEmailServiceSendEmailWithHtmlOrTextContent/messaging/send_email"
+    }
+  ],
+  "knowledge_bases": [],
+  "deletable": true,
+  "using_nemo": false,
+  "webhook_url": "https://webhook.xpander.ai/?agent_id=0045cf07-8af6-4c69-8d13-0a13c631a5d0&asynchronous=false"
 }
 ```
