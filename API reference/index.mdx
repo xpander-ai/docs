@@ -1,288 +1,193 @@
 ---
-title: "xpander.ai SDK"
-description: "Backend-as-a-Service SDK for building and managing AI agents"
-icon: "microchip"
+title: "API Documentation"
+description: "REST API, Python SDK, and MCP Protocol for building and managing AI agents"
+icon: "book-open"
 mode: "wide"
 ---
 
-The **xpander.ai SDK** is a comprehensive Backend-as-a-Service (BaaS) platform for building, deploying, and managing AI agents at scale. It provides five core modules that work together to create powerful AI agent applications.
+Choose your integration method based on your use case:
 
-<Note>
-This is the **Python SDK documentation**. The SDK has been completely refactored to provide a modular, Backend-as-a-Service architecture for enterprise AI agent development.
-</Note>
-
-## Core Architecture
-
-The SDK is built around five main modules:
-
-<CardGroup cols={2}>
-  <Card title="Backend" icon="server" href="/API reference/backend">
-    **Agents Backend** - Get framework specific arguments for AI agents.
+<CardGroup cols={3}>
+  <Card title="REST API" icon="globe" href="/API reference/rest-api" color="#753CFF">
+    **Platform REST API**
+    
+    Universal HTTP endpoints for managing agents, tasks, and knowledge bases from any programming language.
   </Card>
-  <Card title="Agents" icon="robot" href="/API reference/agents">
-    **Agent Management** - Create, configure, and manage AI agents with tools, knowledge bases, and execution capabilities.
+  
+  <Card title="Python SDK" icon="code" href="/API reference/sdk" color="#9B70FF">
+    **SDK for Building Agents**
+    
+    Comprehensive Python library with decorators, event handling, and framework integration for building sophisticated AI agents.
   </Card>
-  <Card title="Tasks" icon="play" href="/API reference/tasks">
-    **Task Execution** - Handle complex task workflows, execution management, and real-time streaming.
-  </Card>
-  <Card title="Tools Repository" icon="wrench" href="/API reference/tools">
-    **Tools Integration** - Register local tools, manage external integrations, and handle MCP servers.
-  </Card>
-  <Card title="Knowledge Bases" icon="database" href="/API reference/knowledge">
-    **Knowledge Management** - Create and search knowledge repositories with semantic search capabilities.
-  </Card>
-  <Card title="Events" icon="bars-progress" href="/API reference/events">
-    **Event Handling** - Event-driven programming with decorators, real-time streaming, and background processing.
+  
+  <Card title="Model Context Protocol" icon="plug" href="/API reference/mcp" color="#4A2C99">
+    **MCP for Claude & IDEs**
+    
+    Expose agents and tools as MCP servers for Claude Desktop, Cursor, and other MCP clients.
   </Card>
 </CardGroup>
 
-## Installation
+## Quick Comparison
+
+| Feature | REST API | Python SDK | Model Context Protocol |
+|---------|----------|------------|--------------|
+| **Language Support** | Any language | Python only | Any MCP client |
+| **Primary Use Case** | Control plane operations | Building agents | Discovering & invoking agents |
+| **Setup Complexity** | Minimal (API key) | pip install | MCP client config |
+| **Best For** | CRUD operations, integrations | Agent development, workflows | IDE/AI client integration |
+| **Real-time** | Polling or webhooks | Event decorators | Server-Sent Events |
+
+## Getting Started
+
+<Steps>
+  <Step title="Get API Credentials">
+    Sign up at [app.xpander.ai](https://app.xpander.ai) and generate your API key from the dashboard
+  </Step>
+  
+  <Step title="Choose Your Integration">
+    - **REST API**: For universal access from any language
+    - **Python SDK**: For building agents in Python
+    - **MCP Protocol**: For IDE and AI client integration
+  </Step>
+  
+  <Step title="Follow the Guide">
+    Each integration method has comprehensive documentation, examples, and quick start guides
+  </Step>
+</Steps>
+
+## REST API - Platform
+
+The REST API provides complete control over your resources:
 
 ```bash
-pip install xpander-sdk
+# List agents
+curl -X GET "https://api.xpander.ai/v1/agents" \
+  -H "x-api-key: YOUR_API_KEY"
 
-# With optional dependencies
-pip install xpander-sdk[agno]  # For Agno framework support
-pip install xpander-sdk[dev]   # For development
+# Invoke an agent
+curl -X POST "https://api.xpander.ai/v1/agents/{agent_id}/invoke" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"input": {"text": "Analyze this data"}}'
 ```
 
-```python
-from xpander_sdk import Agents, Tasks, ToolsRepository, KnowledgeBases
+<Card title="Explore REST API" icon="arrow-right" href="/API reference/rest-api">
+  View complete REST API documentation with all endpoints
+</Card>
 
-# SDK automatically uses environment variables
-# Set XPANDER_API_KEY and XPANDER_ORGANIZATION_ID
+## Python SDK - Build Agents
 
-# Initialize modules directly
-agents = Agents()
-tasks = Tasks()
-tools = ToolsRepository()
-knowledge = KnowledgeBases()
-```
-
-## Key Features
-
-- **🤖 Agent Management**: Create, configure, and manage AI agents with comprehensive lifecycle control
-- **⚡ Task Execution**: Handle complex multi-step workflows with real-time event streaming
-- **🔧 Tools Integration**: Register local tools and integrate with external services via MCP
-- **📚 Knowledge Bases**: Semantic search across document repositories with AI-powered insights
-- **🎯 Event-Driven**: Event handling with decorators for responsive agent applications
-- **🔄 Async/Sync Support**: Both asynchronous and synchronous interfaces for flexibility
-- **📊 Real-time Monitoring**: Track agent performance, metrics, and execution in real-time
-- **🏗️ Modular Architecture**: Five independent modules that work seamlessly together
-
-## Quick Start Example
-
-### Asynchronous Usage
+The Python SDK enables rapid agent development with powerful abstractions:
 
 ```python
-from xpander_sdk import Agents
+from xpander_sdk import Agents, on_task
 
-# Initialize modules (automatically uses environment variables)
+# Initialize SDK
 agents = Agents()
 
-# List all agents
-agent_list = await agents.alist()
-
-# Load a specific agent
-agent = await agents.aget("agent-id")
-
-# Create and execute a task
-task = await agent.acreate_task(
-    prompt="Analyze this data",
-    file_urls=["https://example.com/data.csv"],
-    events_streaming=True
-)
-
-# Stream task events
-async for event in task.aevents():
-    print(f"Event: {event.type} at {event.time}")
-    if event.type == "task_finished":
-        print(f"Result: {event.data.result}")
-        break
-```
-
-### Synchronous Usage
-
-```python
-from xpander_sdk import Agents
-
-# Initialize modules
-agents = Agents()
-
-# List all agents
-agent_list = agents.list()
-
-# Load a specific agent
-agent = agents.get("agent-id")
-
-# Create and execute a task
-task = agent.create_task(
-    prompt="Analyze this data",
-    file_urls=["https://example.com/data.csv"]
-)
-
-# Check task status
-print(f"Task Status: {task.status}")
-print(f"Task Result: {task.result}")
-```
-
-## Event-Driven Development
-
-The SDK supports event-driven programming with decorators for task handling and lifecycle management:
-
-### Asynchronous Usage
-
-```python
-from xpander_sdk import on_task, Events
-
-# Define task handler using decorator
+# Define task handler
 @on_task
 async def handle_task(task):
-    print(f"Processing task: {task.id}")
-    
-    # Your custom logic here
-    task.result = "Task processed successfully"
-    return task
-
-# Start event listener
-events = Events()
-await events.start(on_execution_request=handle_task)
-```
-
-### Synchronous Usage
-
-```python
-from xpander_sdk import on_task
-
-# Define task handler using decorator
-@on_task
-def handle_task(task):
-    print(f"Processing task: {task.id}")
-    
-    # Your custom logic here
-    task.result = "Task processed successfully"
-    return task
-```
-
-### Lifecycle Management
-
-```python
-from xpander_sdk import on_boot, on_shutdown, on_task
-
-# Initialize resources before task processing
-@on_boot
-async def initialize_resources():
-    print("Setting up database and cache...")
-    # Initialization logic here
-
-# Handle tasks with initialized resources
-@on_task
-async def process_task(task):
-    print(f"Processing task: {task.id}")
+    print(f"Processing: {task.id}")
     task.result = "Task completed"
     return task
 
-# Clean up during shutdown
-@on_shutdown
-async def cleanup_resources():
-    print("Cleaning up resources...")
-    # Cleanup logic here
+# List and invoke agents
+agent = await agents.aget("agent-id")
+task = await agent.acreate_task(prompt="Analyze data")
 ```
 
-## Module Documentation
+<Card title="Explore Python SDK" icon="arrow-right" href="/API reference/sdk">
+  View complete SDK documentation with modules and examples
+</Card>
 
-<CardGroup cols={2}>
-  <Card title="Agents Module" icon="robot" href="/API reference/agents">
-    Agent creation, management, and execution with tools and knowledge bases
-  </Card>
-  <Card title="Tasks Module" icon="play" href="/API reference/tasks">
-    Task lifecycle management, execution control, and real-time streaming
-  </Card>
-  <Card title="Tools Repository" icon="wrench" href="/API reference/tools">
-    Local tool registration, external integrations, and MCP server management
-  </Card>
-  <Card title="Knowledge Bases" icon="database" href="/API reference/knowledge">
-    Document management and semantic search across knowledge repositories
-  </Card>
-  <Card title="Events Module" icon="bars-progress" href="/API reference/events">
-    Event-driven programming, decorators, and background task processing
-  </Card>
-  <Card title="Configuration" icon="gear" href="/API reference/configuration">
-    SDK configuration, authentication, and environment setup
-  </Card>
-  <Card title="Types" icon="code" href="/API reference/types">
-    Data types, enumerations, and models used across the SDK
-  </Card>
-</CardGroup>
+## Model Context Protocol - Expose to Claude & IDEs
+
+Connect your agents and tools to Claude Desktop, Cursor, and other MCP clients:
+
+```json
+{
+  "mcpServers": {
+    "xpander.ai": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://api.xpander.ai/mcp/",
+        "--header",
+        "x-api-key:YOUR_API_KEY"
+      ]
+    }
+  }
+}
+```
+
+<Card title="Explore MCP Integration" icon="arrow-right" href="/API reference/mcp">
+  View complete MCP setup guide with examples
+</Card>
 
 ## Authentication
 
-The SDK supports multiple authentication methods:
+All integration methods use API key authentication:
 
-<Tabs>
-  <Tab title="Environment Variables (Recommended)">
-    ```bash
-    export XPANDER_API_KEY="your-api-key"
-    export XPANDER_ORGANIZATION_ID="your-org-id"
-    export XPANDER_BASE_URL="https://inbound.xpander.ai"  # Optional
-    ```
-    
-    ```python
-    from xpander_sdk import Configuration
-    
-    # Automatically reads from environment variables
-    config = Configuration()
-    ```
-  </Tab>
-  <Tab title="Explicit Configuration">
-    ```python
-    from xpander_sdk import Configuration
-    
-    config = Configuration(
-        api_key="your-api-key",
-        organization_id="your-org-id",
-        base_url="https://inbound.xpander.ai"  # Optional
-    )
-    ```
-  </Tab>
-  <Tab title="From File">
-    ```bash
-    # .env file
-    XPANDER_API_KEY=your-api-key
-    XPANDER_ORGANIZATION_ID=your-org-id
-    ```
-    
-    ```python
-    from dotenv import load_dotenv
-    from xpander_sdk import Configuration
-    
-    load_dotenv()
-    config = Configuration()
-    ```
-  </Tab>
-</Tabs>
-
-## Error Handling
-
-```python
-from xpander_sdk.exceptions import ModuleException
-
-try:
-    agent = await agents.aget("invalid-agent-id")
-except ModuleException as e:
-    print(f"Error {e.status_code}: {e.description}")
+```bash
+export XPANDER_API_KEY="your-api-key"
 ```
 
-## Additional Resources
+Get your API key from the [dashboard](https://app.xpander.ai).
+
+## Common Use Cases
+
+<AccordionGroup>
+  <Accordion title="Building a Multi-Agent System" icon="robot">
+    **Use Python SDK** for building agents with complex workflows, tool integrations, and event handling. The SDK provides decorators and lifecycle management for sophisticated agent architectures.
+  </Accordion>
+  
+  <Accordion title="Integrating with Existing Applications" icon="globe">
+    **Use REST API** for integrating xpander into existing applications written in any language. Perfect for microservices, web apps, and mobile applications.
+  </Accordion>
+  
+  <Accordion title="IDE and AI Client Access" icon="plug">
+    **Use Model Context Protocol** for accessing agents from Claude Desktop, Cursor, VSCode, or any MCP-compatible client. Enables seamless agent discovery and invocation from your development environment.
+  </Accordion>
+  
+  <Accordion title="Hybrid Approach" icon="layer-group">
+    **Combine all three**: Build agents with the SDK, manage them via REST API, and access them through MCP clients. All methods work together seamlessly.
+  </Accordion>
+</AccordionGroup>
+
+## API Resources
+
+<CardGroup cols={2}>
+  <Card title="REST API Endpoints" icon="list" href="/API reference/v1/agents/list-agents">
+    Browse all REST API endpoints
+  </Card>
+  
+  <Card title="SDK Modules" icon="cube" href="/API reference/agents">
+    Explore SDK modules and classes
+  </Card>
+  
+  <Card title="Examples" icon="code" href="/Examples">
+    View code examples and tutorials
+  </Card>
+  
+  <Card title="User Guide" icon="book" href="/user-guide">
+    Complete platform documentation
+  </Card>
+</CardGroup>
+
+## Support & Community
 
 <CardGroup cols={3}>
-  <Card title="Getting Started" icon="rocket" href="/user-guide/index">
-    Begin building with xpander.ai
+  <Card title="Slack Community" icon="slack" href="https://join.slack.com/t/xpandercommunity/shared_invite/zt-2mt2xkxkz-omM7f~_h2jcuzFudrYtZQQ">
+    Join our community
   </Card>
-  <Card title="Tutorials" icon="graduation-cap" href="/Examples/index">
-    Step-by-step guides and examples
+  
+  <Card title="Discord" icon="discord" href="https://discord.gg/CUcp4WWh5g">
+    Developer discussions
   </Card>
-  <Card title="GitHub Repository" icon="github" href="https://github.com/xpander-ai/xpander-sdk">
-    View source code and contribute
+  
+  <Card title="GitHub" icon="github" href="https://github.com/xpander-ai">
+    View source code
   </Card>
 </CardGroup>

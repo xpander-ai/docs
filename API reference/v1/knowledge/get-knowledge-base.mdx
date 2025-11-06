@@ -1,0 +1,64 @@
+---
+title: "Get Knowledge Base"
+openapi: "GET /v1/knowledge/{kb_id}"
+description: "Get knowledge base details by ID"
+---
+
+Retrieve detailed information about a specific knowledge base including its configuration, document count, and metadata.
+
+## Path Parameters
+
+<ParamField path="kb_id" type="string" required>
+  Unique identifier of the knowledge base (UUID format)
+</ParamField>
+
+## Response
+
+<ResponseField name="id" type="string">
+  Unique identifier for the knowledge base (UUID)
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  Display name of the knowledge base
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Optional description of the knowledge base purpose (can be null)
+</ResponseField>
+
+<ResponseField name="type" type="string">
+  Knowledge base type (e.g., `managed`)
+</ResponseField>
+
+<ResponseField name="organization_id" type="string">
+  UUID of the organization that owns this knowledge base
+</ResponseField>
+
+<ResponseField name="agent_id" type="string">
+  UUID of the agent this knowledge base is attached to (can be null)
+</ResponseField>
+
+<ResponseField name="total_documents" type="integer">
+  Total number of documents in the knowledge base
+</ResponseField>
+
+## Example Request
+
+```bash
+curl -X GET -H "x-api-key: YOUR_API_KEY" \
+  https://api.xpander.ai/v1/knowledge/73dc30ca-bdbf-42f7-a39f-93aff4f8522e
+```
+
+## Example Response
+
+```json
+{
+  "id": "73dc30ca-bdbf-42f7-a39f-93aff4f8522e",
+  "name": "PeopleDB",
+  "description": "Dataset contains data about people and their phone number",
+  "type": "managed",
+  "organization_id": "91fbe9bc-REDACTED",
+  "agent_id": null,
+  "total_documents": 0
+}
+```

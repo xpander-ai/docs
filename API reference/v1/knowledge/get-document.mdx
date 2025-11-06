@@ -1,0 +1,90 @@
+---
+title: "Get Knowledge Base Document"
+openapi: "GET /v1/knowledge/{kb_id}/documents/{document_id}"
+description: "Get detailed information about a specific document in a knowledge base"
+---
+
+Retrieve complete details about a specific document including metadata, processing status, and content information.
+
+## Path Parameters
+
+<ParamField path="kb_id" type="string" required>
+  Unique identifier of the knowledge base (UUID format)
+</ParamField>
+
+<ParamField path="document_id" type="string" required>
+  Unique identifier of the document (UUID format)
+</ParamField>
+
+## Response
+
+<ResponseField name="kb_id" type="string">
+  Knowledge base ID this document belongs to
+</ResponseField>
+
+<ResponseField name="id" type="string">
+  Unique identifier for the document (UUID)
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  Document name (nullable)
+</ResponseField>
+
+<ResponseField name="document_url" type="string">
+  URL to access the document file
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Processing status: `pending`, `processing`, `completed`, `failed`
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  ISO 8601 timestamp of when the document was added
+</ResponseField>
+
+<ResponseField name="updated_at" type="string">
+  ISO 8601 timestamp of last update
+</ResponseField>
+
+<ResponseField name="metadata" type="object">
+  Additional document metadata (file type, size, etc.)
+</ResponseField>
+
+<ResponseField name="chunks_count" type="integer">
+  Number of text chunks extracted from the document
+</ResponseField>
+
+## Example Request
+
+```bash
+curl -X GET -H "x-api-key: YOUR_API_KEY" \
+  "https://api.xpander.ai/v1/knowledge/e21563bd-7c02-4f8f-9520-8c854f5c2ee6/documents/c7e44aac-e347-481d-bef8-8f230adf1a74"
+```
+
+## Example Response
+
+```json
+{
+  "kb_id": "4be18afd-ccbd-4092-8686-75e9df2a1bec",
+  "id": "043210de-52df-4bfd-94bb-c809fcd8d77a",
+  "document_url": "https://raw.githubusercontent.com/xpander-ai/xpander-sdk/main/README.md",
+  "organization_id": "91fbe9bc-35b3-41e8-b59d-922fb5a0f031",
+  "raw_data": "# xpander.ai SDK\n\n[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)]...",
+  "local_env": false,
+  "sync": false
+}
+```
+
+**Note:** The `raw_data` field contains the complete document content. This can be very large for documents like PDFs or long markdown files.
+
+## Notes
+
+- Use this endpoint to check if a document has been fully processed
+- The `chunks_count` field indicates how many searchable chunks were extracted
+- Documents with `status: "failed"` may need to be re-uploaded
+
+## See Also
+
+- [List Documents](/API reference/v1/knowledge/list-documents) - List all documents in a knowledge base
+- [Add Documents](/API reference/v1/knowledge/add-documents) - Add new documents
+- [Delete Document](/API reference/v1/knowledge/delete-document) - Remove a document

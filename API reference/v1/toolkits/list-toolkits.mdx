@@ -1,0 +1,59 @@
+---
+title: "List Toolkits"
+openapi: "GET /v1/toolkits"
+description: "Returns a paginated list of available toolkits"
+---
+
+Retrieve a paginated list of all available toolkits in your organization. Toolkits are collections of related tools that agents can use to perform specific tasks.
+
+## Query Parameters
+
+<ParamField query="page" type="integer">
+  Page number for pagination (default: 1)
+</ParamField>
+
+<ParamField query="per_page" type="integer">
+  Number of items per page (default: 20, max: 100)
+</ParamField>
+
+## Response
+
+<ResponseField name="items" type="array">
+  Array of toolkit objects
+  <Expandable title="Toolkit Object">
+    <ResponseField name="id" type="string">
+      Unique identifier for the toolkit (UUID)
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      Display name of the toolkit
+    </ResponseField>
+    <ResponseField name="description" type="string">
+      Description of the toolkit's purpose
+    </ResponseField>
+    <ResponseField name="tools" type="array">
+      Array of tool identifiers in this toolkit
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="total" type="integer">
+  Total number of toolkits
+</ResponseField>
+
+<ResponseField name="page" type="integer">
+  Current page number
+</ResponseField>
+
+<ResponseField name="per_page" type="integer">
+  Number of items per page
+</ResponseField>
+
+<ResponseField name="total_pages" type="integer">
+  Total number of pages
+</ResponseField>
+
+## Workaround
+
+Until this endpoint is fixed:
+1. View available toolkits through the web dashboard at https://app.xpander.ai
+2. Configure agent tools through the dashboard interface

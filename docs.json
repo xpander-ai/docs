@@ -124,13 +124,72 @@
       },
       {
         "tab": "API Reference",
+        "openapi": "API reference/openapi.json",
         "groups": [
           {
             "group": "Overview",
-            "pages": ["API reference/index"]
+            "pages": [
+              "API reference/index",
+              "API reference/rest-api",
+              "API reference/sdk",
+              "API reference/mcp"
+            ]
           },
           {
-            "group": "Core Modules",
+            "group": "REST API - Agents",
+            "pages": [
+              "API reference/v1/agents/list-agents",
+              "API reference/v1/agents/create-agent",
+              "API reference/v1/agents/get-agent",
+              "API reference/v1/agents/update-agent",
+              "API reference/v1/agents/deploy-agent",
+              "API reference/v1/agents/delete-agent",
+              "API reference/v1/agents/invoke-sync",
+              "API reference/v1/agents/invoke-async",
+              "API reference/v1/agents/invoke-stream",
+              "API reference/v1/agents/get-agent-tasks"
+            ]
+          },
+          {
+            "group": "REST API - Tasks",
+            "pages": [
+              "API reference/v1/tasks/list-tasks",
+              "API reference/v1/tasks/get-task",
+              "API reference/v1/tasks/delete-task",
+              "API reference/v1/tasks/get-thread"
+            ]
+          },
+          {
+            "group": "REST API - Knowledge",
+            "pages": [
+              "API reference/v1/knowledge/list-knowledge-bases",
+              "API reference/v1/knowledge/create-knowledge-base",
+              "API reference/v1/knowledge/get-knowledge-base",
+              "API reference/v1/knowledge/update-knowledge-base",
+              "API reference/v1/knowledge/delete-knowledge-base",
+              "API reference/v1/knowledge/search-knowledge-base",
+              "API reference/v1/knowledge/list-documents",
+              "API reference/v1/knowledge/add-documents",
+              "API reference/v1/knowledge/get-document",
+              "API reference/v1/knowledge/delete-document"
+            ]
+          },
+          {
+            "group": "REST API - Toolkits",
+            "pages": [
+              "API reference/v1/toolkits/list-toolkits",
+              "API reference/v1/toolkits/get-toolkit-tools",
+              "API reference/v1/toolkits/invoke-tool"
+            ]
+          },
+          {
+            "group": "REST API - Misc",
+            "pages": [
+              "API reference/v1/misc/get-database"
+            ]
+          },
+          {
+            "group": "Python SDK - Core Modules",
             "pages": [
               "API reference/agents/index",
               "API reference/tasks/index",
@@ -141,7 +200,7 @@
             ]
           },
           {
-            "group": "API Reference",
+            "group": "Python SDK - API Reference",
             "pages": [
               "API reference/agents/api-reference/index",
               "API reference/tasks/api-reference/index",

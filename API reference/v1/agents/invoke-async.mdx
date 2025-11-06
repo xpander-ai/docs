@@ -1,0 +1,365 @@
+---
+title: "Invoke Agent (Async)"
+openapi: "POST /v1/agents/{agent_id}/invoke/async"
+description: "Invoke an AI agent asynchronously. Returns immediately with task ID for later polling."
+---
+
+Execute an agent task asynchronously. This endpoint returns immediately with a task ID that can be used to poll for results. Best for long-running tasks or when you need non-blocking execution.
+
+## Path Parameters
+
+<ParamField path="agent_id" type="string" required>
+  Unique identifier of the agent to invoke (UUID format)
+</ParamField>
+
+## Request Body
+
+<ParamField body="input" type="object" required>
+  Agent execution input containing the task details
+  <Expandable title="Input Object">
+    <ParamField body="text" type="string">
+      The message or task to send to the agent. Either `text` or `files` must be provided.
+    </ParamField>
+    <ParamField body="files" type="array">
+      Array of file URLs or file identifiers to process. Supports documents (PDF, DOCX, TXT), images (JPG, PNG), spreadsheets (CSV, XLSX), and more.
+      
+      **Example**: `["https://example.com/doc.pdf", "file-id-12345"]`
+    </ParamField>
+    <ParamField body="user" type="object">
+      User information for personalization and audit trail
+      <Expandable title="User Object">
+        <ParamField body="id" type="string">
+          Unique user identifier
+        </ParamField>
+        <ParamField body="first_name" type="string">
+          User's first name
+        </ParamField>
+        <ParamField body="last_name" type="string">
+          User's last name
+        </ParamField>
+        <ParamField body="email" type="string" required>
+          User's email address (required if user object is provided)
+        </ParamField>
+        <ParamField body="additional_attributes" type="object">
+          Custom user metadata (e.g., `{"customer_tier": "premium", "preferences": {...}}`)
+        </ParamField>
+      </Expandable>
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="output_format" type="string">
+  Desired output format. Valid values: `text` | `json` | `markdown`
+  
+  **Default**: `text`
+  
+  - `text`: Plain text response
+  - `json`: Structured JSON output (use with `output_schema` for validation)
+  - `markdown`: Formatted markdown response
+</ParamField>
+
+<ParamField body="output_schema" type="object">
+  JSON Schema to validate and structure the agent's output. When provided with `output_format: "json"`, the agent will return data conforming to this schema.
+  
+  **Example**:
+  ```json
+  {
+    "type": "object",
+    "required": ["name", "email"],
+    "properties": {
+      "name": {"type": "string"},
+      "email": {"type": "string", "format": "email"}
+    }
+  }
+  ```
+</ParamField>
+
+<ParamField body="additional_context" type="string">
+  Additional context to guide the agent's behavior. Use this to specify tone, audience, constraints, or background information.
+  
+  **Example**: `"This is for executive leadership. Use professional tone and focus on business impact."`
+</ParamField>
+
+<ParamField body="expected_output" type="string">
+  Description of the expected output format, length, or structure. Helps guide the agent to produce the desired result.
+  
+  **Example**: `"A 500-word summary with 3 key recommendations and supporting data."`
+</ParamField>
+
+<ParamField body="title" type="string">
+  Human-readable title for the task. Useful for identification and organization in task lists.
+  
+  **Example**: `"Q4 Sales Analysis"`
+</ParamField>
+
+<ParamField body="parent_execution_id" type="string">
+  UUID of the parent task if this is a sub-task. Used for multi-agent workflows and task hierarchies.
+  
+  **Example**: `"550e8400-e29b-41d4-a716-446655440000"`
+</ParamField>
+
+<ParamField body="triggering_agent_id" type="string">
+  UUID of the agent that triggered this task. Used for tracking agent-to-agent delegation.
+  
+  **Example**: `"7c9e6679-7425-40de-944b-e07fc1f90ae7"`
+</ParamField>
+
+<ParamField body="payload_extension" type="object">
+  Custom metadata to attach to the task. Any valid JSON object. Useful for tracking, routing, or application-specific data.
+  
+  **Example**:
+  ```json
+  {
+    "request_id": "REQ-2025-001",
+    "priority": "high",
+    "department": "sales",
+    "tags": ["urgent", "vip-customer"]
+  }
+  ```
+</ParamField>
+
+<ParamField body="events_streaming" type="boolean">
+  Enable detailed event streaming for progress tracking. When `true`, provides granular events about tool calls and execution steps.
+  
+  **Default**: `false`
+  
+  **Note**: Only effective when using the `/invoke/stream` endpoint.
+</ParamField>
+
+<ParamField body="mcp_servers" type="array">
+  Array of Model Context Protocol (MCP) server configurations to use during execution. Enables integration with external tools and services.
+  
+  **Example**:
+  ```json
+  [
+    {
+      "name": "web-search",
+      "config": {"provider": "google", "max_results": 10}
+    }
+  ]
+  ```
+</ParamField>
+
+<ParamField body="source" type="string">
+  Identifier for the source system or application that created this task. Useful for analytics and debugging.
+  
+  **Example**: `"mobile-app"` | `"web-dashboard"` | `"api-integration"`
+</ParamField>
+
+<ParamField body="id" type="string">
+  Custom task ID. If not provided, a UUID will be automatically generated. Use this to map tasks to external system IDs.
+  
+  **Example**: `"custom-task-12345"`
+</ParamField>
+
+<ParamField body="worker_id" type="string">
+  Identifier for the worker or process handling this task. Used for distributed execution tracking.
+</ParamField>
+
+<ParamField body="run_locally" type="boolean">
+  Execute the task locally instead of in the cloud. Used for development and testing.
+  
+  **Default**: `false`
+</ParamField>
+
+## Response
+
+Returns a complete `AgentExecution` object:
+
+<ResponseField name="id" type="string">
+  Unique identifier for the created task (UUID) - use this to poll for results
+</ResponseField>
+
+<ResponseField name="agent_id" type="string">
+  UUID of the agent executing this task
+</ResponseField>
+
+<ResponseField name="organization_id" type="string">
+  UUID of the organization
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Initial task status: `pending`, `executing`, `completed`, `failed`
+</ResponseField>
+
+<ResponseField name="input" type="object">
+  The input object that was provided
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  ISO 8601 timestamp of when the task was created
+</ResponseField>
+
+<ResponseField name="result" type="string">
+  Task result (null until completed)
+</ResponseField>
+
+<ResponseField name="output_format" type="string">
+  The output format specified
+</ResponseField>
+
+<ResponseField name="output_schema" type="object">
+  The output schema if provided
+</ResponseField>
+
+## Example Requests
+
+### Basic Request
+
+```bash
+curl -X POST -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": {
+      "text": "What is the weather in San Francisco?"
+    }
+  }' \
+  https://api.xpander.ai/v1/agents/{agent_id}/invoke/async
+```
+
+### Structured JSON Output
+
+```bash
+curl -X POST -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": {
+      "text": "Extract contact info: John Doe, john@example.com, (555) 123-4567"
+    },
+    "output_format": "json",
+    "output_schema": {
+      "type": "object",
+      "required": ["name", "email", "phone"],
+      "properties": {
+        "name": {"type": "string"},
+        "email": {"type": "string", "format": "email"},
+        "phone": {"type": "string"}
+      }
+    }
+  }' \
+  https://api.xpander.ai/v1/agents/{agent_id}/invoke/async
+```
+
+### File Processing with User Context
+
+```bash
+curl -X POST -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": {
+      "text": "Analyze these documents and summarize key findings",
+      "files": [
+        "https://example.com/report.pdf",
+        "https://example.com/data.csv"
+      ],
+      "user": {
+        "id": "user-123",
+        "first_name": "Jane",
+        "last_name": "Smith",
+        "email": "jane.smith@company.com",
+        "additional_attributes": {
+          "department": "analytics",
+          "role": "senior_analyst"
+        }
+      }
+    },
+    "title": "Q4 Report Analysis",
+    "additional_context": "Focus on year-over-year trends and regional performance",
+    "expected_output": "Executive summary with 3-5 key insights"
+  }' \
+  https://api.xpander.ai/v1/agents/{agent_id}/invoke/async
+```
+
+### Multi-Agent Workflow
+
+```bash
+curl -X POST -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": {
+      "text": "Process this sub-task"
+    },
+    "parent_execution_id": "parent-task-uuid",
+    "triggering_agent_id": "coordinator-agent-uuid",
+    "payload_extension": {
+      "workflow_id": "WF-2025-001",
+      "step": 2,
+      "total_steps": 5
+    }
+  }' \
+  https://api.xpander.ai/v1/agents/{agent_id}/invoke/async
+```
+
+### Advanced: Full Feature Set
+
+```bash
+curl -X POST -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": {
+      "text": "Research AI trends and create a presentation",
+      "files": [],
+      "user": {
+        "id": "analyst-001",
+        "email": "analyst@company.com"
+      }
+    },
+    "output_format": "markdown",
+    "title": "AI Trends Research",
+    "additional_context": "Target audience: C-level executives. Professional tone.",
+    "expected_output": "10-slide presentation outline with key points",
+    "payload_extension": {
+      "project_id": "PROJ-2025-042",
+      "priority": "high",
+      "deadline": "2025-11-15"
+    },
+    "mcp_servers": [
+      {
+        "name": "web-search",
+        "config": {"provider": "google"}
+      }
+    ],
+    "source": "research-portal"
+  }' \
+  https://api.xpander.ai/v1/agents/{agent_id}/invoke/async
+```
+
+## Example Response
+
+```json
+{
+  "id": "a228b363-1563-4c76-9671-30398c4f2b92",
+  "agent_id": "2c126a59-b625-4e4a-a008-cb3eb76cc3b2",
+  "organization_id": "91fbe9bc-35b3-41e8-b59d-922fb5a0f031",
+  "status": "pending",
+  "input": {
+    "text": "Analyze this data and provide insights",
+    "files": [],
+    "user": null
+  },
+  "created_at": "2025-11-06T02:47:17.244054Z",
+  "result": null,
+  "output_format": "json",
+  "title": "Data Analysis Task"
+}
+```
+
+## Polling for Results
+
+Use the task ID with the [Get Task](/api-reference-rest/tasks/get-task) endpoint to check status and retrieve results:
+
+```bash
+# Poll for results (repeat until status is "completed")
+curl -H "x-api-key: YOUR_API_KEY" \
+  https://api.xpander.ai/v1/tasks/{task_id}
+```
+
+## 
+See Also
+
+- [Advanced Use Cases](/http-api/advanced-use-cases) - Comprehensive guide to all advanced features including structured output, multi-agent workflows, file processing, MCP integration, and more
+- [Invoke Agent (Sync)](/api-reference-rest/agents/invoke-sync) - For quick tasks that complete in under 30 seconds
+- [Invoke Agent (Stream)](/api-reference-rest/agents/invoke-stream) - For real-time streaming responses
+- [Get Task](/api-reference-rest/tasks/get-task) - Poll for task status and retrieve results
+- [List Tasks](/api-reference-rest/tasks/list-tasks) - Query and filter task history
+- [Get Agent Tasks](/api-reference-rest/agents/list-agents) - Get all tasks for a specific agent

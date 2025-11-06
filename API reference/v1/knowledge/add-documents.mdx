@@ -1,0 +1,123 @@
+---
+title: "Add Documents to Knowledge Base"
+openapi: "POST /v1/knowledge/{kb_id}/documents"
+description: "Add one or more documents to a knowledge base"
+---
+
+Upload documents to a knowledge base by providing URLs. The documents will be downloaded, processed, and indexed for semantic search.
+
+## Path Parameters
+
+<ParamField path="kb_id" type="string" required>
+  Unique identifier of the knowledge base (UUID format)
+</ParamField>
+
+## Request Body
+
+<ParamField body="document_urls" type="array" required>
+  Array of document URLs to add to the knowledge base
+  
+  **Supported formats:**
+  - PDF documents
+  - Microsoft Word (.docx, .doc)
+  - Text files (.txt, .md)
+  - Web pages (HTML)
+  - CSV and Excel files
+  - And more...
+  
+  **Example:**
+  ```json
+  {
+    "document_urls": [
+      "https://example.com/document.pdf",
+      "https://example.com/guide.docx",
+      "https://example.com/data.csv"
+    ]
+  }
+  ```
+</ParamField>
+
+## Response
+
+Returns an array of created document objects:
+
+<ResponseField name="kb_id" type="string">
+  Knowledge base ID
+</ResponseField>
+
+<ResponseField name="id" type="string">
+  Unique identifier for the document (UUID)
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  Document name extracted from URL (nullable)
+</ResponseField>
+
+<ResponseField name="document_url" type="string">
+  URL of the document
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Initial processing status: `pending`
+</ResponseField>
+
+## Example Request
+
+```bash
+curl -X POST -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "document_urls": [
+      "https://raw.githubusercontent.com/xpander-ai/xpander-sdk/main/README.md"
+    ]
+  }' \
+  https://api.xpander.ai/v1/knowledge/4be18afd-ccbd-4092-8686-75e9df2a1bec/documents
+```
+
+## Example Response
+
+```json
+[
+  {
+    "kb_id": "4be18afd-ccbd-4092-8686-75e9df2a1bec",
+    "id": null,
+    "name": null,
+    "document_url": "https://raw.githubusercontent.com/xpander-ai/xpander-sdk/main/README.md"
+  }
+]
+```
+
+**Note:** The `id` field is `null` initially. The document is queued for processing. After a few seconds, you can retrieve the document list to get the assigned ID.
+
+## Processing Flow
+
+1. **Upload** - Documents are queued for processing
+2. **Download** - System downloads documents from provided URLs
+3. **Extract** - Text content is extracted from documents
+4. **Chunk** - Content is split into searchable chunks
+5. **Embed** - Chunks are converted to vector embeddings
+6. **Index** - Embeddings are stored in the vector database
+
+Processing typically takes 10-60 seconds per document depending on size.
+
+## Supported File Types
+
+- **Documents:** PDF, DOCX, DOC, TXT, MD, RTF
+- **Spreadsheets:** CSV, XLSX, XLS
+- **Presentations:** PPTX, PPT
+- **Web:** HTML, XML
+- **Code:** JSON, YAML, various programming languages
+
+## Notes
+
+- Documents must be publicly accessible via HTTP/HTTPS
+- Maximum file size: 50MB per document
+- Processing happens asynchronously - use [Get Document](/API reference/v1/knowledge/get-document) to check status
+- Duplicate URLs will create separate document entries
+
+## See Also
+
+- [List Documents](/API reference/v1/knowledge/list-documents) - View all documents in a knowledge base
+- [Get Document](/API reference/v1/knowledge/get-document) - Check document processing status
+- [Delete Document](/API reference/v1/knowledge/delete-document) - Remove documents
+- [Search Knowledge Base](/API reference/v1/knowledge/search-knowledge-base) - Search indexed documents

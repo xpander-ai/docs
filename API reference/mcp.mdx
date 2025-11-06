@@ -1,0 +1,245 @@
+---
+title: "Model Context Protocol"
+description: "Expose agents and tools as MCP servers for Claude Desktop, Cursor, and other MCP clients"
+icon: "plug"
+mode: "wide"
+---
+
+The Model Context Protocol (MCP) integration allows you to expose your agents and tools as MCP servers that can be connected to Claude Desktop, Cursor, VSCode, and any MCP-compatible client.
+
+## Overview
+
+xpander provides three ways to use MCP:
+
+<CardGroup cols={3}>
+  <Card title="MCP Composition" icon="puzzle-piece">
+    Pick and choose tools from multiple connectors and expose them as a single MCP server
+  </Card>
+  
+  <Card title="Agents as MCP" icon="robot">
+    Expose your AI agents as MCP servers that can be invoked from MCP clients
+  </Card>
+  
+  <Card title="Single Connector" icon="plug">
+    Expose an entire connector (like Slack or GitHub) as an MCP server
+  </Card>
+</CardGroup>
+
+## MCP Server Endpoints
+
+Two endpoints are available:
+
+**Standard MCP:**
+```
+https://api.xpander.ai/mcp/
+```
+
+**Server-Sent Events (SSE):**
+```
+https://api.xpander.ai/mcp/sse
+```
+
+Authentication is provided via your API key in the request headers.
+
+<Note>
+OAuth authentication (without API key) is coming soon!
+</Note>
+
+<Warning>
+Your API key is a sensitive credential. Never share it publicly or commit it to version control.
+</Warning>
+
+## Configuration for Claude Desktop
+
+Add the MCP server to Claude Desktop by editing:
+
+```
+~/Library/Application Support/Claude/claude_desktop_config.json
+```
+
+Basic configuration format:
+
+```json
+{
+  "mcpServers": {
+    "xpander.ai": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://api.xpander.ai/mcp/",
+        "--header",
+        "x-api-key:YOUR_API_KEY"
+      ]
+    }
+  }
+}
+```
+
+Replace `YOUR_API_KEY` with your actual API key from [app.xpander.ai](https://app.xpander.ai).
+
+## Quick Setup
+
+<Steps>
+  <Step title="Get Your API Key">
+    Get your API key from [app.xpander.ai](https://app.xpander.ai)
+  </Step>
+  
+  <Step title="Add to Claude Desktop">
+    Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
+    
+    ```json
+    {
+      "mcpServers": {
+        "xpander.ai": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "mcp-remote@latest",
+            "https://api.xpander.ai/mcp/",
+            "--header",
+            "x-api-key:YOUR_API_KEY"
+          ]
+        }
+      }
+    }
+    ```
+  </Step>
+  
+  <Step title="Restart Claude Desktop">
+    Restart Claude Desktop to load the new configuration
+  </Step>
+  
+  <Step title="Test the Connection">
+    Ask Claude: "What agents are available?" or "List my tools"
+  </Step>
+</Steps>
+
+## Available Tools
+
+Once connected, Claude Desktop and other MCP clients can use these tools:
+
+- **List agents** - List all available agents in your organization
+- **Invoke agent** - Execute an agent task
+- **Create task** - Create a new task for an agent
+- **Get task** - Retrieve task details and status
+- **Get agent threads** - Get conversation threads for an agent
+- **Get thread messages** - Retrieve messages from a specific thread
+
+## Use Case 1: MCP Composition
+
+Create custom MCP servers with specific tools from the xpander console at [app.xpander.ai](https://app.xpander.ai):
+
+1. Go to **MCP Servers** → **New MCP Server**
+2. Select specific tools from multiple connectors
+3. Get a custom MCP URL for that composition
+4. Use the same configuration format with the custom URL
+
+## Use Case 2: Agents as MCP
+
+Enable MCP for specific agents:
+
+1. In agent settings, go to **Task Sources** tab
+2. Enable the **MCP** toggle
+3. Get agent-specific MCP configuration
+4. Claude can invoke that specific agent
+
+## Use Case 3: Single Connector
+
+Expose individual connectors (Slack, GitHub, etc.) as MCP servers:
+
+1. Go to **Settings** → **Connectors**
+2. Select a connector
+3. Click **MCP Configuration**
+4. Get connector-specific MCP URL
+
+## Authentication
+
+If you've already authenticated connectors in xpander (Gmail, LinkedIn, Slack, etc.), they work automatically through MCP without additional authentication in Claude.
+
+## Testing Your MCP Integration
+
+After configuration, test by asking Claude:
+
+- "What agents are available?"
+- "List my agents"
+- "Invoke my data analysis agent to analyze this data"
+- "Create a task for my support agent"
+- "What's the status of task xyz?"
+
+Claude will use the MCP tools to interact with your agents and tasks.
+
+## Example Configurations
+
+<Tabs>
+  <Tab title="Standard MCP">
+    ```json
+    {
+      "mcpServers": {
+        "xpander.ai": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "mcp-remote@latest",
+            "https://api.xpander.ai/mcp/",
+            "--header",
+            "x-api-key:YOUR_API_KEY"
+          ]
+        }
+      }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="SSE Endpoint">
+    ```json
+    {
+      "mcpServers": {
+        "xpander.ai": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "mcp-remote@latest",
+            "https://api.xpander.ai/mcp/sse",
+            "--header",
+            "x-api-key:YOUR_API_KEY"
+          ]
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<Warning>
+Replace `YOUR_API_KEY` with your own credentials. Never commit API keys to version control.
+</Warning>
+
+## Supported MCP Clients
+
+xpander MCP servers work with:
+
+- **Claude Desktop** - Anthropic's desktop application
+- **Cursor** - AI-powered code editor
+- **VSCode** - With MCP extension
+- **Any MCP-compatible client** - Following the Model Context Protocol specification
+
+## Roadmap
+
+<Note>
+**Coming Soon**: OAuth authentication support, allowing you to connect without manually managing API keys.
+</Note>
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card title="Setup Guide" icon="rocket" href="/user-guide/task-sources/mcp">
+    Complete MCP setup with screenshots
+  </Card>
+  <Card title="REST API" icon="globe" href="/API reference/rest-api">
+    Manage agents via REST API
+  </Card>
+  <Card title="Python SDK" icon="code" href="/API reference/sdk">
+    Build agents with the SDK
+  </Card>
+</CardGroup>

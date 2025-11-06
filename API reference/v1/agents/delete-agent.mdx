@@ -1,0 +1,43 @@
+---
+title: "Delete Agent"
+openapi: "DELETE /v1/agents/{agent_id}"
+description: "Permanently delete an AI agent and all associated resources"
+---
+
+Permanently delete an agent. This action cannot be undone.
+
+## Path Parameters
+
+<ParamField path="agent_id" type="string" required>
+  Unique identifier of the agent to delete (UUID format)
+</ParamField>
+
+## Response
+
+Returns `202 Accepted` or `204 No Content` on successful deletion.
+
+## Notes
+
+- All running tasks for this agent will be cancelled
+- Agent configuration and history will be permanently removed
+- This action cannot be undone
+- Associated knowledge bases and tools are not deleted
+- You can also delete agents through the web dashboard at https://app.xpander.ai
+
+## Example Request
+
+```bash
+curl -X DELETE -H "x-api-key: YOUR_API_KEY" \
+  https://api.xpander.ai/v1/agents/550e8400-e29b-41d4-a716-446655440000
+```
+
+## Example Response
+
+```
+HTTP/1.1 202 Accepted
+Content-Type: application/json
+
+null
+```
+
+The endpoint returns `202 Accepted` to indicate the deletion request has been accepted and will be processed asynchronously.

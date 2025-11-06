@@ -1,0 +1,39 @@
+---
+title: "Delete Task"
+openapi: "DELETE /v1/tasks/{task_id}"
+description: "Delete a task by ID"
+---
+
+Delete a task and its associated data.
+
+## Path Parameters
+
+<ParamField path="task_id" type="string" required>
+  Unique identifier of the task to delete (UUID format)
+</ParamField>
+
+## Response
+
+Returns `204 No Content` or `202 Accepted` on successful deletion.
+
+## Notes
+
+- Running tasks will be cancelled before deletion
+- Task results and conversation history will be permanently removed
+- This action cannot be undone
+- You can also delete tasks through the web dashboard at https://app.xpander.ai
+
+## Example Request
+
+```bash
+curl -X DELETE -H "x-api-key: YOUR_API_KEY" \
+  https://api.xpander.ai/v1/tasks/333897e5-1c35-4598-a6ad-af5e0c101c84
+```
+
+## Example Response
+
+```
+HTTP/1.1 204 No Content
+```
+
+The endpoint returns `204 No Content` on successful deletion.

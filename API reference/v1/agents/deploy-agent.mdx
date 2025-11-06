@@ -1,0 +1,68 @@
+---
+title: "Deploy Agent"
+openapi: "PUT /v1/agents/{agent_id}"
+description: "Deploy an AI agent to make it active and available for task execution"
+---
+
+Deploy an agent to production. This validates the configuration and makes the agent available for invocation.
+
+## Path Parameters
+
+<ParamField path="agent_id" type="string" required>
+  Unique identifier of the agent to deploy
+</ParamField>
+
+## Response
+
+<ResponseField name="id" type="string">
+  Agent identifier (UUID)
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Updated status: `ACTIVE` or `INACTIVE`
+</ResponseField>
+
+<ResponseField name="deployment_type" type="string">
+  Deployment infrastructure: `serverless`, `container`, or `null`
+</ResponseField>
+
+<ResponseField name="deployed_at" type="string">
+  ISO 8601 timestamp of deployment
+</ResponseField>
+
+## Example Request
+
+```bash
+curl -X PUT -H "x-api-key: YOUR_API_KEY" \
+  https://api.xpander.ai/v1/agents/2c126a59-b625-4e4a-a008-cb3eb76cc3b2
+```
+
+## Example Response
+
+```json
+{
+  "id": "2c126a59-b625-4e4a-a008-cb3eb76cc3b2",
+  "name": "Customer Support Agent",
+  "icon": "🤖",
+  "status": "ACTIVE",
+  "organization_id": "91fbe9bc-35b3-41e8-b59d-922fb5a0f031",
+  "deployment_type": "serverless",
+  "deployed_at": "2025-11-06T12:30:45.123456Z",
+  "instructions": {
+    "role": ["You are a helpful customer support agent"],
+    "goal": ["Assist customers with their inquiries"],
+    "general": "Be professional and empathetic"
+  },
+  "model_provider": "openai",
+  "model_name": "gpt-4o",
+  "framework": "agno",
+  "created_at": "2025-11-05T14:23:10.123456Z"
+}
+```
+
+## Notes
+
+- Agent must have valid instructions and configuration
+- Deployment validates all configurations and dependencies
+- Previously deployed version remains active until new deployment succeeds
+- Check agent status using [List Agents](/api-reference-rest/agents/list-agents) endpoint

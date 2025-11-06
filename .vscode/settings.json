@@ -14,5 +14,8 @@
     "editor.defaultFormatter": "unifiedjs.vscode-mdx",
     "markdown.updateLinksOnFileMove.enabled": "prompt",
     "markdown.validate.enabled": true,
-    "markdown.extension.toc.updateOnSave": false
+    "markdown.extension.toc.updateOnSave": false,
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    }
 } 

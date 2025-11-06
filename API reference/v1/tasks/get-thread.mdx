@@ -1,0 +1,54 @@
+---
+title: "Get Task Thread"
+openapi: "GET /v1/tasks/{task_id}/thread"
+description: "Get task's conversation thread and message history"
+---
+
+Retrieve the complete conversation thread for a task, including all messages and agent responses.
+
+## Path Parameters
+
+<ParamField path="task_id" type="string" required>
+  Unique identifier of the task (UUID format)
+</ParamField>
+
+## Response
+
+<ResponseField name="messages" type="array">
+  Array of conversation messages
+  <Expandable title="Message Object">
+    <ResponseField name="role" type="string">
+      Message role: `user`, `assistant`, `system`, `tool`
+    </ResponseField>
+    <ResponseField name="content" type="string">
+      Message content
+    </ResponseField>
+    <ResponseField name="timestamp" type="string">
+      ISO 8601 timestamp of the message
+    </ResponseField>
+    <ResponseField name="tool_calls" type="array">
+      Tool invocations made by the agent (if any)
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="task_id" type="string">
+  Task identifier (UUID)
+</ResponseField>
+
+<ResponseField name="total_messages" type="integer">
+  Total number of messages in the thread
+</ResponseField>
+
+## Workaround
+
+Until this endpoint is fixed, you can:
+1. Use [Get Task](/api-reference-rest/tasks/get-task) to retrieve the task result
+2. View conversation threads through the web dashboard at https://app.xpander.ai
+3. The `result` field in the task object contains the final agent response
+
+```bash
+# Get task result instead
+curl -H "x-api-key: YOUR_API_KEY" \
+  https://api.xpander.ai/v1/tasks/{task_id}
+```
