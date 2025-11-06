@@ -52,8 +52,32 @@ Retrieve a paginated list of all available toolkits in your organization. Toolki
   Total number of pages
 </ResponseField>
 
-## Workaround
+## Example Request
 
-Until this endpoint is fixed:
-1. View available toolkits through the web dashboard at https://app.xpander.ai
-2. Configure agent tools through the dashboard interface
+```bash
+curl -X GET -H "x-api-key: YOUR_API_KEY" \
+  "https://api.xpander.ai/v1/toolkits?page=1&per_page=20"
+```
+
+## Example Response
+
+```json
+{
+  "items": [],
+  "total": 0,
+  "page": 1,
+  "per_page": 20,
+  "total_pages": 0
+}
+```
+
+## Notes
+
+- Returns an empty list if no custom toolkits are configured
+- Built-in tools are available directly on agents without requiring toolkits
+- Custom toolkits can be created through the web dashboard
+
+## See Also
+
+- [Get Toolkit Tools](/API reference/v1/toolkits/get-toolkit-tools) - Get tools in a specific toolkit
+- [Invoke Tool](/API reference/v1/toolkits/invoke-tool) - Execute a tool directly

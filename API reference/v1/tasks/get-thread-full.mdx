@@ -59,7 +59,7 @@ Returns a nested object containing conversation threads:
 
 ```bash
 curl -X GET -H "x-api-key: YOUR_API_KEY" \
-  https://api.xpander.ai/v1/tasks/b7e398b2-cddc-4c1e-b714-8200953b8558/thread/full
+  https://api.xpander.ai/v1/tasks/de5dd8c6-abb8-4528-a157-ada21801a91c/thread/full
 ```
 
 ## Example Response
@@ -68,37 +68,92 @@ curl -X GET -H "x-api-key: YOUR_API_KEY" \
 {
   "root": [
     {
-      "id": "21355ad9-f228-400f-9eee-afeba48ab03c",
+      "id": "3f4bd194-8c34-4ac5-9e39-9d5dc18999e3",
       "role": "user",
-      "content": "Test async invoke",
-      "created_at": 1762409145,
+      "content": "my ssn is 305071607",
+      "name": null,
+      "tool_call_id": null,
       "tool_calls": null,
+      "audio": null,
+      "images": null,
+      "videos": null,
+      "files": null,
+      "audio_output": null,
+      "image_output": null,
+      "video_output": null,
+      "file_output": null,
+      "redacted_reasoning_content": null,
+      "provider_data": null,
+      "citations": null,
+      "reasoning_content": null,
+      "tool_name": null,
+      "tool_args": null,
+      "tool_call_error": null,
+      "stop_after_tool_call": false,
+      "add_to_agent_memory": true,
+      "from_history": false,
       "metrics": {
         "input_tokens": 0,
         "output_tokens": 0,
-        "total_tokens": 0
-      }
+        "total_tokens": 0,
+        "audio_input_tokens": 0,
+        "audio_output_tokens": 0,
+        "audio_total_tokens": 0,
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 0,
+        "timer": null,
+        "time_to_first_token": null,
+        "duration": null,
+        "provider_metrics": null,
+        "additional_metrics": null
+      },
+      "references": null,
+      "created_at": 1762414336
     },
     {
-      "id": "1619debb-160f-4f93-b80d-5d4b3c3b7a68",
+      "id": "c7fcc879-2279-4da5-b65d-779584b85678",
       "role": "assistant",
-      "content": "Your request to \"Test async invoke\" is noted. Could you please clarify...",
-      "created_at": 1762409145,
+      "content": "⚠️ Hi xpander! For your safety and privacy, please avoid sharing sensitive information like your Social Security Number (SSN) online or in public chats. If you need help with something specific, let me know—I'm here to assist! 😊🔒",
+      "name": null,
+      "tool_call_id": null,
       "tool_calls": null,
+      "audio": null,
+      "images": null,
+      "videos": null,
+      "files": null,
+      "audio_output": null,
+      "image_output": null,
+      "video_output": null,
+      "file_output": null,
+      "redacted_reasoning_content": null,
+      "provider_data": null,
+      "citations": null,
+      "reasoning_content": null,
+      "tool_name": null,
+      "tool_args": null,
+      "tool_call_error": null,
+      "stop_after_tool_call": false,
+      "add_to_agent_memory": true,
+      "from_history": false,
       "metrics": {
-        "input_tokens": 3125,
-        "output_tokens": 87,
-        "total_tokens": 3212
-      }
-    }
-  ],
-  "sub-task-uuid-1": [
-    {
-      "id": "msg-1",
-      "role": "user",
-      "content": "Sub-task input",
-      "created_at": 1762409146,
-      "metrics": {...}
+        "input_tokens": 618,
+        "output_tokens": 54,
+        "total_tokens": 672,
+        "audio_input_tokens": 0,
+        "audio_output_tokens": 0,
+        "audio_total_tokens": 0,
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "reasoning_tokens": 0,
+        "timer": null,
+        "time_to_first_token": null,
+        "duration": null,
+        "provider_metrics": null,
+        "additional_metrics": null
+      },
+      "references": null,
+      "created_at": 1762414336
     }
   ]
 }
@@ -126,9 +181,9 @@ curl -X GET -H "x-api-key: YOUR_API_KEY" \
 | Sub-task messages | ❌ | ✅ |
 | Token metrics | ✅ | ✅ |
 | Tool call details | ✅ | ✅ |
-| **Status** | ⚠️ 502 Error | ✅ Working |
+| Response structure | Simple array | Nested object |
 
-**Recommendation:** Use `/thread/full` instead of `/thread` as it provides more information and is currently more reliable.
+**Recommendation:** Use `/thread/full` when you need to see sub-task execution details in multi-agent workflows.
 
 ## See Also
 

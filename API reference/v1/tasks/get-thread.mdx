@@ -14,41 +14,94 @@ Retrieve the complete conversation thread for a task, including all messages and
 
 ## Response
 
-<ResponseField name="messages" type="array">
+Returns an array of message objects representing the conversation thread:
+
+<ResponseField name="[array]" type="array">
   Array of conversation messages
   <Expandable title="Message Object">
+    <ResponseField name="id" type="string">
+      Unique message identifier
+    </ResponseField>
     <ResponseField name="role" type="string">
       Message role: `user`, `assistant`, `system`, `tool`
     </ResponseField>
     <ResponseField name="content" type="string">
       Message content
     </ResponseField>
-    <ResponseField name="timestamp" type="string">
-      ISO 8601 timestamp of the message
+    <ResponseField name="created_at" type="integer">
+      Unix timestamp of message creation
     </ResponseField>
     <ResponseField name="tool_calls" type="array">
-      Tool invocations made by the agent (if any)
+      Array of tool invocations (if any)
+    </ResponseField>
+    <ResponseField name="metrics" type="object">
+      Token usage and performance metrics
+      <Expandable title="Metrics Object">
+        <ResponseField name="input_tokens" type="integer">
+          Number of input tokens
+        </ResponseField>
+        <ResponseField name="output_tokens" type="integer">
+          Number of output tokens
+        </ResponseField>
+        <ResponseField name="total_tokens" type="integer">
+          Total tokens used
+        </ResponseField>
+      </Expandable>
     </ResponseField>
   </Expandable>
 </ResponseField>
 
-<ResponseField name="task_id" type="string">
-  Task identifier (UUID)
-</ResponseField>
-
-<ResponseField name="total_messages" type="integer">
-  Total number of messages in the thread
-</ResponseField>
-
-## Workaround
-
-Until this endpoint is fixed, you can:
-1. Use [Get Task](/API reference/v1/tasks/get-task) to retrieve the task result
-2. View conversation threads through the web dashboard at https://app.xpander.ai
-3. The `result` field in the task object contains the final agent response
+## Example Request
 
 ```bash
-# Get task result instead
-curl -H "x-api-key: YOUR_API_KEY" \
-  https://api.xpander.ai/v1/tasks/{task_id}
+curl -X GET -H "x-api-key: YOUR_API_KEY" \
+  https://api.xpander.ai/v1/tasks/de5dd8c6-abb8-4528-a157-ada21801a91c/thread
 ```
+
+## Example Response
+
+```json
+[
+  {
+    "id": "3f4bd194-8c34-4ac5-9e39-9d5dc18999e3",
+    "role": "user",
+    "content": "my ssn is 305071607",
+    "name": null,
+    "tool_call_id": null,
+    "tool_calls": null,
+    "created_at": 1762414336,
+    "metrics": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0
+    }
+  },
+  {
+    "id": "c7fcc879-2279-4da5-b65d-779584b85678",
+    "role": "assistant",
+    "content": "⚠️ Hi xpander! For your safety and privacy, please avoid sharing sensitive information like your Social Security Number (SSN) online or in public chats. If you need help with something specific, let me know—I'm here to assist! 😊🔒",
+    "name": null,
+    "tool_call_id": null,
+    "tool_calls": null,
+    "created_at": 1762414336,
+    "metrics": {
+      "input_tokens": 618,
+      "output_tokens": 54,
+      "total_tokens": 672
+    }
+  }
+]
+```
+
+## Use Cases
+
+- **View conversation history** - See the complete interaction between user and agent
+- **Track token usage** - Monitor LLM API costs per message
+- **Debug agent responses** - Analyze what the agent said and why
+- **Audit conversations** - Review interaction history for compliance
+
+## Notes
+
+- Returns only the root task's messages (excludes sub-tasks)
+- For multi-agent workflows with sub-tasks, use [Get Task Thread (Full)](/API reference/v1/tasks/get-thread-full)
+- Token metrics help track LLM API costs per message
