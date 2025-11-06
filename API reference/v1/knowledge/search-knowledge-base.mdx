@@ -1,0 +1,78 @@
+---
+title: "Search Knowledge Base"
+openapi: "GET /v1/knowledge/{kb_id}/search"
+description: "Search in knowledge base using vector search"
+---
+
+Perform semantic search across documents in a knowledge base using vector similarity. Returns the most relevant document chunks based on your query.
+
+## Path Parameters
+
+<ParamField path="kb_id" type="string" required>
+  Unique identifier of the knowledge base to search (UUID format)
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="search_query" type="string" required>
+  The search query text to find relevant documents
+</ParamField>
+
+<ParamField query="top_k" type="integer">
+  Number of results to return (default: 5, max: 50)
+</ParamField>
+
+<ParamField query="use_bubble" type="boolean">
+  Whether to use bubble search algorithm for improved relevance (default: false)
+</ParamField>
+
+## Response
+
+Returns an array of search results, each containing:
+
+<ResponseField name="content" type="string">
+  The text content of the matching document chunk
+</ResponseField>
+
+<ResponseField name="score" type="number">
+  Similarity score (0-1, higher is more relevant)
+</ResponseField>
+
+<ResponseField name="document_id" type="string">
+  UUID of the source document
+</ResponseField>
+
+<ResponseField name="metadata" type="object">
+  Additional metadata about the document chunk
+</ResponseField>
+
+## Example Request
+
+```bash
+curl -H "x-api-key: YOUR_API_KEY" \
+  "https://api.xpander.ai/v1/knowledge/{kb_id}/search?search_query=API%20authentication&top_k=10"
+```
+
+## Example Response
+
+```json
+[
+  {
+    "content": "API authentication is handled via x-api-key header...",
+    "score": 0.92,
+    "document_id": "doc-123",
+    "metadata": {
+      "source": "api-docs.pdf",
+      "page": 5
+    }
+  },
+  {
+    "content": "To authenticate requests, include your API key...",
+    "score": 0.87,
+    "document_id": "doc-456",
+    "metadata": {
+      "source": "getting-started.md"
+    }
+  }
+]
+```

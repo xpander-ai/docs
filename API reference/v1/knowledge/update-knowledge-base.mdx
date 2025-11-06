@@ -1,0 +1,55 @@
+---
+title: "Update Knowledge Base"
+openapi: "PATCH /v1/knowledge/{kb_id}"
+description: "Updates a knowledge base"
+---
+
+Modify a knowledge base's configuration. Only provided fields will be updated.
+
+## Example Request
+
+```bash
+curl -X PATCH -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Updated Test KB","description":"Updated description"}' \
+  https://api.xpander.ai/v1/knowledge/232faada-83c0-41e1-b6c8-83321c0d3c21
+```
+
+## Example Response
+
+```json
+{
+  "id": "232faada-83c0-41e1-b6c8-83321c0d3c21",
+  "name": "Updated Test KB",
+  "description": "Updated description",
+  "type": "managed",
+  "organization_id": "91fbe9bc-35b3-41e8-b59d-922fb5a0f031",
+  "agent_id": null,
+  "total_documents": 0
+}
+```
+
+## Path Parameters
+
+<ParamField path="kb_id" type="string" required>
+  Unique identifier of the knowledge base to update (UUID format)
+</ParamField>
+
+## Request Body
+
+<ParamField body="name" type="string">
+  Display name for the knowledge base
+</ParamField>
+
+<ParamField body="description" type="string">
+  Optional description of the knowledge base purpose
+</ParamField>
+
+<ParamField body="agent_id" type="string">
+  UUID of the agent to attach this knowledge base to
+</ParamField>
+
+## Response
+
+Returns the updated knowledge base object with all current configuration matching the structure from [Get Knowledge Base](/API reference/v1/knowledge/get-knowledge-base).
+

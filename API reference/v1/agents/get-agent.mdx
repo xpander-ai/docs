@@ -1,0 +1,127 @@
+---
+title: "Get Agent"
+openapi: "GET /v1/agents/{agent_id}"
+description: "Retrieve detailed information about a specific AI agent by its unique identifier"
+---
+
+Get complete details about an agent including configuration, deployment status, and metadata.
+
+## Path Parameters
+
+<ParamField path="agent_id" type="string" required>
+  Unique identifier of the agent to retrieve (UUID format)
+</ParamField>
+
+## Response
+
+<ResponseField name="id" type="string">
+  Unique identifier for the agent (UUID)
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  Display name of the agent
+</ResponseField>
+
+<ResponseField name="icon" type="string">
+  Emoji icon representing the agent
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current deployment status: `ACTIVE` or `INACTIVE`
+</ResponseField>
+
+<ResponseField name="organization_id" type="string">
+  UUID of the organization that owns this agent
+</ResponseField>
+
+<ResponseField name="deployment_type" type="string">
+  Deployment infrastructure type: `serverless`, `container`, or `null`
+</ResponseField>
+
+<ResponseField name="instructions" type="object">
+  System instructions configuration
+  <Expandable title="Instructions Object">
+    <ResponseField name="role" type="array">
+      Array of role descriptions
+    </ResponseField>
+    <ResponseField name="goal" type="array">
+      Array of goal descriptions
+    </ResponseField>
+    <ResponseField name="general" type="string">
+      General instructions text
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="model_provider" type="string">
+  AI model provider (e.g., `openai`)
+</ResponseField>
+
+<ResponseField name="model_name" type="string">
+  Specific model version (e.g., `gpt-4o`, `gpt-4.1`, `gpt-4o-mini`)
+</ResponseField>
+
+<ResponseField name="framework" type="string">
+  Agent framework used (e.g., `agno`)
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  ISO 8601 timestamp of when the agent was created
+</ResponseField>
+
+<ResponseField name="using_nemo" type="boolean">
+  Whether the agent uses Nvidia NeMo
+</ResponseField>
+
+<ResponseField name="is_coordinate_mode" type="boolean">
+  Whether the agent operates in coordinate mode
+</ResponseField>
+
+## Example Request
+
+```bash
+curl -X GET -H "x-api-key: YOUR_API_KEY" \
+  https://api.xpander.ai/v1/agents/0045cf07-8af6-4c69-8d13-0a13c631a5d0
+```
+
+## Example Response
+
+```json
+{
+  "id": "0045cf07-8af6-4c69-8d13-0a13c631a5d0",
+  "unique_name": "lavender-wolverine",
+  "name": "DevOps AI Agent",
+  "icon": "🚀",
+  "avatar": "male-avatar",
+  "status": "ACTIVE",
+  "organization_id": "91fbe9bc-35b3-41e8-b59d-922fb5a0f031",
+  "deployment_type": "container",
+  "framework": "agno",
+  "model_provider": "openai",
+  "model_name": "gpt-4.1",
+  "type": "manager",
+  "delegation_type": "router",
+  "created_at": "2025-08-22T01:45:30.341088Z",
+  "instructions": {
+    "role": [
+      "users can't access your files so upload the files and use markdwon when comment with public link. ",
+      "Don't stop until complete all tools are valid.",
+      "generate_diagram can fail , retry with different code "
+    ],
+    "goal": [],
+    "general": "AI DevOps"
+  },
+  "tools": [
+    {
+      "id": "XpanderEmailServiceSendEmailWithHtmlOrTextContent",
+      "name": "Send Email with HTML Content",
+      "method": "post",
+      "path": "/operation/XpanderEmailServiceSendEmailWithHtmlOrTextContent/messaging/send_email"
+    }
+  ],
+  "knowledge_bases": [],
+  "deletable": true,
+  "using_nemo": false,
+  "webhook_url": "https://webhook.xpander.ai/?agent_id=0045cf07-8af6-4c69-8d13-0a13c631a5d0&asynchronous=false"
+}
+```

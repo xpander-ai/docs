@@ -1,0 +1,192 @@
+---
+title: "Platform REST API"
+description: "Universal REST API for managing agents, tasks, and knowledge bases"
+icon: "globe"
+mode: "wide"
+---
+
+The REST API provides comprehensive HTTP endpoints for managing your AI agents, executing tasks, and controlling knowledge bases from any programming language.
+
+## Overview
+
+The REST API is your control plane for the xpander platform, enabling you to:
+
+- **Manage Agents**: Create, update, deploy, and delete AI agents
+- **Execute Tasks**: Invoke agents synchronously, asynchronously, or with streaming
+- **Control Knowledge**: Manage knowledge bases and documents
+- **Access Toolkits**: List and invoke tools across integrations
+
+## Base URL
+
+```
+https://api.xpander.ai
+```
+
+## Authentication
+
+All API requests require authentication via the `x-api-key` header:
+
+```bash
+curl -X GET "https://api.xpander.ai/v1/agents" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+## Quick Start
+
+<CodeGroup>
+```bash cURL
+# List all agents
+curl -X GET "https://api.xpander.ai/v1/agents" \
+  -H "x-api-key: YOUR_API_KEY"
+
+# Invoke an agent
+curl -X POST "https://api.xpander.ai/v1/agents/{agent_id}/invoke" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": {
+      "text": "Analyze this data"
+    }
+  }'
+```
+
+```python Python
+import requests
+
+API_KEY = "your-api-key"
+BASE_URL = "https://api.xpander.ai/v1"
+
+# List all agents
+response = requests.get(
+    f"{BASE_URL}/agents",
+    headers={"x-api-key": API_KEY}
+)
+agents = response.json()
+
+# Invoke an agent
+response = requests.post(
+    f"{BASE_URL}/agents/{agent_id}/invoke",
+    headers={"x-api-key": API_KEY},
+    json={"input": {"text": "Analyze this data"}}
+)
+result = response.json()
+```
+
+```javascript JavaScript
+const API_KEY = 'your-api-key';
+const BASE_URL = 'https://api.xpander.ai/v1';
+
+// List all agents
+const agents = await fetch(`${BASE_URL}/agents`, {
+  headers: { 'x-api-key': API_KEY }
+}).then(r => r.json());
+
+// Invoke an agent
+const result = await fetch(`${BASE_URL}/agents/${agentId}/invoke`, {
+  method: 'POST',
+  headers: {
+    'x-api-key': API_KEY,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    input: { text: 'Analyze this data' }
+  })
+}).then(r => r.json());
+```
+</CodeGroup>
+
+## API Endpoints
+
+<CardGroup cols={2}>
+  <Card title="Agents" icon="robot" href="/API reference/v1/agents/list-agents">
+    Create, manage, and invoke AI agents
+  </Card>
+  <Card title="Tasks" icon="play" href="/API reference/v1/tasks/list-tasks">
+    Monitor and manage task executions
+  </Card>
+  <Card title="Knowledge" icon="database" href="/API reference/v1/knowledge/list-knowledge-bases">
+    Manage knowledge bases and documents
+  </Card>
+  <Card title="Toolkits" icon="wrench" href="/API reference/v1/toolkits/list-toolkits">
+    Access and invoke tools
+  </Card>
+</CardGroup>
+
+## Key Features
+
+- **🌐 Universal Access**: Works with any programming language that supports HTTP
+- **⚡ Multiple Execution Modes**: Sync, async, and streaming invocation
+- **📊 Complete CRUD**: Full lifecycle management for all resources
+- **🔒 Secure**: API key authentication with organization-level scoping
+- **📖 OpenAPI Spec**: Complete OpenAPI 3.1 specification available
+
+## Response Format
+
+All API responses follow a consistent JSON structure:
+
+```json
+{
+  "id": "resource-id",
+  "status": "completed",
+  "created_at": "2025-11-05T20:00:00Z",
+  ...
+}
+```
+
+## Error Handling
+
+The API uses standard HTTP status codes:
+
+- `200` - Success
+- `201` - Created
+- `400` - Bad Request
+- `401` - Unauthorized
+- `404` - Not Found
+- `422` - Validation Error
+- `500` - Internal Server Error
+
+Error responses include detailed information:
+
+```json
+{
+  "detail": [
+    {
+      "loc": ["body", "input"],
+      "msg": "field required",
+      "type": "value_error.missing"
+    }
+  ]
+}
+```
+
+## Rate Limits
+
+The API implements rate limiting to ensure fair usage:
+
+- **Standard**: 100 requests per minute
+- **Burst**: 1000 requests per hour
+
+Rate limit headers are included in responses:
+
+```
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 95
+X-RateLimit-Reset: 1699200000
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Agent Endpoints" icon="robot" href="/API reference/v1/agents/list-agents">
+    Explore agent management endpoints
+  </Card>
+  <Card title="Task Endpoints" icon="play" href="/API reference/v1/tasks/list-tasks">
+    Learn about task execution
+  </Card>
+  <Card title="Examples" icon="code" href="/Examples">
+    View code examples
+  </Card>
+  <Card title="OpenAPI Spec" icon="file-code" href="https://api.xpander.ai/openapi.json">
+    Download OpenAPI specification
+  </Card>
+</CardGroup>

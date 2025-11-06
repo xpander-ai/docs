@@ -1,0 +1,177 @@
+---
+title: "Get Agent Tasks"
+openapi: "GET /v1/agents/{agent_id}/tasks"
+description: "Retrieve paginated list of task executions for a specific agent with optional filters"
+---
+
+Get all task executions for a specific agent with support for filtering by user, status, and parent task relationships. This endpoint is useful for monitoring agent activity and debugging task flows.
+
+## Path Parameters
+
+<ParamField path="agent_id" type="string" required>
+  Unique identifier of the agent (UUID format)
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="page" type="integer" default={1}>
+  Page number (starting from 1)
+</ParamField>
+
+<ParamField query="per_page" type="integer" default={20}>
+  Items per page (maximum 50)
+</ParamField>
+
+<ParamField query="user_id" type="string">
+  Filter by user ID who created the task
+</ParamField>
+
+<ParamField query="parent_task_id" type="string">
+  Filter by parent task ID (for sub-tasks)
+</ParamField>
+
+<ParamField query="triggering_agent_id" type="string">
+  Filter by triggering agent ID (parent calling agent in multi-agent workflows)
+</ParamField>
+
+<ParamField query="status" type="string">
+  Filter by task execution status: `pending`, `running`, `completed`, `failed`, `cancelled`
+</ParamField>
+
+<ParamField query="internal_status" type="string">
+  Filter by internal task status (for debugging)
+</ParamField>
+
+## Response
+
+<ResponseField name="items" type="array">
+  Array of task objects
+  <Expandable title="Task Object">
+    <ResponseField name="id" type="string">
+      Unique identifier for the task (UUID format)
+    </ResponseField>
+    <ResponseField name="agent_id" type="string">
+      ID of the agent that executed this task
+    </ResponseField>
+    <ResponseField name="user_id" type="string">
+      ID of the user who created the task (nullable)
+    </ResponseField>
+    <ResponseField name="parent_task_id" type="string">
+      ID of parent task if this is a subtask (nullable)
+    </ResponseField>
+    <ResponseField name="triggering_agent_id" type="string">
+      ID of agent that triggered this task (nullable)
+    </ResponseField>
+    <ResponseField name="organization_id" type="string">
+      Organization UUID this task belongs to
+    </ResponseField>
+    <ResponseField name="status" type="string">
+      Current task status: pending, completed, error
+    </ResponseField>
+    <ResponseField name="created_at" type="string">
+      ISO timestamp of task creation
+    </ResponseField>
+    <ResponseField name="updated_at" type="string">
+      ISO timestamp of last update
+    </ResponseField>
+    <ResponseField name="result" type="string">
+      Task execution result (nullable, present when completed)
+    </ResponseField>
+    <ResponseField name="title" type="string">
+      Task title or description (nullable)
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="total" type="integer">
+  Total number of tasks for this agent
+</ResponseField>
+
+<ResponseField name="page" type="integer">
+  Current page number
+</ResponseField>
+
+<ResponseField name="per_page" type="integer">
+  Number of items per page
+</ResponseField>
+
+<ResponseField name="total_pages" type="integer">
+  Total number of pages available
+</ResponseField>
+
+## Example Requests
+
+### List all tasks for an agent
+
+```bash
+curl -X GET -H "x-api-key: YOUR_API_KEY" \
+  "https://api.xpander.ai/v1/agents/38551c1d-a16b-454f-84d4-68f431ba608b/tasks?page=1&per_page=2"
+```
+
+### Filter by status
+
+```bash
+curl -X GET -H "x-api-key: YOUR_API_KEY" \
+  "https://api.xpander.ai/v1/agents/38551c1d-a16b-454f-84d4-68f431ba608b/tasks?status=completed&page=1&per_page=10"
+```
+
+### Filter by user
+
+```bash
+curl -X GET -H "x-api-key: YOUR_API_KEY" \
+  "https://api.xpander.ai/v1/agents/38551c1d-a16b-454f-84d4-68f431ba608b/tasks?user_id=user-123&page=1&per_page=10"
+```
+
+## Example Response
+
+```json
+{
+  "items": [
+    {
+      "id": "b7e398b2-cddc-4c1e-b714-8200953b8558",
+      "agent_id": "38551c1d-a16b-454f-84d4-68f431ba608b",
+      "user_id": null,
+      "parent_task_id": null,
+      "triggering_agent_id": null,
+      "organization_id": "91fbe9bc-35b3-41e8-b59d-922fb5a0f031",
+      "status": "completed",
+      "created_at": "2025-11-06T06:05:43.071572Z",
+      "updated_at": "2025-11-06T06:05:48.492501Z",
+      "source_node_type": "sdk",
+      "result": "Your request to \"Test async invoke\" is noted...",
+      "title": "Test async invoke"
+    },
+    {
+      "id": "4921b718-7f97-4bc3-8910-1baab59839d9",
+      "agent_id": "38551c1d-a16b-454f-84d4-68f431ba608b",
+      "user_id": null,
+      "parent_task_id": null,
+      "triggering_agent_id": null,
+      "organization_id": "91fbe9bc-35b3-41e8-b59d-922fb5a0f031",
+      "status": "completed",
+      "created_at": "2025-11-06T06:05:28.666491Z",
+      "updated_at": "2025-11-06T06:05:34.055349Z",
+      "source_node_type": "sdk",
+      "result": "Your request to \"Test sync invoke\" has been received...",
+      "title": "Test sync invoke"
+    }
+  ],
+  "total": 8,
+  "page": 1,
+  "per_page": 2,
+  "total_pages": 4
+}
+```
+
+## Use Cases
+
+- **Monitor agent activity** - Track all tasks executed by a specific agent
+- **Debug workflows** - Filter by parent_task_id to see sub-task hierarchies
+- **User analytics** - Filter by user_id to see tasks from specific users
+- **Multi-agent debugging** - Use triggering_agent_id to trace agent-to-agent delegations
+
+## See Also
+
+- [List Tasks](/API reference/v1/tasks/list-tasks) - List all tasks across all agents
+- [Get Task](/API reference/v1/tasks/get-task) - Get detailed information about a specific task
+- [Invoke Agent](/API reference/v1/agents/invoke-async) - Create new tasks
