@@ -139,6 +139,7 @@
             "group": "REST API - Agents",
             "pages": [
               "API reference/v1/agents/list-agents",
+              "API reference/v1/agents/list-agents-full",
               "API reference/v1/agents/create-agent",
               "API reference/v1/agents/get-agent",
               "API reference/v1/agents/update-agent",
@@ -156,7 +157,8 @@
               "API reference/v1/tasks/list-tasks",
               "API reference/v1/tasks/get-task",
               "API reference/v1/tasks/delete-task",
-              "API reference/v1/tasks/get-thread"
+              "API reference/v1/tasks/get-thread",
+              "API reference/v1/tasks/get-thread-full"
             ]
           },
           {
