@@ -24,7 +24,7 @@ Execute a specific tool within a toolkit with provided parameters. This allows d
 
 ## Response
 
-<ResponseField name="result" type="any">
+<ResponseField name="result" type="object">
   The tool execution result (format varies by tool)
 </ResponseField>
 
@@ -36,11 +36,19 @@ Execute a specific tool within a toolkit with provided parameters. This allows d
   Tool execution time in seconds
 </ResponseField>
 
+## Notes
+
+- This endpoint requires custom toolkits to be configured
+- Tool parameters must match the schema from [Get Toolkit Tools](/API reference/v1/toolkits/get-toolkit-tools)
+- Built-in tools are invoked automatically by agents and don't require this endpoint
+- Currently, custom toolkits must be configured through the web dashboard
+
 ## Example Request
 
 ```bash
 curl -X POST -H "x-api-key: YOUR_API_KEY" \
-  https://api.xpander.ai/v1/toolkits/{toolkit_id}/tools/search_web \
+  -H "Content-Type: application/json" \
+  https://api.xpander.ai/v1/toolkits/{toolkit_id}/tools/{tool_id} \
   -d '{
     "parameters": {
       "query": "AI agent frameworks",
@@ -53,13 +61,15 @@ curl -X POST -H "x-api-key: YOUR_API_KEY" \
 
 ```json
 {
-  "result": [
-    {
-      "title": "Top AI Agent Frameworks",
-      "url": "https://example.com/article",
-      "snippet": "Comprehensive guide to AI agent frameworks..."
-    }
-  ],
+  "result": {
+    "data": [
+      {
+        "title": "Top AI Agent Frameworks",
+        "url": "https://example.com/article",
+        "snippet": "Comprehensive guide to AI agent frameworks..."
+      }
+    ]
+  },
   "status": "success",
   "execution_time": 1.23
 }
