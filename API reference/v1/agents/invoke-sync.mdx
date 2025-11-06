@@ -291,14 +291,12 @@ curl -X POST -H "x-api-key: YOUR_API_KEY" \
 
 - This endpoint waits for task completion before returning
 - Recommended timeout: 30-60 seconds
-- For long-running tasks, use [Invoke Agent (Async)](/api-reference-rest/agents/invoke-async) instead
+- For long-running tasks, use [Invoke Agent (Async)](/API reference/v1/agents/invoke-async) instead
 - The agent must have `deployment_type: serverless` or be a running container
 
-## S
-ee Also
+## See Also
 
-- [Advanced Use Cases](/http-api/advanced-use-cases) - Comprehensive guide to all advanced features including structured output, multi-agent workflows, file processing, and more
-- [Invoke Agent (Async)](/api-reference-rest/agents/invoke-async) - For long-running tasks that don't need immediate results
-- [Invoke Agent (Stream)](/api-reference-rest/agents/invoke-stream) - For real-time streaming responses
-- [Get Task](/api-reference-rest/tasks/get-task) - Retrieve task details and results
-- [List Tasks](/api-reference-rest/tasks/list-tasks) - Query and filter task history
+- [Invoke Agent (Async)](/API reference/v1/agents/invoke-async) - For long-running tasks that don't need immediate results
+- [Invoke Agent (Stream)](/API reference/v1/agents/invoke-stream) - For real-time streaming responses
+- [Get Task](/API reference/v1/tasks/get-task) - Retrieve task details and results
+- [List Tasks](/API reference/v1/tasks/list-tasks) - Query and filter task history

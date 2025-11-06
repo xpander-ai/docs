@@ -346,7 +346,7 @@ curl -X POST -H "x-api-key: YOUR_API_KEY" \
 
 ## Polling for Results
 
-Use the task ID with the [Get Task](/api-reference-rest/tasks/get-task) endpoint to check status and retrieve results:
+Use the task ID with the [Get Task](/API reference/v1/tasks/get-task) endpoint to check status and retrieve results:
 
 ```bash
 # Poll for results (repeat until status is "completed")
@@ -354,12 +354,10 @@ curl -H "x-api-key: YOUR_API_KEY" \
   https://api.xpander.ai/v1/tasks/{task_id}
 ```
 
-## 
-See Also
+## See Also
 
-- [Advanced Use Cases](/http-api/advanced-use-cases) - Comprehensive guide to all advanced features including structured output, multi-agent workflows, file processing, MCP integration, and more
-- [Invoke Agent (Sync)](/api-reference-rest/agents/invoke-sync) - For quick tasks that complete in under 30 seconds
-- [Invoke Agent (Stream)](/api-reference-rest/agents/invoke-stream) - For real-time streaming responses
-- [Get Task](/api-reference-rest/tasks/get-task) - Poll for task status and retrieve results
-- [List Tasks](/api-reference-rest/tasks/list-tasks) - Query and filter task history
-- [Get Agent Tasks](/api-reference-rest/agents/list-agents) - Get all tasks for a specific agent
+- [Invoke Agent (Sync)](/API reference/v1/agents/invoke-sync) - For quick tasks that complete in under 30 seconds
+- [Invoke Agent (Stream)](/API reference/v1/agents/invoke-stream) - For real-time streaming responses
+- [Get Task](/API reference/v1/tasks/get-task) - Poll for task status and retrieve results
+- [List Tasks](/API reference/v1/tasks/list-tasks) - Query and filter task history
+- [Get Agent Tasks](/API reference/v1/agents/list-agents) - Get all tasks for a specific agent
