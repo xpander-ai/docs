@@ -2023,6 +2023,18 @@
                         "title": "Prompts",
                         "default": []
                     },
+                    "is_latest": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Is Latest",
+                        "description": "Whether this is the latest version of the agent"
+                    },
                     "name": {
                         "type": "string",
                         "title": "Name"

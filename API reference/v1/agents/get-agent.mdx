@@ -77,6 +77,280 @@ Get complete details about an agent including configuration, deployment status, 
   Whether the agent operates in coordinate mode
 </ResponseField>
 
+<ResponseField name="origin_template" type="string | null">
+  Reference to the original template used to create the agent, if any
+</ResponseField>
+
+<ResponseField name="delegation_end_strategy" type="string">
+  Strategy for ending delegation workflows (e.g., `return-to-start`)
+</ResponseField>
+
+<ResponseField name="environment_id" type="string">
+  UUID of the environment this agent operates in
+</ResponseField>
+
+<ResponseField name="sub_agents_continuous_thread" type="boolean">
+  Whether sub-agents maintain a continuous conversation thread
+</ResponseField>
+
+<ResponseField name="created_by_prompt" type="string | null">
+  The prompt used to create this agent, if created via prompt
+</ResponseField>
+
+<ResponseField name="prompts" type="array">
+  Array of example prompts that demonstrate the agent's capabilities
+</ResponseField>
+
+<ResponseField name="is_latest" type="boolean">
+  Whether this is the latest version of the agent
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Detailed description of the agent's purpose and capabilities
+</ResponseField>
+
+<ResponseField name="tools" type="array">
+  Array of tools available to the agent
+  <Expandable title="Tool Object">
+    <ResponseField name="id" type="string">
+      Unique identifier for the tool
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      Display name of the tool
+    </ResponseField>
+    <ResponseField name="raw_description" type="string">
+      Detailed description of the tool's functionality
+    </ResponseField>
+    <ResponseField name="function_description" type="string">
+      Description of what the function does
+    </ResponseField>
+    <ResponseField name="method" type="string">
+      HTTP method (e.g., `post`, `get`)
+    </ResponseField>
+    <ResponseField name="path" type="string">
+      API endpoint path for the tool
+    </ResponseField>
+    <ResponseField name="path_params" type="object">
+      Path parameters schema
+    </ResponseField>
+    <ResponseField name="query_params" type="object">
+      Query parameters schema
+    </ResponseField>
+    <ResponseField name="body_schema" type="object">
+      Request body schema
+    </ResponseField>
+    <ResponseField name="parameters" type="object">
+      Complete parameters definition including query, path, body, and headers
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="source_nodes" type="array">
+  Array of source integration nodes
+  <Expandable title="Source Node Object">
+    <ResponseField name="id" type="string">
+      UUID of the source node
+    </ResponseField>
+    <ResponseField name="type" type="string">
+      Type of source: `assistant`, `sdk`, `webhook`, etc.
+    </ResponseField>
+    <ResponseField name="targets" type="array | null">
+      Target nodes for this source
+    </ResponseField>
+    <ResponseField name="metadata" type="object">
+      Additional metadata for the source node
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="attached_tools" type="array">
+  Array of externally attached tool configurations
+  <Expandable title="Attached Tool Object">
+    <ResponseField name="id" type="string">
+      UUID of the attached tool configuration
+    </ResponseField>
+    <ResponseField name="operation_ids" type="array">
+      Array of operation IDs associated with this tool
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="access_scope" type="string">
+  Access control scope: `organizational`, `team`, `private`
+</ResponseField>
+
+<ResponseField name="expected_output" type="string">
+  Description of the expected output format and content from the agent
+</ResponseField>
+
+<ResponseField name="version" type="number">
+  Version number of the agent configuration
+</ResponseField>
+
+<ResponseField name="created_by" type="string">
+  UUID of the user who created this agent
+</ResponseField>
+
+<ResponseField name="delegation_memory_strategy" type="string">
+  Memory strategy for delegation: `summarization`, `full`, etc.
+</ResponseField>
+
+<ResponseField name="is_ai_employee" type="boolean">
+  Whether this agent is configured as an AI employee
+</ResponseField>
+
+<ResponseField name="deletable" type="boolean">
+  Whether the agent can be deleted
+</ResponseField>
+
+<ResponseField name="llm_api_base" type="string | null">
+  Custom API base URL for LLM requests, if configured
+</ResponseField>
+
+<ResponseField name="output_format" type="string">
+  Format of the agent's output: `markdown`, `json`, etc.
+</ResponseField>
+
+<ResponseField name="output_schema" type="object | null">
+  JSON schema for structured output, if configured
+</ResponseField>
+
+<ResponseField name="llm_credentials_key" type="string | null">
+  Reference to LLM credentials, if using custom credentials
+</ResponseField>
+
+<ResponseField name="llm_credentials_key_type" type="string">
+  Type of credentials: `xpander`, `custom`, etc.
+</ResponseField>
+
+<ResponseField name="llm_credentials" type="object | null">
+  Custom LLM credentials object, if configured
+</ResponseField>
+
+<ResponseField name="agno_settings" type="object">
+  Agno framework-specific settings
+  <Expandable title="Agno Settings">
+    <ResponseField name="session_storage" type="boolean">
+      Enable session storage
+    </ResponseField>
+    <ResponseField name="user_memories" type="boolean">
+      Enable user memory persistence
+    </ResponseField>
+    <ResponseField name="session_summaries" type="boolean">
+      Enable session summarization
+    </ResponseField>
+    <ResponseField name="num_history_runs" type="number">
+      Number of historical runs to maintain
+    </ResponseField>
+    <ResponseField name="max_tool_calls_from_history" type="number">
+      Maximum tool calls to retrieve from history
+    </ResponseField>
+    <ResponseField name="tool_call_limit" type="number">
+      Limit on tool calls per session
+    </ResponseField>
+    <ResponseField name="coordinate_mode" type="boolean">
+      Enable coordinate mode
+    </ResponseField>
+    <ResponseField name="pii_detection_enabled" type="boolean">
+      Enable PII detection
+    </ResponseField>
+    <ResponseField name="pii_detection_mask" type="boolean">
+      Mask detected PII
+    </ResponseField>
+    <ResponseField name="prompt_injection_detection_enabled" type="boolean">
+      Enable prompt injection detection
+    </ResponseField>
+    <ResponseField name="openai_moderation_enabled" type="boolean">
+      Enable OpenAI content moderation
+    </ResponseField>
+    <ResponseField name="openai_moderation_categories" type="array">
+      Specific moderation categories to enforce
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="on_prem_event_streaming" type="boolean">
+  Whether on-premises event streaming is enabled
+</ResponseField>
+
+<ResponseField name="prompts_caching_enabled" type="boolean">
+  Whether prompt caching is enabled for performance
+</ResponseField>
+
+<ResponseField name="is_generalist" type="boolean">
+  Whether this is a generalist agent (vs. specialized)
+</ResponseField>
+
+<ResponseField name="oas" type="object">
+  OpenAPI Specification for the agent's capabilities
+  <Expandable title="OAS Object">
+    <ResponseField name="openapi" type="string">
+      OpenAPI version (e.g., `3.1.0`)
+    </ResponseField>
+    <ResponseField name="info" type="object">
+      API metadata (title, version)
+    </ResponseField>
+    <ResponseField name="paths" type="object">
+      API paths and operations
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="graph" type="array">
+  Visual graph representation of agent's tool and MCP connections
+  <Expandable title="Graph Node Object">
+    <ResponseField name="id" type="string">
+      UUID of the graph node
+    </ResponseField>
+    <ResponseField name="item_id" type="string">
+      Reference to the tool or MCP item
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      Display name of the node
+    </ResponseField>
+    <ResponseField name="type" type="string">
+      Node type: `tool`, `mcp`, etc.
+    </ResponseField>
+    <ResponseField name="sub_type" type="string | null">
+      Sub-type classification if applicable
+    </ResponseField>
+    <ResponseField name="targets" type="array">
+      Connected target nodes
+    </ResponseField>
+    <ResponseField name="settings" type="object">
+      Node-specific configuration settings
+    </ResponseField>
+    <ResponseField name="llm_settings" type="array">
+      LLM configuration for this node
+    </ResponseField>
+    <ResponseField name="is_first" type="boolean">
+      Whether this is the first node in execution
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="llm_settings" type="array">
+  Array of LLM configuration settings
+  <Expandable title="LLM Settings Object">
+    <ResponseField name="type" type="string">
+      Settings type: `before`, `after`, etc.
+    </ResponseField>
+    <ResponseField name="provider" type="string">
+      LLM provider (e.g., `openai`)
+    </ResponseField>
+    <ResponseField name="model" type="string">
+      Model identifier
+    </ResponseField>
+    <ResponseField name="temperature" type="number">
+      Temperature parameter for generation
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="webhook_url" type="string">
+  Webhook URL for asynchronous notifications
+</ResponseField>
+
 ## Example Request
 
 ```bash
@@ -88,40 +362,298 @@ curl -X GET -H "x-api-key: YOUR_API_KEY" \
 
 ```json
 {
-  "id": "0045cf07-8af6-4c69-8d13-0a13c631a5d0",
-  "unique_name": "lavender-wolverine",
-  "name": "DevOps AI Agent",
-  "icon": "🚀",
-  "avatar": "male-avatar",
-  "status": "ACTIVE",
-  "organization_id": "91fbe9bc-35b3-41e8-b59d-922fb5a0f031",
-  "deployment_type": "container",
+  "id": "3496ccfc-4547-4142-8fc2-b35c9a1c201d",
+  "unique_name": "bronze-condor",
+  "origin_template": null,
+  "delegation_end_strategy": "return-to-start",
+  "environment_id": "11968157-c0ed-4b8a-a05e-be1d4bb2e922",
+  "sub_agents_continuous_thread": true,
+  "deployment_type": "serverless",
+  "created_by_prompt": null,
+  "prompts": [
+    "Give me NVDA's latest earnings post-mortem with transcript highlights",
+    "Create a notebook template for earnings drift analysis",
+    "Decompose the last 24 hours' global risk-on/off rotation and its triggers",
+    "What surprised the market this morning, not what was expected?",
+    "Find sectors with consensus revisions up but prices flat",
+    "List upcoming earnings in the next three days for my watchlist"
+  ],
+  "is_latest": true,
+  "name": "Finance Agent",
   "framework": "agno",
-  "model_provider": "openai",
-  "model_name": "gpt-4.1",
-  "type": "manager",
-  "delegation_type": "router",
-  "created_at": "2025-08-22T01:45:30.341088Z",
-  "instructions": {
-    "role": [
-      "users can't access your files so upload the files and use markdwon when comment with public link. ",
-      "Don't stop until complete all tools are valid.",
-      "generate_diagram can fail , retry with different code "
-    ],
-    "goal": [],
-    "general": "AI DevOps"
-  },
+  "description": "",
   "tools": [
     {
-      "id": "XpanderEmailServiceSendEmailWithHtmlOrTextContent",
-      "name": "Send Email with HTML Content",
+      "id": "XpanderDocTransformConvertMarkdownToPDF",
+      "name": "Markdown to PDF Converter",
+      "raw_description": "Converts Markdown content into a high-quality PDF file using advanced document transformation techniques.",
+      "function_description": "Converts Markdown content into a high-quality PDF file using advanced document transformation techniques.",
+      "path_params": {},
+      "query_params": {},
+      "body_schema": {
+        "markdown_text": {
+          "title": "Markdown Text",
+          "type": "string",
+          "example": "# Sample Markdown\n\nThis is a sample markdown text."
+        }
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query_params": {"type": "object", "properties": {}, "required": []},
+          "path_params": {"type": "object", "properties": {}, "required": []},
+          "body_params": {
+            "type": "object",
+            "properties": {
+              "markdown_text": {"type": "string", "description": "markdown_text"}
+            },
+            "required": ["markdown_text"]
+          },
+          "headers": {
+            "type": "object",
+            "properties": {
+              "toolcallreasoningtitle": {"type": "string"},
+              "toolcallreasoningdescription": {"type": "string"}
+            },
+            "required": ["toolcallreasoningtitle", "toolcallreasoningdescription"]
+          }
+        },
+        "required": ["query_params", "path_params", "body_params", "headers"]
+      },
       "method": "post",
-      "path": "/operation/XpanderEmailServiceSendEmailWithHtmlOrTextContent/messaging/send_email"
+      "path": "/operation/XpanderDocTransformConvertMarkdownToPDF/transformers/markdown_to_pdf"
     }
   ],
+  "icon": "🚀",
+  "avatar": "male-avatar",
+  "source_nodes": [
+    {
+      "id": "f1ad7f5b-c289-4195-bf40-d126e0205738",
+      "type": "assistant",
+      "targets": null,
+      "metadata": {}
+    },
+    {
+      "id": "9d0f63f5-6022-4a76-b3cd-fe6ea8cc2adf",
+      "type": "sdk",
+      "targets": null,
+      "metadata": {}
+    }
+  ],
+  "attached_tools": [
+    {
+      "id": "8904cc9f-a3f2-4e8e-8123-036dbaecb951",
+      "operation_ids": ["68259fd3ff1266b1d6022ef0", "68259fd3ff1266b1d6022eef"]
+    }
+  ],
+  "access_scope": "organizational",
+  "instructions": {
+    "role": [
+      "Maintain a formal, concise, and professional tone at all times.",
+      "Provide only evidence-backed financial analytics and explanations."
+    ],
+    "goal": [
+      "Deliver accurate, explainable, and timely financial insights across multiple asset classes.",
+      "Ensure all outputs include clear citations, assumptions, and audit trails."
+    ],
+    "general": "I am an institutional-grade Finance and Markets Analysis Agent."
+  },
+  "oas": {
+    "info": {"title": "App", "version": "1.0.0"},
+    "paths": {
+      "/3496ccfc-4547-4142-8fc2-b35c9a1c201d": {
+        "get": {
+          "description": "This operation processes finance-related tasks.",
+          "operationId": "XpanderProcessFinanceTasks"
+        }
+      }
+    },
+    "openapi": "3.1.0"
+  },
+  "graph": [
+    {
+      "id": "81a03e79-e8af-4862-a23e-83f6f6c62357",
+      "item_id": "7128d3b3-799b-4525-847e-ed966b674ec2",
+      "name": "MCP",
+      "type": "mcp",
+      "sub_type": null,
+      "targets": [],
+      "settings": {
+        "mcp_settings": {
+          "type": "remote",
+          "name": "Alpha Vantage",
+          "url": "https://mcp.alphavantage.co/mcp",
+          "transport": "streamable-http"
+        }
+      },
+      "llm_settings": [],
+      "is_first": false
+    }
+  ],
+  "llm_settings": [
+    {
+      "type": "before",
+      "provider": "openai",
+      "model": "gpt-4.1",
+      "temperature": 0.0
+    }
+  ],
+  "status": "ACTIVE",
   "knowledge_bases": [],
-  "deletable": true,
+  "version": 24,
+  "organization_id": "91fbe9bc-35b3-41e8-b59d-922fb5a0f031",
+  "created_by": "c9b4465d-0795-4493-9a23-8fc7cf6d3283",
+  "created_at": "2025-11-09T03:42:35.016813Z",
+  "type": "manager",
+  "delegation_type": "router",
+  "delegation_memory_strategy": "summarization",
+  "is_ai_employee": false,
   "using_nemo": false,
-  "webhook_url": "https://webhook.xpander.ai/?agent_id=0045cf07-8af6-4c69-8d13-0a13c631a5d0&asynchronous=false"
+  "deletable": true,
+  "model_provider": "openai",
+  "model_name": "gpt-5",
+  "llm_api_base": null,
+  "output_format": "markdown",
+  "output_schema": null,
+  "llm_credentials_key": null,
+  "llm_credentials_key_type": "xpander",
+  "llm_credentials": null,
+  "expected_output": "A concise, structured financial analysis report with evidence-backed insights.",
+  "agno_settings": {
+    "session_storage": true,
+    "user_memories": true,
+    "session_summaries": true,
+    "num_history_runs": 10,
+    "max_tool_calls_from_history": 0,
+    "tool_call_limit": 0,
+    "coordinate_mode": true,
+    "pii_detection_enabled": true,
+    "pii_detection_mask": true,
+    "prompt_injection_detection_enabled": true,
+    "openai_moderation_enabled": false,
+    "openai_moderation_categories": [""]
+  },
+  "on_prem_event_streaming": true,
+  "prompts_caching_enabled": false,
+  "is_generalist": false,
+  "webhook_url": "https://webhook.xpander.ai/?agent_id=3496ccfc-4547-4142-8fc2-b35c9a1c201d&asynchronous=false"
 }
+```
+
+## Common Use Cases
+
+### Extracting Agent Configuration Details
+
+Get comprehensive agent information including tools, settings, and webhook URLs:
+
+<CodeGroup>
+```python Python
+import requests
+
+API_KEY = 'your-api-key'
+BASE_URL = 'https://api.xpander.ai/v1'
+
+def get_agent_config(agent_id: str):
+  response = requests.get(
+    f'{BASE_URL}/agents/{agent_id}',
+    headers={'x-api-key': API_KEY}
+  )
+
+  agent = response.json()
+
+  # Extract key configuration
+  config = {
+    'name': agent['name'],
+    'status': agent['status'],
+    'webhook_url': agent['webhook_url'],
+    'model': f"{agent['model_provider']}/{agent['model_name']}",
+    'framework': agent['framework'],
+    'version': agent['version'],
+    'tools_count': len(agent['tools']),
+    'deployment': agent['deployment_type']
+  }
+
+  return config
+
+# Example usage
+config = get_agent_config('3496ccfc-4547-4142-8fc2-b35c9a1c201d')
+print(config)
+```
+
+```javascript JavaScript
+const API_KEY = 'your-api-key';
+const BASE_URL = 'https://api.xpander.ai/v1';
+
+async function getAgentConfig(agentId) {
+  const response = await fetch(`${BASE_URL}/agents/${agentId}`, {
+    headers: { 'x-api-key': API_KEY }
+  });
+
+  const agent = await response.json();
+
+  // Extract key configuration
+  const config = {
+    name: agent.name,
+    status: agent.status,
+    webhook_url: agent.webhook_url,
+    model: `${agent.model_provider}/${agent.model_name}`,
+    framework: agent.framework,
+    version: agent.version,
+    tools_count: agent.tools.length,
+    deployment: agent.deployment_type
+  };
+
+  return config;
+}
+
+// Example usage
+const config = await getAgentConfig('3496ccfc-4547-4142-8fc2-b35c9a1c201d');
+console.log(config);
+```
+
+```bash cURL
+# Get agent and extract webhook URL
+curl -s -X GET "https://api.xpander.ai/v1/agents/3496ccfc-4547-4142-8fc2-b35c9a1c201d" \
+  -H "x-api-key: YOUR_API_KEY" | \
+  jq '{name, status, webhook_url, model: "\(.model_provider)/\(.model_name)", version}'
+```
+</CodeGroup>
+
+**Example Output:**
+```json
+{
+  "name": "Finance Agent",
+  "status": "ACTIVE",
+  "webhook_url": "https://webhook.xpander.ai/?agent_id=3496ccfc-4547-4142-8fc2-b35c9a1c201d&asynchronous=false",
+  "model": "openai/gpt-5",
+  "version": 25
+}
+```
+
+### Retrieving Agent Tools and Capabilities
+
+Inspect available tools and their configurations for integration planning:
+
+```python
+def list_agent_tools(agent_id: str):
+  response = requests.get(
+    f'{BASE_URL}/agents/{agent_id}',
+    headers={'x-api-key': API_KEY}
+  )
+
+  agent = response.json()
+
+  print(f"Agent: {agent['name']}")
+  print(f"Total Tools: {len(agent['tools'])}\n")
+
+  for tool in agent['tools']:
+    print(f"📦 {tool['name']}")
+    print(f"   ID: {tool['id']}")
+    print(f"   Method: {tool['method'].upper()}")
+    print(f"   Path: {tool['path']}")
+    print(f"   Description: {tool['raw_description'][:100]}...")
+    print()
+
+# Example usage
+list_agent_tools('3496ccfc-4547-4142-8fc2-b35c9a1c201d')
 ```
