@@ -1,0 +1,193 @@
+---
+title: "API Documentation"
+description: "REST API, Python SDK, and MCP Protocol for building and managing AI agents"
+icon: "book-open"
+mode: "wide"
+---
+
+Choose your integration method based on your use case:
+
+<CardGroup cols={3}>
+  <Card title="REST API" icon="globe" href="/API reference/rest-api" color="#753CFF">
+    **Platform REST API**
+    
+    Universal HTTP endpoints for managing agents, tasks, and knowledge bases from any programming language.
+  </Card>
+  
+  <Card title="Python SDK" icon="code" href="/API reference/sdk" color="#9B70FF">
+    **SDK for Building Agents**
+    
+    Comprehensive Python library with decorators, event handling, and framework integration for building sophisticated AI agents.
+  </Card>
+  
+  <Card title="Model Context Protocol" icon="plug" href="/API reference/mcp" color="#4A2C99">
+    **MCP for Claude & IDEs**
+    
+    Expose agents and tools as MCP servers for Claude Desktop, Cursor, and other MCP clients.
+  </Card>
+</CardGroup>
+
+## Quick Comparison
+
+| Feature | REST API | Python SDK | Model Context Protocol |
+|---------|----------|------------|--------------|
+| **Language Support** | Any language | Python only | Any MCP client |
+| **Primary Use Case** | Control plane operations | Building agents | Discovering & invoking agents |
+| **Setup Complexity** | Minimal (API key) | pip install | MCP client config |
+| **Best For** | CRUD operations, integrations | Agent development, workflows | IDE/AI client integration |
+| **Real-time** | Polling or webhooks | Event decorators | Server-Sent Events |
+
+## Getting Started
+
+<Steps>
+  <Step title="Get API Credentials">
+    Sign up at [app.xpander.ai](https://app.xpander.ai) and generate your API key from the dashboard
+  </Step>
+  
+  <Step title="Choose Your Integration">
+    - **REST API**: For universal access from any language
+    - **Python SDK**: For building agents in Python
+    - **MCP Protocol**: For IDE and AI client integration
+  </Step>
+  
+  <Step title="Follow the Guide">
+    Each integration method has comprehensive documentation, examples, and quick start guides
+  </Step>
+</Steps>
+
+## REST API - Platform
+
+The REST API provides complete control over your resources:
+
+```bash
+# List agents
+curl -X GET "https://api.xpander.ai/v1/agents" \
+  -H "x-api-key: YOUR_API_KEY"
+
+# Invoke an agent
+curl -X POST "https://api.xpander.ai/v1/agents/{agent_id}/invoke" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"input": {"text": "Analyze this data"}}'
+```
+
+<Card title="Explore REST API" icon="arrow-right" href="/API reference/rest-api">
+  View complete REST API documentation with all endpoints
+</Card>
+
+## Python SDK - Build Agents
+
+The Python SDK enables rapid agent development with powerful abstractions:
+
+```python
+from xpander_sdk import Agents, on_task
+
+# Initialize SDK
+agents = Agents()
+
+# Define task handler
+@on_task
+async def handle_task(task):
+    print(f"Processing: {task.id}")
+    task.result = "Task completed"
+    return task
+
+# List and invoke agents
+agent = await agents.aget("agent-id")
+task = await agent.acreate_task(prompt="Analyze data")
+```
+
+<Card title="Explore Python SDK" icon="arrow-right" href="/API reference/sdk">
+  View complete SDK documentation with modules and examples
+</Card>
+
+## Model Context Protocol - Expose to Claude & IDEs
+
+Connect your agents and tools to Claude Desktop, Cursor, and other MCP clients:
+
+```json
+{
+  "mcpServers": {
+    "xpander.ai": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://api.xpander.ai/mcp/",
+        "--header",
+        "x-api-key:YOUR_API_KEY"
+      ]
+    }
+  }
+}
+```
+
+<Card title="Explore MCP Integration" icon="arrow-right" href="/API reference/mcp">
+  View complete MCP setup guide with examples
+</Card>
+
+## Authentication
+
+All integration methods use API key authentication:
+
+```bash
+export XPANDER_API_KEY="your-api-key"
+```
+
+Get your API key from the [dashboard](https://app.xpander.ai).
+
+## Common Use Cases
+
+<AccordionGroup>
+  <Accordion title="Building a Multi-Agent System" icon="robot">
+    **Use Python SDK** for building agents with complex workflows, tool integrations, and event handling. The SDK provides decorators and lifecycle management for sophisticated agent architectures.
+  </Accordion>
+  
+  <Accordion title="Integrating with Existing Applications" icon="globe">
+    **Use REST API** for integrating xpander into existing applications written in any language. Perfect for microservices, web apps, and mobile applications.
+  </Accordion>
+  
+  <Accordion title="IDE and AI Client Access" icon="plug">
+    **Use Model Context Protocol** for accessing agents from Claude Desktop, Cursor, VSCode, or any MCP-compatible client. Enables seamless agent discovery and invocation from your development environment.
+  </Accordion>
+  
+  <Accordion title="Hybrid Approach" icon="layer-group">
+    **Combine all three**: Build agents with the SDK, manage them via REST API, and access them through MCP clients. All methods work together seamlessly.
+  </Accordion>
+</AccordionGroup>
+
+## API Resources
+
+<CardGroup cols={2}>
+  <Card title="REST API Endpoints" icon="list" href="/API reference/v1/agents/list-agents">
+    Browse all REST API endpoints
+  </Card>
+  
+  <Card title="SDK Modules" icon="cube" href="/API reference/agents">
+    Explore SDK modules and classes
+  </Card>
+  
+  <Card title="Examples" icon="code" href="/Examples">
+    View code examples and tutorials
+  </Card>
+  
+  <Card title="User Guide" icon="book" href="/user-guide">
+    Complete platform documentation
+  </Card>
+</CardGroup>
+
+## Support & Community
+
+<CardGroup cols={3}>
+  <Card title="Slack Community" icon="slack" href="https://join.slack.com/t/xpandercommunity/shared_invite/zt-2mt2xkxkz-omM7f~_h2jcuzFudrYtZQQ">
+    Join our community
+  </Card>
+  
+  <Card title="Discord" icon="discord" href="https://discord.gg/CUcp4WWh5g">
+    Developer discussions
+  </Card>
+  
+  <Card title="GitHub" icon="github" href="https://github.com/xpander-ai">
+    View source code
+  </Card>
+</CardGroup>

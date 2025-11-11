@@ -1,0 +1,376 @@
+---
+title: "@on_boot and @on_shutdown Decorators"
+description: "API reference for lifecycle management decorators for initialization and cleanup tasks"
+icon: "power-off"
+mode: "wide"
+---
+
+# Lifecycle Decorators
+
+The **@on_boot** and **@on_shutdown** decorators provide application lifecycle management for initialization and cleanup tasks in xpander.ai agents.
+
+## Overview
+
+These decorators allow you to:
+- **@on_boot**: Execute initialization code before event listeners start
+- **@on_shutdown**: Execute cleanup code during application shutdown
+- Support both synchronous and asynchronous functions
+- Execute handlers in registration order
+
+## @on_boot Decorator
+
+The **@on_boot** decorator registers functions to run during application startup, before any event listeners are established.
+
+### Syntax
+
+```python
+from xpander_sdk import on_boot
+
+@on_boot
+def initialization_function():
+    # Your initialization logic
+    pass
+```
+
+### Characteristics
+
+- Executes **before** event listeners are set up
+- Executes **before** task processing begins  
+- If any boot handler fails, the application **will not start**
+- Handlers execute in registration order
+- Supports both async and sync functions
+
+### Usage Examples
+
+#### Basic Synchronous Handler
+
+```python
+from xpander_sdk import on_boot
+
+@on_boot
+def initialize_database():
+    """Initialize database connection."""
+    print("Setting up database connection...")
+    # Database initialization logic
+    print("Database connected successfully")
+```
+
+#### Asynchronous Handler
+
+```python
+from xpander_sdk import on_boot
+import asyncio
+
+@on_boot
+async def setup_external_services():
+    """Async initialization of external services."""
+    print("Connecting to external APIs...")
+    await asyncio.sleep(0.1)  # Simulate async setup
+    print("External services configured")
+```
+
+#### Environment Validation
+
+```python
+import os
+from xpander_sdk import on_boot
+
+@on_boot
+def validate_environment():
+    """Validate required environment variables."""
+    required_vars = ["API_KEY", "DATABASE_URL"]
+    missing = [var for var in required_vars if not os.getenv(var)]
+    if missing:
+        raise EnvironmentError(f"Missing required variables: {missing}")
+    print("Environment validation passed")
+```
+
+#### Resource Allocation
+
+```python
+from xpander_sdk import on_boot
+
+# Global variable to store shared resource
+shared_cache = None
+
+@on_boot
+def initialize_cache():
+    """Initialize shared cache."""
+    global shared_cache
+    shared_cache = {}
+    print("Cache initialized")
+```
+
+## @on_shutdown Decorator
+
+The **@on_shutdown** decorator registers functions to run during application shutdown, after event listeners have stopped.
+
+### Syntax
+
+```python
+from xpander_sdk import on_shutdown
+
+@on_shutdown
+def cleanup_function():
+    # Your cleanup logic
+    pass
+```
+
+### Characteristics
+
+- Executes **after** event listeners are stopped
+- Executes **before** final application cleanup
+- Exceptions are **logged but do not prevent shutdown**
+- Handlers execute in registration order
+- Supports both async and sync functions
+
+### Usage Examples
+
+#### Basic Synchronous Handler
+
+```python
+from xpander_sdk import on_shutdown
+
+@on_shutdown
+def save_application_state():
+    """Save application state before shutdown."""
+    print("Saving application state...")
+    # State saving logic
+    print("Application state saved")
+```
+
+#### Asynchronous Handler
+
+```python
+from xpander_sdk import on_shutdown
+import asyncio
+
+@on_shutdown
+async def cleanup_connections():
+    """Async cleanup of connections."""
+    print("Closing database connections...")
+    await asyncio.sleep(0.1)  # Simulate async cleanup
+    print("All connections closed")
+```
+
+#### Resource Cleanup
+
+```python
+from xpander_sdk import on_shutdown
+
+@on_shutdown
+def cleanup_resources():
+    """Clean up allocated resources."""
+    global shared_cache
+    if shared_cache:
+        shared_cache.clear()
+        print("Cache cleared")
+```
+
+#### Graceful Error Handling
+
+```python
+from xpander_sdk import on_shutdown
+import asyncio
+
+@on_shutdown
+async def graceful_cleanup():
+    """Cleanup with timeout and error handling."""
+    try:
+        # Attempt graceful cleanup with timeout
+        await asyncio.wait_for(cleanup_database(), timeout=5.0)
+        print("Database cleanup completed")
+    except asyncio.TimeoutError:
+        print("Warning: Database cleanup timed out")
+    except Exception as e:
+        print(f"Error during cleanup: {e}")
+        # Errors in shutdown handlers don't stop the shutdown process
+```
+
+## Combined Usage
+
+You can use both decorators together for complete lifecycle management:
+
+```python
+from xpander_sdk import on_boot, on_shutdown, on_task
+
+# Global resources
+database_connection = None
+api_client = None
+
+@on_boot
+async def initialize_services():
+    """Initialize all required services."""
+    global database_connection, api_client
+    
+    print("Initializing services...")
+    
+    # Setup database
+    database_connection = await connect_to_database()
+    print("Database connected")
+    
+    # Setup API client
+    api_client = create_api_client()
+    print("API client configured")
+    
+    print("All services initialized")
+
+@on_task
+async def process_task(task):
+    """Process incoming tasks using initialized resources."""
+    print(f"Processing task {task.id}")
+    
+    # Use global resources
+    data = await database_connection.fetch_data(task.input.text)
+    result = await api_client.process(data)
+    
+    task.result = result
+    return task
+
+@on_shutdown
+async def cleanup_services():
+    """Clean up all services."""
+    global database_connection, api_client
+    
+    print("Cleaning up services...")
+    
+    if database_connection:
+        await database_connection.close()
+        print("Database connection closed")
+    
+    if api_client:
+        api_client.close()
+        print("API client closed")
+    
+    print("All services cleaned up")
+```
+
+## Multiple Handlers
+
+You can register multiple handlers of each type, and they will execute in registration order:
+
+```python
+from xpander_sdk import on_boot, on_shutdown
+
+# Multiple boot handlers - execute in order
+@on_boot
+def first_boot_task():
+    print("1. Loading configuration...")
+
+@on_boot
+async def second_boot_task():
+    print("2. Connecting to services...")
+    # Async setup logic
+
+@on_boot
+def third_boot_task():
+    print("3. Final setup steps...")
+
+# Multiple shutdown handlers - execute in order
+@on_shutdown
+async def first_cleanup():
+    print("1. Stopping background processes...")
+
+@on_shutdown
+def second_cleanup():
+    print("2. Saving final state...")
+
+@on_shutdown
+def third_cleanup():
+    print("3. Final cleanup complete")
+```
+
+## Configuration Support
+
+Both decorators support optional configuration parameters:
+
+```python
+from xpander_sdk import on_boot, on_shutdown, Configuration
+
+custom_config = Configuration(
+    api_key="custom-key",
+    base_url="https://custom.api.url"
+)
+
+@on_boot(configuration=custom_config)
+async def custom_boot_handler():
+    """Boot handler with custom configuration."""
+    print("Running with custom configuration")
+
+@on_shutdown(configuration=custom_config)
+def custom_shutdown_handler():
+    """Shutdown handler with custom configuration."""
+    print("Cleaning up with custom configuration")
+```
+
+## Error Handling
+
+### Boot Handler Errors
+
+Boot handlers use **fail-fast** behavior - if any boot handler fails, the application will not start:
+
+```python
+@on_boot
+def critical_setup():
+    if not check_license():
+        raise RuntimeError("Invalid license - cannot start application")
+    print("License validated")
+```
+
+### Shutdown Handler Errors
+
+Shutdown handlers use **graceful degradation** - errors are logged but don't prevent shutdown:
+
+```python
+@on_shutdown
+def cleanup_with_errors():
+    try:
+        risky_cleanup_operation()
+    except Exception as e:
+        # This error will be logged but won't stop shutdown
+        print(f"Cleanup error: {e}")
+```
+
+## Best Practices
+
+### Boot Handlers
+
+1. **Keep them fast** - Boot handlers delay application startup
+2. **Validate early** - Check requirements before task processing begins  
+3. **Handle dependencies** - Order handlers based on dependencies
+4. **Use proper error handling** - Boot failures should stop startup
+
+### Shutdown Handlers
+
+1. **Order matters** - Put critical cleanup first, optional tasks last
+2. **Be defensive** - Handle cleanup gracefully even if resources are unavailable
+3. **Set timeouts** - Don't block shutdown indefinitely
+4. **Log appropriately** - Important for debugging shutdown issues
+
+## Execution Flow
+
+The complete application lifecycle with these decorators:
+
+```
+1. Application Start
+   ↓
+2. Execute @on_boot handlers (in registration order)
+   ↓
+3. Set up Event Listeners  
+   ↓
+4. Task Processing (@on_task handlers)
+   ↓
+5. Shutdown Signal Received
+   ↓
+6. Stop Event Listeners
+   ↓
+7. Execute @on_shutdown handlers (in registration order)
+   ↓
+8. Application Exit
+```
+
+## Related Documentation
+
+- [Events Module](/API reference/events): Full events module documentation
+- [@on_task Decorator](/API reference/events/API reference): Task handler decorator
+- [Configuration](/API reference/configuration): SDK configuration options

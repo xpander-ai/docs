@@ -1,0 +1,427 @@
+---
+title: "SDK Types Reference"
+description: "Complete reference for all data types, enumerations, and models used across the xpander.ai SDK"
+icon: "code"
+mode: "wide"
+---
+
+# SDK Types Reference
+
+The **xpander.ai SDK** uses various data types, enumerations, and models across its modules. This reference provides comprehensive documentation for all shared types.
+
+## Enumerations
+
+### `AgentExecutionStatus`
+
+Enumeration of task execution statuses used throughout the Tasks and Agents modules.
+
+```python
+class AgentExecutionStatus:
+    Pending = "pending"
+    Executing = "executing"
+    Paused = "paused"
+    Error = "error"
+    Failed = "failed"
+    Completed = "completed"
+    Stopped = "stopped"
+```
+
+**Values:**
+- `Pending`: Task is queued and waiting to start
+- `Executing`: Task is currently being executed
+- `Paused`: Task execution is temporarily paused
+- `Error`: Task encountered an error during execution
+- `Failed`: Task execution failed to complete successfully
+- `Completed`: Task finished successfully
+- `Stopped`: Task was manually stopped
+
+**Usage:**
+```python
+from xpander_sdk.types import AgentExecutionStatus
+
+# Check task status
+if task.status == AgentExecutionStatus.Completed:
+    print("Task finished successfully!")
+```
+
+---
+
+### `AgentDeploymentType`
+
+Enumeration of supported deployment types for agents.
+
+```python
+class AgentDeploymentType:
+    Serverless = "serverless"
+    Container = "container"
+```
+
+**Values:**
+- `Serverless`: Agent runs in a serverless environment, ideal for lightweight tasks
+- `Container`: Agent runs in a containerized environment, suitable for resource-intensive operations
+
+**Usage:**
+```python
+from xpander_sdk import AgentDeploymentType
+
+# Check agent deployment type
+if agent.deployment_type == AgentDeploymentType.Serverless:
+    print("Agent configured for serverless deployment")
+elif agent.deployment_type == AgentDeploymentType.Container:
+    print("Agent configured for container deployment")
+```
+
+---
+
+### `OutputFormat`
+
+Enumeration of supported output formats for task results.
+
+```python
+class OutputFormat:
+    Text = "text"
+    Json = "json"
+    Markdown = "markdown"
+    Html = "html"
+```
+
+**Values:**
+- `Text`: Plain text output
+- `Json`: JSON-formatted output
+- `Markdown`: Markdown-formatted output
+- `Html`: HTML-formatted output
+
+**Usage:**
+```python
+from xpander_sdk.types import OutputFormat
+
+task = await agent.acreate_task(
+    prompt="Generate a report",
+    output_format=OutputFormat.Json
+)
+```
+
+---
+
+### `TaskUpdateEventType`
+
+Enumeration of task event types for real-time streaming.
+
+```python
+class TaskUpdateEventType:
+    TaskCreated = "task_created"
+    TaskUpdated = "task_updated"
+    TaskFinished = "task_finished"
+    ToolCallRequest = "tool_call_request"
+    ToolCallResult = "tool_call_result"
+    SubAgentTrigger = "sub_agent_trigger"
+```
+
+**Values:**
+- `TaskCreated`: Task was created
+- `TaskUpdated`: Task status or data was updated
+- `TaskFinished`: Task execution completed
+- `ToolCallRequest`: Agent is requesting to use a tool
+- `ToolCallResult`: Tool execution result is available
+- `SubAgentTrigger`: A sub-agent is triggered during execution
+
+**Usage:**
+```python
+from xpander_sdk.types import TaskUpdateEventType
+
+async for event in task.aevents():
+    if event.type == TaskUpdateEventType.TaskFinished:
+        print("Task completed!")
+        break
+```
+
+## Data Models
+
+### `AgentExecutionInput`
+
+Input configuration for task execution.
+
+```python
+class AgentExecutionInput:
+    text: Optional[str] = ""
+    files: Optional[List[str]] = []
+    user: Optional[User] = None
+```
+
+**Properties:**
+- `text` (Optional[str]): The main prompt or instruction text
+- `files` (Optional[List[str]]): URLs of files to process with the task
+- `user` (Optional[User]): User details associated with task execution
+
+**Note:** Either `text` or `files` must be provided (validated automatically).
+
+---
+
+### `TaskUpdateEvent`
+
+Real-time event data from task execution.
+
+```python
+class TaskUpdateEvent:
+    type: TaskUpdateEventType
+    task_id: str
+    organization_id: str
+    time: datetime
+    data: Union[Task, ToolCallRequest, ToolCallResult]
+```
+
+**Properties:**
+- `type` (TaskUpdateEventType): The type of event
+- `task_id` (str): Unique identifier of the associated task
+- `organization_id` (str): Organization identifier
+- `time` (datetime): Timestamp when the event occurred
+- `data` (Union[Task, ToolCallRequest, ToolCallResult]): Event-specific data payload
+
+**Usage:**
+```python
+async for event in task.aevents():
+    print(f"Event: {event.type} at {event.time}")
+    print(f"Data: {event.data}")
+```
+
+---
+
+### `ToolCallRequest`
+
+Tool invocation request event data.
+
+```python
+class ToolCallRequest:
+    request_id: str
+    operation_id: str
+    tool_call_id: Optional[str] = None
+    graph_node_id: Optional[str] = None
+    tool_name: Optional[str] = None
+    payload: Optional[Any] = None
+```
+
+**Properties:**
+- `request_id` (str): Unique identifier for this specific request
+- `operation_id` (str): Unique identifier for the operation
+- `tool_call_id` (Optional[str]): Tool call identifier
+- `graph_node_id` (Optional[str]): Graph node identifier
+- `tool_name` (Optional[str]): Name of the tool being requested
+- `payload` (Optional[Any]): Input parameters for the tool
+
+**Usage:**
+```python
+async for event in task.aevents():
+    if event.type == TaskUpdateEventType.ToolCallRequest:
+        tool_request: ToolCallRequest = event.data
+        print(f"Tool requested: {tool_request.tool_name}")
+        print(f"Payload: {tool_request.payload}")
+```
+
+---
+
+### `ToolCallResult`
+
+Tool invocation result event data.
+
+```python
+class ToolCallResult:
+    request_id: str
+    operation_id: str
+    tool_call_id: Optional[str] = None
+    graph_node_id: Optional[str] = None
+    tool_name: Optional[str] = None
+    payload: Optional[Any] = None
+    result: Optional[Any] = None
+    is_error: Optional[bool] = False
+```
+
+**Properties:**
+- `request_id` (str): Unique identifier for the original request
+- `operation_id` (str): Unique identifier for the operation
+- `tool_call_id` (Optional[str]): Tool call identifier
+- `graph_node_id` (Optional[str]): Graph node identifier
+- `tool_name` (Optional[str]): Name of the tool that was executed
+- `payload` (Optional[Any]): Original payload from the request
+- `result` (Optional[Any]): Result data from the tool execution
+- `is_error` (Optional[bool]): Whether the tool execution resulted in an error
+
+**Usage:**
+```python
+async for event in task.aevents():
+    if event.type == TaskUpdateEventType.ToolCallResult:
+        tool_result: ToolCallResult = event.data
+        if tool_result.is_error:
+            print(f"Tool error: {tool_result.result}")
+        else:
+            print(f"Tool success: {tool_result.result}")
+```
+
+---
+
+### `ToolInvocationResult`
+
+Result of invoking a tool, containing details about the execution outcome.
+
+```python
+class ToolInvocationResult:
+    result: Any
+    is_success: bool
+    error: Optional[str]
+    execution_time: float
+```
+
+**Properties:**
+- `result` (Any): The actual result data from the tool execution
+- `is_success` (bool): Whether the tool execution was successful
+- `error` (Optional[str]): Error message if execution failed
+- `execution_time` (float): Time taken for execution in seconds
+
+**Usage:**
+```python
+result = await tool.ainvoke("agent-123", {"param": "value"})
+if result.is_success:
+    print(f"Result: {result.result}")
+    print(f"Execution time: {result.execution_time}s")
+else:
+    print(f"Error: {result.error}")
+```
+
+---
+
+### `KnowledgeBaseDocumentItem`
+
+Represents a document within a knowledge base.
+
+```python
+class KnowledgeBaseDocumentItem:
+    id: str
+    document_url: str
+    added_at: datetime
+```
+
+**Properties:**
+- `id` (str): Unique identifier for the document
+- `document_url` (str): URL where the document was originally located
+- `added_at` (datetime): Timestamp when the document was added
+
+---
+
+### `KnowledgeBaseSearchResult`
+
+Represents a search result from a knowledge base.
+
+```python
+class KnowledgeBaseSearchResult:
+    content: str
+    score: float
+```
+
+**Properties:**
+- `content` (str): The matching content from the knowledge base
+- `score` (float): Relevance score for the search result (0.0 to 1.0)
+
+**Usage:**
+```python
+results = await kb.asearch("authentication methods")
+for result in results:
+    print(f"Score: {result.score:.3f}")
+    print(f"Content: {result.content[:200]}...")
+```
+
+## Common Patterns
+
+### Type Checking
+
+```python
+from xpander_sdk.types import TaskUpdateEventType, ToolCallRequest, ToolCallResult
+
+async for event in task.aevents():
+    if event.type == TaskUpdateEventType.ToolCallRequest:
+        # Type-safe access to ToolCallRequest properties
+        tool_request: ToolCallRequest = event.data
+        print(f"Tool: {tool_request.tool_name}")
+    
+    elif event.type == TaskUpdateEventType.ToolCallResult:
+        # Type-safe access to ToolCallResult properties
+        tool_result: ToolCallResult = event.data
+        print(f"Success: {not tool_result.is_error}")
+```
+
+### Status Comparisons
+
+```python
+from xpander_sdk.types import AgentExecutionStatus
+
+def is_task_complete(task) -> bool:
+    return task.status in [
+        AgentExecutionStatus.Completed,
+        AgentExecutionStatus.Failed,
+        AgentExecutionStatus.Error,
+        AgentExecutionStatus.Stopped
+    ]
+
+def is_task_running(task) -> bool:
+    return task.status == AgentExecutionStatus.Executing
+```
+
+### Output Format Selection
+
+```python
+from xpander_sdk.types import OutputFormat
+
+def get_task_output_format(structured: bool = False) -> OutputFormat:
+    return OutputFormat.Json if structured else OutputFormat.Text
+
+# Usage
+task = await agent.acreate_task(
+    prompt="Generate a report",
+    output_format=get_task_output_format(structured=True)
+)
+```
+
+## Import Patterns
+
+### Individual Types
+
+```python
+from xpander_sdk.modules.tasks.models.task import AgentExecutionStatus
+from xpander_sdk.models.shared import OutputFormat
+from xpander_sdk.modules.tasks.sub_modules.task import TaskUpdateEvent
+from xpander_sdk.modules.agents.models.agent import AgentDeploymentType
+```
+
+### All Types
+
+```python
+# Import modules containing types
+from xpander_sdk.modules.tasks.models import task as task_models
+from xpander_sdk.models import events, shared
+
+# Access types with module namespace
+if task.status == task_models.AgentExecutionStatus.Completed:
+    print("Task finished!")
+```
+
+### Specific Module Types
+
+```python
+# For tasks-related types
+from xpander_sdk.modules.tasks.models.task import AgentExecutionStatus
+from xpander_sdk.models.events import TaskUpdateEventType, ToolCallRequest, ToolCallResult
+from xpander_sdk.modules.tasks.sub_modules.task import TaskUpdateEvent
+
+# For knowledge base types
+from xpander_sdk.types import (
+    KnowledgeBaseDocumentItem,
+    KnowledgeBaseSearchResult
+)
+```
+
+## Related Documentation
+
+- [Agents Module](/API reference/agents): Using types with agent operations
+- [Tasks Module](/API reference/tasks): Task execution and status types
+- [Tools Repository](/API reference/tools): Tool invocation result types
+- [Knowledge Bases](/API reference/knowledge): Document and search result types
+- [Events Module](/API reference/events): Event streaming types
+- [SDK Exceptions](/API reference/exceptions): Error handling types

@@ -1,0 +1,486 @@
+---
+title: "SDK Exceptions Reference"
+description: "Complete reference for all SDK exceptions and error handling patterns"
+icon: "triangle-exclamation"
+mode: "wide"
+---
+
+# SDK Exceptions
+
+The **xpander.ai SDK** provides a comprehensive exception system for handling errors gracefully. All SDK modules can raise specific exceptions that help you identify and handle different error conditions.
+
+## Core Exception Classes
+
+### `ModuleException`
+
+The base exception class for all SDK-related errors. All other SDK exceptions inherit from this class.
+
+```python
+class ModuleException(Exception):
+    status_code: int
+    description: str
+    details: Optional[Dict[str, Any]]
+```
+
+**Properties:**
+- `status_code` (int): HTTP status code associated with the error
+- `description` (str): Human-readable error description
+- `details` (Optional[Dict[str, Any]]): Additional error details when available
+
+**Example:**
+```python
+from xpander_sdk.exceptions import ModuleException
+
+try:
+    agents = Agents()
+    agent = await agents.aget("non-existent-agent")
+except ModuleException as e:
+    print(f"Error {e.status_code}: {e.description}")
+    if e.details:
+        print(f"Additional details: {e.details}")
+```
+
+## Common Error Scenarios
+
+### Authentication Errors
+
+**Status Code:** 401 (Unauthorized)
+
+Occurs when API key is missing, invalid, or expired.
+
+```python
+try:
+    agents = Agents()
+    agents_list = await agents.alist()
+except ModuleException as e:
+    if e.status_code == 401:
+        print("Authentication failed. Check your API key.")
+        print("Set XPANDER_API_KEY environment variable")
+```
+
+### Authorization Errors
+
+**Status Code:** 403 (Forbidden)
+
+Occurs when you don't have permission to access a resource.
+
+```python
+try:
+    agent = await agents.aget("restricted-agent-id")
+except ModuleException as e:
+    if e.status_code == 403:
+        print("Access denied. You don't have permission to access this agent.")
+```
+
+### Resource Not Found
+
+**Status Code:** 404 (Not Found)
+
+Occurs when a requested resource doesn't exist.
+
+```python
+try:
+    task = await tasks.aget("non-existent-task-id")
+except ModuleException as e:
+    if e.status_code == 404:
+        print("Task not found. Check the task ID.")
+```
+
+### Validation Errors
+
+**Status Code:** 400 (Bad Request)
+
+Occurs when request parameters are invalid or missing.
+
+```python
+try:
+    task = await agent.acreate_task(
+        prompt="",  # Empty prompt
+        output_schema={"invalid": "schema"}
+    )
+except ModuleException as e:
+    if e.status_code == 400:
+        print(f"Validation error: {e.description}")
+        if e.details:
+            print(f"Field errors: {e.details}")
+```
+
+### Rate Limiting
+
+**Status Code:** 429 (Too Many Requests)
+
+Occurs when you exceed the API rate limits.
+
+```python
+import time
+import asyncio
+
+async def retry_with_backoff(func, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            return await func()
+        except ModuleException as e:
+            if e.status_code == 429:
+                wait_time = 2 ** attempt  # Exponential backoff
+                print(f"Rate limited. Waiting {wait_time} seconds...")
+                await asyncio.sleep(wait_time)
+                if attempt == max_retries - 1:
+                    raise
+            else:
+                raise
+
+# Usage
+result = await retry_with_backoff(lambda: agents.alist())
+```
+
+### Server Errors
+
+**Status Code:** 500+ (Server Error)
+
+Occurs when there's an internal server error.
+
+```python
+try:
+    agent = await agents.aget("agent-id")
+except ModuleException as e:
+    if e.status_code >= 500:
+        print("Server error. Please try again later.")
+        print(f"Error details: {e.description}")
+```
+
+## Error Handling Patterns
+
+### Basic Error Handling
+
+```python
+from xpander_sdk import Agents
+from xpander_sdk.exceptions import ModuleException
+
+async def safe_agent_operations():
+    try:
+        agents = Agents()
+        agent_list = await agents.alist()
+        return agent_list
+    except ModuleException as e:
+        print(f"SDK Error: {e.description}")
+        return None
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        return None
+```
+
+### Comprehensive Error Handling
+
+```python
+from xpander_sdk import Agents, Tasks
+from xpander_sdk.exceptions import ModuleException
+import logging
+
+logger = logging.getLogger(__name__)
+
+async def robust_task_creation(agent_id: str, prompt: str):
+    try:
+        agents = Agents()
+        agent = await agents.aget(agent_id)
+        
+        task = await agent.acreate_task(prompt=prompt)
+        logger.info(f"Task created successfully: {task.id}")
+        return task
+        
+    except ModuleException as e:
+        if e.status_code == 401:
+            logger.error("Authentication failed. Check API credentials.")
+        elif e.status_code == 403:
+            logger.error(f"Access denied to agent {agent_id}")
+        elif e.status_code == 404:
+            logger.error(f"Agent {agent_id} not found")
+        elif e.status_code == 400:
+            logger.error(f"Invalid request: {e.description}")
+            if e.details:
+                logger.error(f"Details: {e.details}")
+        elif e.status_code == 429:
+            logger.warning("Rate limit exceeded")
+        elif e.status_code >= 500:
+            logger.error(f"Server error: {e.description}")
+        else:
+            logger.error(f"Unknown error: {e.description}")
+        return None
+        
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        return None
+```
+
+### Context Manager for Resource Cleanup
+
+```python
+from contextlib import asynccontextmanager
+from xpander_sdk import Tasks
+from xpander_sdk.exceptions import ModuleException
+
+@asynccontextmanager
+async def managed_task(agent_id: str, prompt: str):
+    task = None
+    try:
+        tasks = Tasks()
+        task = await tasks.acreate(agent_id=agent_id, prompt=prompt)
+        yield task
+    except ModuleException as e:
+        print(f"Task creation failed: {e.description}")
+        raise
+    finally:
+        if task and task.status == "in_progress":
+            try:
+                await task.astop()
+                print(f"Task {task.id} stopped during cleanup")
+            except ModuleException as e:
+                print(f"Failed to stop task during cleanup: {e.description}")
+
+# Usage
+async with managed_task("agent-123", "Analyze data") as task:
+    if task:
+        async for event in task.aevents():
+            print(f"Event: {event.type}")
+            if event.type == "task_finished":
+                break
+```
+
+### Retry Logic with Custom Conditions
+
+```python
+import asyncio
+from functools import wraps
+from xpander_sdk.exceptions import ModuleException
+
+def retry_on_failure(max_retries=3, delay=1, backoff=2, retriable_codes=None):
+    if retriable_codes is None:
+        retriable_codes = [429, 500, 502, 503, 504]
+    
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            last_exception = None
+            
+            for attempt in range(max_retries + 1):
+                try:
+                    return await func(*args, **kwargs)
+                except ModuleException as e:
+                    last_exception = e
+                    
+                    if e.status_code not in retriable_codes:
+                        # Don't retry for non-retriable errors
+                        raise
+                    
+                    if attempt == max_retries:
+                        # Last attempt, raise the exception
+                        raise
+                    
+                    wait_time = delay * (backoff ** attempt)
+                    print(f"Attempt {attempt + 1} failed: {e.description}")
+                    print(f"Retrying in {wait_time} seconds...")
+                    await asyncio.sleep(wait_time)
+            
+            # This should never be reached, but just in case
+            raise last_exception
+        
+        return wrapper
+    return decorator
+
+# Usage
+@retry_on_failure(max_retries=3, delay=2)
+async def fetch_agent_with_retry(agent_id: str):
+    agents = Agents()
+    return await agents.aget(agent_id)
+
+# Call the function
+try:
+    agent = await fetch_agent_with_retry("agent-123")
+    print(f"Successfully loaded agent: {agent.name}")
+except ModuleException as e:
+    print(f"Failed after all retries: {e.description}")
+```
+
+## Module-Specific Error Handling
+
+### Agents Module
+
+```python
+from xpander_sdk import Agents
+from xpander_sdk.exceptions import ModuleException
+
+async def handle_agent_errors():
+    agents = Agents()
+    
+    try:
+        agent = await agents.aget("agent-id")
+    except ModuleException as e:
+        if e.status_code == 404:
+            print("Agent not found. Available agents:")
+            agent_list = await agents.alist()
+            for agent_item in agent_list:
+                print(f"- {agent_item.name} (ID: {agent_item.id})")
+        else:
+            print(f"Error loading agent: {e.description}")
+```
+
+### Tasks Module
+
+```python
+from xpander_sdk import Tasks
+from xpander_sdk.exceptions import ModuleException
+
+async def handle_task_errors():
+    tasks = Tasks()
+    
+    try:
+        task = await tasks.acreate(
+            agent_id="agent-123",
+            prompt="Process this data",
+            events_streaming=True
+        )
+    except ModuleException as e:
+        if e.status_code == 400:
+            print("Invalid task parameters:")
+            if e.details:
+                for field, error in e.details.items():
+                    print(f"- {field}: {error}")
+        elif e.status_code == 404:
+            print("Agent not found for task creation")
+        else:
+            print(f"Task creation failed: {e.description}")
+```
+
+### Tools Repository
+
+```python
+from xpander_sdk import ToolsRepository
+from xpander_sdk.exceptions import ModuleException
+
+def handle_tools_errors():
+    tools = ToolsRepository()
+    
+    try:
+        tool = tools.get_tool_by_id("non-existent-tool")
+    except ModuleException as e:
+        print(f"Tool repository error: {e.description}")
+        
+        # List available tools
+        available_tools = tools.functions
+        print("Available tools:")
+        for tool in available_tools:
+            print(f"- {tool.name} (ID: {tool.id})")
+```
+
+### Knowledge Bases
+
+```python
+from xpander_sdk import KnowledgeBases
+from xpander_sdk.exceptions import ModuleException
+
+async def handle_knowledge_errors():
+    kb = KnowledgeBases()
+    
+    try:
+        results = await kb.asearch("search query")
+    except ModuleException as e:
+        if e.status_code == 400:
+            print("Invalid search query")
+        elif e.status_code == 404:
+            print("Knowledge base not found")
+        else:
+            print(f"Search failed: {e.description}")
+```
+
+## Best Practices
+
+### 1. Always Handle ModuleException
+
+```python
+# ✅ Good
+try:
+    result = await some_sdk_operation()
+except ModuleException as e:
+    handle_sdk_error(e)
+except Exception as e:
+    handle_unexpected_error(e)
+
+# ❌ Bad - doesn't catch SDK-specific errors
+try:
+    result = await some_sdk_operation()
+except Exception as e:
+    print(f"Error: {e}")
+```
+
+### 2. Check Status Codes for Specific Handling
+
+```python
+# ✅ Good
+try:
+    agent = await agents.aget("agent-id")
+except ModuleException as e:
+    if e.status_code == 404:
+        # Handle not found specifically
+        create_fallback_agent()
+    elif e.status_code == 403:
+        # Handle permission denied
+        request_access()
+    else:
+        # Handle other errors
+        log_error(e)
+
+# ❌ Bad - treats all errors the same
+try:
+    agent = await agents.aget("agent-id")
+except ModuleException as e:
+    print("Something went wrong")
+```
+
+### 3. Use Appropriate Logging Levels
+
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+
+try:
+    result = await operation()
+except ModuleException as e:
+    if e.status_code == 429:
+        logger.warning(f"Rate limited: {e.description}")
+    elif e.status_code >= 500:
+        logger.error(f"Server error: {e.description}")
+    elif e.status_code == 404:
+        logger.info(f"Resource not found: {e.description}")
+    else:
+        logger.error(f"API error: {e.description}")
+```
+
+### 4. Provide Meaningful Error Messages
+
+```python
+def user_friendly_error(e: ModuleException) -> str:
+    """Convert SDK errors to user-friendly messages."""
+    error_messages = {
+        401: "Please check your API credentials and try again.",
+        403: "You don't have permission to perform this action.",
+        404: "The requested resource was not found.",
+        429: "Too many requests. Please wait a moment before trying again.",
+        500: "Server error. Please try again later.",
+    }
+    
+    return error_messages.get(e.status_code, f"An error occurred: {e.description}")
+
+# Usage
+try:
+    result = await some_operation()
+except ModuleException as e:
+    print(user_friendly_error(e))
+```
+
+## Related Documentation
+
+- [Agents Module](/API reference/agents): Agent management and error handling
+- [Tasks Module](/API reference/tasks): Task execution and error handling
+- [Tools Repository](/API reference/tools): Tool integration and error handling
+- [Knowledge Bases](/API reference/knowledge): Knowledge base operations and error handling
+- [Configuration](/API reference/configuration): SDK configuration and authentication

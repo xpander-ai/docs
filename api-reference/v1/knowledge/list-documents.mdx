@@ -1,0 +1,105 @@
+---
+title: "List Knowledge Base Documents"
+openapi: "GET /v1/knowledge/{kb_id}/documents"
+description: "Get paginated list of documents in a knowledge base"
+---
+
+Retrieve all documents stored in a specific knowledge base with pagination support. This endpoint returns document metadata including IDs and URLs.
+
+## Path Parameters
+
+<ParamField path="kb_id" type="string" required>
+  Unique identifier of the knowledge base (UUID format)
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="page" type="integer" default={1}>
+  Page number (starting from 1)
+</ParamField>
+
+<ParamField query="per_page" type="integer" default={20}>
+  Items per page (maximum 50)
+</ParamField>
+
+## Response
+
+<ResponseField name="items" type="array">
+  Array of document objects
+  <Expandable title="Document Object">
+    <ResponseField name="kb_id" type="string">
+      Knowledge base ID this document belongs to
+    </ResponseField>
+    <ResponseField name="id" type="string">
+      Unique identifier for the document (UUID)
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      Document name (nullable)
+    </ResponseField>
+    <ResponseField name="document_url" type="string">
+      URL to access the document file
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="total" type="integer">
+  Total number of documents in the knowledge base
+</ResponseField>
+
+<ResponseField name="page" type="integer">
+  Current page number
+</ResponseField>
+
+<ResponseField name="per_page" type="integer">
+  Number of items per page
+</ResponseField>
+
+<ResponseField name="total_pages" type="integer">
+  Total number of pages available
+</ResponseField>
+
+## Example Request
+
+```bash
+curl -X GET -H "x-api-key: YOUR_API_KEY" \
+  "https://api.xpander.ai/v1/knowledge/e21563bd-7c02-4f8f-9520-8c854f5c2ee6/documents?page=1&per_page=10"
+```
+
+## Example Response
+
+```json
+{
+  "items": [
+    {
+      "kb_id": "e21563bd-7c02-4f8f-9520-8c854f5c2ee6",
+      "id": "c7e44aac-e347-481d-bef8-8f230adf1a74",
+      "name": null,
+      "document_url": "https://svc-sb.app.xpander.ai/storage/v1/object/public/kb_files/e21563bd-7c02-4f8f-9520-8c854f5c2ee6/1753618104807-ztna-vs-vpn-side-by-side-comparison.md"
+    },
+    {
+      "kb_id": "e21563bd-7c02-4f8f-9520-8c854f5c2ee6",
+      "id": "d297e31f-ff36-457c-a2e7-254965c366fc",
+      "name": null,
+      "document_url": "https://svc-sb.app.xpander.ai/storage/v1/object/public/kb_files/e21563bd-7c02-4f8f-9520-8c854f5c2ee6/1753618103245-whitelisting-docs-client-processes-1.md"
+    }
+  ],
+  "total": 278,
+  "page": 1,
+  "per_page": 10,
+  "total_pages": 28
+}
+```
+
+## Notes
+
+- Documents are returned in the order they were added to the knowledge base
+- The `document_url` field contains the full URL to access the document file
+- Use this endpoint to audit what documents are in a knowledge base
+- Combine with [Get Document](/API reference/v1/knowledge/get-document) to retrieve full document details
+
+## See Also
+
+- [Add Documents](/API reference/v1/knowledge/add-documents) - Add new documents to a knowledge base
+- [Get Document](/API reference/v1/knowledge/get-document) - Get detailed information about a specific document
+- [Delete Document](/API reference/v1/knowledge/delete-document) - Remove a document from a knowledge base
+- [Search Knowledge Base](/API reference/v1/knowledge/search-knowledge-base) - Search for content within documents

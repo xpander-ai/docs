@@ -1,0 +1,104 @@
+---
+title: "Agents Module Reference"
+description: "Complete API reference for the Agents module including all classes, methods, properties, and parameters"
+icon: "robot"
+mode: "wide"
+---
+
+## Introduction
+
+The **Agents Module** provides comprehensive functionality for managing AI agents, creating tasks, and executing workflows within the xpander.ai platform.
+
+## Overview
+
+In this module, you can:
+
+- List, retrieve, and manage multiple AI agents
+- Load specific agents and interact with their components
+- Manage tasks, tools, and knowledge bases associated with each agent
+- Access configurable elements like MCP (Model Context Protocol) servers
+
+## Examples
+
+### Listing all Agents
+
+This example demonstrates how to list all available agents in both asynchronous and synchronous styles.
+
+#### Asynchronous Example
+
+Using `alist()` to retrieve agents asynchronously:
+
+```python
+from xpander_sdk import Agents, AgentDeploymentType
+
+agents = Agents()
+agents_list = await agents.alist()
+for agent in agents_list:
+    print(f"Agent: {agent.name} (ID: {agent.id})")
+    # Load full agent details to access deployment_type
+    full_agent = await agent.aload()
+    print(f"Deployment Type: {full_agent.deployment_type}")
+```
+
+#### Synchronous Example
+
+Using `list()` to retrieve agents synchronously:
+
+```python
+from xpander_sdk import Agents
+
+agents = Agents()
+agents_list = agents.list()
+for agent in agents_list:
+    print(f"Agent: {agent.name} (ID: {agent.id})")
+```
+
+### Loading a Specific Agent
+
+Learn how to load a specific agent by its ID, which allows you to interact with its tools and tasks.
+
+#### Asynchronous Example
+
+```python
+agent = await agents.aget("agent-123")
+print(f"Agent name: {agent.name}")
+```
+
+#### Synchronous Example
+
+```python
+agent = agents.get("agent-123")
+print(f"Agent name: {agent.name}")
+```
+
+### Creating and Managing Tasks
+
+This section illustrates creating, managing, and executing tasks assigned to agents.
+
+#### Asynchronous Example
+
+```python
+task = await agent.acreate_task(
+    prompt="Analyze this dataset",
+    file_urls=["https://example.com/data.csv"],
+    events_streaming=True,
+    output_format=OutputFormat.Json
+)
+```
+
+#### Synchronous Example
+
+```python
+task = agent.create_task(
+    prompt="Analyze this dataset",
+    file_urls=["https://example.com/data.csv"],
+    events_streaming=True,
+    output_format=OutputFormat.Json
+)
+```
+
+For more details on task management, see the [Tasks API Reference](/API reference/tasks/API reference).
+
+---
+
+Continue to the [Agents API Reference](/API reference/agents/API reference) for detailed documentation on classes and methods.
