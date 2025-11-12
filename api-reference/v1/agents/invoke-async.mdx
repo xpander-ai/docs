@@ -147,9 +147,18 @@ Execute an agent task asynchronously. This endpoint returns immediately with a t
 </ParamField>
 
 <ParamField body="id" type="string">
-  Custom task ID. If not provided, a UUID will be automatically generated. Use this to map tasks to external system IDs.
+  **Thread ID** for conversation context. This ID is critical for multi-turn conversations:
   
-  **Example**: `"custom-task-12345"`
+  - **If not provided**: A UUID will be automatically generated (recommended for single-turn requests)
+  - **First message in conversation**: Provide a unique UUID and save it for subsequent messages
+  - **Follow-up messages**: Use the same `id` from the first request to maintain conversation history
+  - The agent will remember all previous messages in the thread when you reuse the same ID
+  
+  **Example**: `"a37db9a1-e483-4544-9136-b32120ae8c81"`
+  
+  <Info>
+    **Multi-Turn Conversations**: To enable the agent to remember previous messages, always use the same `id` for all requests in a conversation thread. Each unique `id` represents a separate conversation session. The response will include the same `id` (whether you provided it or it was auto-generated).
+  </Info>
 </ParamField>
 
 <ParamField body="worker_id" type="string">
@@ -324,6 +333,45 @@ curl -X POST -H "x-api-key: YOUR_API_KEY" \
   https://api.xpander.ai/v1/agents/{agent_id}/invoke/async
 ```
 
+### Multi-Turn Conversation (Async)
+
+```bash
+# First message - creates a new conversation thread
+curl -X POST -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": {
+      "text": "My name is Bob and I work in sales"
+    },
+    "id": "thread-async-456"
+  }' \
+  https://api.xpander.ai/v1/agents/{agent_id}/invoke/async
+
+# Poll for completion using the task ID, then send follow-up
+curl -X POST -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": {
+      "text": "What is my name and what department do I work in?"
+    },
+    "id": "thread-async-456"
+  }' \
+  https://api.xpander.ai/v1/agents/{agent_id}/invoke/async
+# Agent will remember: "Your name is Bob and you work in sales"
+
+# Another follow-up in the same conversation thread
+curl -X POST -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": {
+      "text": "How many messages have I sent you in this thread?"
+    },
+    "id": "thread-async-456"
+  }' \
+  https://api.xpander.ai/v1/agents/{agent_id}/invoke/async
+# Agent will respond based on full conversation history
+```
+
 ## Example Response
 
 ```json
@@ -377,10 +425,18 @@ curl -H "x-api-key: YOUR_API_KEY" \
   https://api.xpander.ai/v1/tasks/{task_id}
 ```
 
+## Notes
+
+- **Multi-Turn Conversations**: Use the same `id` parameter across requests to maintain conversation context. The agent will remember all previous messages in the thread.
+- Each task returns immediately with a task ID - poll the `/tasks/{task_id}` endpoint to check completion status
+- For multi-turn conversations, wait for each task to complete before sending the next message to ensure proper context
+
 ## See Also
 
 - [Invoke Agent (Sync)](/API reference/v1/agents/invoke-sync) - For quick tasks that complete in under 30 seconds
 - [Invoke Agent (Stream)](/API reference/v1/agents/invoke-stream) - For real-time streaming responses
 - [Get Task](/API reference/v1/tasks/get-task) - Poll for task status and retrieve results
+- [Get Task Thread](/API reference/v1/tasks/get-thread) - View complete conversation history for a thread
 - [List Tasks](/API reference/v1/tasks/list-tasks) - Query and filter task history
 - [Get Agent Tasks](/API reference/v1/agents/list-agents) - Get all tasks for a specific agent
+- [Agent Memory](/user-guide/backend-configuration/agent-memory) - Configure how agents store and recall conversation history

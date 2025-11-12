@@ -145,6 +145,21 @@ Execute an agent task with real-time streaming responses. This endpoint returns 
   **Example**: `"chat-widget"` | `"mobile-app"` | `"websocket-client"`
 </ParamField>
 
+<ParamField body="id" type="string">
+  **Thread ID** for conversation context. This ID is critical for multi-turn conversations:
+  
+  - **If not provided**: A UUID will be automatically generated (recommended for single-turn requests)
+  - **First message in conversation**: Provide a unique UUID and save it for subsequent messages
+  - **Follow-up messages**: Use the same `id` from the first request to maintain conversation history
+  - The agent will remember all previous messages in the thread when you reuse the same ID
+  
+  **Example**: `"a37db9a1-e483-4544-9136-b32120ae8c81"`
+  
+  <Info>
+    **Multi-Turn Conversations**: To enable the agent to remember previous messages, always use the same `id` for all requests in a conversation thread. Each unique `id` represents a separate conversation session. The response will include the same `id` (whether you provided it or it was auto-generated).
+  </Info>
+</ParamField>
+
 ## Example Requests
 
 ### Basic Streaming Request
@@ -216,6 +231,48 @@ curl -X POST -H "x-api-key: YOUR_API_KEY" \
        "events_streaming": true
      }' \
      https://api.xpander.ai/v1/agents/{agent_id}/invoke/stream
+```
+
+### Multi-Turn Conversation (Streaming)
+
+```bash
+# First message - creates a new conversation thread
+curl -X POST -H "x-api-key: YOUR_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "input": {
+         "text": "My favorite color is blue"
+       },
+       "id": "stream-thread-789",
+       "events_streaming": true
+     }' \
+     https://api.xpander.ai/v1/agents/{agent_id}/invoke/stream
+
+# Follow-up message in the same thread
+curl -X POST -H "x-api-key: YOUR_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "input": {
+         "text": "What is my favorite color?"
+       },
+       "id": "stream-thread-789",
+       "events_streaming": true
+     }' \
+     https://api.xpander.ai/v1/agents/{agent_id}/invoke/stream
+# Agent will stream response: "Your favorite color is blue"
+
+# Another follow-up with conversation history
+curl -X POST -H "x-api-key: YOUR_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "input": {
+         "text": "How many messages have I sent in this thread?"
+       },
+       "id": "stream-thread-789",
+       "events_streaming": true
+     }' \
+     https://api.xpander.ai/v1/agents/{agent_id}/invoke/stream
+# Agent will respond based on complete conversation history
 ```
 
 ## Response Format
@@ -340,10 +397,12 @@ while (true) {
 - Connection stays open until task completes or errors
 - Set appropriate timeout values for long-running tasks
 - Handle connection errors and implement retry logic
-
+- **Multi-Turn Conversations**: Use the same `id` parameter across requests to maintain conversation context. The agent will remember all previous messages in the thread and stream responses with full context awareness.
 
 ## See Also
 
 - [Invoke Agent (Sync)](/API reference/v1/agents/invoke-sync) - For quick tasks with immediate results
 - [Invoke Agent (Async)](/API reference/v1/agents/invoke-async) - For long-running tasks with polling
 - [Get Task](/API reference/v1/tasks/get-task) - Retrieve task details after streaming completes
+- [Get Task Thread](/API reference/v1/tasks/get-thread) - View complete conversation history for a thread
+- [Agent Memory](/user-guide/backend-configuration/agent-memory) - Configure how agents store and recall conversation history

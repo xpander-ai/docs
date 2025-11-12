@@ -139,9 +139,18 @@ Execute an agent task synchronously and wait for completion. This endpoint block
 </ParamField>
 
 <ParamField body="id" type="string">
-  Custom task ID. If not provided, a UUID will be automatically generated. Use this to map tasks to external system IDs.
+  **Thread ID** for conversation context. This ID is critical for multi-turn conversations:
   
-  **Example**: `"custom-task-12345"`
+  - **If not provided**: A UUID will be automatically generated (recommended for single-turn requests)
+  - **First message in conversation**: Provide a unique UUID and save it for subsequent messages
+  - **Follow-up messages**: Use the same `id` from the first request to maintain conversation history
+  - The agent will remember all previous messages in the thread when you reuse the same ID
+  
+  **Example**: `"a37db9a1-e483-4544-9136-b32120ae8c81"`
+  
+  <Info>
+    **Multi-Turn Conversations**: To enable the agent to remember previous messages, always use the same `id` for all requests in a conversation thread. Each unique `id` represents a separate conversation session. The response will include the same `id` (whether you provided it or it was auto-generated).
+  </Info>
 </ParamField>
 
 ## Response
@@ -149,7 +158,7 @@ Execute an agent task synchronously and wait for completion. This endpoint block
 Returns a complete `AgentExecution` object with the final result:
 
 <ResponseField name="id" type="string">
-  Unique identifier for the created task (UUID)
+  Unique identifier for the created task (UUID) - this is the thread ID if you provided one
 </ResponseField>
 
 <ResponseField name="agent_id" type="string">
@@ -177,11 +186,47 @@ Returns a complete `AgentExecution` object with the final result:
 </ResponseField>
 
 <ResponseField name="started_at" type="string">
-  ISO 8601 timestamp of when execution began
+  ISO 8601 timestamp of when execution began (may be null)
 </ResponseField>
 
 <ResponseField name="finished_at" type="string">
   ISO 8601 timestamp of when the task finished
+</ResponseField>
+
+<ResponseField name="output_format" type="string">
+  The output format specified in the request
+</ResponseField>
+
+<ResponseField name="output_schema" type="object">
+  The output schema if provided in the request
+</ResponseField>
+
+<ResponseField name="title" type="string">
+  The task title if provided
+</ResponseField>
+
+<ResponseField name="source" type="string">
+  The source identifier (e.g., "api")
+</ResponseField>
+
+<ResponseField name="events_streaming" type="boolean">
+  Whether event streaming was enabled
+</ResponseField>
+
+<ResponseField name="payload_extension" type="object">
+  Custom metadata attached to the task
+</ResponseField>
+
+<ResponseField name="parent_execution" type="object">
+  Parent task information if this is a sub-task
+</ResponseField>
+
+<ResponseField name="sub_executions" type="array">
+  Array of sub-task executions spawned by this task
+</ResponseField>
+
+<ResponseField name="triggering_agent_id" type="string">
+  UUID of the agent that triggered this task (if delegated)
 </ResponseField>
 
 ## Example Requests
@@ -267,23 +312,85 @@ curl -X POST -H "x-api-key: YOUR_API_KEY" \
   https://api.xpander.ai/v1/agents/{agent_id}/invoke
 ```
 
+### Multi-Turn Conversation
+
+```bash
+# First message - creates a new conversation thread
+curl -X POST -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": {
+      "text": "My name is Alice and I like Python programming"
+    },
+    "id": "conversation-thread-123"
+  }' \
+  https://api.xpander.ai/v1/agents/{agent_id}/invoke
+
+# Follow-up message - reuses the same ID to maintain context
+curl -X POST -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": {
+      "text": "What is my name and what do I like?"
+    },
+    "id": "conversation-thread-123"
+  }' \
+  https://api.xpander.ai/v1/agents/{agent_id}/invoke
+# Agent will respond: "Your name is Alice and you like Python programming"
+
+# Another follow-up in the same thread
+curl -X POST -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": {
+      "text": "How many messages have I sent in this thread?"
+    },
+    "id": "conversation-thread-123"
+  }' \
+  https://api.xpander.ai/v1/agents/{agent_id}/invoke
+# Agent will respond based on the full conversation history
+```
+
 ## Example Response
 
 ```json
 {
-  "id": "550e8400-e29b-41d4-a716-446655440000",
-  "agent_id": "2c126a59-b625-4e4a-a008-cb3eb76cc3b2",
+  "id": "test-thread-20251112",
+  "agent_id": "efada57d-3d0d-44d1-b64c-e2c2d0dfcc42",
   "organization_id": "91fbe9bc-35b3-41e8-b59d-922fb5a0f031",
-  "status": "completed",
   "input": {
     "text": "What is 2+2?",
     "files": [],
     "user": null
   },
+  "status": "completed",
+  "internal_status": null,
+  "last_executed_node_id": null,
+  "agent_version": null,
+  "created_at": "2025-11-12T06:17:20.631941Z",
+  "started_at": null,
+  "paused_at": null,
+  "finished_at": "2025-11-12T06:17:26.869452Z",
   "result": "2+2 equals 4",
-  "created_at": "2025-11-06T02:47:17.244054Z",
-  "started_at": "2025-11-06T02:47:18.100000Z",
-  "finished_at": "2025-11-06T02:47:20.500000Z"
+  "parent_execution": null,
+  "sub_executions": [],
+  "finished_sub_executions": [],
+  "is_manually_stopped": false,
+  "payload_extension": null,
+  "hitl_request": null,
+  "pending_eca_request": null,
+  "source": "api",
+  "worker_id": null,
+  "additional_context": null,
+  "expected_output": null,
+  "output_format": "text",
+  "output_schema": null,
+  "events_streaming": false,
+  "used_mutating_tools": false,
+  "is_continuous": false,
+  "mcp_servers": [],
+  "triggering_agent_id": null,
+  "title": null
 }
 ```
 
@@ -293,10 +400,13 @@ curl -X POST -H "x-api-key: YOUR_API_KEY" \
 - Recommended timeout: 30-60 seconds
 - For long-running tasks, use [Invoke Agent (Async)](/API reference/v1/agents/invoke-async) instead
 - The agent must have `deployment_type: serverless` or be a running container
+- **Multi-Turn Conversations**: Use the same `id` parameter across requests to maintain conversation context. The agent will remember all previous messages in the thread.
 
 ## See Also
 
 - [Invoke Agent (Async)](/API reference/v1/agents/invoke-async) - For long-running tasks that don't need immediate results
 - [Invoke Agent (Stream)](/API reference/v1/agents/invoke-stream) - For real-time streaming responses
 - [Get Task](/API reference/v1/tasks/get-task) - Retrieve task details and results
+- [Get Task Thread](/API reference/v1/tasks/get-thread) - View complete conversation history for a thread
 - [List Tasks](/API reference/v1/tasks/list-tasks) - Query and filter task history
+- [Agent Memory](/user-guide/backend-configuration/agent-memory) - Configure how agents store and recall conversation history
