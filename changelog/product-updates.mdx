@@ -3,6 +3,41 @@ title: 'Product Updates'
 mode: 'wide'
 ---
 
+<Update label="2025-11-12" description="Platform, Agent, and UI Enhancements">
+
+## New Features:
+
+- **OAuth 2.1 Authorization Server:** Introduced a full OAuth 2.1 server with Remote OAuth and Dynamic Client Registration for MCP and API endpoints, including JWT-based authentication and discovery endpoints.
+- **Tool-Call Reasoning Metadata:** Agents can now attach concise reasoning metadata (title and description) to tool calls, improving reviewability in the UI and standardizing tool schema requirements.
+- **Built-in Sleep Tool:** Added a toggleable built-in Sleep tool in agent settings, with UI support for enabling/disabling and visual indicators.
+- **Organization-Scoped Toolkits:** Introduced a new toolkits entity with row-level security, supporting grouped tools per organization and cache reset commands for on-prem controllers.
+- **OAuth2 CLI Login Flow:** Enabled seamless OAuth2-based CLI authentication with callback redirects, improving developer experience for CLI integrations.
+- **Guardrails and Agno Settings:** Expanded agent guardrails configuration, including PII detection, prompt injection detection, OpenAI moderation categories, and max tool calls from history.
+- **Agent Version Naming:** Added support for naming agent versions, with editable version names displayed throughout the UI and persisted in Supabase.
+
+
+
+## Improvements:
+
+- **Agent Activity Token Metrics:** Exposed input and output LLM token breakdowns in agent activity threads and sessions for improved monitoring and billing.
+- **Connector Versioning and Upgrade Flow:** Improved connectors table with version selectors, upgrade confirmation dialogs, and better version management.
+- **UI/UX Enhancements:** Refined metrics counting, improved modal and tab behaviors, clarified terminology (e.g., "Executions" to "Tasks"), and enhanced error handling and session management.
+- **Safe Redirect Handling:** WebUI authentication redirects now include safety checks to ensure only trusted destinations are used, with correct token forwarding.
+
+## Bug Fixes:
+
+- **Tool-Call Reporting and Error Flow:** Improved reliability of tool-call lifecycle reporting, error event emission, and UI rendering for tool-call steps.
+- **Thread Activity Metrics:** Corrected token metrics display and layout in thread activity views, ensuring accurate input/output token counts.
+- **UI Consistency:** Resolved various UI bugs, including modal race conditions, built-in tool toggling, and metrics tab rendering.
+- **Connector and Agent Settings:** Fixed issues with connector version selection, upload modal behavior, and agent settings persistence.
+
+</Update>
+
+---
+title: 'Product Updates'
+mode: 'wide'
+---
+
 <Update label="2025-10-15" description="MCP Tools & Environment Management">
 
 ## New Features:
