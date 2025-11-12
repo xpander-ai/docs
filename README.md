@@ -1,4 +1,4 @@
-# xpander.ai Documentation
+# xpander.ai Docs
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/xpander-ai/docs?quickstart=1)
 
