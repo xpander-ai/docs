@@ -3,46 +3,758 @@ title: 'Product Updates'
 mode: 'wide'
 ---
 
+<Update label="2025-11-12" description="Platform, Agent, and UI Enhancements">
+
+## New Features:
+
+- **Removed SSE Transport for MCP:** Deprecated the Server-Sent Events (SSE) transport for the Model Context Protocol (MCP), consolidating to a single HTTP-based server for improved simplicity and alignment with current agent communication models.
+- **OAuth2 CLI Login Flow:** Enabled OAuth2-based CLI authentication with callback redirects, streamlining developer experience for CLI integrations.
+
+## Improvements:
+
+- **Header-Based Authentication and Secrets Handling:** Tightened header-based authentication and secrets usage in the AI Gateway proxy, including improved handling of Basic Auth and secrets manager integration.
+- **Agent Execution Upsert:** Enhanced agent execution state persistence to prevent missing-key errors during task updates, improving reliability in event-driven flows.
+- **LLM Token Metrics:** Exposed input and output LLM token breakdowns in agent activity threads and sessions for improved monitoring and billing.
+- **Documentation and UI Consistency:** Updated documentation and minor UI elements for clarity and normalization across services.
+
+## Bug Fixes:
+
+- **Basic Auth and Secrets Manager:** Fixed issues with Basic Auth formatting and secure credential resolution via AWS Secrets Manager, ensuring consistent behavior across gateway and API caller services.
+- **Agent Execution Error Handling:** Improved error handling for agent execution flows, including upsert logic and error event emission.
+- **General UI and Metrics:** Addressed UI bugs, metrics tab rendering, and ensured accurate input/output token counts in activity views.
+
+</Update>
+
+---
+title: 'Product Updates'
+mode: 'wide'
+---
+
 <Update label="2025-11-12" description="Weekly Product Update">
 
 ## New Features
 
 - **xpander-mono**
-  - Deprecated the Server-Sent Events (SSE) transport for the Model Context Protocol (MCP), consolidating all MCP communication to a single HTTP-based server. This simplifies the integration and reduces resource usage. ([#3226](https://github.com/xpander-ai/xpander-mono/pull/3226))
+  - Deprecated the Server-Sent Events (SSE) transport for the Model Context Protocol (MCP), consolidating all MCP communication to a single HTTP-based server. This simplifies the integration and reduces resource usage.
 
 - **frontend**
-  - Added OAuth2 CLI login flow with callback redirect, enabling seamless OAuth2-based CLI authentication for developers. ([#1969](https://github.com/xpander-ai/frontend/pull/1969))
+  - Added OAuth2 CLI login flow with callback redirect, enabling seamless OAuth2-based CLI authentication for developers.
 
 ## Improvements
 
 - **xpander-mono**
-  - Enhanced AI Gateway proxy by consolidating Basic Auth handling, improving secrets management, and adding request payload flexibility for development utilities. ([#3224](https://github.com/xpander-ai/xpander-mono/pull/3224))
-  - Improved outbound connector requests to consistently handle Basic Auth formatting and securely resolve credentials via AWS Secrets Manager, with optional role assumption support. ([#3223](https://github.com/xpander-ai/xpander-mono/pull/3223))
-  - Exposed per-thread LLM token breakdown (input/output tokens) in agent activity for improved monitoring and billing. ([#3220](https://github.com/xpander-ai/xpander-mono/pull/3220))
-  - Increased Redis cache TTL for billing quota validation from 3 to 10 minutes to reduce repeated quota checks and external API load. ([#3214](https://github.com/xpander-ai/xpander-mono/pull/3214))
-  - Exposed tool-call reasoning metadata (title and description) in agent runtime and UI to improve reviewability of tool invocations. ([#3216](https://github.com/xpander-ai/xpander-mono/pull/3216))
+  - Enhanced AI Gateway proxy by consolidating Basic Auth handling, improving secrets management, and adding request payload flexibility for development utilities.
+  - Improved outbound connector requests to consistently handle Basic Auth formatting and securely resolve credentials via AWS Secrets Manager, with optional role assumption support.
+  - Exposed per-thread LLM token breakdown (input/output tokens) in agent activity for improved monitoring and billing.
+  - Increased Redis cache TTL for billing quota validation from 3 to 10 minutes to reduce repeated quota checks and external API load.
+  - Exposed tool-call reasoning metadata (title and description) in agent runtime and UI to improve reviewability of tool invocations.
 
 - **frontend**
-  - Split thread activity metrics into input and output tokens and adjusted the layout for improved clarity in the Threads activity UI. ([#1981](https://github.com/xpander-ai/frontend/pull/1981))
-  - Refined agent metrics, enabled opening agent creation via URL, and standardized UX labels for improved dashboard clarity. ([#1979](https://github.com/xpander-ai/frontend/pull/1979))
-  - Added a built-in Sleep tool to agent settings and improved the chat WebUI, including support for self-hosted chat URLs and enhanced progress visibility in thread logs. ([#1976](https://github.com/xpander-ai/frontend/pull/1976))
-  - Enabled deep-linking from the Tasks list to the monitor tab and auto-scroll to the relevant thread for faster triage and debugging. ([#1971](https://github.com/xpander-ai/frontend/pull/1971))
-  - Improved OAuth2 login flow with API key selection and authorization UI for CLI authentication. ([#1972](https://github.com/xpander-ai/frontend/pull/1972))
+  - Split thread activity metrics into input and output tokens and adjusted the layout for improved clarity in the Threads activity UI.
+  - Refined agent metrics, enabled opening agent creation via URL, and standardized UX labels for improved dashboard clarity.
+  - Added a built-in Sleep tool to agent settings and improved the chat WebUI, including support for self-hosted chat URLs and enhanced progress visibility in thread logs.
+  - Enabled deep-linking from the Tasks list to the monitor tab and auto-scroll to the relevant thread for faster triage and debugging.
+  - Improved OAuth2 login flow with API key selection and authorization UI for CLI authentication.
 
 ## Bug Fixes
 
 - **xpander-mono**
-  - Fixed agent execution state persistence to prevent missing-key errors during task updates by upserting agent executions when records are missing. ([#3222](https://github.com/xpander-ai/xpander-mono/pull/3222))
-  - Stabilized tool-call reporting, generalist instructions, and agent error flow for improved reliability and clarity. ([#3219](https://github.com/xpander-ai/xpander-mono/pull/3219))
-  - Addressed bugs impacting agent execution flow and Chainlit UI, tightened PII/instructions handling, and ensured consistent tool-call step rendering. ([#3218](https://github.com/xpander-ai/xpander-mono/pull/3218))
-  - Improved task thread error handling and xpander SDK user mapping for more explicit API error semantics. ([#3210](https://github.com/xpander-ai/xpander-mono/pull/3210))
-  - Fixed agno setting and version bump. ([#3225](https://github.com/xpander-ai/xpander-mono/pull/3225))
+  - Fixed agent execution state persistence to prevent missing-key errors during task updates by upserting agent executions when records are missing.
+  - Stabilized tool-call reporting, generalist instructions, and agent error flow for improved reliability and clarity.
+  - Addressed bugs impacting agent execution flow and Chainlit UI, tightened PII/instructions handling, and ensured consistent tool-call step rendering.
+  - Improved task thread error handling and xpander SDK user mapping for more explicit API error semantics.
+  - Fixed agno setting and version bump.
 
 - **frontend**
-  - Fixed UI issues including text changes in agno settings, default masking of detected PII, and metrics tab display. ([#1983](https://github.com/xpander-ai/frontend/pull/1983))
-  - Ensured safe redirect handling for WebUI authentication, only allowing trusted destinations and correct session token forwarding. ([#1982](https://github.com/xpander-ai/frontend/pull/1982))
-  - Addressed race conditions in the "Just a minute" modal and ensured built-in tools are open by default. ([#1978](https://github.com/xpander-ai/frontend/pull/1978))
-  - Fixed chat WebUI behaviors and added support for toggling the Sleep tool in agent settings. ([#1975](https://github.com/xpander-ai/frontend/pull/1975))
-  - Fixed small UI issues including footer display, version selection, and upload modal. ([#1961](https://github.com/xpander-ai/frontend/pull/1961))
+  - Fixed UI issues including text changes in agno settings, default masking of detected PII, and metrics tab display.
+  - Ensured safe redirect handling for WebUI authentication, only allowing trusted destinations and correct session token forwarding.
+  - Addressed race conditions in the "Just a minute" modal and ensured built-in tools are open by default.
+  - Fixed chat WebUI behaviors and added support for toggling the Sleep tool in agent settings.
+  - Fixed small UI issues including footer display, version selection, and upload modal.
 
 </Update>
+
+---
+title: 'Product Updates'
+mode: 'wide'
+---
+
+<Update label="2025-10-15" description="MCP Tools & Environment Management">
+
+## New Features:
+
+- **MCP Connector Management:** Complete UI for creating, managing, and configuring MCP connectors with tool visualization and server selection.
+- **Environment Configuration:** Enhanced environment settings with sorting, deletion, and configuration management capabilities.
+
+## Improvements:
+
+- **Tool Picker Panel:** Redesigned tool selection interface with improved usability and select-all functionality.
+- **Connector Operations:** Streamlined connector creation and deletion workflows.
+
+## Bug Fixes:
+
+- **MCP Server Display:** Fixed MCP server table rendering and connector display issues.
+- **Environment UI:** Resolved environment skeleton loading and configuration bugs.
+
+</Update>
+
+<Update label="2025-10-08" description="On-Premise Streaming & Assets">
+
+## New Features:
+
+- **On-Premise Streaming:** Real-time streaming support for on-premise deployments with improved performance.
+- **Deployed Assets Management:** Comprehensive management interface for deployed assets and configurations.
+
+## Improvements:
+
+- **Environment Types:** Enhanced environment type enforcement and validation mechanisms.
+- **Self-Hosted UI:** Improved self-hosted configuration panels and settings interface.
+
+## Bug Fixes:
+
+- **Streaming Text:** Fixed text streaming issues in on-premise environments.
+- **Environment ID Handling:** Resolved environment ID tracking and validation bugs.
+
+</Update>
+
+<Update label="2025-10-01" description="User Groups & Permissions">
+
+## New Features:
+
+- **User Groups:** Enterprise-grade access control with user group creation and management.
+- **Default Group Assignment:** Automatic group assignment for new users with customizable defaults.
+- **Granular Permissions:** Fine-grained permission controls at the organizational level.
+
+## Improvements:
+
+- **Settings Refactor:** Separated user and admin settings for better organization.
+- **Onboarding:** Added option to skip onboarding questionnaire for existing users.
+
+## Bug Fixes:
+
+- **Group Enforcement:** Fixed user group enforcement and edge function hooks.
+- **Permission Validation:** Resolved permission validation edge cases.
+
+</Update>
+
+<Update label="2025-09-24" description="Agent Teams & Collaboration">
+
+## New Features:
+
+- **Agent Teams:** Multi-agent coordination with coordinate mode for complex workflows.
+- **Bot-to-Bot Communication:** Direct communication support between agents.
+- **Sub-Agent Executions:** Hierarchical agent execution with enqueue mechanism.
+
+## Improvements:
+
+- **Team Mode UI:** Enhanced team mode interface with coordinate mode toggle.
+- **Agent Hub:** Improved agent discovery and template selection.
+
+## Bug Fixes:
+
+- **Team Sessions:** Fixed session management for team-based workflows.
+- **Agent Activity Tracking:** Resolved monitoring and tracking issues for team agents.
+
+</Update>
+
+<Update label="2025-09-22" description="Agno 2.0 Framework Migration">
+
+## New Features:
+
+- **Agno 2.0 Integration:** Complete migration to Agno 2.0 framework for enhanced performance.
+- **Team Mode Sessions:** Advanced session management from Agno for team workflows.
+
+## Improvements:
+
+- **Performance:** Significant performance improvements across agent execution.
+- **Reliability:** Enhanced stability and error handling throughout the platform.
+
+</Update>
+
+<Update label="2025-09-17" description="Connectors v2 & Tool Management">
+
+## New Features:
+
+- **Connectors v2:** Redesigned connector architecture with improved management capabilities.
+- **Connector Headers:** Support for custom headers and server_url configuration.
+- **Enhanced Tool Picker:** Improved tool selection with better filtering and search.
+
+## Improvements:
+
+- **Connected Connector Page:** Redesigned connector details page with better usability.
+- **Pending Connectors:** Disabled pending connectors to prevent configuration errors.
+
+## Bug Fixes:
+
+- **Connector Display:** Fixed connector description and display issues.
+- **Tool Selection:** Resolved tool picker panel bugs and selection state issues.
+
+</Update>
+
+<Update label="2025-09-10" description="Authentication & SSO Enhancements">
+
+## New Features:
+
+- **OIDC Parent Accounts:** Support for OIDC parent account authentication.
+- **Passwordless Login:** Simplified authentication with passwordless options.
+- **SecretsManager Integration:** Enhanced security with AWS SecretsManager authentication.
+
+## Improvements:
+
+- **SSO Configuration:** Improved SSO setup and configuration UI.
+- **OAuth2 Scopes:** Added readonly scopes for better access control.
+- **Login UI:** Enhanced authentication interface with better error messaging.
+
+## Bug Fixes:
+
+- **User Provisioning:** Fixed user provisioning to assign member role instead of admin by default.
+- **Login Flow:** Resolved login via URL enforcement and redirect issues.
+
+</Update>
+
+<Update label="2025-09-03" description="PDF Generation & Document Processing">
+
+## New Features:
+
+- **Markdown to PDF:** Comprehensive markdown-to-PDF conversion with public static URLs.
+- **Advanced PDF Styling:** Enhanced styling with improved line spacing, fonts, and table formatting.
+- **DejaVu Sans Font:** Integrated DejaVu Sans font for better international character support.
+
+## Improvements:
+
+- **PDF Table Formatting:** Improved table rendering with proper headers and borders.
+- **Link Handling:** Better link rendering and word-wrapping in generated PDFs.
+- **wkhtmltopdf Optimization:** Fine-tuned PDF generation engine for better performance.
+
+## Bug Fixes:
+
+- **PDF Generation:** Fixed multiple PDF generation edge cases and formatting issues.
+- **Character Encoding:** Resolved special character and encoding problems in PDFs.
+
+</Update>
+
+<Update label="2025-08-27" description="Code Interpreter & Custom Functions">
+
+## New Features:
+
+- **Code Interpreter:** Integrated code interpreter for executing code within agents.
+- **AI Function Generation:** AI-powered custom function generation with expected output prediction.
+- **Enhanced Function Editor:** Improved function editing experience with better syntax highlighting.
+
+## Improvements:
+
+- **Generate with AI Button:** Quick access to AI-powered function generation.
+- **Function Settings:** Enhanced function configuration options and settings panel.
+- **Action Routes:** Improved action routing and editor functionality.
+
+## Bug Fixes:
+
+- **Function Editor:** Fixed editor state and saving issues.
+- **Custom Actions:** Resolved custom action execution and configuration bugs.
+
+</Update>
+
+<Update label="2025-08-20" description="LLM Providers & Model Support">
+
+## New Features:
+
+- **GPT-5 Support:** Added support for GPT-5 models with temperature controls.
+- **Nvidia LLM Provider:** Integration with Nvidia LLM services and Nvidia Nemo.
+- **Custom LLM Keys:** BYOL (Bring Your Own License) support for custom model keys.
+
+## Improvements:
+
+- **LLM Key Management:** Enhanced UI for managing and configuring LLM provider keys.
+- **Bedrock Provider:** Improved AWS Bedrock integration and error handling.
+- **Model Selection:** Better model selection interface with provider-specific options.
+
+## Bug Fixes:
+
+- **Provider Configuration:** Fixed LLM provider configuration and key validation issues.
+- **Model Loading:** Resolved model loader and initialization bugs.
+
+</Update>
+
+<Update label="2025-08-13" description="Pricing, Billing & Resource Tracking">
+
+## New Features:
+
+- **New Pricing UI:** Redesigned pricing interface with transparent tier information.
+- **Budget Caps:** Set budget limits to control resource usage and costs.
+- **Builder Seats Management:** Manage team builder seats and permissions.
+- **Tool Duration Tracking:** Track execution time and resource usage per tool.
+
+## Improvements:
+
+- **Resource Monitoring:** Enhanced container usage tracking and cleanup mechanisms.
+- **Usage Metrics:** Total execution duration metrics and detailed analytics.
+- **Contact Sales Integration:** Seamless integration with sales team for enterprise pricing.
+
+## Bug Fixes:
+
+- **Container Cleanup:** Fixed agent container cleanup for hanged assets.
+- **Metrics Aggregation:** Resolved metrics collection and aggregation issues.
+
+</Update>
+
+<Update label="2025-08-06" description="Webhooks & API Improvements">
+
+## New Features:
+
+- **Enhanced Webhook Endpoints:** Webhook endpoints with agent_id in URL paths for better routing.
+- **Static Webhook Triggers:** Static trigger endpoints with POST method support.
+- **Webhook Tester Modal:** Agent Webhook Tester with file upload capabilities.
+
+## Improvements:
+
+- **Async Webhook Invocation:** Improved webhook handling using xpander-sdk for better performance.
+- **Form Data Support:** Added application/x-www-form-urlencoded support for webhooks.
+- **Webhook Output:** Enhanced structured output and response handling.
+
+## Bug Fixes:
+
+- **Webhook Configuration:** Fixed webhook modal layout and configuration issues.
+- **Validation:** Resolved webhook validation and curl generation bugs.
+
+</Update>
+
+<Update label="2025-08-04" description="SDK v2.0.0">
+
+## New Features:
+
+- **Complete SDK Refactor:** Major SDK restructure with improved architecture, new agent columns, and enhanced performance.
+- **Slack Bots Integration:** Comprehensive Slack bot functionality with auto-engage features, conversation starters, and app distributions.
+- **End Client Authentication:** New authentication system with improved security and performance optimizations.
+- **AWS Marketplace Integration:** Full integration with AWS Marketplace for seamless deployment and billing.
+- **Custom Workers & Kubernetes:** Kubernetes cluster support for custom workers with advanced logging and monitoring capabilities.
+
+## Improvements:
+
+- **Agent Versioning System:** Complete agent versioning with draft handling and deployment management.
+- **Webhook System Overhaul:** Organization-level API keys and enhanced webhook functionality.
+- **Knowledge Base Enhancements:** Advanced CRUD operations, OCR support, and improved document processing.
+- **Performance Optimizations:** Significant performance improvements across agent workers and API responses.
+
+## Bug Fixes:
+
+- **Memory Management:** Fixed memory leaks and improved garbage collection in long-running sessions.
+- **Authentication Issues:** Resolved various authentication and authorization edge cases.
+- **UI/UX Improvements:** Fixed multiple interface issues and improved user experience.
+
+</Update>
+
+<Update label="2025-07-25" description="Platform Enhancements">
+
+## New Features:
+
+- **Neon Database Integration:** Multi-tenant database integration with secure vault storage per tenant.
+- **LinkedIn API Updates:** Comprehensive LinkedIn API controller with expanded endpoint coverage.
+- **Static File Upload System:** Public CDN upload functionality for static files and assets.
+- **Image Generation Multi-turn:** Enhanced OpenAI image generation with multi-turn conversation support.
+
+## Improvements:
+
+- **Supabase Migration:** Migrated to async Supabase client for improved performance and reliability.
+- **Chainlit Enhancements:** Better cookie handling, empty state fixes, and conversation starters.
+- **Agent Builder UI:** Improved agent builder interface with better versioning and status management.
+
+## Bug Fixes:
+
+- **Form Submission:** Fixed form handling and submission issues across the platform.
+- **Agent Status:** Resolved agent status synchronization and draft handling issues.
+
+</Update>
+
+<Update label="2025-07-10" description="Core Platform Updates">
+
+## New Features:
+
+- **CSV File Support:** Added comprehensive CSV file processing and handling capabilities.
+- **AWS Assume Role Support:** Enhanced AWS integration with assume role functionality for improved security.
+- **Default API Keys:** Implemented default API key management system for streamlined setup.
+
+## Improvements:
+
+- **Slack Bot Performance:** Enhanced auto-engage functionality with rate limiting and improved context handling.
+- **Agent Performance:** Optimized agent worker implementation for better resource utilization.
+- **API Security:** Improved authentication parsing and AWS credentials handling.
+
+## Bug Fixes:
+
+- **Basic Authentication:** Fixed basic auth parsing issues.
+- **AWS Credentials:** Resolved AWS credentials configuration problems.
+- **Thread Management:** Fixed thread mapping and context issues in Slack integrations.
+
+</Update>
+
+<Update label="2025-06-20" description="Enhanced Integrations">
+
+## New Features:
+
+- **Mintlify Search Integration:** Added Mintlify search functionality for improved documentation access.
+- **PR Title Validator:** Implemented automated PR title validation system.
+- **Agent Import System:** Internal agent import capabilities for streamlined deployment.
+
+## Improvements:
+
+- **Agent List Performance:** Optimized agent list handling for organizations with 1000+ agents.
+- **Error Handling:** Better error handling across various platform components.
+- **Code Quality:** Enhanced code quality with improved testing and validation frameworks.
+
+</Update>
+
+<Update label="2025-05-15" description="Infrastructure & Monitoring">
+
+## New Features:
+
+- **OpenTelemetry Integration:** Comprehensive observability and monitoring with OpenTelemetry.
+- **Custom Deployment Versioning:** Support for deploying specific versions with custom configurations.
+- **Preflight Testing:** Build preflight checks to ensure deployment reliability.
+
+## Improvements:
+
+- **Resource Allocation:** Optimized Kubernetes resource allocation and pod lifecycle management.
+- **Build System:** Enhanced build system with better dependency management.
+- **Deployment Pipeline:** Improved deployment pipeline with better error handling and rollback capabilities.
+
+</Update>
+
+<Update label="2025-04-04" description="SDK v1.9.0">
+
+## New Features:
+
+- **Enhanced Webhook System:** Improved multi-file upload support with better handling of large batch files for document processing agents.
+- **Secure File Access:** Added presigned URLs for file access with 30-day validity period.
+
+## Improvements:
+
+- **Documentation Updates:** Enhanced documentation with clear examples for file processing workflows.
+- **Performance Optimization:** Optimized large batch file handling for improved agent performance.
+
+Read more here: http://docs.xpander.ai/docs/05-human-interfaces/05-webhooks
+
+</Update>
+
+<Update label="2025-03-23" description="MCP Support">
+
+## New Features:
+
+- **Model Context Protocol (MCP) Support:** Added native support for MCP across all agentic interfaces.
+- **Cross-Provider Compatibility:** Enhanced compatibility with standardized MCP implementations.
+
+## Improvements:
+
+- **Agent Performance:** Improved agent performance with optimized MCP message handling.
+
+<Frame>
+<video
+  muted
+  loop
+  playsInline
+  controls
+  allowFullScreen
+  className="w-full aspect-video"
+  src="https://assets.xpanderai.io/vidoes/release-notes/mcp-support.mp4"
+></video>
+</Frame>
+
+Read more here: http://docs.xpander.ai/docs/05-human-interfaces/04-mcp
+
+</Update>
+
+<Update label="2025-03-16" description="SDK v1.8.0">
+
+## New Features:
+
+- **Extended LLM Provider Support:** Added support for latest model versions across multiple providers.
+
+## Improvements:
+
+- **Response Latency:** Improved response latency for high-volume agent deployments.
+
+## Bug Fixes:
+
+- **Memory Management:** Fixed memory management issues in long-running sessions.
+
+</Update>
+
+<Update label="2025-03-09" description="SDK v1.7.3">
+
+## New Features:
+
+- **Agent-to-Agent Communication:** Added support for direct communication between agents.
+- **Cross-Provider Compatibility:** Updated message format compatibility across providers.
+
+## Improvements:
+
+- **Error Handling:** Enhanced error handling for network timeouts during tool execution.
+
+## Bug Fixes:
+
+- **UI Rendering:** Fixed rendering issues in the agent configuration panel.
+
+</Update>
+
+<Update label="2025-03-02" description="SDK v1.7.2">
+
+## New Features:
+
+- **Agent Template Gallery:** Released template gallery for faster development workflows.
+- **Environment Variables:** Added configuration support for environment variables.
+
+## Improvements:
+
+- **Memory Efficiency:** Improved memory efficiency for large context windows.
+- **Schema Validation:** Enhanced validation for custom tool schemas.
+
+</Update>
+
+<Update label="2025-02-23" description="SDK v1.7.0">
+
+## New Features:
+
+- **Claude Model Support:** Added support for latest Claude models.
+- **Python SDK Examples:** Released new enterprise use case examples.
+
+## Improvements:
+
+- **Tool Execution:** Improved performance with parallel processing capabilities.
+
+## Bug Fixes:
+
+- **Tool Extraction:** Fixed issues with certain response formats.
+
+</Update>
+
+<Update label="2025-02-16" description="SDK v1.6.5">
+
+## New Features:
+
+- **Unit Testing Framework:** Added framework for agent behavior validation.
+- **Performance Monitoring:** Released dashboard for agent performance tracking.
+
+## Improvements:
+
+- **Tool Coordination:** Enhanced execution coordination between multiple agents.
+- **Documentation:** Improved guides for custom tool development.
+
+</Update>
+
+<Update label="2025-02-09" description="SDK v1.6.3">
+
+## New Features:
+
+- **Mixtral Model Support:** Added support for additional Mixtral models.
+- **Structured Logging:** Implemented enhanced logging with structured output.
+
+## Improvements:
+
+- **Cross-Provider Compatibility:** Enhanced compatibility for tool formats.
+
+## Bug Fixes:
+
+- **Serialization:** Fixed issues with nested tool responses.
+
+</Update>
+
+<Update label="2025-02-02" description="SDK v1.6.0">
+
+## New Features:
+
+- **Debugging Tools:** Released comprehensive debugging tools for agent development.
+- **File Attachment API:** Added support for file attachments via API.
+
+## Bug Fixes:
+
+- **Memory Initialization:** Fixed issues with provider switching scenarios.
+
+</Update>
+
+<Update label="2025-01-26" description="SDK v1.5.4">
+
+## New Features:
+
+- **Agent Metrics Dashboard:** Released comprehensive metrics and analytics dashboard.
+- **Runtime Tool Registration:** Added capabilities for dynamic tool registration.
+
+## Improvements:
+
+- **Error Reporting:** Enhanced reporting with context preservation.
+- **Message Handling:** Improved format handling for all providers.
+
+</Update>
+
+<Update label="2025-01-19" description="SDK v1.5.2">
+
+## New Features:
+
+- **OpenAI Model Support:** Added support for latest OpenAI models.
+- **Python Decorators:** Released decorator-based tool registration system.
+
+## Improvements:
+
+- **Authentication:** Enhanced with automatic token refresh capabilities.
+
+## Bug Fixes:
+
+- **Tool Execution:** Fixed timeout handling issues.
+
+</Update>
+
+<Update label="2025-01-12" description="SDK v1.5.0">
+
+## New Features:
+
+- **Memory Management:** Enhanced system with retention controls and user-specific isolation.
+- **Multi-User Support:** Improved state management for multi-user scenarios.
+
+## Improvements:
+
+- **Documentation:** Released guides for edge deployment scenarios.
+
+</Update>
+
+<Update label="2025-01-05" description="SDK v1.4.2">
+
+## New Features:
+
+- **Multimodal Capabilities:** Added support for multimodal agent interactions.
+- **Document Processing:** Released comprehensive examples and templates.
+
+## Improvements:
+
+- **Security:** Enhanced handling of sensitive data.
+- **Telemetry:** Improved agent execution monitoring and analytics.
+
+</Update>
+
+<Update label="2024-12-31" description="SDK v1.0.0">
+
+## New Features:
+
+- **Initial Release:** Official launch of xpander.ai platform.
+- **LLM Integration:** Support for OpenAI, Claude, and Gemini LLM providers.
+- **Memory Management:** Basic memory management and tool execution framework ([SDK Agent Reference](/API reference/agents/index)).
+- **Authentication:** Simple authentication and user management system.
+
+</Update>
+
+<Update label="2024-12-23" description="SDK v0.9.5">
+
+## New Features:
+
+- **Ollama Support:** Added support for local model inference via Ollama.
+- **Agent State Management:** Released beta version of comprehensive state management.
+
+## Improvements:
+
+- **Error Handling:** Improved handling for tool executions.
+- **Documentation:** Enhanced with quick start guides ([docs/01-get-started/01-index.mdx](/user-guide/index)).
+
+</Update>
+
+<Update label="2024-12-16" description="SDK v0.9.2">
+
+## New Features:
+
+- **FriendliAI Integration:** Launched support for FriendliAI with Claude models.
+- **Dynamic Tool Discovery:** Added mechanism for automatic tool discovery.
+
+## Improvements:
+
+- **Performance:** Enhanced performance for high-volume deployments.
+- **Examples:** Released extended integration pattern examples.
+
+</Update>
+
+<Update label="2024-12-09" description="SDK v0.9.0">
+
+## New Features:
+
+- **Streaming Responses:** Added support for streaming from all providers.
+- **Python Client:** Released new client with simplified API.
+
+## Improvements:
+
+- **Tool Compatibility:** Enhanced cross-provider tool format compatibility.
+- **Memory Consistency:** Improved consistency across multi-turn conversations ([SDK Agent Reference](/API reference/agents/index)).
+
+</Update>
+
+<Update label="2024-12-02" description="SDK v0.8.5">
+
+## New Features:
+
+- **LangChain Integration:** Added comprehensive LangChain support.
+- **Tool Format Conversion:** Released automatic conversion utilities.
+
+## Improvements:
+
+- **Memory Initialization:** Enhanced with custom instructions support.
+
+</Update>
+
+<Update label="2024-11-25" description="SDK v0.8.2">
+
+## New Features:
+
+- **NVIDIA NIM Support:** Added support for NVIDIA NIM models.
+- **Persistent Storage:** Enhanced agent memory with storage options.
+
+## Improvements:
+
+- **Error Handling:** Improved handling for rate limiting and quotas.
+- **Examples:** Released multi-step task execution examples.
+
+</Update>
+
+<Update label="2024-11-18" description="SDK v0.8.0">
+
+## New Features:
+
+- **Multi-Provider Switching:** Support for switching providers within same session.
+- **Provider Adapter Pattern:** Released simplified integration pattern.
+
+## Improvements:
+
+- **Tool Execution:** Enhanced framework with parallel processing.
+- **Documentation:** Improved with provider-specific best practices.
+
+</Update>
+
+<Update label="2024-11-11" description="Minor Update">
+
+## Improvements:
+
+- **Message Handling:** Enhanced format handling across providers.
+- **Tool Extraction:** Improved reliability with explicit provider specification.
+- **Documentation:** Released extended memory management guides.
+
+</Update>
+
+<Update label="2024-11-04" description="SDK v0.7.0">
+
+## New Features:
+
+- **Automatic Format Conversion:** Added message format conversion between providers.
+- **Python SDK:** Released with expanded provider support.
+
+## Improvements:
+
+- **Error Reporting:** Enhanced with provider-specific details.
+- **Schema Validation:** Improved tool schema validation for better compatibility.
+
+</Update>
+
+<Update label="2024-11-01" description="SDK v0.5.0">
+
+## New Features:
+
+- **Alpha Release:** Initial alpha version with basic OpenAI integration.
+- **Tool Calling:** Support for simple tool calling and execution ([SDK Tools Reference](/API reference/tools/index)).
+- **Memory Management:** Initial capabilities ([SDK Agent Reference](/API reference/agents/index)).
+- **Documentation:** Basic documentation and examples ([docs/01-get-started](/user-guide)).
+
+</Update>
+
+> Note: Current SDK version is v1.47.10 as of this documentation update.
