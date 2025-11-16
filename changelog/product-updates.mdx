@@ -4,6 +4,44 @@ mode: 'wide'
 rss: true
 ---
 
+<Update label="2025-11-16" description="Async Platform Stabilization, Agent Improvements, and Model Catalog Expansion">
+
+## New Features:
+
+- **OpenAI GPT-5.1 Model Support:** Added GPT-5.1 and additional GPT-5 family variants to the model catalog, with updated context and output token limits for each model.
+- **Agent Description Field:** Introduced editable agent descriptions in the Workbench and auto-generation of agent descriptions using OpenAI for consistent UX.
+- **Built-in Tools Management:** Added toggles for enabling/disabling built-in tools, including a Sleep tool, directly in agent settings.
+- **OIDC Redirect Metadata:** Enhanced OIDC login flow to support redirect URLs and propagate metadata through authentication callbacks.
+- **Async Redis and Background Tasks:** Migrated platform services to async Redis clients and offloaded non-critical work to background tasks for improved throughput and reliability.
+
+## Improvements:
+
+- **Async Agent Execution and Scheduler:** Refactored agent execution and scheduling to use pure async models, stabilizing event handling and status polling.
+- **Agent Activity and Thread Export:** Improved agent activity thread export with deduplication and JSON-safe serialization for downstream consumers.
+- **Environment Management:** Unified environment handling and default logic across the UI, with clearer badges, sorting, and admin actions.
+- **Agent Activity Logs UI:** Refined agent activity logs to group user turns, tool calls, and assistant answers for improved readability.
+- **Token Metrics:** Exposed input and output LLM token breakdowns in agent activity threads and sessions for improved monitoring and billing.
+- **UI/UX Enhancements:** Improved chat background color handling, loader states for iframe chat initialization, and clarified terminology (e.g., "Executions" to "Tasks").
+- **Connector and API Key Management:** Added SQL functions for environment filtering, improved API key selection in OAuth2 flows, and refined connector versioning logic.
+
+## Bug Fixes:
+
+- **Agent Execution and Error Handling:** Fixed race conditions and error propagation in agent execution, including PII error handling and synthetic thread fallback.
+- **Tool-Call Reporting and UI:** Stabilized tool-call reporting, ensured error events are always yielded, and improved UI rendering for tool-call steps.
+- **Thread Activity Metrics:** Corrected token metrics display and layout in thread activity views, ensuring accurate input/output token counts.
+- **UI Consistency:** Resolved various UI bugs, including modal race conditions, built-in tool toggling, metrics tab rendering, and chat view background color.
+- **Connector and Agent Settings:** Fixed issues with connector version selection, upload modal behavior, and agent settings persistence.
+- **OAuth2 CLI Flow:** Improved OAuth2 CLI login flow with API key selection, authorization UI, and safe redirect handling.
+
+</Update>
+
+
+---
+title: 'Product Updates'
+mode: 'wide'
+rss: true
+---
+
 
 <Update label="2025-11-12" description="Platform, Agent, and UI Enhancements">
 
