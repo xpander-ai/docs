@@ -4,6 +4,28 @@ mode: 'wide'
 rss: true
 ---
 
+<Update label="2025-11-16" description="Async Platform Stabilization, Agent Improvements, and Model Catalog Expansion">
+Today's update is relatively short due to the last update being 4 days ago. We're now moving to a weekly update every Sunday.
+
+## New Features:
+
+- **OpenAI GPT-5.1 Model Support:** Added GPT-5.1 and additional GPT-5 family variants to the model catalog, with updated context and output token limits for each model.
+- **Agent Description Field:** Introduced editable agent descriptions in the Workbench and auto-generation of agent descriptions. This will be populated in the Agents list in app.xpander.ai and chat.xpander.ai (or chat.your-company.com)
+- **Improved robustness of Task scheduler:** Migrated platform services to async Redis clients and offloaded non-critical work to background tasks for improved throughput and reliability.
+
+## Improvements:
+
+- **Environment Management:** Added option to configure default environment for agent deployments.
+- **Agent Activity Logs UI:** Refined agent activity logs to group user turns, tool calls, and assistant answers for improved readability.
+- **UI/UX Enhancements:** Improved chat background color handling, loader states for iframe chat initialization, and clarified terminology (e.g., "Executions" to "Tasks").
+- **Connector and API Key Management:** Added SQL functions for environment filtering, improved API key selection in OAuth2 flows, and refined connector versioning logic.
+
+## Bug Fixes:
+
+- **UI Consistency:** Resolved various UI bugs, including modal race conditions, built-in tool toggling, metrics tab rendering, and chat view background color.
+- **OAuth2 CLI Flow:** Improved OAuth2 CLI login flow with API key selection, authorization UI, and safe redirect handling.
+
+</Update>
 
 <Update label="2025-11-12" description="Platform, Agent, and UI Enhancements">
 
