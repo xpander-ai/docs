@@ -237,7 +237,10 @@
         "groups": [
           {
             "group": "Overview",
-            "pages": ["connectors/index"]
+            "pages": [
+              "connectors/index",
+              "connectors/aws-integration"
+            ]
           },
           {
             "group": "Connectors",
