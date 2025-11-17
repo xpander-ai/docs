@@ -173,13 +173,12 @@ helm upgrade --install xpander xpander/xpander \
 
 For a detailed overview of the on-premises architecture and how components interact, see:
 
-**[On-Premises Architecture Guide](https://blog.xpander.ai/on-premises-architecture)**
+**[On-Premises Architecture Guide](https://pages.xpander.ai/on-premises-architecture)**
 
 The Helm chart deploys the following components:
 
 - **Agent Controller** - Main API endpoint and orchestration
 - **AI Gateway** - AI service gateway for LLM providers
-- **MCP** - Model Context Protocol service
 - **Agent Worker** - Task execution runtime
 - **Redis** - Cache and state management
 - **PostgreSQL** - Data persistence
@@ -189,26 +188,25 @@ The Helm chart deploys the following components:
 When you set a `domain`, these hostnames are automatically created:
 - `agent-controller.{domain}` - Main API endpoint
 - `ai-gateway.{domain}` - AI service gateway  
-- `mcp.{domain}` - MCP (Model Context Protocol) service
 
 ## Configuration Options
 
 ### Required Parameters
 
-| Parameter | Description | Example |
-|-----------|-------------|---------|
-| `global.organizationId` | Your xpander.ai organization ID | `6aedc41e-9771-4660-b46e-af51c66d2ea8` |
-| `global.environmentId` | Your xpander.ai environment ID | `0e308480-f02c-44a9-97ce-e15bb39d94e8` |
-| `secrets.static.deploymentManagerApiKey` | Deployment manager API key | `6120718c-ef9b-42e8-93a8-18203d0700a9` |
+| Parameter                                | Description                     | Example                                |
+| ---------------------------------------- | ------------------------------- | -------------------------------------- |
+| `global.organizationId`                  | Your xpander.ai organization ID | `6aedc41e-9771-4660-b46e-af51c66d2ea8` |
+| `global.environmentId`                   | Your xpander.ai environment ID  | `0e308480-f02c-44a9-97ce-e15bb39d94e8` |
+| `secrets.static.deploymentManagerApiKey` | Deployment manager API key      | `6120718c-ef9b-42e8-93a8-18203d0700a9` |
 
 ### Optional Parameters
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `domain` | Base domain for ingress hosts | `""` (ingress disabled) |
-| `ingress.enabled` | Enable external access via ingress | `false` |
-| `agent-worker.env.AGENTS_OPENAI_API_KEY` | OpenAI API key for GPT models | `""` |
-| `agent-worker.env.ANTHROPIC_API_KEY` | Anthropic API key for Claude models | `""` |
+| Parameter                                | Description                         | Default                 |
+| ---------------------------------------- | ----------------------------------- | ----------------------- |
+| `domain`                                 | Base domain for ingress hosts       | `""` (ingress disabled) |
+| `ingress.enabled`                        | Enable external access via ingress  | `false`                 |
+| `agent-worker.env.AGENTS_OPENAI_API_KEY` | OpenAI API key for GPT models       | `""`                    |
+| `agent-worker.env.ANTHROPIC_API_KEY`     | Anthropic API key for Claude models | `""`                    |
 
 ## AI Service Configuration
 
