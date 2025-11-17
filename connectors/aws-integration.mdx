@@ -1,0 +1,166 @@
+---
+title: "AWS Integration"
+description: "Securely manage connector credentials using AWS Secrets Manager and IAM roles"
+icon: "aws"
+---
+
+This page describes how to integrate xpander with AWS security features to securely manage connector credentials. Instead of storing sensitive API keys directly in xpander, you can leverage AWS Secrets Manager and IAM roles attached to Kubernetes pods to provide secure, auditable access to your connector credentials.
+
+## Integration Options
+
+<CardGroup cols={2}>
+  <Card
+    title="AWS Secrets Manager"
+    icon="key"
+    href="#pulling-credentials-from-aws-secrets-manager"
+  >
+    Pull API keys dynamically from AWS Secrets Manager for enhanced security
+  </Card>
+  <Card
+    title="IAM Roles for Service Accounts"
+    icon="shield-halved"
+    href="#attaching-iam-roles-to-xpander-controller"
+  >
+    Attach IAM roles to Kubernetes pods for secure AWS authentication
+  </Card>
+</CardGroup>
+
+## Pulling Credentials from AWS Secrets Manager
+
+When configuring a connector in xpander, you can enable the option to pull credentials from AWS Secrets Manager instead of storing them directly in the xpander platform. This approach provides several security benefits:
+
+### Security Benefits
+
+- **No Direct Credential Storage**: API keys and secrets are never stored in xpander's database
+- **Centralized Secret Management**: Maintain all your secrets in AWS Secrets Manager with a single source of truth
+- **Audit Trail**: AWS CloudTrail automatically logs all access to secrets for compliance and security monitoring
+- **Automatic Rotation**: Leverage AWS Secrets Manager's automatic rotation capabilities for credentials
+- **Fine-Grained Access Control**: Use IAM policies to control exactly which services can access specific secrets
+
+### How It Works
+
+When you enable AWS Secrets Manager integration for a connector:
+
+1. Check the "Use AWS Secrets Manager" option in the connector configuration
+2. Provide the ARN (Amazon Resource Name) of the secret in AWS Secrets Manager that contains your API key
+3. The xpander controller pod uses its attached IAM role to authenticate with AWS
+4. When the connector needs credentials, xpander retrieves them directly from Secrets Manager in real-time
+5. Credentials are never persisted in xpander's storage
+
+The secret ARN format looks like: `arn:aws:secretsmanager:us-east-1:123456789012:secret:my-api-key-AbCdEf`
+
+<Note>
+For self-hosted deployments, the xpander controller pod must have an IAM role attached with permissions to access the specified secrets in AWS Secrets Manager. See the section below for details on configuring IAM roles.
+</Note>
+
+## Attaching IAM Roles to xpander Controller
+
+In self-hosted deployments on Amazon EKS (Elastic Kubernetes Service), you can attach IAM roles directly to the xpander controller pod using IAM Roles for Service Accounts (IRSA). This provides secure, temporary credentials without needing to manage long-lived access keys.
+
+### Understanding IAM Roles for Service Accounts
+
+IAM Roles for Service Accounts (IRSA) is an AWS feature that allows you to associate an IAM role with a Kubernetes service account. When a pod uses that service account, it automatically receives temporary AWS credentials that assume the associated IAM role.
+
+**Key benefits of IRSA:**
+
+- **No Static Credentials**: Pods receive temporary, automatically rotated credentials
+- **Pod-Level Permissions**: Different pods can have different AWS permissions based on their service account
+- **Least Privilege**: Grant only the specific AWS permissions each pod needs
+- **AWS Native Integration**: Leverages AWS STS (Security Token Service) for credential management
+
+### How xpander Uses IAM Roles
+
+When the xpander controller pod is deployed with an attached IAM role:
+
+1. The Kubernetes service account is annotated with the IAM role ARN
+2. AWS injects temporary credentials into the pod as environment variables
+3. When xpander needs to access AWS Secrets Manager, it uses these temporary credentials
+4. Credentials are automatically rotated by AWS before they expire
+
+### Required IAM Permissions
+
+The IAM role attached to the xpander controller pod needs permissions to read secrets from AWS Secrets Manager. Here's an example IAM policy:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret"
+      ],
+      "Resource": [
+        "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:xpander/*"
+      ]
+    }
+  ]
+}
+```
+
+Replace `REGION` and `ACCOUNT_ID` with your AWS region and account ID. The resource pattern shown allows access to all secrets under the `xpander/` prefix.
+
+### Setting Up IRSA for xpander
+
+To configure IAM roles for the xpander controller in your EKS cluster:
+
+1. Create an IAM role with the necessary Secrets Manager permissions
+2. Configure the trust relationship to allow the EKS cluster's OIDC provider
+3. Annotate the xpander controller's Kubernetes service account with the role ARN
+4. Deploy or restart the xpander controller pod to pick up the new permissions
+
+<Tip>
+For detailed instructions on setting up IRSA in your EKS cluster, refer to the [AWS documentation on IAM roles for service accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html).
+</Tip>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Use Specific Secret ARNs">
+    Instead of granting broad Secrets Manager access, specify exact secret ARNs in your IAM policies to follow the principle of least privilege.
+  </Accordion>
+
+  <Accordion title="Organize Secrets by Environment">
+    Use naming conventions like `xpander/prod/`, `xpander/staging/` to organize secrets by environment and apply appropriate IAM policies.
+  </Accordion>
+
+  <Accordion title="Enable AWS CloudTrail">
+    Ensure CloudTrail is enabled to maintain an audit log of all secret access attempts for security and compliance purposes.
+  </Accordion>
+
+  <Accordion title="Use Secret Rotation">
+    Enable automatic rotation for secrets in AWS Secrets Manager to regularly update credentials without manual intervention.
+  </Accordion>
+
+  <Accordion title="Test IAM Permissions">
+    Before deploying to production, verify that the xpander controller pod can successfully retrieve secrets from Secrets Manager in a test environment.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Permission Denied Errors">
+    If xpander cannot access secrets, verify:
+    - The IAM role is properly attached to the service account
+    - The IAM policy includes the correct secret ARN
+    - The trust relationship allows the EKS OIDC provider
+    - The secret ARN format is correct
+  </Accordion>
+
+  <Accordion title="Secrets Not Found">
+    Ensure:
+    - The secret ARN exists in AWS Secrets Manager
+    - The secret is in the same AWS region as your EKS cluster
+    - The secret name matches exactly (secret names are case-sensitive)
+  </Accordion>
+
+  <Accordion title="IRSA Not Working">
+    Check:
+    - The EKS cluster has an OIDC provider configured
+    - The service account annotation includes the full role ARN
+    - The pod has been restarted after annotating the service account
+    - Environment variables like AWS_ROLE_ARN are present in the pod
+  </Accordion>
+</AccordionGroup>
