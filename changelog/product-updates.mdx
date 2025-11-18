@@ -4,6 +4,36 @@ mode: 'wide'
 rss: true
 ---
 
+<Update label="2025-11-18" description="Generalist Agent Revamp, MCP Client Consolidation, and Activity Log Enhancements">
+
+## New Features:
+
+- **Generalist Task Reasoning & UI Revamp:** Introduced an end-to-end reasoning API and revamped hosted assistants UI, including task cards, step-by-step reasoning timelines, and grouped tool-call steps for generalist agents.
+- **Agent Memories & History:** Enabled persistent user memories and extended history for generalist agents to keep more context across runs.
+- **MCP Client in Agents Service:** Consolidated the MCP client into the Agents service, exposing unified HTTP/SSE endpoints for listing and invoking remote MCP tools with robust parsing and retries.
+- **Agent Description Field & Auto-Generation:** Added agent descriptions in the Workbench and automatic description generation so agents are easier to understand and discover.
+- **Expanded OpenAI Model Catalog:** Added GPT-5.1 and additional GPT-5 family variants to the model catalog, with updated token limits and ordering for easier selection.
+
+## Improvements:
+
+- **Hosted Assistants Web UI:** Refined task grouping, thinking indicators, iframe embedding headers, caching behavior for public assets, and CSS cleanup to reduce visual noise.
+- **Agent Activity Logs:** Enhanced activity logs with session and per-tool execution durations, grouped user/assistant/tool turns, and clearer operation/tool metadata.
+- **Environment Management:** Unified environment handling between cloud and self-hosted deployments, including a single default environment per organization and clearer labels/badges.
+- **Guardrails & PII Handling:** Tightened generalist instructions, enabled PII masking by default, improved prompt-injection and moderation controls, and added synthetic activity threads when PII prevents full detail.
+- **Authentication & OAuth/OIDC Flows:** Improved WebUI auth redirects and CLI/OAuth2 login flows, including redirect metadata, safe redirect checks, and more reliable re-authentication behavior.
+- **AI Gateway & Connectors:** Simplified Basic Auth handling with AWS Secrets Manager integration, added text-payload flexibility, and ensured transient control headers aren’t forwarded downstream.
+- **Async Scheduling & Job Execution:** Stabilized async agent execution and scheduler event handling by moving to an async scheduler model and cleaning up nested event-loop usage.
+
+## Bug Fixes:
+
+- **Billing & Quota Usage:** Corrected entitlement-based usage calculations (base vs. extras and custom plans) to align billing metrics with plan limits.
+- **Thread Export & Activity Errors:** Fixed duplicate messages and non-serializable session data in activity thread exports, and improved error propagation for PII-related failures.
+- **Chat & Logs UI Polish:** Resolved duplicated steps in Chainlit chat, ensured chat backgrounds render correctly across themes, added loaders while embedded chat apps initialize, and reduced clutter in agent thread logs.
+- **MCP Service Decommissioning:** Fully disabled legacy MCP service deployments and CI triggers after moving functionality into the Agents service.
+
+</Update>
+
+
 <Update label="2025-11-16" description="Async Platform Stabilization, Agent Improvements, and Model Catalog Expansion">
 Today's update is relatively short due to the last update being 4 days ago. We're now moving to a weekly update every Sunday.
 
