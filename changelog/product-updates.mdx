@@ -4,6 +4,32 @@ mode: 'wide'
 rss: true
 ---
 
+<Update label="2025-11-23" description="Generalist Agent Revamp, UI/UX Enhancements, other fixes and improvements">
+
+## New Features:
+
+- **Generalist Agent Revamp:** Major overhaul of the generalist agent experience, including explicit reasoning tools (think/analyze), task grouping in the WebUI, and a well-known agent card endpoint for client discovery.
+- **Timezone Awareness:** Chat sessions now capture and sync the user's IANA timezone from the browser to the backend.
+- **User Details Propagation:** Webhook and agent invocation pipelines now accept and propagate user identity details.
+
+## Improvements:
+
+- **UI/UX Enhancements:** 
+  - Overhauled the Chainlit WebUI with stabilized task sync indicators, improved task grouping, and live reasoning display.
+  - Refined logs (monitoring) panel with duration indicators, operation icons, and improved readability.
+  - Improved file extraction and rendering for images and attachments in chat threads.
+  - Enhanced connector management in Workbench, including connection switching, multi-delete, and version upgrades.
+
+## Bug Fixes:
+
+- **Task Grouping and State Persistence:** Fixed issues with duplicated chat steps, improper task state persistence, and UI artifacts during session reconstruction.
+- **Silent Agent Task Creation:** Ensured agent task creation is silent in the UI, with accurate progress and completion indicators.
+- **Connector and Avatar UI:** Resolved connector collapsible section bugs, avatar sizing inconsistencies, and improved tool selection logic.
+- **Logs Panel and Activity Thread:** Fixed collapse/expand behavior, duration calculations, and error propagation in activity threads.
+
+</Update>
+
+
 <Update label="2025-11-16" description="Async Platform Stabilization, Agent Improvements, and Model Catalog Expansion">
 Today's update is relatively short due to the last update being 4 days ago. We're now moving to a weekly update every Sunday.
 
