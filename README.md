@@ -4,7 +4,7 @@
 
 This repository contains the documentation for xpander.ai, built with [Mintlify](https://mintlify.com).
 
-🌐 **Live Documentation**: https://docs.xpander.ai
+🌐 **Live Documentation**: https://xpander.ai/docs
 
 > **Quick Start**: Click the "Open in GitHub Codespaces" button above to instantly start reviewing or contributing to the documentation. No local setup required!
 

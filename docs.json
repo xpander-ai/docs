@@ -299,37 +299,37 @@
         {
           "dropdown": "User Guide",
           "icon": { "name": "book", "style": "regular" },
-          "href": "https://docs.xpander.ai/user-guide"
+          "href": "https://xpander.ai/docs/user-guide"
         },
         {
           "dropdown": "Examples",
           "icon": { "name": "lightbulb", "style": "regular" },
-          "href": "https://docs.xpander.ai/Examples/index"
+          "href": "https://xpander.ai/docs/Examples/index"
         },
         {
           "dropdown": "Templates",
           "icon": { "name": "floppy-disk", "style": "regular" },
-          "href": "https://docs.xpander.ai/templates"
+          "href": "https://xpander.ai/docs/templates"
         },
         {
           "dropdown": "Workshops",
           "icon": { "name": "school", "style": "regular" },
-          "href": "https://docs.xpander.ai/workshops"
+          "href": "https://xpander.ai/docs/workshops"
         },
         {
           "dropdown": "API Reference",
           "icon": { "name": "code", "style": "regular" },
-          "href": "https://docs.xpander.ai/api-reference/index"
+          "href": "https://xpander.ai/docs/api-reference/index"
         },
         {
           "dropdown": "Changelog",
           "icon": { "name": "note", "style": "regular" },
-          "href": "https://docs.xpander.ai/changelog/product-updates"
+          "href": "https://xpander.ai/docs/changelog/product-updates"
         },
         {
           "dropdown": "AI Connectors",
           "icon": { "name": "plug", "style": "regular" },
-          "href": "https://docs.xpander.ai/connectors/index"
+          "href": "https://xpander.ai/docs/connectors/index"
         }
       ],
       "anchors": [
@@ -345,7 +345,7 @@
         },
         {
           "anchor": "SDK Reference",
-          "href": "https://docs.xpander.ai/api-reference/index",
+          "href": "https://xpander.ai/docs/api-reference/index",
           "icon": { "name": "code", "style": "regular" }
         },
         {
