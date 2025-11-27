@@ -53,6 +53,10 @@ Modify an agent's configuration. Only provided fields will be updated. At least 
   Target environment ID
 </ParamField>
 
+<ParamField body="status" type="string">
+  Agent status (enum: `ACTIVE`, `INACTIVE`)
+</ParamField>
+
 ## Response
 
 Returns the updated `AIAgent` object with all current configuration.
@@ -69,7 +73,8 @@ curl -X PATCH -H "x-api-key: YOUR_API_KEY" \
       "goal": ["Help users with their questions"],
       "general": "Be concise and accurate"
     },
-    "model_name": "gpt-4o"
+    "model_name": "gpt-4o",
+    "status": "ACTIVE"
   }' \
   https://api.xpander.ai/v1/agents/{agent_id}
 ```
