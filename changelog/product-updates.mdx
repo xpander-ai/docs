@@ -4,6 +4,31 @@ mode: 'wide'
 rss: true
 ---
 
+<Update label="2025-11-30" description="Platform Performance, Billing, Metrics, and AWS Bedrock Integration">
+
+## New Features:
+
+- **AWS Bedrock Integration:** Enabled native AWS Bedrock as LLM provider for agents.
+- **Helicone Integration:** Added support for Helicone as AI Gateway for LLM providers.
+
+## Improvements:
+
+- **Performance Enhancements:** 
+  - Reduced streaming latency and improved robustness of agent event pipelines by pre-starting SDK and worker streams and coordinating their outputs.
+  - Optimized Kubernetes metrics collection.
+  - Streamlined execution history updates and improved event-loop responsiveness.
+- **Configuration and Memory:** 
+  - Aligned default user memory settings and improved configuration for agent memory behavior.
+
+## Bug Fixes:
+
+- **UI and Configuration Consistency:** 
+  - Corrected default user memory behavior to default-off.
+- **Robustness and Error Handling:** 
+  - Improved error handling and graceful shutdown in streaming event pipelines.
+  - Ensured that missing or invalid API keys do not break core agent flows, but only disable related features.
+
+</Update>
 <Update label="2025-11-23" description="Generalist Agent Revamp, UI/UX Enhancements, other fixes and improvements">
 
 ## New Features:
