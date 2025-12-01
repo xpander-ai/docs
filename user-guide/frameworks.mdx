@@ -15,8 +15,8 @@ xpander provides a **unified API** across all agent frameworks. No matter which 
 **How it works:**
 
 1. Create an agent (via Workbench, SDK, or API)
-2. Fetch config with `Agents().aget()`
-3. Initialize your framework with xpander's config
+2. Use `Backend().aget_args()` to get framework-specific config
+3. Initialize your framework with the returned args
 4. Use `@on_task` to handle incoming tasks
 
 By using `@on_task`, your agent automatically supports:
@@ -28,35 +28,28 @@ By using `@on_task`, your agent automatically supports:
 
 ---
 
-## Agent Properties
-
-When you fetch an agent with `Agents().aget()`, you get access to:
-
-| Property                    | Description                       |
-| --------------------------- | --------------------------------- |
-| `model_name`                | Configured model (e.g., "gpt-4o") |
-| `model_provider`            | Provider (e.g., "openai")         |
-| `instructions.full`         | Complete system prompt            |
-| `instructions.instructions` | Core instructions                 |
-| `instructions.description`  | Agent description                 |
-| `tools.functions`           | Generic tool functions            |
-| `strands_tools`             | Strands-compatible tools          |
-| `openai_agents_sdk_tools`   | OpenAI Agents SDK tools           |
-| `sanitized_name`            | URL-safe agent name               |
-| `aget_db()`                 | Get PostgreSQL connection         |
-
----
-
 ## Framework Examples
+
+<Tip>
+**What's in `backend.aget_args()`?** The Backend returns framework-specific arguments including:
+
+| Property        | Description                                     |
+| --------------- | ----------------------------------------------- |
+| `model`         | Configured AI model instance                    |
+| `instructions`  | System prompt from Workbench                    |
+| `description`   | Agent description                               |
+| `tools`         | Tools from the catalog + custom `@register_tool`|
+| `db`            | PostgreSQL connection for memory                |
+| `session_id`    | Task ID for conversation tracking               |
+</Tip>
 
 <Tabs>
 
 <Tab title="Agno">
 
 ```python
-from xpander_sdk import Task, on_task, Agents, Configuration
+from xpander_sdk import Task, on_task, Backend, Configuration
 from agno.agent import Agent
-from agno.models.openai import OpenAIChat
 
 @on_task(
     Configuration(
@@ -66,20 +59,9 @@ from agno.models.openai import OpenAIChat
     )
 )
 async def my_agent_handler(task: Task):
-    # Fetch agent configuration from xpander
-    xpander_agent = await Agents(configuration=task.configuration).aget()
-
     # Initialize Agno with xpander's configuration
-    agno_agent = Agent(
-        db=await xpander_agent.aget_db(),
-        session_id=task.id,
-        add_history_to_context=True,
-        model=OpenAIChat(id=xpander_agent.model_name, api_key="{YOUR_LLM_KEY}"),
-        instructions=xpander_agent.instructions.instructions,
-        description=xpander_agent.instructions.description,
-        tools=xpander_agent.tools.functions,
-        additional_context=f"User details: {task.input.user.model_dump_json()}" if task.input.user else None
-    )
+    backend = Backend(configuration=task.configuration)
+    agno_agent = Agent(**await backend.aget_args(task=task))
 
     # Run the agent
     result = await agno_agent.arun(
