@@ -30,19 +30,6 @@ By using `@on_task`, your agent automatically supports:
 
 ## Framework Examples
 
-<Tip>
-**What's in `backend.aget_args()`?** The Backend returns framework-specific arguments including:
-
-| Property        | Description                                     |
-| --------------- | ----------------------------------------------- |
-| `model`         | Configured AI model instance                    |
-| `instructions`  | System prompt from Workbench                    |
-| `description`   | Agent description                               |
-| `tools`         | Tools from the catalog + custom `@register_tool`|
-| `db`            | PostgreSQL connection for memory                |
-| `session_id`    | Task ID for conversation tracking               |
-</Tip>
-
 <Tabs>
 
 <Tab title="Agno">
@@ -73,6 +60,19 @@ async def my_agent_handler(task: Task):
 
     return task
 ```
+
+<Note>
+**What's in `backend.aget_args()`?** Framework-specific arguments including:
+
+| Property        | Description                                     |
+| --------------- | ----------------------------------------------- |
+| `model`         | Configured AI model instance                    |
+| `instructions`  | System prompt from Workbench                    |
+| `description`   | Agent description                               |
+| `tools`         | Tools from the catalog + custom `@register_tool`|
+| `db`            | PostgreSQL connection for memory                |
+| `session_id`    | Task ID for conversation tracking               |
+</Note>
 
 </Tab>
 
