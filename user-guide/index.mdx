@@ -1,221 +1,112 @@
 ---
 title: "Introduction"
-description: "Production AI agents platform. Choose managed agents that users interact with directly, or embedded agents to power your own applications with AI. Infrastructure included - Runtime, PostgreSQL, CI/CD, event triggers, MCP Gateways and 2000+ AI Tools."
+description: "xpander.ai is a full-stack, self-hosted agent infrastructure platform that gives you a one-stop shop for all your agent needs, including: MCP/function call connectors and catalog, agent runtime management, prompt management, and stateful PostgreSQL-backed storage"
 icon: "sparkles"
 ---
 
-# Two Ways to Build Agents
+## Two Ways to Build AI Agents
 
-Both approaches run on xpander's infrastructure - either **serverless cloud** or **your VPC with AgentOS** (xpander's K8s environment).
-
-**The key difference:** How will users interact with your agent?
+xpander.ai supports two distinct approaches depending on your use case complexity and requirements.
 
 <CardGroup cols={2}>
-  <Card title="☁️ Managed Agents" href="#managed-agents">
-    **The agent IS your product**
+  <Card title="Autonomous Agents with a Specific Role" icon="robot" href="#1-autonomous-agents-with-a-specific-role-low-code--no-code">
+    Production-ready agents via Visual Workbench - no code required
 
-    Visual setup, instant deployment. Users interact directly - no frontend needed
-  <br></br>
-    **Perfect when you need:**
-    • IT helpdesk that knows your company wiki
-    • Sales bot that qualifies leads 24/7
-    • DevOps assistant with AWS/GCP access
-    • HR bot handling employee FAQs
+    **Best for:** Chatbots, support agents, DevOps assistants, task automation
   </Card>
-  <Card title="🔧 Embedded Agents" href="#embedded-agents">
-    **The agent powers YOUR product**
+  <Card title="Complex Multi-Framework Applications" icon="cubes" href="#2-complex-multi-framework-applications-code--containers">
+    Full agentic product development with custom logic
 
-    Your app, your UI. xpander handles the AI heavy lifting
-  <br></br>
-    **Perfect when building:**
-    • SaaS that needs AI copilot features
-    • Trading platform with custom analysis
-    • Healthcare app with compliance rules
-    • Enterprise system with legacy APIs
+    **Best for:** RAG-powered SaaS, multi-modal pipelines, enterprise platforms
   </Card>
 </CardGroup>
 
+---
 
-## ☁️ Managed Agents
+## 1. Autonomous Agents with a Specific Role (Low Code / No Code)
 
-**Your complete AI agent, ready to use.** Configure everything visually in the Workbench:
-
-- ✅ Select AI models (pre-configured or bring your own keys)
-- ✅ Add tools and MCP servers from the repository
-- ✅ Set up memory, knowledge bases, and instructions
-- ✅ Connect directly to Slack, webhooks, or web chat
-- ✅ Built on **Agno-AGI** framework (additional frameworks on roadmap)
-
-<Info>
-**What you get:** A fully functional AI agent that users interact with directly. No frontend to build, no infrastructure to manage - just configure and interact with the agent via Slack, Webhook, WebUI or scheduled tasks.
-</Info>
-
-<Frame>
-  ![managed-agent-example](/images/agent-example.png)
-</Frame>
-
-### Real-world managed agent examples
+Production-ready autonomous agents via Visual Workbench - no code required. The platform manages the Agno runtime for you.
 
 <CardGroup cols={2}>
-  <Card title="IT Support Bot" icon="headset">
-    Deploy to Slack to answer employee questions, reset passwords, check system status
+  <Card title="Key Characteristics" icon="list-check">
+    - Clearly defined agent role and goals
+    - Non-deterministic behavior OK
+    - Single or multi-agent with tools
+    - Configuration driven
   </Card>
-  <Card title="Customer Service Agent" icon="comments">
-    Handle support tickets via web chat, search docs, escalate complex issues
-  </Card>
-  <Card title="Sales Assistant" icon="chart-line">
-    Qualify leads through webhooks, update CRM, schedule follow-ups
-  </Card>
-  <Card title="DevOps Helper" icon="terminal">
-    Monitor deployments, run diagnostics, alert on issues via scheduled tasks
-  </Card>
-  <Card title="Knowledge Base Q&A" icon="book">
-    Answer questions from your docs, accessible via web UI or Slack
-  </Card>
-  <Card title="Onboarding Assistant" icon="user-plus">
-    Guide new employees through processes, answer FAQs, collect information
+  <Card title="Example Use Cases" icon="lightbulb">
+    - Website chatbots and support
+    - DevOps and IT helpdesk assistants
+    - PR review, log summarization
+    - Sales qualification bots
   </Card>
 </CardGroup>
 
-## 🔧 Embedded Agents
+**Try it:** [xpander.ai website agent](https://xpander.ai)
 
-**Build your own product with AI capabilities.** Use xpander as the AI backend for your application.
+---
 
-- ✅ Integrate with any Python agent framework (LangChain, CrewAI, AutoGen)
-- ✅ Add custom business logic and tools with `@register_tool`
-- ✅ Control your own frontend and user experience
-- ✅ Deploy to xpander's infrastructure or your K8s cluster
-- ✅ **Framework agnostic** - works with any Python application
+## 2. Complex Multi-Framework Applications (Code + Containers)
 
-<Info>
-**What you get:** An AI backend for YOUR application. You build the UI, xpander handles the AI processing, memory, and scaling.
-</Info>
-
-### Real-world embedded agent examples
+Same xpander infrastructure, but you write the code. Use your preferred framework with custom logic.
 
 <CardGroup cols={2}>
-  <Card title="SaaS Platform" icon="globe">
-    Your web app's frontend sends user requests to xpander agents for AI processing
+  <Card title="Key Characteristics" icon="list-check">
+    - Custom code and logic
+    - Deterministic behavior when needed
+    - Any framework (LangChain, Agno, etc.)
+    - Container-based deployment
   </Card>
-  <Card title="Mobile App" icon="mobile">
-    iOS/Android app uses xpander SDK to add conversational AI features
-  </Card>
-  <Card title="Enterprise Portal" icon="building">
-    Custom internal system with xpander handling the AI logic
-  </Card>
-  <Card title="E-commerce Site" icon="cart-shopping">
-    Your checkout flow uses embedded agents for product recommendations
-  </Card>
-  <Card title="Healthcare App" icon="heart-pulse">
-    Patient portal with HIPAA-compliant AI assistant powered by xpander
-  </Card>
-  <Card title="Educational Platform" icon="graduation-cap">
-    Learning app where xpander agents provide tutoring and feedback
+  <Card title="Example Use Cases" icon="lightbulb">
+    - RAG-powered SaaS products
+    - Trading and analytics platforms
+    - Healthcare and compliance apps
+    - Document processing systems
   </Card>
 </CardGroup>
 
-### How to build embedded agents
+→ [Frameworks Guide](/user-guide/frameworks)
 
-**1. Test your agent locally:**
-```python local_test.py
-from xpander_sdk import Backend
-from agno.agent import Agent
+---
 
-# Get all your workbench configuration
-backend = Backend()
-agent = Agent(**backend.get_args())
+## What xpander provides (both approaches)
 
-# Test the agent locally
-agent.print_response("What can you help me with?")
-```
-
-**2. Your application creates tasks (frontend/API layer):**
-
-```python your_app.py
-from xpander_sdk import Tasks
-import asyncio
-
-async def handle_user_request(user_id: str, message: str):
-    # Your app creates a task for xpander to process
-    task = await Tasks().acreate(
-        agent_id="your-agent-id",
-        prompt=message,
-        metadata={"user_id": user_id}  # Pass any context
-    )
-
-    # Wait for xpander to process it
-    while task.status not in ["completed", "failed"]:
-        await asyncio.sleep(1)
-        task = await task.areload()
-
-    # Return result to your users
-    return task.result
-```
-
-**3. Optionally, customize task processing (backend):**
-```python xpander_handler.py
-from xpander_sdk import on_task, Backend, register_tool
-from agno.agent import Agent
-
-@register_tool
-def query_inventory(sku: str) -> dict:
-    """Your custom business logic"""
-    # Connect to YOUR database, APIs, etc.
-    return {"sku": sku, "quantity": 100}
-
-@on_task
-async def handle_task(task: Task):
-    backend = Backend(configuration=task.configuration)
-    agent = Agent(**backend.get_args())
-
-    # Process with your custom tools available
-    result = await agent.arun(message=task.to_message())
-    task.result = result.content
-    return task
-```
-
-<Note>
-**Without the `@on_task` handler:** Tasks created via SDK are processed by managed agents automatically.
-**With the `@on_task` handler:** Your custom container code processes the tasks. Run `xpander deploy` to deploy your container.
-
-**Both agent types can be deployed to:**
-- **Serverless cloud:** xpander's managed infrastructure (default)
-- **Your VPC:** Install AgentOS in your K8s cluster for complete data control
-</Note>
-
-## Dive Deeper
-
-xpander is built for production-grade AI agent development. Learn more about the platform capabilities:
-
-<CardGroup cols={3}>
-  <Card title="Quick Start" icon="rocket" href="/user-guide/quick-start">
-    Get started with your first agent in 5 steps
+<CardGroup cols={2}>
+  <Card title="Unified Task API" icon="list-check" href="/api-reference/v1/tasks">
+    Reliable scheduling, direct invoke with streams, task results
   </Card>
-  <Card title="AI Model Configuration" icon="brain" href="/user-guide/backend-configuration/ai-model">
-    Configure and manage AI models for your agents
+  <Card title="Tools & Connectors" icon="wrench" href="/user-guide/backend-configuration/connectors">
+    MCP connectors catalog + custom tools
+  </Card>
+  <Card title="Memory & State" icon="database" href="/user-guide/backend-configuration/agent-memory">
+    PostgreSQL-backed persistent storage
   </Card>
   <Card title="System Prompts" icon="message" href="/user-guide/backend-configuration/system-prompt">
-    Define your agent's personality and behavior
+    Version-controlled prompt management
   </Card>
-  <Card title="Tools & Connectors" icon="plug" href="/user-guide/backend-configuration/connectors">
-    Integrate with external services and APIs
+  <Card title="AI Models" icon="brain" href="/user-guide/backend-configuration/ai-model">
+    OpenAI, Anthropic, or bring your own
   </Card>
-  <Card title="Agent Memory" icon="brain-circuit" href="/user-guide/backend-configuration/agent-memory">
-    Configure persistent memory and conversation history
+  <Card title="Deployment" icon="cloud" href="/user-guide/frameworks#deployment">
+    K8s cloud or self-hosted
   </Card>
-  <Card title="Slack Integration" icon="slack" href="/user-guide/task-sources/slack">
-    Deploy agents to Slack workspaces
+</CardGroup>
+
+---
+
+## Get Started
+
+<CardGroup cols={2}>
+  <Card title="Quick Start" icon="rocket" href="/user-guide/quick-start">
+    Build your first agent in minutes
   </Card>
-  <Card title="Web Interface" icon="globe" href="/user-guide/task-sources/web-ui">
-    Create professional web interfaces
+  <Card title="Frameworks Guide" icon="cubes" href="/user-guide/frameworks">
+    Run your code on xpander infrastructure
   </Card>
-  <Card title="MCP Integration" icon="bridge" href="/user-guide/task-sources/mcp">
-    Connect MCP clients like Claude Desktop
+  <Card title="Examples" icon="code" href="/Examples">
+    Real-world agent examples
   </Card>
-  <Card title="Webhooks" icon="webhook" href="/user-guide/task-sources/webhooks">
-    Trigger agents from external systems
-  </Card>
-  <Card title="API Reference" icon="code" href="/api-reference">
-    Complete SDK and API documentation
+  <Card title="API Reference" icon="terminal" href="/api-reference">
+    SDK and API documentation
   </Card>
 </CardGroup>

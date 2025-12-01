@@ -1,178 +1,166 @@
 ---
 title: "Quick Start"
-description: "Get started with xpander in 5 simple steps - from configuration to production deployment"
+description: "Get started with xpander.ai - choose your path based on how you prefer to build agents"
 icon: "rocket"
 mode: "wide"
 ---
 
+## Two Paths to Build Agents
+
+xpander.ai supports two main paths, depending on how you prefer to build agents:
+
+<CardGroup cols={2}>
+  <Card title="No-Code Agent Builder" icon="wand-magic-sparkles" href="#no-code-agent-builder">
+    Production-ready agents via Visual Workbench - no code required
+
+    **Best for:** Chatbots, support agents, DevOps assistants, task automation
+  </Card>
+  <Card title="Code + Containers" icon="code" href="/user-guide/frameworks">
+    Use your preferred framework with xpander's backend infrastructure
+
+    **Best for:** Custom logic, multi-modal apps, deterministic pipelines
+  </Card>
+</CardGroup>
+
+---
+
+## No-Code Agent Builder
+
+Build and deploy production-ready agents directly in the UI without writing code. Select tools, edit the system prompt, enable memories and other advanced features - the platform manages the Agno runtime for you.
+
+<Info>
+More frameworks will be added to the no-code offering soon. [Join the beta](https://xpander.ai) to get early access.
+</Info>
+
 <Steps>
-  <Step title="Start from a new or existing agent">
-    Use the Workbench at [app.xpander.ai](https://app.xpander.ai) to set up your agent's framework (runtime environment), instructions, model, tools, and knowledge bases through the intuitive web interface.
+  <Step title="Create your agent">
+    Use the Workbench at [app.xpander.ai](https://app.xpander.ai) to set up your agent's instructions, model, tools, and knowledge bases through the intuitive web interface.
 
-    You can also start from a [template](/Examples/templates/01-index).
-
-  <Tip>
-  You can also start from the CLI and skip the UI, by running `xpander agent new` and following the wizard. Install the xpander CLI by running `npm install -g xpander-cli`
-</Tip>
-    <Frame caption="The Agent Workbench is used to control and test the agent backend">
+    <Frame caption="The Agent Workbench - configure your agent without code">
     ![Agent Workbench](/images/workbench.png)
     </Frame>
-
-
   </Step>
 
-  <Step title="Download and customize your agent code">
-   The `init` command is used to download the entire agent code to your local machine, pre-scaffolded with the desired framework (runtime environment - i.e. Agno), as well as the configuration of the agent.
+  <Step title="Configure the backend">
+    Set up your agent's capabilities:
 
-   <Note>
-   You can use the agent ID, agent name, or run without specifying an agent to get an interactive selection list.
-   </Note>
-
-    ```bash
-    # Install the xpander CLI
-    npm install -g xpander-cli
-
-    # Initialize your agent project (choose one):
-    xpander agent init                    # Option 1: Interactive selection list
-    # OR
-    xpander agent init "my-agent"         # Option 2: Use agent name
-    # OR  
-    xpander agent init "abc123"           # Option 3: Use agent ID
-    # OR
-    x a i                                 # Option 4: Shortcut with selection list
-    ```
-
+    - **AI Model** - Choose from OpenAI, Anthropic, or bring your own keys
+    - **System Prompt** - Define your agent's role, personality, and behavior
+    - **Tools** - Add connectors from the catalog (Slack, GitHub, Jira, etc.)
+    - **Knowledge Base** - Upload documents for RAG capabilities
+    - **Memory** - Enable conversation history and user context
   </Step>
 
-  <Step title="Add your business logic">
-  By editing your agent's code, you can add your own business logic, workflows and functions, or external API calls - giving you full control over how your agent behaves.
-<Note>
-  The `@on_task` decorator registers your function as an event handler that processes incoming tasks from Slack, WebUI, or webhooks. 
+  <Step title="Connect task sources">
+    Choose how users will interact with your agent:
 
-  The `@register_tool` decorator makes your custom functions available to the AI agent, allowing it to call your business logic when needed. 
-  
-     Read more about these decorators in the [Events](/API reference/events/index) and [Tools](/API reference/tools/index) sections of the API Reference.
-  </Note>
-    ```python Agent Code
-    from xpander_sdk import Backend, on_task, Task, register_tool
-    from agno.agent import Agent
-
-    @register_tool  # Register local tools
-    def weather_check(location: str) -> str:
-        """Check weather for a location"""
-        return f"Weather in {location}: Sunny, 25°C"
-
-    @on_task
-    def handle_request(task: Task):
-        backend = Backend(task.configuration)
-        agent = Agent(**backend.get_args())  # Gets remote tools + your local tools
-        
-        result = agent.arun(message=task.to_message())
-        task.result = result.content
-        return task
-    ```
+    - **Slack** - Deploy directly to your workspace
+    - **Web UI** - Get a hosted chat interface
+    - **Webhooks** - Trigger from external systems
+    - **API** - Invoke programmatically
+    - **Scheduled Tasks** - Run on a schedule
   </Step>
 
-  <Step title="Test locally">
-    Test your agent in real-time by running it locally. The development server connects to your xpander backend and routes all incoming requests (Slack, WebUI, webhooks) to your local machine for instant feedback and debugging.
-
-    ```bash Local Development
-    # Start local development server
-    xpander dev
-    
-    # Or run with debug logging
-    xpander dev --debug
-    ```
-
-    ```text Development Output
-    DEBUG    | Events initialised 
-    INFO     | Listener started; waiting for events…
-    INFO     | Agent 'Support AI Engineer' chat: https://amaranth-mammal.agents.xpander.ai | builder: https://app.xpander.ai/agents/4b4cf37c-53ae-4280-8b96-844ed13bea6c
-    ```
-  </Step>
-
-  <Step title="Deploy to your environment">
-    ```bash Deployment
-    # Deploy the agent to the xpander cloud
-    xpander deploy
-    ```
-
-    Your agent is now live with automatic scaling, monitoring, and all human interfaces (Slack, WebUI, webhooks) configured!
+  <Step title="Test and deploy">
+    Test your agent in the Workbench chat, then deploy with one click. Your agent is live with automatic scaling and monitoring.
   </Step>
 </Steps>
 
-## CLI Command Reference
+### Using the API
 
-The xpander.ai CLI supports both full commands and shortcuts for faster usage:
+You can also create and invoke no-code agents programmatically:
 
-### 🎛️ Control Plane Commands
-Manage agents in xpander.ai's cloud platform:
+<CodeGroup>
 
-```bash
-xpander login               # Authenticate with xpander.ai (opens browser)
-x l                         # ↑ shortcut
-
-xpander agent new           # Create new agent interactively  
-x a n                       # ↑ shortcut
-x a n --name "bot" --folder "." --framework "agno"  # Non-interactive
-
-xpander agent edit [agent]  # Edit agent configuration (browser)
-x a e [agent]               # ↑ shortcut
-
-xpander agent delete [agent] # Delete agent permanently
-x a del [agent]             # ↑ shortcut
-
-xpander agent invoke [agent] "message" # Test agent via webhook
-x a invoke [agent] "message" # ↑ shortcut
+```bash Create Agent
+curl --request POST \
+  --url https://api.xpander.ai/v1/agents \
+  --header 'Content-Type: application/json' \
+  --header 'x-api-key: <your-api-key>' \
+  --data '{
+  "name": "my-cool-agent",
+  "deployment_type": "serverless",
+  "framework": "agno"
+}'
 ```
 
-### 🏗️ Local Development Commands  
-Download framework templates and test locally:
-
-```bash
-xpander agent init [agent]  # Download agent files to current folder
-x a i [agent]               # ↑ shortcut
-
-xpander agent dev [agent]   # Run agent locally for testing
-x a dev [agent]             # ↑ shortcut
+```bash Invoke Agent
+curl --request POST \
+  --url https://api.xpander.ai/v1/agents/<agent-id>/invoke \
+  --header 'Content-Type: application/json' \
+  --header 'x-api-key: <your-api-key>' \
+  --data '{
+    "input": {
+      "text": "hi!"
+    }
+  }'
 ```
 
-### ☁️ Cloud Deployment Commands
-Deploy containers and monitor in the cloud:
-
-```bash
-xpander agent deploy [agent] # Deploy agent as Docker container
-x a d [agent]               # ↑ shortcut
-
-xpander agent logs [agent]  # Stream real-time logs from cloud
-x a l [agent]               # ↑ shortcut
-
-xpander agent restart [agent] # Restart deployed container
-x a restart [agent]         # ↑ shortcut
-
-xpander agent stop [agent]  # Stop running container
-x a stop [agent]            # ↑ shortcut
+```bash Async Task
+curl --request POST \
+  --url https://api.xpander.ai/v1/agents/<agent-id>/invoke/async \
+  --header 'Content-Type: application/json' \
+  --header 'x-api-key: <your-api-key>' \
+  --data '{
+    "input": {
+      "text": "Generate a weekly report"
+    }
+  }'
 ```
 
-<Tip>
-Commands with `[agent]` show a selection list if no agent is specified. Agent lists are sorted by creation date (newest first).
-</Tip>
+```bash List Tasks
+curl --request GET \
+  --url 'https://api.xpander.ai/v1/tasks?agent_id=<agent-id>' \
+  --header 'x-api-key: <your-api-key>'
+```
 
-<Note>
-For complete CLI documentation including advanced workflows, CI/CD integration, and all command options, see the [Full CLI Reference](/API reference/cli-reference).
-</Note>
+```bash Create Knowledge Base
+curl --request POST \
+  --url https://api.xpander.ai/v1/knowledge \
+  --header 'Content-Type: application/json' \
+  --header 'x-api-key: <your-api-key>' \
+  --data '{
+  "name": "my-agent-kb",
+  "description": "Knowledge base for my agent"
+}'
+```
+
+</CodeGroup>
+
+---
+
+## Code + Containers
+
+If you need custom logic, use multiple frameworks, or require deterministic behavior:
+
+```bash
+# Create a new agent and select a framework template
+xpander agent new
+```
+
+Available templates:
+
+- **Agno** - The fastest agent framework
+- **Strands** - AWS Strands integration
+- **Google ADK** - Google's Agent Development Kit
+- **OpenAI Agents SDK** - OpenAI's agent framework
+- **LangChain** - Popular LLM orchestration framework
+
+Or follow the [Frameworks Guide](/user-guide/frameworks) to instrument your existing code with xpander.
+
+---
 
 ## Next Steps
 
 <CardGroup cols={2}>
-  <Card title="AI Model Configuration" icon="brain" href="/user-guide/backend-configuration/ai-model">
-    Learn more about configuring AI models for your agents
+  <Card title="Frameworks Guide" icon="cubes" href="/user-guide/frameworks">
+    Use your own code with xpander's infrastructure
+  </Card>
+  <Card title="CLI Reference" icon="terminal" href="/api-reference/cli-reference">
+    Full CLI documentation and shortcuts
   </Card>
   <Card title="Examples" icon="code" href="/Examples">
-    Explore real-world agent examples and templates
-  </Card>
-  <Card title="API Reference" icon="book" href="/api-reference">
-    Complete SDK and API documentation
+    Explore real-world agent examples
   </Card>
   <Card title="Connectors" icon="plug" href="/connectors">
     Browse available MCP connectors
