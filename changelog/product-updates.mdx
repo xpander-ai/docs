@@ -4,6 +4,35 @@ mode: 'wide'
 rss: true
 ---
 
+<Update label="2025-12-06" description="Agent Activity Threads, Advanced Reasoning & Memory Controls, Provider Expansion, and Streaming Robustness">
+
+## New Features:
+
+- **Agent Activity Threads:** Added a dedicated activity threads API and storage layer for agent executions, capturing user messages, tool calls, reasoning steps, sub-agent triggers, and auth events in a single, queryable timeline.
+- **Hosted Assistants Reasoning View:** Introduced a reasoning panel in the hosted assistants Web UI that surfaces Think/Analyze events so builders can inspect how agents plan and analyze between tool calls.
+- **Advanced Reasoning Controls:** Exposed an “Advanced Reasoning tools” toggle for Agno-based agents, with database defaults wired so new agents can opt into richer planning behavior.
+- **Tool Call Compression Settings:** Added configurable tool call compression for Agno agents (enable/disable, threshold, and instructions) to condense verbose tool outputs into concise summaries.
+- **Agentic Memory & Culture Toggles:** Introduced explicit toggles for agent-managed user memories and agent culture, with consolidated memory settings to control how agents store and reuse information.
+- **Expanded LLM Provider Catalog:** Added Google AI Studio (Gemini), Helicone, OpenRouter, and Nebius Token Factory providers, along with rich model catalogs and deployment snippets that wire required API keys end-to-end.
+
+## Improvements:
+
+- **Streaming Performance & Robustness:** Further reduced streaming latency by pre-starting SDK and worker streams, coordinating dual-source event queues, and improving cleanup and error handling so streams close reliably on task completion.
+- **Kubernetes Metrics & Background Work:** Optimized Kubernetes metrics collection using shared thread pools and non-blocking initialization, and moved execution history upserts to background tasks to keep event loops responsive.
+- **Execution Lifecycle Handling:** Treated Failed executions as terminal states with proper `finished_at` timestamps, and standardized TaskFinished events and payloads so downstream consumers consistently receive full task objects.
+- **Framework & Feature Gating:** Expanded supported agent frameworks (including OpenAI Agents, Strands, Google ADK, and others) and introduced per-framework feature gating so only compatible tabs and settings are shown in the UI.
+- **Agent Settings UX:** Enhanced the Agent Settings experience with searchable LLM selection, improved framework icons and labels, consolidated memory sections, and additional controls for reasoning and compression defaults.
+- **Connector and Deployment Configuration:** Improved connector header and security handling, OAuth2 connector flows (including iOS-specific handling), and deployment snippets so new provider keys and secrets propagate reliably across environments.
+
+## Bug Fixes:
+
+- **Task Streaming Completion:** Fixed inconsistencies where streaming sessions could hang by ensuring a final TaskFinished event is always emitted and SSE streams terminate cleanly after completion or error.
+- **Execution Status Accounting:** Corrected handling of Failed execution states so task timelines and metrics show accurate completion times.
+- **UI Framework Details:** Resolved issues with framework name and icon display in agent settings, and fixed layout and behavior problems in the user profile dialog.
+- **Mobile & OAuth UX:** Addressed chat textarea auto-resizing in hosted assistants on iOS/Safari and stabilized iOS OAuth2 connector flows with clearer loading and disabled states.
+
+</Update>
+
 <Update label="2025-11-30" description="Platform Performance, Billing, Metrics, and AWS Bedrock Integration">
 
 ## New Features:
