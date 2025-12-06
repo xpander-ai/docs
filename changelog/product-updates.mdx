@@ -4,6 +4,54 @@ mode: 'wide'
 rss: true
 ---
 
+<Update label="2025-12-06" description="Agent Activity Threads, Advanced Reasoning, LLM Provider Expansion, and Platform Enhancements">
+
+## New Features:
+
+- **Agent Activity Threads API:** Introduced comprehensive activity threads for AI agents with thread-based activity records, enabling retrieval of task conversations, tool calls, reasoning steps, and sub-agent triggers. Events are synced from task updates and persisted in Redis for real-time observability.
+- **Advanced Reasoning Tools:** Added configurable reasoning tools toggle for Agno-based agents to enable explicit thinking and analysis capabilities between tool calls, improving agent decision-making and planning.
+- **Tool Calls Compression:** Implemented configurable tool call compression settings to condense verbose tool outputs into token-efficient summaries, reducing context bloat and improving memory efficiency. Includes threshold controls and custom compression instructions.
+- **Agentic Memory & Culture:** Introduced explicit toggles for agent-managed memory and culture with consolidated UI settings, providing better control over agent persistence behavior and memory management.
+- **Expanded LLM Provider Support:** Added support for new LLM providers including:
+  - **Google AI Studio (Gemini):** Full integration with Gemini models including 2.0-flash, 2.5-pro, and 3-pro-preview variants.
+  - **Helicone:** AI Gateway integration for LLM provider routing and observability.
+  - **OpenRouter:** Unified gateway access for multiple model providers.
+  - **Nebius Token Factory:** Support for aggregated models including Meta Llama, NVIDIA Nemotron, Qwen, DeepSeek, Gemma, and GLM.
+- **Multi-Framework Support:** Expanded framework selection to include Strands Agents, OpenAI Agents, Google ADK, and LangChain with intelligent per-framework feature gating.
+
+## Improvements:
+
+- **Streaming Performance Enhancements:** 
+  - Implemented dual-stream mechanism with pre-started SDK and worker streams to significantly reduce streaming latency and improve time-to-first-token.
+  - Coordinated stream outputs with shared async queue for optimal event delivery.
+  - Optimized Kubernetes metrics collection with ThreadPoolExecutor to prevent event loop blocking.
+- **UI/UX Enhancements:**
+  - Made LLM model selection modal searchable for easier navigation through large model catalogs.
+  - Improved user profile settings dialog with simplified structure.
+  - Enhanced automatic chat textarea height adjustment for better mobile experience (iOS/Safari).
+  - Fixed iOS OAuth2 flow with stabilized link handling and loading states.
+  - Improved framework display with proper icons and names in agent settings.
+- **Configuration Management:**
+  - Streamlined execution history updates with async task creation.
+  - Extended agent settings with better default configurations for reasoning and compression features.
+  - Improved API key management and secret handling across deployment environments.
+
+## Bug Fixes:
+
+- **Task Lifecycle Management:** 
+  - Fixed task finish signaling and error event payloads across agent pipeline to ensure consistent task object delivery.
+  - Corrected Failed status handling to properly set finished_at timestamp.
+  - Improved SSE stream termination on TaskFinished events.
+- **UI Consistency:** 
+  - Resolved framework name and icon display issues in settings panels.
+  - Fixed chat instance text area responsiveness issues.
+  - Corrected agent thinking span visibility in web UI.
+- **API and Event Handling:**
+  - Enhanced triggering_agent_id filtering in tasks API.
+  - Improved error event payload structure for downstream consumers.
+  - Fixed reasoning tools parameter application before caching.
+
+</Update>
 <Update label="2025-11-30" description="Platform Performance, Billing, Metrics, and AWS Bedrock Integration">
 
 ## New Features:
