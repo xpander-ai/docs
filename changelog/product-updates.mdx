@@ -4,6 +4,35 @@ mode: 'wide'
 rss: true
 ---
 
+<Update label="2025-12-06" description="Agent Reasoning, Memory Management, Multi-Framework Support, and New LLM Providers">
+
+## New Features:
+
+- **Agent Activity Threads API:** New API endpoints to observe and retrieve agent execution activity, including task conversations, tool calls, and reasoning steps. This provides detailed visibility into agent behavior and decision-making processes.
+- **Advanced Reasoning Tools:** Added toggle to enable advanced reasoning capabilities (think/analyze) for Agno-based agents, with real-time UI display of reasoning context during task execution.
+- **Tool Call Compression:** Introduced configurable compression settings to condense verbose tool outputs into token-efficient summaries, improving context retention and reducing token usage.
+- **Agentic Memory & Culture Management:** New toggles for agent-managed memory and culture with a consolidated settings interface, giving agents more autonomy in managing their own persistent state.
+- **New LLM Providers:** Added support for Google AI Studio (Gemini models), Helicone AI gateway, OpenRouter, and Nebius Token Factory, significantly expanding the available model catalog.
+- **Multi-Framework Support:** Expanded agent framework selection to include Strands Agents, OpenAI Agents, and Google ADK, enabling developers to choose the best framework for their use case.
+- **Searchable LLM Modal:** Enhanced LLM model selection with search and filtering capabilities, making it easier to find and select from the extensive model catalog.
+
+## Improvements:
+
+- **Streaming Performance:** Reduced first-token latency by pre-starting dual streams (SDK + worker) and optimizing event pipelines for faster agent responses.
+- **Default Settings:** Enabled reasoning tools and tool call compression by default for new agents to provide better out-of-the-box performance and observability.
+- **Framework Feature Gating:** Implemented per-framework feature restrictions to prevent unsupported settings from appearing, improving configuration clarity and preventing errors.
+- **Kubernetes Metrics:** Optimized metrics collection with non-blocking initialization and shared thread pool executor, reducing overhead on agent execution.
+
+## Bug Fixes:
+
+- Fixed chat textarea auto-resize issues on iOS/Safari for improved mobile experience.
+- Corrected task finish signaling and error event payloads across the streaming pipeline for more reliable task completion detection.
+- Resolved Failed status handling in agent executions with proper completion timestamps.
+- Fixed framework name and icon display inconsistencies in agent settings.
+- Corrected iOS OAuth2 flow issues for improved authentication reliability.
+- Resolved user profile settings dialog rendering and interaction issues.
+
+</Update>
 <Update label="2025-11-30" description="Platform Performance, Billing, Metrics, and AWS Bedrock Integration">
 
 ## New Features:
