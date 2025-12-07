@@ -4,6 +4,37 @@ mode: 'wide'
 rss: true
 ---
 
+<Update label="2025-12-07" description="Advanced Reasoning, Agent Activity revamp, Multi-Framework Support, Tool Call Compression, More LLMs">
+
+## New Features:
+
+- **Advanced Reasoning Tools:** Added toggles for Advanced Reasoning tools , enabling agents to use think and analyze capabilities for improved planning and decision-making between tool calls. **This feature greatly improves agent performance and it's highly recommended to try it**. Enable the *Advanced Reasoning tools* under the Tools tab in the AI Workbench.
+- **End-to-end OAuth2 Experience in Remote MCPs:** Use OAuth2 to authorize users against Remote/Hosted MCP Servers via any invocation endpoint. See the feature demo here: https://xpander.ai/demo-videos/end-to-end-auth-with-mcp-and-oauth2/ 
+- **Agentic Memory and Culture Management:** Introduced explicit toggles for agent-managed memory and culture with consolidated settings UI, allowing fine-grained control over agent persistence behavior and memory management. Agentic Culture allows agents to learn from their previous experiences.
+- **Revamped Agent Activity view:** Now with comprehensive activity tracking with thread-based activity records, exposing task conversations, tool calls, reasoning steps, sub-agent triggers, and authentication events.
+- **Tool Calls Compression:** Added configurable tool call compression settings to reduce verbose tool outputs and improve token efficiency, with customizable threshold and compression instructions for better context management.
+- **Reasoning UI Display:** Added visual representation of agent reasoning in the chat UI, displaying Think/Analyze events with title and description for improved transparency into agent decision-making.
+- **Expanded LLM Provider Support:** 
+  - Integrated Google AI Studio (Gemini) with support for various Gemini models.
+  - Added **Helicone** and **OpenRouter** for a much wider selection of models to drive your agents.
+  - Added **Nebius Token Factory** support with aggregated models including Meta Llama, NVIDIA Nemotron, Qwen, DeepSeek, and more.
+  - **Searchable LLM Model Selection:** Enhanced the LLM selection dropdown with search and filtering capabilities to improve usability when choosing from the expanded model catalog.
+- **Multi-Framework Support:** Enabled support for multiple agent frameworks including Strands Agents, OpenAI Agents, Google ADK, and LangChain.
+
+## Improvements:
+
+- **Streaming Performance:** Reduced streaming latency by pre-starting dual streams (SDK and worker) and optimizing Kubernetes metrics collection with non-blocking initialization and shared thread pool executor.
+- **Framework Settings UI:** Improved framework name and icon display in agent settings for better visual clarity and user experience.
+- **User Profile Settings:** Enhanced user settings modal with simplified structure and improved rendering behavior.
+
+## Bug Fixes:
+
+- **Chat Textarea Responsiveness:** Fixed automatic height adjustment for chat text area in Chat UI, ensuring proper responsiveness across devices including iOS/Safari.
+- **Failed Task Status:** Properly handle Failed status as terminal state and set finished_at timestamp to ensure accurate task completion tracking.
+- **Task Filtering:** Extended task filters with triggering_agent_id parameter for improved debugging and task retrieval capabilities.
+
+</Update>
+
 <Update label="2025-11-30" description="Platform Performance, Billing, Metrics, and AWS Bedrock Integration">
 
 ## New Features:
