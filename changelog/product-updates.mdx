@@ -4,6 +4,42 @@ mode: 'wide'
 rss: true
 ---
 
+<Update label="2025-12-07" description="Advanced Reasoning, Agent Activity Tracking, Multi-Framework Support, and Tool Call Compression">
+
+## New Features:
+
+- **Agent Activity Threads API:** Introduced comprehensive activity tracking with thread-based activity records, exposing task conversations, tool calls, reasoning steps, sub-agent triggers, and authentication events via Agent Controller APIs with Redis-backed persistence.
+- **Advanced Reasoning Tools:** Added toggles for Advanced Reasoning tools in Agno-based agents, enabling agents to use think and analyze capabilities for improved planning and decision-making between tool calls.
+- **Agentic Memory and Culture Management:** Introduced explicit toggles for agent-managed memory and culture with consolidated settings UI, allowing fine-grained control over agent persistence behavior and memory management.
+- **Tool Calls Compression:** Added configurable tool call compression settings to reduce verbose tool outputs and improve token efficiency, with customizable threshold and compression instructions for better context management.
+- **Reasoning UI Display:** Added visual representation of agent reasoning in the hosted assistants WebUI, displaying Think/Analyze events with title and description for improved transparency into agent decision-making.
+- **Expanded LLM Provider Support:** 
+  - Integrated Google AI Studio (Gemini) with support for gemini-2.0-flash, gemini-2.5-pro, and gemini-3-pro-preview models.
+  - Added Helicone as AI Gateway for LLM providers with observability features.
+  - Integrated OpenRouter for unified gateway access to multiple models.
+  - Added Nebius Token Factory support with aggregated models including Meta Llama, NVIDIA Nemotron, Qwen, DeepSeek, and more.
+- **Multi-Framework Support:** Enabled support for multiple agent frameworks including Strands Agents, OpenAI Agents, Google ADK, and LangChain with framework-specific feature gating and permission-based settings visibility.
+- **Searchable LLM Model Selection:** Enhanced the LLM selection modal with search and filtering capabilities to improve usability when choosing from the expanded model catalog.
+
+## Improvements:
+
+- **Task Completion Handling:** Aligned task finish signaling across the agent pipeline by standardizing TaskFinished event emission in SSE and ensuring consistent task object payloads in error events for better downstream reliability.
+- **Streaming Performance:** Reduced streaming latency by pre-starting dual streams (SDK and worker) and optimizing Kubernetes metrics collection with non-blocking initialization and shared thread pool executor.
+- **Framework Settings UI:** Improved framework name and icon display in agent settings for better visual clarity and user experience.
+- **User Profile Settings:** Enhanced user settings modal with simplified structure and improved rendering behavior.
+- **iOS OAuth2 Experience:** Stabilized OAuth2 connector flow for iOS with improved link handling, loading states, and disabled button behavior.
+- **Select Component:** Enhanced select-2 component with better selection state handling and improved multi-value remove functionality.
+
+## Bug Fixes:
+
+- **Reasoning and Compression Defaults:** Corrected Agno runtime defaults to enable reasoning tools and tool call compression by default, aligning frontend and backend behavior.
+- **Chat Textarea Responsiveness:** Fixed automatic height adjustment for chat text area in hosted assistants WebUI, ensuring proper responsiveness across devices including iOS/Safari.
+- **Failed Task Status:** Properly handle Failed status as terminal state and set finished_at timestamp to ensure accurate task completion tracking.
+- **Task Filtering:** Extended task filters with triggering_agent_id parameter for improved debugging and task retrieval capabilities.
+- **Connector Security:** Hardened connector headers and security handling by validating security object as dictionary before accessing authType to prevent runtime errors.
+
+</Update>
+
 <Update label="2025-11-30" description="Platform Performance, Billing, Metrics, and AWS Bedrock Integration">
 
 ## New Features:
