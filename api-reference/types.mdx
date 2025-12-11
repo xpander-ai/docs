@@ -328,6 +328,133 @@ for result in results:
     print(f"Content: {result.content[:200]}...")
 ```
 
+---
+
+### `AgnoSettings`
+
+Configuration settings for the Agno framework, including memory management and tool optimization.
+
+```python
+class AgnoSettings:
+    session_storage: Optional[bool] = True
+    agent_memories: Optional[bool] = False
+    user_memories: Optional[bool] = False
+    agentic_memory: Optional[bool] = False
+    agentic_culture: Optional[bool] = False
+    session_summaries: Optional[bool] = False
+    num_history_runs: Optional[int] = 3
+    max_tool_calls_from_history: Optional[int] = 0
+    tool_call_limit: Optional[int] = None
+    coordinate_mode: Optional[bool] = False
+    pii_detection_enabled: Optional[bool] = False
+    pii_detection_mask: Optional[bool] = True
+    prompt_injection_detection_enabled: Optional[bool] = False
+    openai_moderation_enabled: Optional[bool] = False
+    openai_moderation_categories: Optional[List[str]] = None
+    reasoning_tools_enabled: Optional[bool] = False
+    tool_calls_compression: Optional[AgnoToolCallsCompressionSettings] = None
+```
+
+**Memory & Storage Properties:**
+- `session_storage` (bool): Enable session-level storage for conversation context. Default: `True`
+- `agent_memories` (bool): Enable agent-specific memory storage. Default: `False`
+- `user_memories` (bool): Enable user-specific memory across sessions. Default: `False`
+- `agentic_memory` (bool): Enable advanced agentic memory capabilities. Default: `False`
+- `agentic_culture` (bool): Enable cultural context for agents. Default: `False`
+- `session_summaries` (bool): Generate summaries of sessions. Default: `False`
+- `num_history_runs` (int): Number of historical runs to retain. Default: `3`
+- `max_tool_calls_from_history` (int): Max tool calls to load from history. Default: `0`
+
+**Tool & Execution Properties:**
+- `tool_call_limit` (int): Maximum tool calls per run. Default: `None` (unlimited)
+- `coordinate_mode` (bool): Load agent as a Team for coordination. Default: `False`
+- `reasoning_tools_enabled` (bool): Enable Agno reasoning tools. Default: `False`
+- `tool_calls_compression` (AgnoToolCallsCompressionSettings): Tool call compression settings
+
+**Security & Guardrails:**
+- `pii_detection_enabled` (bool): Enable PII detection on agent input. Default: `False`
+- `pii_detection_mask` (bool): Mask detected PII instead of blocking. Default: `True`
+- `prompt_injection_detection_enabled` (bool): Enable prompt injection detection. Default: `False`
+- `openai_moderation_enabled` (bool): Enable OpenAI content moderation. Default: `False`
+- `openai_moderation_categories` (List[str]): Specific moderation categories to enforce
+
+**Usage:**
+```python
+from xpander_sdk.models.frameworks import AgnoSettings
+
+# Configure agent with memory features
+agno_settings = AgnoSettings(
+    session_storage=True,
+    agent_memories=True,
+    user_memories=True,
+    session_summaries=True,
+    num_history_runs=5,
+    tool_call_limit=20
+)
+
+# Agent configuration would use these settings
+# (typically configured via UI or API)
+```
+
+---
+
+### `AgnoToolCallsCompressionSettings`
+
+Settings for compressing tool call history to optimize context usage.
+
+```python
+class AgnoToolCallsCompressionSettings:
+    enabled: Optional[bool] = False
+    threshold: Optional[int] = 3
+    instructions: Optional[str] = ""
+```
+
+**Properties:**
+- `enabled` (bool): Enable tool calls compression. Default: `False`
+- `threshold` (int): Number of tool calls before compression activates. Default: `3`
+- `instructions` (str): Custom instructions for compression behavior. Default: `""`
+
+**Usage:**
+```python
+from xpander_sdk.models.frameworks import AgnoSettings, AgnoToolCallsCompressionSettings
+
+agno_settings = AgnoSettings(
+    tool_calls_compression=AgnoToolCallsCompressionSettings(
+        enabled=True,
+        threshold=5,
+        instructions="Summarize tool calls focusing on results"
+    )
+)
+```
+
+---
+
+### Model Providers
+
+Supported AI model providers in the xpander.ai platform:
+
+**Supported Providers:**
+- **OpenAI** - GPT models (gpt-4, gpt-4o, etc.)
+  - Environment: `OPENAI_API_KEY` or `AGENTS_OPENAI_API_KEY`
+- **Anthropic** - Claude models
+  - Environment: `ANTHROPIC_API_KEY`
+- **Google AI Studio** - Gemini models
+  - Environment: `GOOGLE_API_KEY`
+- **NVIDIA NIM** - NVIDIA inference microservices
+  - Environment: `NVIDIA_API_KEY`
+- **Amazon Bedrock** - AWS Bedrock models
+  - Environment: `AWS_BEARER_TOKEN_BEDROCK`
+- **Fireworks** - Fireworks AI models
+  - Environment: `FIREWORKS_API_KEY`
+- **Helicone** - OpenAI-compatible with monitoring
+  - Environment: `HELICONE_API_KEY`
+- **Nebius** - Nebius AI models
+  - Environment: `NEBIUS_API_KEY`
+- **OpenRouter** - Multi-model router
+  - Environment: `OPENROUTER_API_KEY`
+
+**Note:** Model providers are configured at the agent level. The SDK automatically loads the appropriate provider based on agent configuration.
+
 ## Common Patterns
 
 ### Type Checking

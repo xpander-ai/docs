@@ -15,6 +15,7 @@ In this module, you can:
 
 - List, retrieve, and manage multiple AI agents
 - Load specific agents and interact with their components
+- Export agents as templates and import them across organizations
 - Manage tasks, tools, and knowledge bases associated with each agent
 - Access configurable elements like MCP (Model Context Protocol) servers
 
@@ -98,6 +99,45 @@ task = agent.create_task(
 ```
 
 For more details on task management, see the [Tasks API Reference](/API reference/tasks/API reference).
+
+### Agent Import & Export
+
+Agent templates and cross-organization sharing are currently available via the REST API:
+
+```python
+import requests
+
+# Export an agent
+response = requests.post(
+    f"https://api.xpander.ai/v1/agents/{agent_id}/export",
+    headers={"x-api-key": "YOUR_API_KEY"},
+    json={
+        "name": "My Agent Template",
+        "description": "Template for customer support",
+        "icon": "🎧",
+        "with_knowledge_bases": True
+    }
+)
+template = response.json()
+print(f"Template ID: {template['id']}")
+
+# Import a template
+response = requests.post(
+    f"https://api.xpander.ai/v1/agents/template_import/{template_id}",
+    headers={"x-api-key": "YOUR_API_KEY"},
+    json={
+        "name": "My Imported Agent",
+        "with_knowledge_bases": True
+    }
+)
+agent = response.json()
+print(f"Imported Agent ID: {agent['id']}")
+```
+
+For comprehensive documentation on agent templates and cross-account sharing, see:
+- [Export Agent](/API reference/v1/agents/export-agent) - REST API endpoint
+- [Import Agent](/API reference/v1/agents/import-agent) - REST API endpoint
+- [Agent Import & Export Guide](/api-reference/agents/import-export) - Complete guide
 
 ---
 
