@@ -1,0 +1,175 @@
+---
+title: "Export Agent"
+openapi: "POST /v1/agents/{agent_id}/export"
+description: "Export an AI agent as a reusable template with configuration and knowledge bases"
+---
+
+Export an agent into a portable template that can be shared across organizations. The template packages all agent components including configuration, tools, sub-agents, and optionally knowledge bases with their documents.
+
+## Path Parameters
+
+<ParamField path="agent_id" type="string" required>
+  The unique identifier (UUID) of the agent to export
+</ParamField>
+
+## Request Body
+
+<ParamField body="name" type="string" required>
+  Display name for the template
+</ParamField>
+
+<ParamField body="description" type="string">
+  Description of what the template does
+</ParamField>
+
+<ParamField body="icon" type="string">
+  Emoji icon for the template (e.g., "🎧", "🚀")
+</ParamField>
+
+<ParamField body="with_knowledge_bases" type="boolean" default={true}>
+  Controls whether knowledge bases and their document files are included in the export
+  - `true`: Includes all knowledge bases with their documents and files
+  - `false`: Exports only agent configuration without knowledge bases
+</ParamField>
+
+## Response
+
+Returns an `AgentTemplate` object:
+
+<ResponseField name="id" type="string">
+  Unique identifier for the template (UUID)
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  Template display name
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Template description
+</ResponseField>
+
+<ResponseField name="icon" type="string">
+  Emoji icon representing the template
+</ResponseField>
+
+<ResponseField name="organization_id" type="string">
+  UUID of the organization that created the template
+</ResponseField>
+
+<ResponseField name="agent_definition" type="object">
+  Complete agent configuration
+  <Expandable title="Agent Definition Object">
+    <ResponseField name="id" type="string">
+      Original agent ID
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      Agent name
+    </ResponseField>
+    <ResponseField name="description" type="string">
+      Agent description
+    </ResponseField>
+    <ResponseField name="instructions" type="object">
+      Agent instructions (role, goal, general)
+    </ResponseField>
+    <ResponseField name="custom_functions" type="array">
+      Array of custom functions
+    </ResponseField>
+    <ResponseField name="connectors" type="array">
+      Array of connected tools
+    </ResponseField>
+    <ResponseField name="sub_agents" type="array">
+      Array of sub-agent definitions
+    </ResponseField>
+    <ResponseField name="knowledge_bases" type="array">
+      Array of knowledge bases (if with_knowledge_bases is true)
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Example Request
+
+### Export with Knowledge Bases
+
+```bash
+curl -X POST -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Customer Support Agent Template",
+    "description": "Pre-configured agent for customer support workflows",
+    "icon": "🎧",
+    "with_knowledge_bases": true
+  }' \
+  https://api.xpander.ai/v1/agents/550e8400-e29b-41d4-a716-446655440000/export
+```
+
+### Export without Knowledge Bases
+
+```bash
+curl -X POST -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Support Agent Config",
+    "description": "Agent configuration only",
+    "icon": "🎧",
+    "with_knowledge_bases": false
+  }' \
+  https://api.xpander.ai/v1/agents/550e8400-e29b-41d4-a716-446655440000/export
+```
+
+## Example Response
+
+```json
+{
+  "id": "template-123",
+  "name": "Customer Support Agent Template",
+  "description": "Pre-configured agent for customer support workflows",
+  "icon": "🎧",
+  "organization_id": "org-456",
+  "agent_definition": {
+    "id": "agent-789",
+    "name": "Support Agent",
+    "description": "Handles customer inquiries",
+    "instructions": {
+      "role": ["Customer support specialist"],
+      "goal": ["Resolve customer issues efficiently"],
+      "general": "Be helpful and professional"
+    },
+    "custom_functions": [],
+    "connectors": [],
+    "sub_agents": [],
+    "knowledge_bases": [
+      {
+        "name": "Product Documentation",
+        "description": "Product guides and FAQs",
+        "documents": [
+          {
+            "name": "User Guide",
+            "url": "https://...",
+            "content": "..."
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## Use Cases
+
+- **Cross-Account Sharing**: Share agent templates with other organizations
+- **Backup & Version Control**: Create snapshots of agent configurations
+- **Agent Marketplace**: Distribute pre-built agents
+- **Team Collaboration**: Share standardized agents across teams
+
+## Notes
+
+- **Cross-Organization Sharing**: Templates can be shared across different organizations - the template ID works universally
+- **Knowledge Base Size**: When `with_knowledge_bases: true`, the export includes all document content which may result in larger payloads
+- **Tool Credentials**: Tool configurations are exported without credentials - recipients will need to provide their own API keys
+
+## See Also
+
+- [Import Agent](/API reference/v1/agents/import-agent) - Create a new agent from a template
+- [Agent Import & Export Guide](/api-reference/agents/import-export) - Comprehensive guide to templates and cross-account sharing
+- [Create Agent](/API reference/v1/agents/create-agent) - Create a new agent from scratch
+- [Get Agent](/API reference/v1/agents/get-agent) - Retrieve agent details

@@ -5,15 +5,6 @@
         "description": "\n    The xpander.ai API Service provides a unified REST API for managing AI agents,\n    executing tasks, managing knowledge bases, and integrating with external systems.\n    \n    Features:\n    - Agent Management: Create, update, deploy, and delete AI agents\n    - Task Execution: Invoke agents with support for sync, async, and streaming modes\n    - Knowledge Bases: Manage knowledge bases and documents for RAG workflows\n    - Toolkits: Access and invoke tools across various integrations\n    - MCP Integration: Model Context Protocol support for standardized AI interactions\n    \n    Authentication: All endpoints require API key authentication via x-api-key header.\n    ",
         "version": "0.001"
     },
-    "servers": [
-        {
-            "url": "https://api.xpander.ai",
-            "description": "Production API Server"
-        }
-    ],
-    "x-mcp": {
-        "enabled": true
-    },
     "paths": {
         "/health": {
             "get": {
@@ -44,7 +35,7 @@
                 "operationId": "List_agents__minimal__v1_agents_get",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -110,7 +101,7 @@
                 "operationId": "Create_AI_Agent_v1_agents_post",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "requestBody": {
@@ -159,7 +150,7 @@
                 "operationId": "List_agents__full__v1_agents_full_get",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -226,7 +217,7 @@
                 "operationId": "Get_Agent_v1_agents__agent_id__get",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -274,7 +265,7 @@
                 "operationId": "Update_AI_Agent_v1_agents__agent_id__patch",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -332,7 +323,7 @@
                 "operationId": "Deploy_AI_Agent_v1_agents__agent_id__put",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -380,7 +371,7 @@
                 "operationId": "Delete_AI_Agent_v1_agents__agent_id__delete",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -428,7 +419,7 @@
                 "operationId": "Invoke_Agent__Async__v1_agents__agent_id__invoke_async_post",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -488,7 +479,7 @@
                 "operationId": "Invoke_Agent__Stream__v1_agents__agent_id__invoke_stream_post",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -546,7 +537,7 @@
                 "operationId": "Invoke_Agent__Sync__v1_agents__agent_id__invoke_post",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -606,7 +597,7 @@
                 "operationId": "Get_Agent_Tasks_v1_agents__agent_id__tasks_get",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -684,7 +675,7 @@
                         "in": "query",
                         "required": false,
                         "schema": {
-                            "$ref": "#/components/schemas/xpander_dev_utils__models__executions__AgentExecutionStatus",
+                            "$ref": "#/components/schemas/AgentExecutionStatus-Input",
                             "description": "Filter by task execution status"
                         },
                         "description": "Filter by task execution status"
@@ -725,6 +716,126 @@
                 }
             }
         },
+        "/v1/agents/{agent_id}/export": {
+            "post": {
+                "tags": [
+                    "API v1",
+                    "Agents",
+                    "Agents Import/Export"
+                ],
+                "summary": "Export Agent",
+                "description": "Exports an AI agent into a reusable template with configuration and knowledge bases",
+                "operationId": "Export_Agent_v1_agents__agent_id__export_post",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "agent_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Agent Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ExportAgentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AgentTemplate"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/agents/template_import/{template_id}": {
+            "post": {
+                "tags": [
+                    "API v1",
+                    "Agents",
+                    "Agents Import/Export"
+                ],
+                "summary": "Import Agent",
+                "description": "Imports an AI agent from a template and creates a new agent instance",
+                "operationId": "Import_Agent_v1_agents_template_import__template_id__post",
+                "security": [
+                    {
+                        "APIKeyHeader": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "template_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Template Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ExportAgentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AIAgent"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/v1/knowledge": {
             "get": {
                 "tags": [
@@ -737,7 +848,7 @@
                 "operationId": "List_knowledge_bases_v1_knowledge_get",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -803,7 +914,7 @@
                 "operationId": "Create_knowledge_base_v1_knowledge_post",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "requestBody": {
@@ -852,7 +963,7 @@
                 "operationId": "Get_knowledge_base_details_v1_knowledge__kb_id__get",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -900,7 +1011,7 @@
                 "operationId": "Delete_knowledge_base_v1_knowledge__kb_id__delete",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -946,7 +1057,7 @@
                 "operationId": "Update_knowledge_base_v1_knowledge__kb_id__patch",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -1007,7 +1118,7 @@
                 "operationId": "Get_knowledge_base_documents_v1_knowledge__kb_id__documents_get",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -1083,7 +1194,7 @@
                 "operationId": "Add_knowledge_base_documents_v1_knowledge__kb_id__documents_post",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -1148,7 +1259,7 @@
                 "operationId": "Get_knowledge_base_document_by_id_v1_knowledge__kb_id__documents__document_id__get",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -1206,7 +1317,7 @@
                 "operationId": "Delete_knowledge_base_document_by_id_v1_knowledge__kb_id__documents__document_id__delete",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -1263,7 +1374,7 @@
                 "operationId": "Search_in_knowledge_base_v1_knowledge__kb_id__search_get",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -1385,7 +1496,7 @@
                 "operationId": "List_Toolkits_v1_toolkits_get",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -1452,7 +1563,7 @@
                 "operationId": "Get_toolkit_tools_v1_toolkits__toolkit_id__tools_get",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -1474,7 +1585,8 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "type": "object"
+                                        "type": "object",
+                                        "additionalProperties": true
                                     },
                                     "title": "Response Get Toolkit Tools V1 Toolkits  Toolkit Id  Tools Get"
                                 }
@@ -1505,7 +1617,7 @@
                 "operationId": "Invoke_toolkit_tool_v1_toolkits__toolkit_id__tools__tool_id__post",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -1572,7 +1684,7 @@
                 "operationId": "Get_Tasks_v1_tasks_get",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -1626,6 +1738,17 @@
                         "description": "filter by parent task id (optional)"
                     },
                     {
+                        "name": "agent_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "description": "filter by agent id (optional)",
+                            "title": "Agent Id"
+                        },
+                        "description": "filter by agent id (optional)"
+                    },
+                    {
                         "name": "triggering_agent_id",
                         "in": "query",
                         "required": false,
@@ -1641,7 +1764,7 @@
                         "in": "query",
                         "required": false,
                         "schema": {
-                            "$ref": "#/components/schemas/xpander_dev_utils__models__executions__AgentExecutionStatus",
+                            "$ref": "#/components/schemas/AgentExecutionStatus-Input",
                             "description": "filter by task status (optional)"
                         },
                         "description": "filter by task status (optional)"
@@ -1694,7 +1817,7 @@
                 "operationId": "Get_Task_v1_tasks__task_id__get",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -1742,7 +1865,7 @@
                 "operationId": "Delete_Task_v1_tasks__task_id__delete",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -1785,7 +1908,7 @@
                 "operationId": "Get_Task_s_thread_v1_tasks__task_id__thread_get",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -1804,12 +1927,7 @@
                         "description": "Successful Response",
                         "content": {
                             "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "object"
-                                    }
-                                }
+                                "schema": {}
                             }
                         }
                     },
@@ -1838,7 +1956,7 @@
                 "operationId": "Get_Task_s_full_thread_v1_tasks__task_id__thread_full_get",
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ],
                 "parameters": [
@@ -1857,17 +1975,7 @@
                         "description": "Successful Response",
                         "content": {
                             "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "root": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object"
-                                            }
-                                        }
-                                    }
-                                }
+                                "schema": {}
                             }
                         }
                     },
@@ -1909,7 +2017,7 @@
                 },
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "APIKeyHeader": []
                     }
                 ]
             }
@@ -2033,11 +2141,42 @@
                             }
                         ],
                         "title": "Is Latest",
-                        "description": "Whether this is the latest version of the agent"
+                        "default": false
+                    },
+                    "has_pending_changes": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Has Pending Changes",
+                        "default": false
                     },
                     "name": {
                         "type": "string",
                         "title": "Name"
+                    },
+                    "connectivity_details": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/AIAgentConnectivityDetailsA2A"
+                            },
+                            {
+                                "$ref": "#/components/schemas/AIAgentConnectivityDetailsCurl"
+                            },
+                            {
+                                "additionalProperties": true,
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Connectivity Details",
+                        "default": {}
                     },
                     "framework": {
                         "anyOf": [
@@ -2086,7 +2225,7 @@
                             }
                         ],
                         "title": "Icon",
-                        "default": "🚀"
+                        "default": "\ud83d\ude80"
                     },
                     "avatar": {
                         "anyOf": [
@@ -2139,7 +2278,7 @@
                                 "type": "null"
                             }
                         ],
-                        "default": "organizational"
+                        "default": "personal"
                     },
                     "instructions": {
                         "anyOf": [
@@ -2159,6 +2298,7 @@
                     "oas": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -2379,6 +2519,7 @@
                     "output_schema": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -2442,16 +2583,25 @@
                         ],
                         "default": {
                             "session_storage": true,
+                            "agent_memories": false,
+                            "agentic_culture": false,
                             "user_memories": false,
+                            "agentic_memory": false,
                             "session_summaries": false,
                             "num_history_runs": 3,
                             "max_tool_calls_from_history": 0,
                             "tool_call_limit": 0,
                             "coordinate_mode": true,
                             "pii_detection_enabled": false,
-                            "pii_detection_mask": false,
+                            "pii_detection_mask": true,
                             "prompt_injection_detection_enabled": false,
-                            "openai_moderation_enabled": false
+                            "openai_moderation_enabled": false,
+                            "reasoning_tools_enabled": true,
+                            "tool_calls_compression": {
+                                "enabled": true,
+                                "instructions": "",
+                                "threshold": 3
+                            }
                         }
                     },
                     "on_prem_event_streaming": {
@@ -2511,6 +2661,199 @@
                     "organizational"
                 ],
                 "title": "AIAgentAccessScope"
+            },
+            "AIAgentConnectivityDetailsA2A": {
+                "properties": {
+                    "custom_headers": {
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                    "type": "string"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Custom Headers",
+                        "default": {}
+                    },
+                    "auth_type": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/AIAgentConnectivityDetailsA2AAuthType"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": "none"
+                    },
+                    "api_key_header_name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Api Key Header Name",
+                        "default": "X-API-Key"
+                    },
+                    "auth_value": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Auth Value"
+                    },
+                    "agent_url": {
+                        "type": "string",
+                        "title": "Agent Url"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "agent_url"
+                ],
+                "title": "AIAgentConnectivityDetailsA2A"
+            },
+            "AIAgentConnectivityDetailsA2AAuthType": {
+                "type": "string",
+                "enum": [
+                    "none",
+                    "api_key",
+                    "basic",
+                    "bearer"
+                ],
+                "title": "AIAgentConnectivityDetailsA2AAuthType"
+            },
+            "AIAgentConnectivityDetailsCurl": {
+                "properties": {
+                    "custom_headers": {
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                    "type": "string"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Custom Headers",
+                        "default": {}
+                    },
+                    "auth_type": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/AIAgentConnectivityDetailsA2AAuthType"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": "none"
+                    },
+                    "api_key_header_name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Api Key Header Name",
+                        "default": "X-API-Key"
+                    },
+                    "auth_value": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Auth Value"
+                    },
+                    "curl_command": {
+                        "type": "string",
+                        "title": "Curl Command"
+                    },
+                    "invoke_url": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Invoke Url"
+                    },
+                    "method": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Method",
+                        "default": "POST"
+                    },
+                    "prompt_field_name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Prompt Field Name",
+                        "default": ""
+                    },
+                    "files_field_name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Files Field Name",
+                        "default": ""
+                    },
+                    "task_id_field_name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Task Id Field Name",
+                        "default": ""
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "curl_command"
+                ],
+                "title": "AIAgentConnectivityDetailsCurl"
             },
             "AIAgentDelegationEndStrategy": {
                 "type": "string",
@@ -2931,9 +3274,47 @@
                         ],
                         "title": "Api Key"
                     },
+                    "client_id": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Client Id"
+                    },
+                    "client_secret": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Client Secret"
+                    },
+                    "additional_scopes": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Additional Scopes",
+                        "default": []
+                    },
                     "headers": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -2946,6 +3327,7 @@
                     "env_vars": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -2969,6 +3351,18 @@
                         ],
                         "title": "Allowed Tools",
                         "default": []
+                    },
+                    "share_user_token_across_other_agents": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Share User Token Across Other Agents",
+                        "default": true
                     }
                 },
                 "type": "object",
@@ -2979,6 +3373,7 @@
                     "input": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -2990,6 +3385,7 @@
                     "output": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -3122,6 +3518,7 @@
                     "agent",
                     "tool",
                     "human_in_the_loop",
+                    "xpsleep-agent-delay",
                     "custom_agent",
                     "storage",
                     "coding_agent",
@@ -3194,7 +3591,11 @@
                     "friendlyAI",
                     "anthropic",
                     "gemini",
-                    "fireworks"
+                    "fireworks",
+                    "google_ai_studio",
+                    "helicone",
+                    "open_router",
+                    "nebius"
                 ],
                 "title": "AIAgentModelProvider"
             },
@@ -3231,6 +3632,7 @@
                     "metadata": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -3251,10 +3653,12 @@
                 "type": "string",
                 "enum": [
                     "manager",
-                    "regular"
+                    "regular",
+                    "a2a",
+                    "curl"
                 ],
                 "title": "AIAgentType",
-                "description": "Enumeration of the agent types.\n\nAttributes:\n    Manager: marks the agent as a Managing agent.\n    Regular: marks the agent as a regular agent."
+                "description": "Enumeration of the agent types.\n\nAttributes:\n    Manager: marks the agent as a Managing agent.\n    Regular: marks the agent as a regular agent.\n    A2A: marks the agent as an external agent used via A2A protocol.\n    Curl: marks the agent as an external agent used via a CURL."
             },
             "AddDocumentsRequest": {
                 "properties": {
@@ -3483,6 +3887,319 @@
                 "type": "object",
                 "title": "AgentBuilderUpdateAgentRequest"
             },
+            "AgentDefinition": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Description",
+                        "default": ""
+                    },
+                    "unique_name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Unique Name",
+                        "default": ""
+                    },
+                    "icon": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Icon",
+                        "default": "\ud83d\ude80"
+                    },
+                    "avatar": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Avatar",
+                        "default": "male-avatar"
+                    },
+                    "type": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/AIAgentType"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "delegation_type": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/AIAgentDelegationType"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": "router"
+                    },
+                    "delegation_memory_strategy": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/AIAgentDelegationMemoryStrategy"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": "summarization"
+                    },
+                    "created_by_prompt": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Created By Prompt"
+                    },
+                    "is_ai_employee": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Is Ai Employee",
+                        "default": false
+                    },
+                    "prompts": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Prompts",
+                        "default": []
+                    },
+                    "llm_settings": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "$ref": "#/components/schemas/AIAgentGraphItemLLMSettings"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Llm Settings",
+                        "default": []
+                    },
+                    "source_nodes": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "$ref": "#/components/schemas/AIAgentSourceNode"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Source Nodes",
+                        "default": []
+                    },
+                    "attached_tools": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "$ref": "#/components/schemas/Connector"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Attached Tools",
+                        "default": []
+                    },
+                    "access_scope": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/AIAgentAccessScope"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": "organizational"
+                    },
+                    "instructions": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/AIAgentInstructions"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": {
+                            "role": [],
+                            "goal": [],
+                            "general": ""
+                        }
+                    },
+                    "oas": {
+                        "anyOf": [
+                            {
+                                "additionalProperties": true,
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Oas",
+                        "default": {}
+                    },
+                    "graph": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "$ref": "#/components/schemas/AIAgentGraphItem"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Graph",
+                        "default": []
+                    },
+                    "status": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/AgentStatus"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": "ACTIVE"
+                    },
+                    "version": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Version",
+                        "default": 1
+                    },
+                    "model_provider": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/AIAgentModelProvider"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": "openai"
+                    },
+                    "model_name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Model Name",
+                        "default": "gpt-4.1"
+                    },
+                    "custom_functions": {
+                        "items": {
+                            "$ref": "#/components/schemas/CustomFunction"
+                        },
+                        "type": "array",
+                        "title": "Custom Functions"
+                    },
+                    "connectors": {
+                        "items": {
+                            "$ref": "#/components/schemas/ConnectedConnector"
+                        },
+                        "type": "array",
+                        "title": "Connectors"
+                    },
+                    "sub_agents": {
+                        "items": {
+                            "$ref": "#/components/schemas/AgentDefinition"
+                        },
+                        "type": "array",
+                        "title": "Sub Agents",
+                        "default": []
+                    },
+                    "knowledge_bases": {
+                        "items": {
+                            "$ref": "#/components/schemas/ExportedKnowledgeBase"
+                        },
+                        "type": "array",
+                        "title": "Knowledge Bases",
+                        "default": []
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "name",
+                    "custom_functions",
+                    "connectors"
+                ],
+                "title": "AgentDefinition"
+            },
             "AgentExecution": {
                 "properties": {
                     "id": {
@@ -3652,6 +4369,7 @@
                     "payload_extension": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -3738,6 +4456,7 @@
                     "output_schema": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -3786,6 +4505,7 @@
                         "anyOf": [
                             {
                                 "items": {
+                                    "additionalProperties": true,
                                     "type": "object"
                                 },
                                 "type": "array"
@@ -3818,6 +4538,29 @@
                             }
                         ],
                         "title": "Title"
+                    },
+                    "think_mode": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ThinkMode"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": "default"
+                    },
+                    "disable_attachment_injection": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Disable Attachment Injection",
+                        "default": false
                     }
                 },
                 "type": "object",
@@ -3935,6 +4678,7 @@
                     "payload_extension": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -3990,6 +4734,7 @@
                     "output_schema": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -4048,6 +4793,7 @@
                         "anyOf": [
                             {
                                 "items": {
+                                    "additionalProperties": true,
                                     "type": "object"
                                 },
                                 "type": "array"
@@ -4080,6 +4826,29 @@
                             }
                         ],
                         "title": "Title"
+                    },
+                    "think_mode": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ThinkMode"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": "default"
+                    },
+                    "disable_attachment_injection": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Disable Attachment Injection",
+                        "default": false
                     }
                 },
                 "type": "object",
@@ -4087,6 +4856,19 @@
                     "input"
                 ],
                 "title": "AgentExecutionRequest"
+            },
+            "AgentExecutionStatus-Input": {
+                "type": "string",
+                "enum": [
+                    "pending",
+                    "executing",
+                    "paused",
+                    "error",
+                    "failed",
+                    "completed",
+                    "stopped"
+                ],
+                "title": "AgentExecutionStatus"
             },
             "AgentKnowledgeBase": {
                 "properties": {
@@ -4164,6 +4946,61 @@
                 "title": "AgentStatus",
                 "description": "Enumeration of possible agent statuses.\n\nAttributes:\n    DRAFT: Agent is in a draft state.\n    ACTIVE: Agent is active and operational.\n    INACTIVE: Agent is inactive and not operational."
             },
+            "AgentTemplate": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Description"
+                    },
+                    "icon": {
+                        "type": "string",
+                        "title": "Icon"
+                    },
+                    "organization_id": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Organization Id"
+                    },
+                    "agent_definition": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/AgentDefinition"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "name",
+                    "icon"
+                ],
+                "title": "AgentTemplate"
+            },
             "AgnoSettings": {
                 "properties": {
                     "session_storage": {
@@ -4178,6 +5015,30 @@
                         "title": "Session Storage",
                         "default": true
                     },
+                    "agent_memories": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Agent Memories",
+                        "default": false
+                    },
+                    "agentic_culture": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Agentic Culture",
+                        "default": false
+                    },
                     "user_memories": {
                         "anyOf": [
                             {
@@ -4188,6 +5049,18 @@
                             }
                         ],
                         "title": "User Memories",
+                        "default": false
+                    },
+                    "agentic_memory": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Agentic Memory",
                         "default": false
                     },
                     "session_summaries": {
@@ -4272,7 +5145,7 @@
                             }
                         ],
                         "title": "Pii Detection Mask",
-                        "default": false
+                        "default": true
                     },
                     "prompt_injection_detection_enabled": {
                         "anyOf": [
@@ -4311,10 +5184,270 @@
                             }
                         ],
                         "title": "Openai Moderation Categories"
+                    },
+                    "reasoning_tools_enabled": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Reasoning Tools Enabled",
+                        "default": true
+                    },
+                    "tool_calls_compression": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/AgnoToolCallsCompressionSettings"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": {
+                            "enabled": true,
+                            "threshold": 3,
+                            "instructions": ""
+                        }
                     }
                 },
                 "type": "object",
                 "title": "AgnoSettings"
+            },
+            "AgnoToolCallsCompressionSettings": {
+                "properties": {
+                    "enabled": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Enabled",
+                        "default": false
+                    },
+                    "threshold": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Threshold",
+                        "default": 3
+                    },
+                    "instructions": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Instructions",
+                        "default": ""
+                    }
+                },
+                "type": "object",
+                "title": "AgnoToolCallsCompressionSettings"
+            },
+            "ConnectedConnector": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Name",
+                        "default": ""
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Description",
+                        "default": ""
+                    },
+                    "open_api_spec_id": {
+                        "type": "string",
+                        "title": "Open Api Spec Id"
+                    },
+                    "general_params": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "$ref": "#/components/schemas/GeneralParam"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "General Params",
+                        "default": []
+                    },
+                    "operation_ids": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Operation Ids",
+                        "default": []
+                    },
+                    "operations_with_details": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "additionalProperties": true,
+                                    "type": "object"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Operations With Details",
+                        "default": []
+                    },
+                    "cc_id": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Cc Id"
+                    },
+                    "root_id": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Root Id"
+                    },
+                    "code": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Code"
+                    },
+                    "openapi_spec": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Openapi Spec"
+                    },
+                    "is_custom": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Is Custom",
+                        "default": false
+                    },
+                    "owner": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Owner"
+                    },
+                    "version": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Version"
+                    },
+                    "total_operations": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Total Operations"
+                    },
+                    "operations_map": {
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                    "$ref": "#/components/schemas/ConnectorOperation"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Operations Map"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "open_api_spec_id"
+                ],
+                "title": "ConnectedConnector"
             },
             "ConnectionURIResponse": {
                 "properties": {
@@ -4350,6 +5483,24 @@
                 ],
                 "title": "Connector",
                 "description": "Connector model representing the structure of a connector with an ID and associated operation IDs.\n\nAttributes:\n    id (str): The unique identifier for the connector.\n    operation_ids (list[str]): A list of operation IDs associated with the connector."
+            },
+            "ConnectorOperation": {
+                "properties": {
+                    "path": {
+                        "type": "string",
+                        "title": "Path"
+                    },
+                    "method": {
+                        "type": "string",
+                        "title": "Method"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "path",
+                    "method"
+                ],
+                "title": "ConnectorOperation"
             },
             "CreateManagedKnowledgeBaseRequest": {
                 "properties": {
@@ -4546,6 +5697,7 @@
                     "payload_extension": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -4632,6 +5784,7 @@
                     "output_schema": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -4680,6 +5833,7 @@
                         "anyOf": [
                             {
                                 "items": {
+                                    "additionalProperties": true,
                                     "type": "object"
                                 },
                                 "type": "array"
@@ -4712,6 +5866,29 @@
                             }
                         ],
                         "title": "Title"
+                    },
+                    "think_mode": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ThinkMode"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": "default"
+                    },
+                    "disable_attachment_injection": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Disable Attachment Injection",
+                        "default": false
                     }
                 },
                 "type": "object",
@@ -4724,6 +5901,242 @@
                 ],
                 "title": "CreatedTask",
                 "description": "Task creation response model.\n\nExtends AgentExecution with additional agent_id field."
+            },
+            "CustomFunction": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Description"
+                    },
+                    "input_schema": {
+                        "additionalProperties": true,
+                        "type": "object",
+                        "title": "Input Schema"
+                    },
+                    "technical_description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Technical Description"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/CustomFunctionStatus"
+                    },
+                    "limits": {
+                        "additionalProperties": true,
+                        "type": "object",
+                        "title": "Limits"
+                    },
+                    "source_code": {
+                        "type": "string",
+                        "title": "Source Code"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "name",
+                    "input_schema",
+                    "status",
+                    "limits",
+                    "source_code"
+                ],
+                "title": "CustomFunction"
+            },
+            "CustomFunctionStatus": {
+                "type": "string",
+                "enum": [
+                    "draft",
+                    "analysing",
+                    "ready",
+                    "error"
+                ],
+                "title": "CustomFunctionStatus"
+            },
+            "ExportAgentRequest": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Description"
+                    },
+                    "icon": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Icon"
+                    },
+                    "with_knowledge_bases": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "With Knowledge Bases",
+                        "default": true
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "name"
+                ],
+                "title": "ExportAgentRequest"
+            },
+            "ExportedKnowledgeBase": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Description"
+                    },
+                    "documents": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "$ref": "#/components/schemas/ExportedKnowledgeBaseDocument"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Documents",
+                        "default": []
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "name"
+                ],
+                "title": "ExportedKnowledgeBase"
+            },
+            "ExportedKnowledgeBaseDocument": {
+                "properties": {
+                    "name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Name"
+                    },
+                    "url": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Url"
+                    },
+                    "content": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Content"
+                    }
+                },
+                "type": "object",
+                "title": "ExportedKnowledgeBaseDocument"
+            },
+            "GeneralParam": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "description": {
+                        "type": "string",
+                        "title": "Description"
+                    },
+                    "location": {
+                        "type": "string",
+                        "enum": [
+                            "path",
+                            "query",
+                            "header",
+                            "cookie"
+                        ],
+                        "title": "Location"
+                    },
+                    "value": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Value"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "name",
+                    "description",
+                    "location"
+                ],
+                "title": "GeneralParam"
             },
             "HTTPValidationError": {
                 "properties": {
@@ -4919,6 +6332,7 @@
                 "type": "string",
                 "enum": [
                     "api_key",
+                    "oauth2",
                     "custom_headers",
                     "none"
                 ],
@@ -4957,6 +6371,17 @@
                     "name": {
                         "type": "string",
                         "title": "Name"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Description"
                     },
                     "icon": {
                         "anyOf": [
@@ -5079,6 +6504,17 @@
                             }
                         ],
                         "title": "Is Coordinate Mode"
+                    },
+                    "has_pending_changes": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Has Pending Changes"
                     }
                 },
                 "type": "object",
@@ -5376,6 +6812,7 @@
                     "body_params": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -5387,6 +6824,7 @@
                     "query_params": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -5398,6 +6836,7 @@
                     "path_params": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -5409,6 +6848,7 @@
                     "headers": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -5564,6 +7004,14 @@
                 "title": "TasksListItem",
                 "description": "Summary representation of a task in list operations.\n\nThis model provides essential information about a task, suitable for\ndisplay and interaction in list views, while enabling efficient retrieval\nof full task details when needed.\n\nAttributes:\n    id (str): Unique identifier for this task execution.\n    agent_id (str): ID of the agent responsible for executing the task.\n    organization_id (str): ID of the organization that owns the agent.\n    status (AgentExecutionStatus): Current execution status of the task.\n    created_at (Optional[datetime]): Timestamp when the execution was created.\n    updated_at (Optional[datetime]): Timestamp of the last update to this execution.\n    source_node_type (Optional[str]): The type of the source node that triggered execution.\n    result (Optional[str]): Final result of the execution, if available.\n    title (Optional[str]): Task title.\n    \nMethods:\n    aload: Asynchronously load the full task details.\n    load: Synchronously load the full task details.\n    \nExample:\n    >>> tasks = Tasks()\n    >>> task_list = tasks.list(agent_id=\"agent123\")\n    >>> for item in task_list:\n    ...     print(f\"Task: {item.id} - Status: {item.status}\")\n    ...     full_task = item.load()  # Load complete task details"
             },
+            "ThinkMode": {
+                "type": "string",
+                "enum": [
+                    "default",
+                    "harder"
+                ],
+                "title": "ThinkMode"
+            },
             "Toolkit": {
                 "properties": {
                     "id": {
@@ -5653,6 +7101,7 @@
                     "additional_attributes": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -5711,6 +7160,7 @@
                     "additional_attributes": {
                         "anyOf": [
                             {
+                                "additionalProperties": true,
                                 "type": "object"
                             },
                             {
@@ -5894,6 +7344,18 @@
                         "title": "Organization Id",
                         "description": "Organization ID"
                     },
+                    "name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Name",
+                        "description": "Doc name"
+                    },
                     "raw_data": {
                         "anyOf": [
                             {
@@ -5956,12 +7418,21 @@
             }
         },
         "securitySchemes": {
-            "ApiKeyAuth": {
+            "APIKeyHeader": {
                 "type": "apiKey",
                 "description": "API Key for authentication",
                 "in": "header",
                 "name": "x-api-key"
             }
         }
+    },
+    "servers": [
+        {
+            "url": "https://api.xpander.ai",
+            "description": "Production API Server"
+        }
+    ],
+    "x-mcp": {
+        "enabled": true
     }
 }

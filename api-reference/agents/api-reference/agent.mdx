@@ -47,6 +47,12 @@ deployment_type: AgentDeploymentType
 ```
 Deployment type for the agent (Serverless or Container). Determines the execution environment for agent tasks.
 
+### `origin_template`
+```python
+origin_template: Optional[str]
+```
+UUID of the template this agent was imported from. `None` if the agent was created from scratch rather than imported from a template.
+
 ## Methods
 
 ### `aload()

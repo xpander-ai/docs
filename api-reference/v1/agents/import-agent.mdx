@@ -1,0 +1,212 @@
+---
+title: "Import Agent"
+openapi: "POST /v1/agents/template_import/{template_id}"
+description: "Import an AI agent from a template and create a new agent instance"
+---
+
+Create a new agent instance from a template. The template can be from your organization or shared from another organization. All agent configuration, tools, sub-agents, and optionally knowledge bases will be replicated into your organization.
+
+## Path Parameters
+
+<ParamField path="template_id" type="string" required>
+  Unique identifier of the template to import (UUID format)
+</ParamField>
+
+## Request Body
+
+<ParamField body="name" type="string" required>
+  Display name for the new agent instance
+</ParamField>
+
+<ParamField body="description" type="string">
+  Description of the agent instance (optional - can customize the template description)
+</ParamField>
+
+<ParamField body="icon" type="string">
+  Emoji icon for the agent (optional - defaults to template icon)
+  
+  **Example**: `"🎧"` | `"🚀"` | `"💼"`
+</ParamField>
+
+<ParamField body="with_knowledge_bases" type="boolean" default={true}>
+  Controls whether to import knowledge bases from the template
+  - `true`: Imports all knowledge bases with their documents and files (if included in template)
+  - `false`: Imports only agent configuration without knowledge bases
+  
+  **Note**: Only effective if the template was exported with `with_knowledge_bases: true`
+</ParamField>
+
+## Response
+
+Returns a complete `AIAgent` object:
+
+<ResponseField name="id" type="string">
+  Unique identifier for the created agent (UUID)
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  Display name of the agent
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Agent description
+</ResponseField>
+
+<ResponseField name="icon" type="string">
+  Emoji icon representing the agent
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current deployment status: `ACTIVE` or `INACTIVE`
+</ResponseField>
+
+<ResponseField name="origin_template" type="string">
+  UUID of the template this agent was imported from
+</ResponseField>
+
+<ResponseField name="deployment_type" type="string">
+  Deployment infrastructure: `serverless` or `container`
+</ResponseField>
+
+<ResponseField name="organization_id" type="string">
+  UUID of your organization
+</ResponseField>
+
+<ResponseField name="instructions" type="object">
+  System instructions configuration inherited from template
+  <Expandable title="Instructions Object">
+    <ResponseField name="role" type="array">
+      Array of role descriptions
+    </ResponseField>
+    <ResponseField name="goal" type="array">
+      Array of goal descriptions
+    </ResponseField>
+    <ResponseField name="general" type="string">
+      General instructions text
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="model_provider" type="string">
+  AI model provider (e.g., `openai`)
+</ResponseField>
+
+<ResponseField name="model_name" type="string">
+  Specific model version (e.g., `gpt-4o`, `gpt-4.1`)
+</ResponseField>
+
+<ResponseField name="framework" type="string">
+  Agent framework used (e.g., `agno`)
+</ResponseField>
+
+<ResponseField name="knowledge_bases" type="array">
+  Array of imported knowledge bases (if `with_knowledge_bases: true`)
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  ISO 8601 timestamp of when the agent was created
+</ResponseField>
+
+## Example Requests
+
+### Basic Import
+
+```bash
+curl -X POST -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My Support Agent",
+    "description": "Customer support agent from template",
+    "icon": "🎧",
+    "with_knowledge_bases": true
+  }' \
+  https://api.xpander.ai/v1/agents/template_import/{template_id}
+```
+
+### Import Without Knowledge Bases
+
+```bash
+curl -X POST -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Support Agent Framework",
+    "description": "Will add custom knowledge bases later",
+    "icon": "🎧",
+    "with_knowledge_bases": false
+  }' \
+  https://api.xpander.ai/v1/agents/template_import/{template_id}
+```
+
+### Cross-Organization Import
+
+```bash
+# Organization B importing a template from Organization A
+curl -X POST -H "x-api-key: ORG_B_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Sales Assistant (Customized)",
+    "description": "Imported from marketplace template",
+    "icon": "💼"
+  }' \
+  https://api.xpander.ai/v1/agents/template_import/template-from-org-a
+```
+
+## Example Response
+
+```json
+{
+  "id": "agent-new-001",
+  "name": "My Support Agent",
+  "description": "Customer support agent from template",
+  "icon": "🎧",
+  "status": "ACTIVE",
+  "origin_template": "template-123",
+  "organization_id": "your-org-456",
+  "deployment_type": "serverless",
+  "created_at": "2025-11-06T02:47:17.244054Z",
+  "instructions": {
+    "role": ["Customer support specialist"],
+    "goal": ["Resolve customer issues efficiently"],
+    "general": "Be helpful and professional"
+  },
+  "model_provider": "openai",
+  "model_name": "gpt-4o",
+  "framework": "agno",
+  "knowledge_bases": [
+    {
+      "id": "kb-001",
+      "name": "Product Documentation",
+      "description": "Product guides and FAQs"
+    }
+  ],
+  "attached_tools": [],
+  "graph": []
+}
+```
+
+## Import Behavior
+
+When importing a template:
+
+1. **New Agent Created**: A completely independent agent instance is created in your organization
+2. **Configuration Copied**: All agent settings, instructions, and behavior are replicated
+3. **Sub-Agents Recreated**: Complete agent hierarchy is maintained with new instances
+4. **Knowledge Bases**: Documents are copied to your organization (if included and `with_knowledge_bases: true`)
+5. **Tools & Connectors**: Tool configurations are preserved - you'll need to provide credentials
+6. **Independence**: Changes to the imported agent won't affect the source agent or template
+
+## Notes
+
+- **Cross-Organization Support**: Templates can be imported from any organization - share the template ID
+- **Customization**: You can modify the agent name, description, and icon during import
+- **Tool Setup**: After import, configure credentials for any tools that require authentication
+- **Knowledge Bases**: If the template was exported without knowledge bases, `with_knowledge_bases: true` has no effect
+- **Origin Tracking**: The `origin_template` field tracks which template was used for import
+
+## See Also
+
+- [Export Agent](/API reference/v1/agents/export-agent) - Create a template from an existing agent
+- [Agent Import & Export Guide](/api-reference/agents/import-export) - Comprehensive guide to templates
+- [Update Agent](/API reference/v1/agents/update-agent) - Customize the imported agent
+- [Deploy Agent](/API reference/v1/agents/deploy-agent) - Deploy the imported agent
+- [List Agents](/API reference/v1/agents/list-agents) - View all agents in your organization

@@ -113,7 +113,9 @@
               "api-reference/v1/agents/invoke-sync",
               "api-reference/v1/agents/invoke-async",
               "api-reference/v1/agents/invoke-stream",
-              "api-reference/v1/agents/get-agent-tasks"
+              "api-reference/v1/agents/get-agent-tasks",
+              "api-reference/v1/agents/export-agent",
+              "api-reference/v1/agents/import-agent"
             ]
           },
           {

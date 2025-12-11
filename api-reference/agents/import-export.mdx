@@ -1,0 +1,305 @@
+---
+title: "Agent Import & Export"
+description: "Export agents as reusable templates and import them across accounts for sharing and collaboration"
+icon: "download"
+---
+
+## Overview
+
+Agent templates enable you to export AI agents into reusable, shareable configurations that can be imported across different organizations. This powerful feature facilitates:
+
+- **Cross-Account Sharing**: Share agent configurations between organizations
+- **Agent Marketplace**: Distribute pre-built agents as templates
+- **Backup & Migration**: Create portable copies of your agents
+- **Version Control**: Maintain templates for different agent configurations
+
+## Agent Templates
+
+An agent template packages all components of an AI agent into a portable format:
+
+- **Agent Configuration**: Instructions, settings, and behavior
+- **Tools & Integrations**: Connected tools and custom functions
+- **Sub-Agents**: Complete hierarchy of delegated agents
+- **Knowledge Bases** (Optional): Associated documents and files
+
+<Note>
+Templates support **cross-account usage**, meaning an agent exported from one organization can be imported into any other organization.
+</Note>
+
+## Exporting Agents
+
+Export an agent to create a reusable template that can be shared or imported later.
+
+### Export Options
+
+When exporting an agent, you can control whether to include knowledge bases:
+
+<ParamField path="with_knowledge_bases" type="boolean" default={true}>
+  Controls whether knowledge bases and their document files are included in the export
+  - `true`: Includes all knowledge bases with their documents and files
+  - `false`: Exports only agent configuration without knowledge bases
+</ParamField>
+
+### REST API Example
+
+#### Export with Knowledge Bases
+
+```bash
+curl -X POST https://api.xpander.ai/v1/agents/{agent_id}/export \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Customer Support Agent Template",
+    "description": "Pre-configured agent for customer support workflows",
+    "icon": "🎧",
+    "with_knowledge_bases": true
+  }'
+```
+
+#### Export without Knowledge Bases
+
+```bash
+curl -X POST https://api.xpander.ai/v1/agents/{agent_id}/export \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Support Agent Config Only",
+    "description": "Agent configuration without knowledge bases",
+    "icon": "🎧",
+    "with_knowledge_bases": false
+  }'
+```
+
+### Response Structure
+
+The export returns an `AgentTemplate` object containing:
+
+```json
+{
+  "id": "template-123",
+  "name": "Customer Support Agent Template",
+  "description": "Pre-configured agent for customer support workflows",
+  "icon": "🎧",
+  "organization_id": "org-456",
+  "agent_definition": {
+    "id": "agent-789",
+    "name": "Support Agent",
+    "description": "Handles customer inquiries",
+    "instructions": {
+      "role": ["Customer support specialist"],
+      "goal": ["Resolve customer issues efficiently"],
+      "general": "Be helpful and professional"
+    },
+    "custom_functions": [...],
+    "connectors": [...],
+    "sub_agents": [...],
+    "knowledge_bases": [
+      {
+        "name": "Product Documentation",
+        "description": "Product guides and FAQs",
+        "documents": [
+          {
+            "name": "User Guide",
+            "url": "https://...",
+            "content": "..."
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## Importing Agents
+
+Import a template to create a new agent instance in your organization.
+
+### REST API Example
+
+```bash
+curl -X POST https://api.xpander.ai/v1/agents/template_import/{template_id} \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My Support Agent",
+    "description": "Customized support agent from template",
+    "icon": "🎧",
+    "with_knowledge_bases": true
+  }'
+```
+
+### Import Behavior
+
+When importing a template:
+
+1. **New Agent Created**: A fresh agent instance is created in your organization
+2. **Configuration Copied**: All agent settings, instructions, and tools are replicated
+3. **Sub-Agents Recreated**: Complete agent hierarchy is maintained
+4. **Knowledge Bases** (if included): Documents are copied to your organization
+5. **Tools & Connectors**: Tool configurations are preserved (you may need to provide credentials)
+
+<Note>
+The imported agent is fully independent from the original. Changes to the imported agent won't affect the source agent or template.
+</Note>
+
+## Cross-Account Sharing
+
+Templates can be shared and used across different organizations, enabling powerful collaboration scenarios.
+
+### Sharing Workflow
+
+1. **Organization A** exports an agent as a template
+2. Template ID is shared with **Organization B** (via documentation, marketplace, etc.)
+3. **Organization B** imports the template using the template ID
+4. A new agent instance is created in **Organization B**
+
+### Use Cases
+
+<CardGroup cols={2}>
+  <Card title="Agency to Client" icon="handshake">
+    Share pre-built agents with clients for their specific needs
+  </Card>
+  <Card title="Internal Teams" icon="users">
+    Distribute standardized agents across departments
+  </Card>
+  <Card title="Marketplace" icon="store">
+    Publish agents as templates for community use
+  </Card>
+  <Card title="Development to Production" icon="rocket">
+    Promote agent configurations between environments
+  </Card>
+</CardGroup>
+
+## Knowledge Base Handling
+
+### Including Knowledge Bases
+
+When `with_knowledge_bases: true`:
+- **Documents**: All document files are exported with their content
+- **Structure**: Knowledge base organization is preserved
+- **Size**: Export may be larger due to document content
+
+### Excluding Knowledge Bases
+
+When `with_knowledge_bases: false`:
+- **Lightweight**: Smaller export size for faster sharing
+- **Configuration Only**: Agent behavior without data
+- **Flexibility**: Import and attach different knowledge bases later
+
+<Tip>
+Use `with_knowledge_bases: false` when sharing agent logic that should use organization-specific knowledge, or when document files are too large for convenient sharing.
+</Tip>
+
+## Best Practices
+
+### For Exporting
+
+1. **Descriptive Names**: Use clear, descriptive template names
+2. **Documentation**: Include comprehensive descriptions
+3. **Knowledge Base Decision**: Choose whether to include based on use case:
+   - Include for complete, ready-to-use agents
+   - Exclude for configurable frameworks
+4. **Icon Selection**: Use meaningful icons for easy identification
+
+### For Importing
+
+1. **Review Template**: Understand what's included before importing
+2. **Customize After Import**: Adjust agent settings for your needs
+3. **Test Thoroughly**: Validate imported agents in your environment
+4. **Tool Credentials**: Ensure you have access to required integrations
+5. **Knowledge Base Validation**: Verify imported documents are appropriate
+
+### For Cross-Account Sharing
+
+1. **Security Review**: Ensure no sensitive data in templates
+2. **Documentation**: Provide clear usage instructions
+3. **Version Management**: Track template versions for updates
+4. **Access Control**: Share template IDs securely
+
+## Security Considerations
+
+<Warning>
+When creating templates for cross-account sharing, ensure:
+- No API keys or credentials in agent configurations
+- No sensitive business data in knowledge bases
+- No organization-specific identifiers
+- Compliance with data sharing policies
+</Warning>
+
+### What Gets Shared
+
+**Included in Templates:**
+- Agent instructions and behavior
+- Tool configurations (without credentials)
+- Knowledge base documents (if selected)
+- Sub-agent hierarchies
+
+**NOT Included:**
+- API keys or secrets
+- Organization-specific credentials
+- User data or execution history
+- Account identifiers
+
+## Common Scenarios
+
+### Scenario 1: Sharing Agent Logic Only
+
+```bash
+# Export without knowledge bases
+POST /v1/agents/{agent_id}/export
+{
+  "name": "Sales Assistant Framework",
+  "with_knowledge_bases": false
+}
+
+# Recipient imports and adds their own knowledge
+POST /v1/agents/template_import/{template_id}
+# Then attach organization-specific knowledge bases
+```
+
+### Scenario 2: Complete Agent Package
+
+```bash
+# Export with everything
+POST /v1/agents/{agent_id}/export
+{
+  "name": "Complete Onboarding Agent",
+  "with_knowledge_bases": true
+}
+
+# Recipient gets fully functional agent
+POST /v1/agents/template_import/{template_id}
+```
+
+### Scenario 3: Agent Marketplace Distribution
+
+```bash
+# Create marketplace-ready template
+POST /v1/agents/{agent_id}/export
+{
+  "name": "E-commerce Support Agent",
+  "description": "Ready-to-use agent for online stores",
+  "icon": "🛒",
+  "with_knowledge_bases": true
+}
+
+# Multiple organizations can import
+POST /v1/agents/template_import/marketplace-template-123
+```
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Agent Management" icon="robot" href="/api-reference/agents">
+    Learn about creating and managing agents
+  </Card>
+  <Card title="Knowledge Bases" icon="database" href="/api-reference/knowledge">
+    Manage knowledge bases and documents
+  </Card>
+  <Card title="REST API Reference" icon="code" href="/api-reference/rest-api">
+    Complete API documentation
+  </Card>
+  <Card title="Tools Integration" icon="wrench" href="/api-reference/tools">
+    Configure tools and integrations
+  </Card>
+</CardGroup>

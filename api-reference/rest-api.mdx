@@ -12,6 +12,7 @@ The REST API provides comprehensive HTTP endpoints for managing your AI agents, 
 The REST API is your control plane for the xpander platform, enabling you to:
 
 - **Manage Agents**: Create, update, deploy, and delete AI agents
+- **Export & Import**: Share agents as templates across organizations
 - **Execute Tasks**: Invoke agents synchronously, asynchronously, or with streaming
 - **Control Knowledge**: Manage knowledge bases and documents
 - **Access Toolkits**: List and invoke tools across integrations
@@ -100,6 +101,9 @@ const result = await fetch(`${BASE_URL}/agents/${agentId}/invoke`, {
 <CardGroup cols={2}>
   <Card title="Agents" icon="robot" href="/API reference/v1/agents/list-agents">
     Create, manage, and invoke AI agents
+  </Card>
+  <Card title="Agent Templates" icon="download" href="/api-reference/agents/import-export">
+    Export and import agents across organizations
   </Card>
   <Card title="Tasks" icon="play" href="/API reference/v1/tasks/list-tasks">
     Monitor and manage task executions
