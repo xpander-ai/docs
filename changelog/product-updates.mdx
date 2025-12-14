@@ -4,27 +4,25 @@ mode: 'wide'
 rss: true
 ---
 
-<Update label="2025-12-14" description="Agent import/export improvements, external agent types, A2A protocol updates, and connection flow enhancements">
+<Update label="2025-12-14" description="Agent import/export, GPT 5.2 support, SalesForce Hosted MCP, connection flow enhancements">
 
 ## New Features:
 
-- **Agent import/export with knowledge base content:** Agents can now be exported and imported with optional inclusion of associated knowledge bases and document content.
-- **External agent types (A2A and Curl):** Added new agent types to support calling external agents/services with standardized connectivity details and authentication.
-- **A2A protocol (JSON-RPC) support:** Updated the A2A service to use Agent2Agent protocol endpoints (agent card + JSON-RPC methods for sending messages, getting task status, and canceling tasks), including authenticated access.
-- **Nano Banana image generation API:** Added an image generation endpoint powered by Google GenAI that uploads generated images to S3 and returns a presigned URL.
-- **Unified “Create New Connection” flow:** Introduced a new end-to-end UI for creating and editing connections with improved validation and support for multiple auth methods (API key, OAuth2, AWS).
+- **Agent import/export with knowledge base content:** Agents can now be exported and imported with optional inclusion of associated knowledge bases and document content. This is useful for promoting agents between sandbox and production accounts. Check out the Export/Import calls in the API reference: https://docs.xpander.ai/api-reference/v1/agents/export-agent 
+- **Nano Banana image generation API:** New tool: generate images via your agents with Google Nano Banana.
+- **Refactored “Create New Connection” flow:** Introduced a new end-to-end UI for creating and editing connections with improved validation and support for multiple auth methods (API key, OAuth2, AWS services with SigV4).
 - **Expanded OpenAI model catalog:** Added support for OpenAI GPT-5.2 (and additional GPT-5 family variants) in the model selection catalog.
+- **SalesForce Hosted MCP:** With improvements in MCP and OAuth2 handling, SalesForce Hosted MCP is fully supported and tested. 
 
 ## Improvements:
 
-- **Agent activity migration and evaluation:** Improved activity view reliability by migrating legacy sessions into threads on demand and adding a thread evaluation endpoint with caching.
-- **MCP and OAuth scope handling:** Enhanced MCP deployment enablement and OAuth scope handling (including additional scopes and refresh-token support).
+- **MCP and OAuth2 scope handling:** Enhanced MCP deployment enablement and OAuth scope handling (including additional scopes and refresh-token support).
+- **Agent activity view refactor:** Improved activity view reliability by migrating legacy sessions into threads on demand and adding a thread evaluation endpoint with caching.
 - **SDK and A2A tooling UX:** Refined SDK/A2A UI surfaces (e.g., agent card handling, triggers actions, and MCP tool gating) for clarity and consistency.
 
 ## Bug Fixes:
 
 - **Template and import route stability:** Fixed agent template forward-reference issues and stabilized the template import route behavior.
-- **Billing and metrics reliability:** Fixed billing metrics reporting and routed usage reporting to a stable dummy agent to improve consistency.
 - **UI fixes:** Fixed access scope rendering issues and corrected UI styling/behavior in MCP-related modals and built-in tools.
 
 </Update>
