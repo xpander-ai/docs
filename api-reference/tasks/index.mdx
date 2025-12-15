@@ -17,6 +17,7 @@ In this module, you can:
 - Monitor task execution status and progress in real-time
 - Track custom internal status (up to 255 characters) alongside system status
 - Stream task events for responsive application development
+- Retrieve detailed activity logs with messages, tool calls, and reasoning steps
 - Manage task lifecycle including stopping and updating tasks
 - Handle both synchronous and asynchronous task operations
 
@@ -186,6 +187,60 @@ result = await agno_agent.arun(
 )
 
 print(f"Analysis result: {result.content}")
+```
+
+### Task Activity Monitoring
+
+Retrieve and analyze detailed execution logs for completed tasks.
+
+#### Asynchronous Example
+
+```python
+from xpander_sdk import Task
+from xpander_sdk.models.activity import (
+    AgentActivityThreadMessage,
+    AgentActivityThreadToolCall,
+    AgentActivityThreadReasoning,
+    AgentActivityThreadSubAgentTrigger
+)
+
+# Load a completed task
+task = await Task.aload("task-456")
+
+# Get detailed activity log
+activity_log = await task.aget_activity_log()
+
+# Analyze different types of activity
+for message in activity_log.messages:
+    if isinstance(message, AgentActivityThreadMessage):
+        # User or agent message
+        print(f"{message.role}: {message.content.text}")
+    elif isinstance(message, AgentActivityThreadToolCall):
+        # Tool invocation
+        print(f"Tool: {message.tool_name} -> {message.result}")
+    elif isinstance(message, AgentActivityThreadReasoning):
+        # Reasoning step
+        print(f"Reasoning: {message.thought}")
+    elif isinstance(message, AgentActivityThreadSubAgentTrigger):
+        # Sub-agent trigger
+        print(f"Sub-agent: {message.agent_id}")
+```
+
+#### Synchronous Example
+
+```python
+from xpander_sdk.models.activity import AgentActivityThreadToolCall
+
+task = Task.load("task-456")
+activity_log = task.get_activity_log()
+
+# Count tool usage
+tool_usage = {}
+for message in activity_log.messages:
+    if isinstance(message, AgentActivityThreadToolCall):
+        tool_usage[message.tool_name] = tool_usage.get(message.tool_name, 0) + 1
+
+print(f"Tool usage summary: {tool_usage}")
 ```
 
 ---

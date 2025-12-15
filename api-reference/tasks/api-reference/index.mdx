@@ -361,6 +361,68 @@ for file_data in readable_files:
 
 ---
 
+### `aget_activity_log()`
+
+Asynchronously retrieve the activity log for this task.
+
+```python
+async def aget_activity_log() -> AgentActivityThread
+```
+
+**Returns:** `AgentActivityThread` object containing complete activity log including messages, tool calls, reasoning steps, sub-agent triggers, and authentication events.
+
+**Example:**
+```python
+from xpander_sdk.models.activity import (
+    AgentActivityThreadMessage,
+    AgentActivityThreadToolCall
+)
+
+task = await Task.aload("task-123")
+activity_log = await task.aget_activity_log()
+
+for message in activity_log.messages:
+    if isinstance(message, AgentActivityThreadMessage):
+        print(f"{message.role}: {message.content.text}")
+    elif isinstance(message, AgentActivityThreadToolCall):
+        print(f"Tool: {message.tool_name}")
+        print(f"Result: {message.result}")
+```
+
+**Raises:**
+- [`ModuleException`](/API reference/exceptions): If the activity log cannot be retrieved or doesn't exist.
+
+**Related:** [AgentActivityThread](/API reference/types#agentactivitythread)
+
+---
+
+### `get_activity_log()`
+
+Synchronously retrieve the activity log for this task.
+
+```python
+def get_activity_log() -> AgentActivityThread
+```
+
+**Returns:** `AgentActivityThread` object with complete activity log.
+
+**Example:**
+```python
+from xpander_sdk.models.activity import AgentActivityThreadMessage
+
+task = Task.load("task-123")
+activity_log = task.get_activity_log()
+
+for message in activity_log.messages:
+    if isinstance(message, AgentActivityThreadMessage):
+        print(f"{message.role}: {message.content.text}")
+```
+
+**Raises:**
+- [`ModuleException`](/API reference/exceptions): If the activity log cannot be retrieved or doesn't exist.
+
+---
+
 ### `to_message()`
 
 Convert task input to a formatted message string.
@@ -581,6 +643,113 @@ async def process_task_with_files():
     for file_data in readable_files:
         print(f"\nFile: {file_data['url']}")
         print(f"Content preview: {file_data['content'][:200]}...")
+```
+
+### Task Activity Log Analysis
+
+```python
+from xpander_sdk import Task
+from xpander_sdk.models.activity import (
+    AgentActivityThreadMessage,
+    AgentActivityThreadToolCall,
+    AgentActivityThreadReasoning,
+    AgentActivityThreadSubAgentTrigger
+)
+
+async def analyze_task_execution():
+    # Load a completed task
+    task = await Task.aload("task-456")
+    
+    # Retrieve detailed activity log
+    activity_log = await task.aget_activity_log()
+    
+    print(f"Task ID: {activity_log.id}")
+    print(f"Created: {activity_log.created_at}")
+    
+    # Check if user information is available
+    if activity_log.user:
+        print(f"User: {activity_log.user.email}")
+    
+    # Process different message types
+    tool_calls = []
+    reasoning_steps = []
+    messages = []
+    
+    for message in activity_log.messages:
+        if isinstance(message, AgentActivityThreadMessage):
+            # User/agent conversation
+            messages.append({
+                'role': message.role,
+                'text': message.content.text,
+                'time': message.created_at
+            })
+            print(f"\n[{message.created_at}] {message.role}: {message.content.text}")
+            
+        elif isinstance(message, AgentActivityThreadToolCall):
+            # Tool invocations
+            tool_calls.append({
+                'name': message.tool_name,
+                'payload': message.payload,
+                'result': message.result,
+                'is_error': message.is_error
+            })
+            print(f"\n[{message.created_at}] Tool: {message.tool_name}")
+            print(f"  Payload: {message.payload}")
+            if message.result:
+                print(f"  Result: {message.result}")
+            if message.is_error:
+                print(f"  ⚠️ Error occurred")
+                
+        elif isinstance(message, AgentActivityThreadReasoning):
+            # Agent reasoning
+            reasoning_steps.append({
+                'type': message.type,
+                'thought': message.thought,
+                'confidence': message.confidence
+            })
+            print(f"\n[{message.created_at}] Reasoning ({message.type}):")
+            print(f"  Title: {message.title}")
+            print(f"  Confidence: {message.confidence}")
+            if message.thought:
+                print(f"  Thought: {message.thought}")
+            if message.action:
+                print(f"  Action: {message.action}")
+                
+        elif isinstance(message, AgentActivityThreadSubAgentTrigger):
+            # Sub-agent calls
+            print(f"\n[{message.created_at}] Sub-agent triggered:")
+            print(f"  Agent ID: {message.agent_id}")
+            print(f"  Query: {message.query}")
+            if message.files:
+                print(f"  Files: {', '.join(message.files)}")
+    
+    # Summary statistics
+    print(f"\n=== Execution Summary ===")
+    print(f"Total messages: {len(messages)}")
+    print(f"Tool calls: {len(tool_calls)}")
+    print(f"Reasoning steps: {len(reasoning_steps)}")
+    
+    # Calculate tool usage
+    if tool_calls:
+        print(f"\nTools used:")
+        tool_usage = {}
+        for call in tool_calls:
+            tool_name = call['name']
+            tool_usage[tool_name] = tool_usage.get(tool_name, 0) + 1
+        for tool, count in tool_usage.items():
+            print(f"  - {tool}: {count} times")
+
+# Synchronous version
+def analyze_task_execution_sync():
+    from xpander_sdk.models.activity import AgentActivityThreadMessage
+    
+    task = Task.load("task-456")
+    activity_log = task.get_activity_log()
+    
+    # Process activity log (same logic as above)
+    for message in activity_log.messages:
+        if isinstance(message, AgentActivityThreadMessage):
+            print(f"{message.role}: {message.content.text}")
 ```
 
 ## Related Classes

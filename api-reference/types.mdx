@@ -186,6 +186,151 @@ async for event in task.aevents():
 
 ---
 
+### `AgentActivityThread`
+
+Complete activity log for a task execution containing all messages, tool calls, reasoning, and events.
+
+```python
+class AgentActivityThread:
+    id: str
+    created_at: datetime
+    messages: List[AgentActivityThreadMessageType]
+    user: Optional[User] = None
+```
+
+**Properties:**
+- `id` (str): Unique identifier for the activity thread
+- `created_at` (datetime): When the activity thread was created
+- `messages` (List[AgentActivityThreadMessageType]): Ordered list of all activity messages (messages, tool calls, reasoning steps, etc.)
+- `user` (Optional[User]): User associated with the activity, if available
+
+**Message Types:**
+- `AgentActivityThreadMessage`: User/agent conversation messages
+- `AgentActivityThreadToolCall`: Tool invocations and results
+- `AgentActivityThreadReasoning`: Agent reasoning steps
+- `AgentActivityThreadSubAgentTrigger`: Sub-agent invocations
+- `AgentActivityThreadAuth`: Authentication events
+
+**Usage:**
+```python
+from xpander_sdk import Task
+from xpander_sdk.models.activity import (
+    AgentActivityThreadMessage,
+    AgentActivityThreadToolCall
+)
+
+task = await Task.aload("task-123")
+activity_log = await task.aget_activity_log()
+
+for message in activity_log.messages:
+    if isinstance(message, AgentActivityThreadMessage):
+        print(f"{message.role}: {message.content.text}")
+    elif isinstance(message, AgentActivityThreadToolCall):
+        print(f"Tool: {message.tool_name}")
+```
+
+---
+
+### `AgentActivityThreadMessage`
+
+User or agent conversation message in the activity log.
+
+```python
+class AgentActivityThreadMessage:
+    id: str
+    created_at: datetime
+    role: Literal["user", "agent"]
+    content: AgentActivityThreadMessageContent
+```
+
+**Properties:**
+- `id` (str): Message unique identifier
+- `created_at` (datetime): When the message was created
+- `role` (Literal["user", "agent"]): Whether message is from user or agent
+- `content` (AgentActivityThreadMessageContent): Message content with text and files
+
+---
+
+### `AgentActivityThreadToolCall`
+
+Tool invocation record in the activity log.
+
+```python
+class AgentActivityThreadToolCall:
+    id: str
+    created_at: datetime
+    tool_name: str
+    payload: Any
+    is_error: Optional[bool] = False
+    reasoning: Optional[ToolCallRequestReasoning] = None
+    result: Optional[Any] = None
+```
+
+**Properties:**
+- `id` (str): Tool call unique identifier
+- `created_at` (datetime): When the tool was called
+- `tool_name` (str): Name of the invoked tool
+- `payload` (Any): Input parameters sent to the tool
+- `is_error` (bool): Whether the tool call resulted in an error
+- `reasoning` (Optional[ToolCallRequestReasoning]): Agent's reasoning for using this tool
+- `result` (Optional[Any]): Tool execution result
+
+---
+
+### `AgentActivityThreadReasoning`
+
+Agent reasoning step in the activity log.
+
+```python
+class AgentActivityThreadReasoning:
+    id: str
+    created_at: datetime
+    type: AgentActivityThreadReasoningType  # "think" or "analyze"
+    title: str
+    confidence: float
+    thought: Optional[str] = None
+    action: Optional[str] = None
+    result: Optional[str] = None
+    analysis: Optional[str] = None
+```
+
+**Properties:**
+- `id` (str): Reasoning step unique identifier
+- `created_at` (datetime): When the reasoning occurred
+- `type` (AgentActivityThreadReasoningType): Type of reasoning (think/analyze)
+- `title` (str): Brief title for the reasoning step
+- `confidence` (float): Agent's confidence level (0.0 to 1.0)
+- `thought` (Optional[str]): Agent's internal thought process
+- `action` (Optional[str]): Planned action based on reasoning
+- `result` (Optional[str]): Result of the reasoning step
+- `analysis` (Optional[str]): Detailed analysis
+
+---
+
+### `AgentActivityThreadSubAgentTrigger`
+
+Sub-agent invocation record in the activity log.
+
+```python
+class AgentActivityThreadSubAgentTrigger:
+    id: str
+    created_at: datetime
+    agent_id: str
+    query: Optional[str] = None
+    files: Optional[List[str]] = []
+    reasoning: ToolCallRequestReasoning
+```
+
+**Properties:**
+- `id` (str): Sub-agent trigger unique identifier
+- `created_at` (datetime): When the sub-agent was triggered
+- `agent_id` (str): ID of the sub-agent being invoked
+- `query` (Optional[str]): Query sent to the sub-agent
+- `files` (Optional[List[str]]): File URLs passed to the sub-agent
+- `reasoning` (ToolCallRequestReasoning): Reasoning for triggering the sub-agent
+
+---
+
 ### `ToolCallRequest`
 
 Tool invocation request event data.
