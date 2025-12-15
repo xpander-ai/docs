@@ -177,6 +177,7 @@
               "api-reference/knowledge/api-reference/index",
               "api-reference/events/api-reference/index",
               "api-reference/configuration/index",
+              "api-reference/configuration/self-hosted",
               "api-reference/types",
               "api-reference/exceptions"
             ]

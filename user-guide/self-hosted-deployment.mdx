@@ -297,7 +297,7 @@ curl http://localhost:8081/health
 
 ```bash Via Ingress (if enabled)
 # Test via ingress hostnames
-curl http://agent-controller.xpander.my-company.com/health
+curl http://agent-controller.my-company.com/health
 curl http://ai-gateway.xpander.my-company.com/health
 curl http://mcp.xpander.my-company.com/health
 ```
@@ -311,6 +311,50 @@ Once deployed, connect your environment in the xpander.ai Console:
 1. Go to [https://app.xpander.ai/environments](https://app.xpander.ai/environments)
 2. Find your environment and click **"Complete setup"**
 3. The status should change to **"Connected"** when the deployment is healthy
+
+## Using Self-Hosted Deployment with xpander SDK
+
+To use your self-hosted deployment with the xpander SDK, configure the `base_url` to point to your Agent Controller endpoint.
+
+<Note>
+**API Key**: When using self-hosted deployment, use the **Agent Controller API key** generated during Helm installation, not your xpander.ai cloud API key.
+</Note>
+
+### Configuration
+
+```python
+from xpander_sdk import Configuration
+
+config = Configuration(
+    api_key="your-agent-controller-api-key",  # From Helm installation
+    organization_id="your-org-id",
+    base_url="https://agent-controller.my-company.com"
+)
+```
+
+### Using with Agno Framework
+
+```python
+from xpander_sdk import Backend, Configuration
+from agno.agent import Agent
+
+config = Configuration(
+    api_key="your-agent-controller-api-key",  # From Helm installation
+    organization_id="your-org-id",
+    base_url="https://agent-controller.my-company.com"
+)
+
+backend = Backend(configuration=config)
+agno_agent = Agent(**backend.get_args(agent_id="agent-123"))
+
+result = await agno_agent.arun(input="What can you help me with?")
+```
+
+<Note>
+**Important**: Make sure your `base_url` points to the Agent Controller endpoint (e.g., `https://agent-controller.{your-domain}`), not the root domain.
+
+For more examples, see the [Self-Hosted Configuration Guide](https://docs.xpander.ai/api-reference/configuration/self-hosted).
+</Note>
 
 ## Troubleshooting
 
