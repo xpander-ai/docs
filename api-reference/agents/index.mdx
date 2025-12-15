@@ -17,6 +17,7 @@ In this module, you can:
 - Load specific agents and interact with their components
 - Export agents as templates and import them across organizations
 - Manage tasks, tools, and knowledge bases associated with each agent
+- Retrieve, manage, and delete user sessions for agents with session storage
 - Access configurable elements like MCP (Model Context Protocol) servers
 
 ## Examples
@@ -99,6 +100,50 @@ task = agent.create_task(
 ```
 
 For more details on task management, see the [Tasks API Reference](/API reference/tasks/API reference).
+
+### Session Management
+
+Manage user sessions for agents using the Agno framework with session storage.
+
+#### Asynchronous Example
+
+```python
+from xpander_sdk import Agent
+
+# Load agent
+agent = await Agent.aload("agent-123")
+
+# Get all sessions for a user
+sessions = await agent.aget_user_sessions(user_id="user_123")
+print(f"User has {len(sessions)} sessions")
+
+# Retrieve specific session
+session = await agent.aget_session(session_id="sess_456")
+if session:
+    print(f"Session ID: {session.session_id}")
+    print(f"Messages: {len(session.messages)}")
+
+# Delete a session
+await agent.adelete_session(session_id="sess_456")
+print("Session deleted")
+```
+
+#### Synchronous Example
+
+```python
+agent = Agent.load("agent-123")
+
+# Get all user sessions
+sessions = agent.get_user_sessions(user_id="user_123")
+
+# Get specific session
+session = agent.get_session(session_id="sess_789")
+
+# Delete session
+agent.delete_session(session_id="sess_789")
+```
+
+**Note:** Session management is only supported for agents using the Agno framework with session storage enabled.
 
 ### Agent Import & Export
 

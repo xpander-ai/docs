@@ -88,7 +88,141 @@ print(f"Created task ID: {task.id}")
 Asynchronously access knowledge bases linked to this agent.
 
 ```python
-async def aget_knowledge_bases() - List[KnowledgeBase]
+async def aget_knowledge_bases() -> List[KnowledgeBase]
+```
+
+---
+
+### `aget_user_sessions(user_id)`
+
+Asynchronously retrieve all user sessions associated with this agent.
+
+```python
+async def aget_user_sessions(user_id: str) -> Any
+```
+
+**Parameters:**
+- `user_id` (str): Identifier of the user whose sessions are to be retrieved
+
+**Returns:** List of session records associated with the user.
+
+**Example:**
+```python
+sessions = await agent.aget_user_sessions(user_id="user_123")
+for session in sessions:
+    print(f"Session ID: {session.session_id}")
+```
+
+**Raises:**
+- `NotImplementedError`: If the agent framework does not support session storage
+- `LookupError`: If session storage is not enabled for this agent
+- `ImportError`: If required dependencies for Agno storage are not installed
+
+**Note:** This method is only supported for agents using the Agno framework with session storage enabled.
+
+---
+
+### `get_user_sessions(user_id)`
+
+Synchronously retrieve all user sessions associated with this agent.
+
+```python
+def get_user_sessions(user_id: str) -> Any
+```
+
+**Parameters:** Same as `aget_user_sessions()`
+
+**Returns:** List of sessions related to the given user.
+
+**Example:**
+```python
+sessions = agent.get_user_sessions(user_id="user_123")
+print(f"Found {len(sessions)} sessions")
+```
+
+---
+
+### `aget_session(session_id)`
+
+Asynchronously retrieve a single session by its session ID.
+
+```python
+async def aget_session(session_id: str) -> Any
+```
+
+**Parameters:**
+- `session_id` (str): Unique identifier of the session to retrieve
+
+**Returns:** A single session record if found, or None if the session does not exist.
+
+**Example:**
+```python
+session = await agent.aget_session(session_id="sess_456")
+if session:
+    print(f"Session found: {session.session_id}")
+```
+
+**Raises:**
+- `NotImplementedError`: If the agent framework does not support session storage
+- `LookupError`: If session storage is not enabled for this agent
+
+---
+
+### `get_session(session_id)`
+
+Synchronously retrieve a single session by its session ID.
+
+```python
+def get_session(session_id: str) -> Any
+```
+
+**Parameters:** Same as `aget_session()`
+
+**Returns:** A single session record if found, or None if the session does not exist.
+
+**Example:**
+```python
+session = agent.get_session(session_id="sess_456")
+```
+
+---
+
+### `adelete_session(session_id)`
+
+Asynchronously delete a session by its session ID.
+
+```python
+async def adelete_session(session_id: str) -> None
+```
+
+**Parameters:**
+- `session_id` (str): Unique identifier of the session to delete
+
+**Example:**
+```python
+await agent.adelete_session(session_id="sess_456")
+print("Session deleted successfully")
+```
+
+**Raises:**
+- `NotImplementedError`: If the agent framework does not support session storage
+- `LookupError`: If session storage is not enabled for this agent
+
+---
+
+### `delete_session(session_id)`
+
+Synchronously delete a session by its session ID.
+
+```python
+def delete_session(session_id: str) -> None
+```
+
+**Parameters:** Same as `adelete_session()`
+
+**Example:**
+```python
+agent.delete_session(session_id="sess_456")
 ```
 
 ## Usage
@@ -129,6 +263,63 @@ elif agent.deployment_type == AgentDeploymentType.Container:
     print("Agent configured for container deployment")
 
 print(f"Deployment type: {agent.deployment_type}")
+```
+
+### Session Management
+
+```python
+from xpander_sdk import Agent
+
+# Load agent
+agent = await Agent.aload("agent-123")
+
+# Get all sessions for a user
+sessions = await agent.aget_user_sessions(user_id="user_123")
+print(f"User has {len(sessions)} sessions")
+
+# Retrieve specific session
+session = await agent.aget_session(session_id="sess_456")
+if session:
+    print(f"Session ID: {session.session_id}")
+    print(f"Created: {session.created_at}")
+
+# Delete a session
+await agent.adelete_session(session_id="sess_456")
+print("Session deleted")
+
+# Synchronous version
+agent_sync = Agent.load("agent-123")
+sessions_sync = agent_sync.get_user_sessions(user_id="user_123")
+session_sync = agent_sync.get_session(session_id="sess_789")
+agent_sync.delete_session(session_id="sess_789")
+```
+
+### Session Cleanup and Management
+
+```python
+async def cleanup_old_sessions(agent, user_id: str, keep_recent: int = 5):
+    """Keep only the most recent N sessions for a user."""
+    # Get all user sessions
+    sessions = await agent.aget_user_sessions(user_id=user_id)
+    
+    # Sort by created date (assuming sessions have created_at)
+    sorted_sessions = sorted(
+        sessions,
+        key=lambda s: s.created_at,
+        reverse=True
+    )
+    
+    # Delete older sessions
+    sessions_to_delete = sorted_sessions[keep_recent:]
+    for session in sessions_to_delete:
+        await agent.adelete_session(session_id=session.session_id)
+        print(f"Deleted session: {session.session_id}")
+    
+    print(f"Kept {keep_recent} most recent sessions")
+    return len(sessions_to_delete)
+
+# Usage
+deleted_count = await cleanup_old_sessions(agent, user_id="user_123")
 ```
 
 ## Related Classes
