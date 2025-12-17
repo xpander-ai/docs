@@ -1,0 +1,247 @@
+---
+title: "Full Observability"
+description: "End-to-end tracing, logging, and metrics for complete visibility into agent execution"
+icon: "chart-line"
+---
+
+xpander provides comprehensive observability for your agents, including distributed tracing, structured logging, and real-time metrics. Understand exactly what your agents are doing and why.
+
+## Overview
+
+<CardGroup cols={2}>
+  <Card title="Distributed Tracing" icon="route">
+    End-to-end request tracing across all agent operations
+  </Card>
+  <Card title="Structured Logging" icon="list">
+    Searchable logs with context, timestamps, and severity levels
+  </Card>
+  <Card title="Real-time Metrics" icon="gauge">
+    Live dashboards for latency, throughput, and error rates
+  </Card>
+  <Card title="Activity Log" icon="clock-rotate-left">
+    Complete history of messages, tool calls, and reasoning steps
+  </Card>
+</CardGroup>
+
+## Activity Log
+
+Every agent execution generates a detailed activity log containing:
+
+- **Messages** - User inputs and agent responses
+- **Tool Calls** - Every tool invocation with inputs and outputs
+- **Reasoning Steps** - Chain-of-thought and decision points
+- **Sub-agent Triggers** - Multi-agent orchestration events
+
+### Accessing Activity Logs
+
+```python
+from xpander_sdk import Task
+
+# Load a completed task
+task = Task.load("task-456")
+
+# Get detailed activity log
+activity_log = task.get_activity_log()
+
+for message in activity_log.messages:
+    print(f"{message.type}: {message.content}")
+```
+
+### Activity Types
+
+```python
+from xpander_sdk.models.activity import (
+    AgentActivityThreadMessage,
+    AgentActivityThreadToolCall,
+    AgentActivityThreadReasoning,
+    AgentActivityThreadSubAgentTrigger
+)
+
+for item in activity_log.messages:
+    if isinstance(item, AgentActivityThreadMessage):
+        print(f"[{item.role}] {item.content.text}")
+
+    elif isinstance(item, AgentActivityThreadToolCall):
+        print(f"[TOOL] {item.tool_name}")
+        print(f"  Input: {item.input}")
+        print(f"  Output: {item.result}")
+
+    elif isinstance(item, AgentActivityThreadReasoning):
+        print(f"[THINKING] {item.thought}")
+
+    elif isinstance(item, AgentActivityThreadSubAgentTrigger):
+        print(f"[SUB-AGENT] Triggered {item.agent_id}")
+```
+
+## Distributed Tracing
+
+Every request is assigned a unique trace ID that follows it through:
+
+- API gateway
+- Agent runtime
+- Tool invocations
+- External API calls
+- Sub-agent executions
+
+### Trace Structure
+
+```
+Trace: abc123
+├── Agent Invocation (250ms)
+│   ├── LLM Call #1 (180ms)
+│   │   └── Token usage: 1,234 in / 567 out
+│   ├── Tool: github-issues-list (45ms)
+│   │   └── API call to api.github.com
+│   └── LLM Call #2 (120ms)
+│       └── Token usage: 890 in / 234 out
+└── Response (total: 595ms)
+```
+
+### Viewing Traces
+
+Access traces in the Workbench under **Agent > Activity** or via API:
+
+```python
+from xpander_sdk import Tasks
+
+tasks = Tasks()
+task = tasks.get("task-456")
+
+# Get trace information
+print(f"Trace ID: {task.trace_id}")
+print(f"Duration: {task.duration_ms}ms")
+print(f"Tool calls: {len(task.tool_calls)}")
+```
+
+## Metrics Dashboard
+
+Real-time metrics available in the Workbench:
+
+### Latency Metrics
+
+| Metric | Description |
+|--------|-------------|
+| P50 Latency | Median response time |
+| P95 Latency | 95th percentile response time |
+| P99 Latency | 99th percentile response time |
+| Time to First Token | Streaming start latency |
+
+### Throughput Metrics
+
+| Metric | Description |
+|--------|-------------|
+| Requests/min | Total invocations per minute |
+| Tokens/min | Total tokens processed |
+| Tool calls/min | External tool invocations |
+| Concurrent tasks | Active simultaneous executions |
+
+### Error Metrics
+
+| Metric | Description |
+|--------|-------------|
+| Error Rate | Percentage of failed requests |
+| Timeout Rate | Requests exceeding time limit |
+| Tool Failures | Failed external API calls |
+| Rate Limits | Throttled requests |
+
+## Logging
+
+### Log Levels
+
+```python
+import logging
+from xpander_sdk import Backend
+
+# Configure log level
+backend = Backend(log_level=logging.DEBUG)
+
+# Logs automatically captured:
+# DEBUG - Detailed execution flow
+# INFO - Key events and milestones
+# WARNING - Recoverable issues
+# ERROR - Failures requiring attention
+```
+
+### Log Format
+
+```json
+{
+  "timestamp": "2024-01-15T10:30:00.123Z",
+  "level": "INFO",
+  "trace_id": "abc123",
+  "agent_id": "agent-456",
+  "task_id": "task-789",
+  "message": "Tool invocation completed",
+  "tool": "github-issues-list",
+  "duration_ms": 45,
+  "status": "success"
+}
+```
+
+### Log Search
+
+Search logs in the Workbench or via API:
+
+```python
+from xpander_sdk import Logs
+
+logs = Logs()
+results = logs.search(
+    agent_id="agent-456",
+    level="ERROR",
+    start_time="2024-01-15T00:00:00Z",
+    end_time="2024-01-15T23:59:59Z"
+)
+
+for log in results:
+    print(f"{log.timestamp} - {log.message}")
+```
+
+## Alerting
+
+Configure alerts for critical conditions:
+
+```yaml
+alerts:
+  - name: "High Error Rate"
+    condition: error_rate > 5%
+    window: 5m
+    notify: slack://alerts-channel
+
+  - name: "Latency Spike"
+    condition: p95_latency > 10s
+    window: 1m
+    notify: email://oncall@company.com
+
+  - name: "Tool Failures"
+    condition: tool_failure_rate > 10%
+    window: 5m
+    notify: pagerduty://service-key
+```
+
+## Integration with External Tools
+
+Export telemetry to your existing observability stack:
+
+<CardGroup cols={3}>
+  <Card title="Datadog" icon="chart-area">
+    APM and log aggregation
+  </Card>
+  <Card title="Grafana" icon="chart-line">
+    Custom dashboards
+  </Card>
+  <Card title="OpenTelemetry" icon="signal">
+    Vendor-neutral export
+  </Card>
+</CardGroup>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Tasks API" icon="list-check" href="/api-reference/tasks">
+    Task management and monitoring
+  </Card>
+  <Card title="Events API" icon="bolt" href="/api-reference/events">
+    Real-time event streaming
+  </Card>
+</CardGroup>

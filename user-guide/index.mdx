@@ -1,112 +1,246 @@
 ---
-title: "Introduction"
-description: "xpander.ai is a full-stack, self-hosted agent infrastructure platform that gives you a one-stop shop for all your agent needs, including: MCP/function call connectors and catalog, agent runtime management, prompt management, and stateful PostgreSQL-backed storage"
-icon: "sparkles"
+title: 'xpander.ai'
+description: '**xpander.ai is a full-stack, multi-framework, multi-cloud, self-hosted agent platform for building, running, and deploying autonomous agents**'
+icon: 'sparkles'
 ---
 
-## Two Ways to Build AI Agents
+Building and running agents in production shouldn't be hard. xpander.ai provides the right tools across the agent lifecycle, from configuring models, frameworks, tools, and behavior, through testing and optimization, to deployment, management, and scaling in production.
 
-xpander.ai supports two distinct approaches depending on your use case complexity and requirements.
+This guide walks you through getting your first agent running, then explains how the platform works so you can customize and scale.
 
-<CardGroup cols={2}>
-  <Card title="Autonomous Agents with a Specific Role" icon="robot" href="#1-autonomous-agents-with-a-specific-role-low-code--no-code">
-    Production-ready agents via Visual Workbench - no code required
+## Your first agent
 
-    **Best for:** Chatbots, support agents, DevOps assistants, task automation
-  </Card>
-  <Card title="Complex Multi-Framework Applications" icon="cubes" href="#2-complex-multi-framework-applications-code--containers">
-    Full agentic product development with custom logic
+The fastest path to a working agent takes about two minutes.
 
-    **Best for:** RAG-powered SaaS, multi-modal pipelines, enterprise platforms
-  </Card>
+- Go to the [xpander workbench](https://app.xpander.ai). Your account includes a Starter Kit agent that's ready to use out of the box.
+- Type something in the chat interface. The agent will respond using its configured tools and memory.
+- Expand the "Thoughts" section to see the reasoning and tool calls the agent used.
+
+You now have a working agent. The rest of this guide explains how to customize it.
+
+## How xpander works
+
+Here's the mental model that helps everything else make sense.
+
+### Agents run on frameworks
+
+When you create an agent, you choose which framework powers it: [Agno](https://github.com/agno-agi/agno), [Google ADK](https://github.com/google/adk-python), [OpenAI Agents](https://github.com/openai/openai-agents-python), [LangChain](https://github.com/langchain-ai/langchain), or [Amazon Strands](https://github.com/strands-agents/sdk-python). Each has different strengths, and the UI adapts to show relevant options for your choice.
+
+### The workbench is where you build
+
+The workbench is your central hub for configuring agents. Here you set up the system prompt, connect tools, configure memory, and choose your model. The built-in chat lets you test changes immediately.
+
+<Frame caption="The xpander workbench with the Starter Kit agent">
+  ![Workbench example](/static/images/screenshots/Workbench-example.png)
+</Frame>
+
+### Memory works automatically
+
+Agents can store two types of memories: user-level (persisted across sessions for each user) and agent-level (shared across all users). You can simply ask the agent to remember something, and it handles storage and retrieval behind the scenes.
+
+<Frame caption="Agent and user memories in the Memory Tab">
+  ![Memory management](/static/images/screenshots/Memory.png)
+</Frame>
+
+<Tip>
+  Agent memories evolve naturally through interactions. Over time, your agent
+  learns and adapts based on what it remembers.
+</Tip>
+
+### UI or code
+
+You can build your entire agent in the workbench without writing code. When you need custom logic, use the CLI to download your agent's code, modify it locally, and redeploy. Either way, xpander handles infrastructure and scaling.
+
+## Invoke your agent
+
+Once your agent is configured, you can invoke it through several channels.
+
+### Chat UI
+
+The simplest option. Your agents are available at [chat.xpander.ai](https://chat.xpander.ai) for direct conversation.
+
+<Frame caption="The xpander chat interface">
+  ![Chat interface](/static/images/screenshots/chat-xpander.png)
+</Frame>
+
+### API
+
+Call your agent programmatically from any application:
+
+```bash Framework-agnostic multimodal API
+curl --request POST \
+  --url https://api.xpander.ai/v1/agents/<agent-id>/invoke \
+  --header 'Content-Type: application/json' \
+  --header 'x-api-key: <your-api-key>' \
+  --data '{
+    "input": {
+      "text": "hi!"
+    }
+  }'
+```
+
+### Other interfaces
+
+Users can also interact with your agent through [Slack](/user-guide/scale/slack), [MCP](/user-guide/scale/mcp), [webhooks](/user-guide/scale/webhooks), or [scheduled tasks](/user-guide/scale/scheduled-tasks).
+
+All interfaces are multimodal—you can pass files, images, and text, and xpander handles the conversion for your agent.
+
+---
+
+## Customize with code
+
+When the workbench isn't enough, the CLI gives you full access to your agent's code:
+
+```bash xpander-cli
+npm install -g xpander-cli
+xpander login
+xpander agent new --framework agno
+```
+
+This generates an `xpander_handler.py` file tailored to your chosen framework:
+
+```python xpander_handler.py
+from agno.agent import Agent
+from xpander_sdk import Task, on_task, Backend
+
+@on_task
+async def my_agent_handler(task: Task) -> Task:
+  backend = Backend(configuration=task.configuration)
+  agno_args = await backend.aget_args(task=task)
+  agno_agent = Agent(**agno_args)
+
+  result = await agno_agent.arun(
+      input=task.to_message(),
+      files=task.get_files(),
+      images=task.get_images()
+    )
+
+  task.result = result.content
+  return task
+```
+
+Modify the logic however you need, redeploy, and xpander takes care of scaling, patching, and user interactions. See the [frameworks guide](/user-guide/build/frameworks) for more details.
+
+---
+
+## Go deeper
+
+### Build
+
+Everything you need to configure production-grade agents.
+
+<CardGroup cols={4}>
+  <Card title="AI Models" icon="microchip" href="/user-guide/build/ai-model" />
+  <Card
+    title="Memory & State"
+    icon="database"
+    href="/user-guide/build/agent-memory"
+  />
+  <Card
+    title="Agent Database"
+    icon="hard-drive"
+    href="/user-guide/build/agent-db"
+  />
+  <Card
+    title="Tools & Connectors"
+    icon="plug"
+    href="/user-guide/build/connectors"
+  />
+  <Card
+    title="Knowledge Base"
+    icon="books"
+    href="/user-guide/build/knowledge-base"
+  />
+  <Card
+    title="System Prompts"
+    icon="scroll"
+    href="/user-guide/build/system-prompt"
+  />
+  <Card
+    title="Tool Schema Editor"
+    icon="sliders"
+    href="/user-guide/build/tool-calling-editor"
+  />
+  <Card
+    title="Advanced Reasoning"
+    icon="brain-circuit"
+    href="/user-guide/build/reasoning-mode"
+  />
+  <Card title="Frameworks" icon="cubes" href="/user-guide/build/frameworks" />
+  <Card
+    title="Import Agent"
+    icon="file-import"
+    href="/user-guide/build/import-agent"
+  />
 </CardGroup>
 
----
+For common design patterns like multimodal agents, multi-agent workflows, and knowledge-base agents, see [Agentic Patterns](/user-guide/agentic-patterns).
 
-## 1. Autonomous Agents with a Specific Role (Low Code / No Code)
+### Test
 
-Production-ready autonomous agents via Visual Workbench - no code required. The platform manages the Agno runtime for you.
+Validate your agents before deploying them.
 
-<CardGroup cols={2}>
-  <Card title="Key Characteristics" icon="list-check">
-    - Clearly defined agent role and goals
-    - Non-deterministic behavior OK
-    - Single or multi-agent with tools
-    - Configuration driven
-  </Card>
-  <Card title="Example Use Cases" icon="lightbulb">
-    - Website chatbots and support
-    - DevOps and IT helpdesk assistants
-    - PR review, log summarization
-    - Sales qualification bots
-  </Card>
+<CardGroup cols={4}>
+  <Card
+    title="Chat Interface"
+    icon="comments"
+    href="/user-guide/test/chat-interface"
+  />
+  <Card
+    title="Local Debugging"
+    icon="bug"
+    href="/user-guide/test/local-debugging"
+  />
 </CardGroup>
 
-**Try it:** [xpander.ai website agent](https://xpander.ai)
+### Run
 
----
+Run agents on xpander's infrastructure or your own.
 
-## 2. Complex Multi-Framework Applications (Code + Containers)
-
-Same xpander infrastructure, but you write the code. Use your preferred framework with custom logic.
-
-<CardGroup cols={2}>
-  <Card title="Key Characteristics" icon="list-check">
-    - Custom code and logic
-    - Deterministic behavior when needed
-    - Any framework (LangChain, Agno, etc.)
-    - Container-based deployment
-  </Card>
-  <Card title="Example Use Cases" icon="lightbulb">
-    - RAG-powered SaaS products
-    - Trading and analytics platforms
-    - Healthcare and compliance apps
-    - Document processing systems
-  </Card>
+<CardGroup cols={4}>
+  <Card
+    title="Agent Containers"
+    icon="container-storage"
+    href="/user-guide/run/agent-containers"
+  />
+  <Card
+    title="Cloud Hosting"
+    icon="cloud"
+    href="/user-guide/run/self-hosted-deployment"
+  />
+  <Card
+    title="Self-Hosted K8s"
+    icon="dharmachakra"
+    href="/user-guide/run/k8s-self-deploy"
+  />
 </CardGroup>
 
-→ [Frameworks Guide](/user-guide/frameworks)
+### Manage
 
----
+Monitor and maintain agents in production.
 
-## What xpander provides (both approaches)
-
-<CardGroup cols={2}>
-  <Card title="Unified Task API" icon="list-check" href="/api-reference/v1/tasks">
-    Reliable scheduling, direct invoke with streams, task results
-  </Card>
-  <Card title="Tools & Connectors" icon="wrench" href="/user-guide/backend-configuration/connectors">
-    MCP connectors catalog + custom tools
-  </Card>
-  <Card title="Memory & State" icon="database" href="/user-guide/backend-configuration/agent-memory">
-    PostgreSQL-backed persistent storage
-  </Card>
-  <Card title="System Prompts" icon="message" href="/user-guide/backend-configuration/system-prompt">
-    Version-controlled prompt management
-  </Card>
-  <Card title="AI Models" icon="brain" href="/user-guide/backend-configuration/ai-model">
-    OpenAI, Anthropic, or bring your own
-  </Card>
-  <Card title="Deployment" icon="cloud" href="/user-guide/frameworks#deployment">
-    K8s cloud or self-hosted
-  </Card>
+<CardGroup cols={4}>
+  <Card
+    title="Observability"
+    icon="chart-line"
+    href="/user-guide/manage/observability"
+  />
+  <Card
+    title="Agent Versioning"
+    icon="code-branch"
+    href="/user-guide/manage/agent-versioning"
+  />
+  <Card title="Task Management" icon="list-check" href="/api-reference/tasks" />
 </CardGroup>
 
----
+### Scale
 
-## Get Started
+Connect agents to additional interfaces and users.
 
-<CardGroup cols={2}>
-  <Card title="Quick Start" icon="rocket" href="/user-guide/quick-start">
-    Build your first agent in minutes
-  </Card>
-  <Card title="Frameworks Guide" icon="cubes" href="/user-guide/frameworks">
-    Run your code on xpander infrastructure
-  </Card>
-  <Card title="Examples" icon="code" href="/Examples">
-    Real-world agent examples
-  </Card>
-  <Card title="API Reference" icon="terminal" href="/api-reference">
-    SDK and API documentation
-  </Card>
+<CardGroup cols={4}>
+  <Card title="Unified API" icon="code" href="/user-guide/scale/unified-api" />
+  <Card title="Slack" icon="slack" href="/user-guide/scale/slack" />
+  <Card title="Web UI" icon="browser" href="/user-guide/scale/web-ui" />
+  <Card title="MCP" icon="link" href="/user-guide/scale/mcp" />
+  <Card title="Webhooks" icon="webhook" href="/user-guide/scale/webhooks" />
 </CardGroup>

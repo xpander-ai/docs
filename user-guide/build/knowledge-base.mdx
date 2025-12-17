@@ -1,0 +1,274 @@
+---
+title: "Managed Knowledge Base"
+description: "Built-in RAG with vector storage, document management, and semantic search"
+icon: "books"
+---
+
+The Managed Knowledge Base provides built-in RAG (Retrieval-Augmented Generation) capabilities for your agents. Upload documents, automatically chunk and embed them, and let your agents query relevant context at runtime.
+
+## Overview
+
+<CardGroup cols={2}>
+  <Card title="Vector Storage" icon="database">
+    Automatic embedding and indexing with optimized vector search
+  </Card>
+  <Card title="Document Management" icon="file-lines">
+    Upload, update, and organize documents with metadata
+  </Card>
+  <Card title="Semantic Search" icon="magnifying-glass">
+    Natural language queries return relevant document chunks
+  </Card>
+  <Card title="Multi-format Support" icon="files">
+    PDF, Markdown, HTML, TXT, DOCX, and more
+  </Card>
+</CardGroup>
+
+## Creating a Knowledge Base
+
+### Via Workbench
+
+1. Navigate to **Agent Settings > Knowledge Base**
+2. Click **Create Knowledge Base**
+3. Configure chunking and embedding settings
+4. Upload documents
+
+### Via SDK
+
+```python
+from xpander_sdk import KnowledgeBase
+
+# Create a new knowledge base
+kb = KnowledgeBase.create(
+    name="Product Documentation",
+    description="Technical docs and guides",
+    embedding_model="text-embedding-3-small",
+    chunk_size=512,
+    chunk_overlap=50
+)
+
+print(f"Created knowledge base: {kb.id}")
+```
+
+## Adding Documents
+
+### Supported Formats
+
+| Format | Extension | Notes |
+|--------|-----------|-------|
+| PDF | .pdf | Text extraction with layout preservation |
+| Markdown | .md | Headers preserved as metadata |
+| Plain Text | .txt | Direct chunking |
+| Word | .docx | Full formatting support |
+| HTML | .html | Tags stripped, content preserved |
+| CSV | .csv | Row-based chunking |
+
+### Upload Documents
+
+```python
+from xpander_sdk import KnowledgeBase
+
+kb = KnowledgeBase.load("kb-123")
+
+# Upload single document
+doc = kb.add_document(
+    file_path="/path/to/document.pdf",
+    metadata={
+        "category": "technical",
+        "version": "2.0",
+        "author": "engineering"
+    }
+)
+
+# Upload from URL
+doc = kb.add_document(
+    url="https://example.com/docs/guide.pdf",
+    metadata={"source": "external"}
+)
+
+# Upload multiple documents
+docs = kb.add_documents([
+    {"file_path": "/path/to/doc1.pdf"},
+    {"file_path": "/path/to/doc2.md"},
+    {"url": "https://example.com/doc3.html"}
+])
+```
+
+## Chunking Strategies
+
+Configure how documents are split into searchable chunks:
+
+### Fixed Size
+
+```python
+kb = KnowledgeBase.create(
+    name="My KB",
+    chunk_strategy="fixed",
+    chunk_size=512,        # tokens per chunk
+    chunk_overlap=50       # overlapping tokens
+)
+```
+
+### Semantic
+
+```python
+kb = KnowledgeBase.create(
+    name="My KB",
+    chunk_strategy="semantic",
+    max_chunk_size=1024,   # maximum tokens
+    min_chunk_size=100     # minimum tokens
+)
+```
+
+### By Headers (Markdown/HTML)
+
+```python
+kb = KnowledgeBase.create(
+    name="My KB",
+    chunk_strategy="headers",
+    header_levels=[1, 2, 3]  # Split on h1, h2, h3
+)
+```
+
+## Querying the Knowledge Base
+
+### Semantic Search
+
+```python
+# Search for relevant documents
+results = kb.search(
+    query="How do I configure authentication?",
+    top_k=5,
+    threshold=0.7
+)
+
+for result in results:
+    print(f"Score: {result.score}")
+    print(f"Content: {result.content[:200]}...")
+    print(f"Source: {result.metadata['source']}")
+```
+
+### Filtered Search
+
+```python
+# Search with metadata filters
+results = kb.search(
+    query="deployment configuration",
+    top_k=5,
+    filters={
+        "category": "technical",
+        "version": {"$gte": "2.0"}
+    }
+)
+```
+
+## Agent Integration
+
+Connect a knowledge base to your agent for automatic RAG:
+
+### Via Workbench
+
+1. Open agent settings
+2. Navigate to **Knowledge Base**
+3. Select the knowledge base to attach
+4. Configure retrieval settings
+
+### Via SDK
+
+```python
+from xpander_sdk import Backend, Agents
+
+# Attach knowledge base to agent
+agents = Agents()
+agents.update(
+    agent_id="agent-123",
+    knowledge_base_id="kb-456",
+    rag_config={
+        "top_k": 5,
+        "threshold": 0.7,
+        "include_metadata": True
+    }
+)
+
+# Agent automatically retrieves context
+backend = Backend()
+# RAG happens automatically during agent invocation
+```
+
+### Custom RAG in Code
+
+```python
+from xpander_sdk import Backend, KnowledgeBase
+from agno.agent import Agent
+
+backend = Backend()
+kb = KnowledgeBase.load("kb-123")
+
+# Manual RAG flow
+user_query = "How do I deploy to Kubernetes?"
+context = kb.search(user_query, top_k=3)
+
+# Build context string
+context_str = "\n\n".join([
+    f"[Source: {r.metadata['source']}]\n{r.content}"
+    for r in context
+])
+
+# Create agent with context
+agent = Agent(**backend.get_args())
+response = agent.run(
+    f"Context:\n{context_str}\n\nQuestion: {user_query}"
+)
+```
+
+## Document Management
+
+### List Documents
+
+```python
+docs = kb.list_documents(
+    limit=100,
+    offset=0,
+    filters={"category": "technical"}
+)
+
+for doc in docs:
+    print(f"{doc.id}: {doc.name} ({doc.chunk_count} chunks)")
+```
+
+### Update Document
+
+```python
+# Re-process document with new settings
+kb.update_document(
+    document_id="doc-123",
+    metadata={"version": "3.0"},
+    reprocess=True  # Re-chunk and re-embed
+)
+```
+
+### Delete Document
+
+```python
+kb.delete_document("doc-123")
+```
+
+## Embedding Models
+
+Choose from supported embedding models:
+
+| Model | Dimensions | Best For |
+|-------|------------|----------|
+| text-embedding-3-small | 1536 | General purpose, cost-effective |
+| text-embedding-3-large | 3072 | Higher accuracy, technical content |
+| text-embedding-ada-002 | 1536 | Legacy compatibility |
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Knowledge Base API" icon="code" href="/api-reference/knowledge">
+    Full API reference
+  </Card>
+  <Card title="Tools & Connectors" icon="plug" href="/user-guide/build/connectors">
+    Agentic RAG for tools
+  </Card>
+</CardGroup>

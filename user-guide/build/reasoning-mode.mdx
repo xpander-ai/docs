@@ -1,0 +1,253 @@
+---
+title: "Advanced Reasoning Mode"
+description: "Extended thinking and chain-of-thought reasoning for complex problem solving"
+icon: "brain-circuit"
+---
+
+Advanced Reasoning Mode enables extended thinking capabilities for your agents, allowing them to break down complex problems, consider multiple approaches, and arrive at well-reasoned solutions.
+
+## Overview
+
+<CardGroup cols={2}>
+  <Card title="Extended Thinking" icon="lightbulb">
+    Agents spend more time reasoning before responding
+  </Card>
+  <Card title="Chain-of-Thought" icon="link">
+    Step-by-step reasoning visible in activity logs
+  </Card>
+  <Card title="Self-Reflection" icon="rotate">
+    Agents can reconsider and refine their approach
+  </Card>
+  <Card title="Multi-step Planning" icon="diagram-project">
+    Break complex tasks into manageable steps
+  </Card>
+</CardGroup>
+
+## When to Use
+
+Advanced reasoning is beneficial for:
+
+- **Complex Analysis** - Financial modeling, code review, data interpretation
+- **Multi-step Tasks** - Tasks requiring planning and execution
+- **Ambiguous Requests** - Queries needing clarification or interpretation
+- **Critical Decisions** - Actions with significant consequences
+
+## Configuration
+
+### Via Workbench
+
+1. Open agent settings
+2. Navigate to **AI Model > Advanced**
+3. Enable **Advanced Reasoning Mode**
+4. Configure thinking budget
+
+### Via SDK
+
+```python
+from xpander_sdk import Backend
+
+backend = Backend(
+    reasoning_mode="extended",
+    thinking_budget=10000  # max thinking tokens
+)
+```
+
+## Reasoning Modes
+
+### Standard Mode
+
+Default behavior - efficient responses for straightforward queries:
+
+```python
+backend = Backend(reasoning_mode="standard")
+```
+
+### Extended Mode
+
+More thorough reasoning with visible thought process:
+
+```python
+backend = Backend(
+    reasoning_mode="extended",
+    thinking_budget=5000
+)
+```
+
+### Deep Mode
+
+Maximum reasoning depth for complex problems:
+
+```python
+backend = Backend(
+    reasoning_mode="deep",
+    thinking_budget=20000,
+    allow_reflection=True
+)
+```
+
+## Thinking Budget
+
+Control how much "thinking" the agent can do:
+
+| Budget | Use Case | Typical Latency |
+|--------|----------|-----------------|
+| 1,000 tokens | Quick clarification | +1-2s |
+| 5,000 tokens | Standard reasoning | +3-5s |
+| 10,000 tokens | Complex analysis | +5-10s |
+| 20,000+ tokens | Deep research | +10-20s |
+
+```python
+backend = Backend(
+    reasoning_mode="extended",
+    thinking_budget=10000,
+    thinking_budget_strict=False  # Allow exceeding if needed
+)
+```
+
+## Viewing Reasoning
+
+### Activity Log
+
+Reasoning steps appear in the activity log:
+
+```python
+from xpander_sdk import Task
+from xpander_sdk.models.activity import AgentActivityThreadReasoning
+
+task = Task.load("task-123")
+activity = task.get_activity_log()
+
+for item in activity.messages:
+    if isinstance(item, AgentActivityThreadReasoning):
+        print(f"[THINKING] {item.thought}")
+```
+
+### Example Output
+
+```
+[THINKING] Let me break down this code review request...
+
+[THINKING] First, I'll identify the main components:
+1. Authentication middleware
+2. Database connection handler
+3. API route definitions
+
+[THINKING] Potential issues I'm seeing:
+- The auth middleware doesn't handle token expiration
+- Database connections aren't being pooled
+- No rate limiting on public endpoints
+
+[THINKING] I should prioritize the security issues first,
+then address performance concerns...
+
+[RESPONSE] Here's my code review with findings organized
+by severity...
+```
+
+## Streaming Reasoning
+
+Stream thinking in real-time:
+
+```python
+from xpander_sdk import Backend
+from agno.agent import Agent
+
+backend = Backend(reasoning_mode="extended")
+agent = Agent(**backend.get_args())
+
+# Stream includes thinking tokens
+for chunk in agent.run_stream("Analyze this architecture"):
+    if chunk.type == "thinking":
+        print(f"[Thinking] {chunk.content}", end="")
+    elif chunk.type == "response":
+        print(chunk.content, end="")
+```
+
+## Self-Reflection
+
+Enable agents to reconsider their approach:
+
+```python
+backend = Backend(
+    reasoning_mode="extended",
+    allow_reflection=True,
+    max_reflections=3  # How many times to reconsider
+)
+```
+
+### Reflection Flow
+
+```
+Initial Response → Self-Critique → Refinement → Final Response
+```
+
+```python
+# Activity log shows reflection
+[THINKING] Let me draft an initial response...
+[RESPONSE] Here's the deployment guide...
+[REFLECTION] Wait, I should verify the Kubernetes version requirement
+[THINKING] Checking the docs... version 1.25+ is required
+[RESPONSE] Updated deployment guide with version requirements...
+```
+
+## Best Practices
+
+### When to Enable
+
+<CardGroup cols={2}>
+  <Card title="Enable For" icon="check">
+    - Code review and analysis
+    - Complex debugging
+    - Architecture decisions
+    - Security assessments
+  </Card>
+  <Card title="Skip For" icon="xmark">
+    - Simple Q&A
+    - Status checks
+    - CRUD operations
+    - Real-time chat
+  </Card>
+</CardGroup>
+
+### Optimizing Performance
+
+```python
+# Dynamic reasoning based on query complexity
+def get_reasoning_config(query: str) -> dict:
+    # Simple queries - standard mode
+    if len(query) < 50 and "?" not in query:
+        return {"reasoning_mode": "standard"}
+
+    # Complex queries - extended mode
+    keywords = ["analyze", "review", "explain", "debug", "plan"]
+    if any(kw in query.lower() for kw in keywords):
+        return {
+            "reasoning_mode": "extended",
+            "thinking_budget": 10000
+        }
+
+    return {"reasoning_mode": "standard"}
+```
+
+## Model Support
+
+Advanced reasoning works best with:
+
+| Model | Reasoning Support |
+|-------|-------------------|
+| Claude 3.5 Sonnet | Full support |
+| Claude 3 Opus | Full support |
+| GPT-4 Turbo | Full support |
+| GPT-4o | Full support |
+| GPT-3.5 | Limited |
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="AI Models" icon="microchip" href="/user-guide/build/ai-model">
+    Model configuration
+  </Card>
+  <Card title="Observability" icon="chart-line" href="/user-guide/manage/observability">
+    View reasoning in activity logs
+  </Card>
+</CardGroup>

@@ -1,0 +1,106 @@
+---
+title: "Self-Deploy to K8s Cluster"
+description: "Deploy xpander.ai to your own Kubernetes infrastructure in minutes using Helm charts for full control and enterprise security."
+icon: "dharmachakra"
+mode: "wide"
+---
+
+<Info>
+**Time to complete:** 5 minutes  
+**What you'll get:** xpander.ai running on your own Kubernetes cluster with full data control
+</Info>
+
+Deploy the xpander.ai engine to your Kubernetes infrastructure. Keep all data within your network while leveraging the full power of the platform.
+
+## Quick K8s Deployment
+
+<Steps>
+  <Step title="Create Environment" titleIcon="cloud">
+    Create a self-hosted environment in the xpander.ai Console:
+    
+    1. Go to [app.xpander.ai/environments](https://app.xpander.ai/environments)
+    2. Click **"Add Environment"**
+    3. Enter your server FQDN (e.g., `xpander.my-company.com`)
+
+    <Tip>The platform provides your complete Helm installation commands!</Tip>
+  </Step>
+  
+  <Step title="Install with Helm" titleIcon="download">
+    Run the provided Helm command from the UI. This is just an example. Make sure you provide your OpenAI/Anthropic keys.
+    
+    ```bash
+    # Add repository and install (example - use your generated commands)
+    helm repo add xpander https://charts.xpander.ai
+    helm upgrade --install xpander xpander/xpander \
+      --namespace xpander --create-namespace \
+      --set ingress.enabled=true \
+      --set domain=xpander.my-company.com \
+      --set global.organizationId=your-org-id \
+      --set global.environmentId=your-env-id \
+      --set secrets.static.deploymentManagerApiKey=your-key
+    ```
+    
+  </Step>
+    
+  <Step title="Verify" titleIcon="check">
+    Check deployment:
+    
+    ```bash
+    kubectl -n xpander get pods
+    curl http://agent-controller.xpander.my-company.com/health
+    ```
+    
+    All pods should show `Running` status.
+  </Step>
+</Steps>
+
+## What You Deployed
+
+<CardGroup cols={2}>
+  <Card title="xpander self-deployed engine" icon="server">
+    Agent controller, AI gateway, MCP server, and worker nodes
+  </Card>
+  <Card title="Your Data Stays Private" icon="shield">
+    All conversations and business logic remain in your cluster
+  </Card>
+  <Card title="Outbound Only" icon="arrow-right">
+    No inbound connections - only connects out to the xpander.ai cloud
+  </Card>
+  <Card title="Ready to Use" icon="rocket">
+    Easily deploy all your existing or new agents and MCP servers to your self-hosted environment
+  </Card>
+</CardGroup>
+
+## Prerequisites
+
+<AccordionGroup>
+  <Accordion title="Required before you start">
+    - **Kubernetes 1.20+** with kubectl access
+    - **Helm 3.12+** installed
+    - **Ingress Controller** (NGINX recommended)
+    - **Storage Class** for persistent volumes
+    - **Outbound HTTPS** access to `166.117.85.46` and `15.197.85.80`
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+Your self-hosted xpander.ai is ready! Now build:
+
+- **[Visual Agent Builder to Code](/Examples/5-minute-wins/visual-agent-to-code)** - Create agents on your infrastructure
+- **[OpenAPI Spec to MCP Tool](/Examples/5-minute-wins/openapi-to-mcp)** - Deploy MCP servers to your cluster
+- **[Connect to Slack](/Examples/5-minute-wins/slack-agent-setup)** - Team integrations
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Pods not starting">
+    Check storage and permissions: `kubectl -n xpander describe pod <pod-name>`
+  </Accordion>
+  <Accordion title="Can't access endpoints">
+    Verify ingress and DNS: `kubectl -n xpander get ingress`
+  </Accordion>
+  <Accordion title="Need help">
+    Full deployment guide: [Self-Hosted Deployment](/user-guide/run/self-hosted-deployment)
+  </Accordion>
+</AccordionGroup>

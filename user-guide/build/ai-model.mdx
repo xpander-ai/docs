@@ -1,0 +1,130 @@
+---
+title: 'AI Model'
+description: 'Choose your LLM provider and manage API keys'
+icon: 'brain'
+mode: 'wide'
+---
+
+xpander provides flexible AI model configuration, allowing you to use xpander's managed models or bring your own LLM keys and AI Gateway.
+
+<CardGroup cols={2}>
+  <Card title="Managed Models" icon="stars">
+    Use xpander's pre-configured models with automatic token management
+  </Card>
+  <Card title="Custom Configuration" icon="key">
+    Connect your own LLM provider or AI Gateway with full control
+  </Card>
+</CardGroup>
+
+## Using the Workbench
+
+Configure your AI model from the Workbench **General** → **LLM Settings** panel.
+
+<Frame>
+  ![LLM Settings Overview](/static/images/screenshots/2025-12-16-22-46-20.png)
+</Frame>
+
+### Bring Your Own Keys
+
+You can bring your own LLM API keys and use your own AI Gateway through the configuration panel.
+
+<Frame>
+  ![Custom AI Gateway Configuration](/static/images/screenshots/2025-12-16-22-47-11.png)
+</Frame>
+
+**Configuration options:**
+- **Model Provider** - Select from supported providers (OpenAI, Anthropic, Azure, AWS Bedrock, etc.)
+- **API Key** - Your provider's API key for authentication
+- **API Base URL** - Custom AI Gateway endpoint (e.g., `ai.your-company.com`)
+- **Model Name** - Specific model version to use
+
+<Note>
+If your AI Gateway is behind a private subnet or firewall, make sure to run xpander in the same network with access to those models.
+</Note>
+
+## Using the SDK
+
+When running agents with the SDK, the `Backend` object automatically includes the LLM client configured in the Workbench, with API keys securely managed in the platform vault.
+
+<Info>
+**No model configuration needed!** The agent uses the Workbench LLM settings by default. Only override the model if you need to change it at runtime.
+</Info>
+
+<CodeGroup>
+
+```python Default (Uses Workbench Config)
+from xpander_sdk import Backend
+from agno.agent import Agent
+
+backend = Backend()
+agno_agent = Agent(**backend.get_args())
+
+# Agent uses the model configured in Workbench
+agno_agent.print_response(input='What is xpander?')
+```
+
+```python Override with OpenAI (Optional)
+from xpander_sdk import Backend
+from agno.agent import Agent
+from agno.models.openai import OpenAI
+
+backend = Backend()
+agno_agent = Agent(**backend.get_args())
+
+# Override to use a specific OpenAI model
+agno_agent.model = OpenAI('gpt-4o')
+
+agno_agent.print_response(input='Explain quantum computing')
+```
+
+```python Override with Anthropic (Optional)
+from xpander_sdk import Backend
+from agno.agent import Agent
+from agno.models.anthropic import Anthropic
+
+backend = Backend()
+agno_agent = Agent(**backend.get_args())
+
+# Override to use Claude
+agno_agent.model = Anthropic('claude-3-5-sonnet-20241022')
+
+agno_agent.print_response(input='Write a haiku about AI')
+```
+
+```python Override with Ollama (Optional)
+from xpander_sdk import Backend
+from agno.agent import Agent
+from agno.models.ollama import Ollama
+
+backend = Backend()
+agno_agent = Agent(**backend.get_args())
+
+# Override to use self-hosted model
+agno_agent.model = Ollama('llama3:8b')
+
+agno_agent.print_response(input="What's your role?")
+```
+
+</CodeGroup>
+
+### How Backend Configuration Works
+
+By default, the `Backend` object automatically fetches the LLM configuration from the Workbench:
+- **Model Provider** - The LLM provider selected in the Workbench
+- **API Keys** - Securely retrieved from the platform vault at runtime
+- **Base URL** - Custom AI Gateway endpoint (if configured)
+- **Model Name** - The specific model version to use
+
+All credentials are stored securely in the vault and automatically injected when your agent runs - you never need to hardcode API keys in your code.
+
+### When to Override the Model
+
+Override the model in your code only when you need to:
+- Test with different models without changing Workbench settings
+- Use different models for different agent instances
+- Switch models dynamically based on runtime conditions
+- Run local models (Ollama) for development
+
+<Warning>
+When you override `agno_agent.model` in your code, you're responsible for providing the API keys for that model. The platform vault credentials only apply to the default Workbench configuration.
+</Warning>

@@ -1,0 +1,208 @@
+---
+title: "Tool Calling Editor"
+description: "Visual editor for customizing tool schemas, parameters, and behavior"
+icon: "sliders"
+---
+
+The Tool Calling Editor provides a visual interface for customizing how your agent interacts with tools. Modify input schemas, filter outputs, and configure advanced features like Agentic RAG.
+
+## Overview
+
+<CardGroup cols={2}>
+  <Card title="Input Schema" icon="arrow-right-to-bracket">
+    Hard-code parameters, set defaults, or restrict what the agent controls
+  </Card>
+  <Card title="Output Schema" icon="arrow-right-from-bracket">
+    Filter response fields, remove PII, reduce token usage
+  </Card>
+  <Card title="Agentic RAG" icon="filter">
+    Semantic querying for large payloads before loading into memory
+  </Card>
+  <Card title="Custom Instructions" icon="message">
+    Add context to help the agent use tools effectively
+  </Card>
+</CardGroup>
+
+## Accessing the Editor
+
+1. Open your agent in the Workbench
+2. Navigate to the **Tools** section
+3. Click the **Settings** icon next to any tool
+
+## Input Schema Editor
+
+The Input Schema tab lets you control the parameters sent to tools.
+
+### Hard-coding Parameters
+
+Force specific values regardless of AI decisions:
+
+```json
+{
+  "repository": {
+    "value": "my-org/my-repo",
+    "locked": true
+  },
+  "state": {
+    "value": "open",
+    "locked": false,
+    "default": true
+  }
+}
+```
+
+- **locked: true** - AI cannot override this value
+- **default: true** - AI can override if needed
+
+### Use Cases
+
+<AccordionGroup>
+  <Accordion title="Restrict Repository Access">
+    Hard-code the repository parameter to prevent the agent from accessing other repos:
+
+    ```json
+    {
+      "owner": { "value": "my-org", "locked": true },
+      "repo": { "value": "allowed-repo", "locked": true }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Set Default Filters">
+    Provide sensible defaults the AI can override:
+
+    ```json
+    {
+      "state": { "value": "open", "default": true },
+      "sort": { "value": "updated", "default": true },
+      "direction": { "value": "desc", "default": true }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Hide Sensitive Parameters">
+    Hard-code API keys or tokens:
+
+    ```json
+    {
+      "api_key": { "value": "sk-...", "locked": true, "hidden": true }
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Output Schema Editor
+
+The Output Schema tab filters API responses before they reach the AI.
+
+### Selecting Fields
+
+Toggle fields on/off to include/exclude them:
+
+```yaml
+user:
+  - id: true
+  - name: true
+  - email: false  # Exclude PII
+  - phone: false  # Exclude PII
+  - department: true
+  - role: true
+```
+
+### Benefits
+
+- **Reduce token usage** - Only send relevant data
+- **Remove PII** - Exclude sensitive fields automatically
+- **Focus responses** - Help the AI concentrate on important data
+
+## Agentic RAG Configuration
+
+For tools that return large datasets, enable Agentic RAG to let the agent query semantically.
+
+### How It Works
+
+1. Backend API returns large payload (1M+ records)
+2. Agent provides semantic query at runtime
+3. xpander filters using vector search
+4. Only relevant items loaded into context
+
+### Configuration
+
+```yaml
+agentic_rag:
+  enabled: true
+  fields:
+    - name
+    - description
+    - content
+  max_results: 50
+  similarity_threshold: 0.7
+```
+
+### Example
+
+Without Agentic RAG:
+```
+Tool returns: 50,000 user records
+Tokens used: 500,000+
+Result: Context overflow
+```
+
+With Agentic RAG:
+```
+Agent query: "engineers in San Francisco"
+Tool returns: 23 matching records
+Tokens used: 2,300
+Result: Precise, relevant data
+```
+
+## Custom Instructions
+
+Add instructions to help the AI use tools effectively:
+
+```markdown
+## When to use this tool
+Use this tool when the user asks about GitHub issues or pull requests.
+
+## Important notes
+- Always filter by state="open" unless user asks for closed issues
+- Include labels in the response for categorization
+- Rate limit: 5000 requests/hour
+
+## Example queries
+- "Show me open bugs" → state=open, labels=bug
+- "Recent PRs" → sort=updated, direction=desc
+```
+
+## SDK Integration
+
+Access tool configurations programmatically:
+
+```python
+from xpander_sdk import Backend
+
+backend = Backend()
+
+# Get tool configuration
+tool = backend.get_tool("github-issues-manager")
+
+# Modify input schema
+tool.input_schema.set_locked("repository", "my-repo")
+
+# Modify output schema
+tool.output_schema.exclude_fields(["email", "phone"])
+
+# Enable Agentic RAG
+tool.enable_agentic_rag(fields=["title", "body"], max_results=50)
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Tools & Connectors" icon="plug" href="/user-guide/build/connectors">
+    Overview of tools and MCP connectors
+  </Card>
+  <Card title="Tools API Reference" icon="code" href="/api-reference/tools">
+    Programmatic tool management
+  </Card>
+</CardGroup>

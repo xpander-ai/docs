@@ -1,0 +1,338 @@
+---
+title: "Local Debugging"
+description: "Debug agents locally with full platform integration and hot reloading"
+icon: "bug"
+---
+
+Local Debugging lets you develop and test agents on your machine while connected to the xpander platform. Get instant feedback, set breakpoints, and iterate quickly without deploying.
+
+## Overview
+
+<CardGroup cols={2}>
+  <Card title="Hot Reloading" icon="rotate">
+    Code changes apply instantly without restart
+  </Card>
+  <Card title="Full Integration" icon="plug">
+    Access all platform tools and connectors locally
+  </Card>
+  <Card title="Breakpoints" icon="circle-stop">
+    Standard debugger support (pdb, IDE debuggers)
+  </Card>
+  <Card title="Live Logs" icon="terminal">
+    Real-time logging with configurable verbosity
+  </Card>
+</CardGroup>
+
+## Quick Start
+
+### 1. Install CLI
+
+```bash
+pip install xpander-sdk
+```
+
+### 2. Authenticate
+
+```bash
+xpander login
+```
+
+### 3. Start Debug Server
+
+```bash
+xpander dev
+```
+
+### 4. Connect Your Agent
+
+```python
+from xpander_sdk import Backend
+from agno.agent import Agent
+
+# Local mode automatically detected
+backend = Backend()
+agent = Agent(**backend.get_args())
+
+# Run locally with platform tools
+agent.print_response("Check my calendar for today")
+```
+
+## Development Modes
+
+### Interactive Mode
+
+Run single prompts and see results:
+
+```bash
+xpander dev --interactive
+```
+
+```
+xpander> What meetings do I have today?
+[Tool: google-calendar-list] Fetching events...
+[Tool: google-calendar-list] Found 3 events
+
+You have 3 meetings today:
+- 10:00 AM: Team standup
+- 2:00 PM: Product review
+- 4:00 PM: 1:1 with manager
+
+xpander>
+```
+
+### Watch Mode
+
+Auto-reload on file changes:
+
+```bash
+xpander dev --watch
+```
+
+```
+Watching for changes in ./src/**/*.py
+[12:34:56] Reloading agent...
+[12:34:57] Agent ready
+```
+
+### Server Mode
+
+Run a local API server:
+
+```bash
+xpander dev --server --port 8000
+```
+
+```bash
+# Test with curl
+curl -X POST http://localhost:8000/invoke \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Hello!"}'
+```
+
+## Debugging Techniques
+
+### Print Debugging
+
+```python
+from xpander_sdk import Backend
+import logging
+
+# Enable verbose logging
+logging.basicConfig(level=logging.DEBUG)
+
+backend = Backend(log_level=logging.DEBUG)
+```
+
+### Python Debugger (pdb)
+
+```python
+from xpander_sdk import Backend
+from agno.agent import Agent
+import pdb
+
+backend = Backend()
+agent = Agent(**backend.get_args())
+
+# Set breakpoint
+pdb.set_trace()
+
+response = agent.run("Debug this request")
+```
+
+### IDE Debugging
+
+#### VS Code
+
+```json
+// .vscode/launch.json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Agent",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/agent.py",
+      "env": {
+        "XPANDER_DEBUG": "true"
+      }
+    }
+  ]
+}
+```
+
+#### PyCharm
+
+1. Right-click `agent.py` → Debug
+2. Breakpoints work automatically
+3. Inspect variables in debugger panel
+
+## Local Tool Testing
+
+Test tool calls without hitting production:
+
+### Mock Responses
+
+```python
+from xpander_sdk import Backend
+from xpander_sdk.testing import MockTool
+
+backend = Backend()
+
+# Mock specific tool
+backend.mock_tool(
+    "github-issues-list",
+    response={
+        "issues": [
+            {"id": 1, "title": "Test issue", "state": "open"}
+        ]
+    }
+)
+
+# Agent uses mocked response
+agent = Agent(**backend.get_args())
+agent.run("List GitHub issues")
+```
+
+### Record & Replay
+
+```python
+from xpander_sdk import Backend
+
+# Record mode - save real responses
+backend = Backend(record_tools=True)
+agent = Agent(**backend.get_args())
+agent.run("List GitHub issues")  # Saves response
+
+# Replay mode - use recorded responses
+backend = Backend(replay_tools=True)
+agent = Agent(**backend.get_args())
+agent.run("List GitHub issues")  # Uses saved response
+```
+
+## Environment Configuration
+
+### Local Environment Variables
+
+```bash
+# .env.local
+XPANDER_API_KEY=your-api-key
+XPANDER_AGENT_ID=agent-123
+XPANDER_DEBUG=true
+XPANDER_LOG_LEVEL=DEBUG
+```
+
+```python
+from dotenv import load_dotenv
+load_dotenv('.env.local')
+
+from xpander_sdk import Backend
+backend = Backend()  # Reads from env
+```
+
+### Override Configuration
+
+```python
+backend = Backend(
+    # Override agent configuration locally
+    model="gpt-4",
+    temperature=0.5,
+    max_tokens=2000,
+
+    # Local-only settings
+    debug=True,
+    timeout=60
+)
+```
+
+## Testing
+
+### Unit Tests
+
+```python
+import pytest
+from xpander_sdk import Backend
+from xpander_sdk.testing import MockBackend
+
+def test_agent_response():
+    backend = MockBackend()
+    backend.mock_tool("weather-api", {"temp": 72, "condition": "sunny"})
+
+    agent = Agent(**backend.get_args())
+    response = agent.run("What's the weather?")
+
+    assert "72" in response.content
+    assert "sunny" in response.content.lower()
+```
+
+### Integration Tests
+
+```python
+import pytest
+from xpander_sdk import Backend
+
+@pytest.fixture
+def backend():
+    return Backend(
+        environment="testing",
+        record_tools=True
+    )
+
+def test_full_workflow(backend):
+    agent = Agent(**backend.get_args())
+
+    # Test complete workflow
+    response = agent.run("Create a GitHub issue for bug #123")
+
+    assert response.status == "success"
+    assert "issue created" in response.content.lower()
+```
+
+## Troubleshooting
+
+### Common Issues
+
+<AccordionGroup>
+  <Accordion title="Connection refused">
+    Ensure you're authenticated:
+    ```bash
+    xpander login
+    xpander whoami  # Verify connection
+    ```
+  </Accordion>
+
+  <Accordion title="Tools not available">
+    Check agent has tools configured:
+    ```bash
+    xpander agent info --tools
+    ```
+  </Accordion>
+
+  <Accordion title="Slow responses">
+    Enable local caching:
+    ```python
+    backend = Backend(cache_tools=True)
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Debug Logs
+
+```bash
+# Maximum verbosity
+XPANDER_LOG_LEVEL=TRACE xpander dev
+
+# Log to file
+xpander dev --log-file debug.log
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="CLI Reference" icon="terminal" href="/cli-reference">
+    Full CLI documentation
+  </Card>
+  <Card title="SDK Reference" icon="code" href="/api-reference/sdk">
+    Python SDK reference
+  </Card>
+</CardGroup>
