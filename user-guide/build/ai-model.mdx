@@ -253,7 +253,7 @@ When you override `agent.model` in your code, you're responsible for providing t
 
 ### How to use SDK model overrides in production
 
-When running the agent in production, you will use the [`on_task`](/api-reference/on-task) decorator to stream events to the agent. Learn more about the [`Backend`](https://docs.xpander.ai/api-reference/backend) class in the API reference
+When running the agent in production, you will use the `@on_task` decorator to stream events to the agent. Learn more about the [`Backend`](https://docs.xpander.ai/api-reference/backend) class in the API reference
 
 ```python xpander_handler.py
 from dotenv import load_dotenv
