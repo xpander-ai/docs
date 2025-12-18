@@ -1,10 +1,10 @@
 ---
-title: "Agent Serverless"
-description: "Deploy agents from Workbench without managing code or infrastructure"
+title: "Serverless Agents"
+description: "Deploy agents from the Workbench without managing code or infrastructure"
 icon: "bolt"
 ---
 
-Serverless is the default deployment mode when you build agents entirely in **Workbench** without customizing code. Your agent runs on agent-workers (xpander cloud or self-hosted) without you managing containers or code files.
+Serverless is the default deployment mode when you build agents entirely in the **Workbench** without customizing code. Your agent runs on agent-workers (xpander cloud or self-hosted) without you managing containers or code files.
 
 <Note>
 **When you customize agent code** (write your own `xpander_handler.py`), your agent automatically becomes containerized when you run `xpander deploy`. See [Agent Containers](/user-guide/run/agent-containers) for the code-first workflow.
@@ -17,7 +17,7 @@ Serverless is the default deployment mode when you build agents entirely in **Wo
 Build your agent visually in Workbench:
 
 1. **Configure in UI**: Set LLM model, system prompt, tools, knowledge bases
-2. **Click Deploy**: Agent runs serverlessly on agent-workers
+2. **Click Deploy**: Agent runs on serverless agent-workers
 3. **Invoke**: Use REST API, SDK, Slack, webhooks, or any integration
 
 **No code required.** The platform handles everything.
@@ -41,7 +41,7 @@ Build your agent visually in Workbench:
   <Step title="Deploy from Workbench">
     Click **Deploy** in Workbench.
 
-    Your agent automatically runs serverlessly on agent-workers.
+    Your agent automatically runs on serverless agent-workers.
 
     No Dockerfile, no CLI commands, no code files needed.
   </Step>
