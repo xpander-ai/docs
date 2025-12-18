@@ -2,21 +2,177 @@
 title: 'AI Model'
 description: 'Choose your LLM provider and manage API keys'
 icon: 'brain'
-mode: 'wide'
 ---
 
 xpander provides flexible AI model configuration, allowing you to use xpander's managed models or bring your own LLM keys and AI Gateway.
 
-<CardGroup cols={2}>
-  <Card title="Managed Models" icon="stars">
-    Use xpander's pre-configured models with automatic token management
+<CardGroup cols={3}>
+  <Card title="xpander Built-in Keys" icon="stars">
+    Use xpander's pre-configured models with pay-as-you-go billing
   </Card>
-  <Card title="Custom Configuration" icon="key">
-    Connect your own LLM provider or AI Gateway with full control
+  <Card title="Bring Your Own Keys" icon="key">
+    Connect your own API keys from OpenAI, Anthropic, AWS, Google, etc.
+  </Card>
+  <Card title="AI Gateway" icon="network-wired">
+    Route through Helicone, OpenRouter, or your custom AI Gateway
   </Card>
 </CardGroup>
 
-## Using the Workbench
+## Supported Models & Providers
+
+xpander integrates with a wide range of LLM providers and models. Below is a comprehensive matrix of supported providers and their available models.
+
+<AccordionGroup>
+
+<Accordion title="OpenAI">
+
+**Available with xpander AI built-in keys (pay-as-you-go) or bring your own OpenAI API key**
+
+- GPT-5.2, GPT-5.1, GPT-5, GPT-5 Mini, GPT-5 Nano
+- GPT-4.1, GPT-4.1-mini
+- GPT-4o, GPT-4o Mini, GPT-4 Turbo
+- GPT-3.5 Turbo
+
+</Accordion>
+
+<Accordion title="Anthropic">
+
+**Available with xpander AI built-in keys (pay-as-you-go) or bring your own Anthropic API key**
+
+- Claude Opus 4.5, Claude Opus 4
+- Claude Sonnet 4.5, Claude Sonnet 4, Claude Sonnet 3.7, Claude Sonnet 3.5
+- Claude Haiku 3.5
+
+</Accordion>
+
+<Accordion title="Amazon Bedrock">
+
+**Bring your own AWS credentials with Bedrock access**
+
+- Claude Opus 4, Claude Sonnet 4.5, Claude Sonnet 4, Claude Sonnet 3.7, Claude Sonnet 3.5
+- Claude Haiku 3.5
+- Amazon Titan Text Express
+
+</Accordion>
+
+<Accordion title="Google AI Studio">
+
+**Bring your own Google AI Studio API key**
+
+- Gemini 3 Pro (Preview)
+- Gemini 2.5 Pro
+- Gemini 2.0 Flash, Gemini 2.0 Flash Lite
+
+</Accordion>
+
+<Accordion title="NVIDIA NIM">
+
+**Bring your own NVIDIA API key**
+
+**Meta Llama Models:**
+- Llama 4 Scout 17B, Llama 4 Maverick 17B
+- Llama 3.3 70B, Llama 3.1 405B, Llama 3.1 70B, Llama 3.1 8B
+- Llama 3.2 3B, Llama 3.2 1B
+
+**Mistral Models:**
+- Mistral Small 3.2 24B, Mistral 7B Instruct v0.3
+
+**NVIDIA Nemotron:**
+- Nemotron Ultra 253B, Nemotron Nano 8B, Nemotron Nano 4B
+
+</Accordion>
+
+<Accordion title="Fireworks AI">
+
+**Bring your own Fireworks AI API key**
+
+- GLM-4.6
+- Kimi K2 Instruct
+- DeepSeek V3.1
+- OpenAI gpt-oss-120b, gpt-oss-20b
+- Qwen3 235B A22B (Thinking & Instruct modes)
+
+</Accordion>
+
+<Accordion title="Helicone (AI Gateway)">
+
+**Bring your own Helicone API key**
+
+Helicone provides access to models from multiple providers through a unified AI gateway with observability, caching, and rate limiting features.
+
+**Supported Providers:**
+- Anthropic Claude (Opus, Sonnet, Haiku - all versions)
+- OpenAI (GPT-5, GPT-4.1, GPT-4o, o1, o3, o4 series)
+- Google Gemini (2.5 Pro, Flash, Lite & 3 Pro Preview)
+- xAI Grok (3, 4, Code Fast)
+- Meta Llama (4, 3.3, 3.1)
+
+</Accordion>
+
+<Accordion title="OpenRouter (Multi-Provider Gateway)">
+
+**Bring your own OpenRouter API key**
+
+OpenRouter provides unified access to 200+ models with automatic fallback, load balancing, and unified pricing.
+
+**Frontier Models:**
+- Anthropic Claude (Opus 4.5, Sonnet 4.5, Haiku 4.5)
+- OpenAI (GPT-5.1, GPT-5.1 Chat/Codex, o3/o4 Deep Research)
+- Google Gemini (3 Pro Preview, 2.5 Flash Image)
+
+**Specialized Models:**
+- xAI Grok (4, 4.1 Fast)
+- DeepSeek (V3.1, V3.2)
+- Qwen3 (Max, Coder Plus, VL Thinking)
+- Amazon Nova Premier
+
+**Open Source:**
+- AllenAI OLMo 3, Prime Intellect INTELLECT-3, Liquid LFM2
+
+</Accordion>
+
+<Accordion title="Nebius Token Factory">
+
+**Bring your own Nebius API key**
+
+Nebius provides high-performance inference for open-source models.
+
+**Meta Llama:**
+- Llama 3.3 70B, Llama 3.1 8B, Llama Guard 3 8B
+
+**NVIDIA:**
+- Nemotron Ultra 253B, Nemotron Nano V2 12B
+
+**Qwen:**
+- Qwen3 235B (Instruct & Thinking), Qwen3 32B
+- Qwen2.5 Coder 7B, Qwen2.5 VL 72B, Qwen3 Embedding 8B
+
+**DeepSeek:**
+- DeepSeek R1, DeepSeek V3
+
+**Google Gemma:**
+- Gemma 3 27B, Gemma 2 9B, Gemma 2 2B
+
+**Others:**
+- Moonshot Kimi K2 (Instruct & Thinking)
+- GLM 4.5, GLM 4.5 Air
+- OpenAI gpt-oss-120b, gpt-oss-20b
+
+**Image Generation:**
+- Black Forest Labs FLUX (Dev & Schnell)
+
+</Accordion>
+
+</AccordionGroup>
+
+<Info>
+**Using Custom Models:** The models listed above are featured models that have been tested with xpander. To use a different model from your provider, select **"Custom"** in the model dropdown and enter the model name exactly as specified by your provider (e.g., `fireworks/custom-120b`, `anthropic/custom-model-id`). This is particularly useful for:
+- Private or fine-tuned models only you have access to
+- Newly released models not yet in the dropdown
+- Provider-specific model variants with custom endpoints
+</Info>
+
+## How to change AI Model and Provider
 
 Configure your AI model from the Workbench **General** → **LLM Settings** panel.
 
@@ -44,60 +200,26 @@ If your AI Gateway is behind a private subnet or firewall, make sure to run xpan
 
 ## Using the SDK
 
-When running agents with the SDK, the `Backend` object automatically includes the LLM client configured in the Workbench, with API keys securely managed in the platform vault.
-
-<Info>
-**No model configuration needed!** The agent uses the Workbench LLM settings by default. Only override the model if you need to change it at runtime.
-</Info>
-
 <CodeGroup>
 
 ```python Default (Uses Workbench Config)
-from xpander_sdk import Backend
+from xpander_sdk import Backend, Configuration
 from agno.agent import Agent
 
-backend = Backend()
-agno_agent = Agent(**backend.get_args())
+backend = Backend(configuration=Configuration(api_key="<your-xpander-key>"))
+agno_agent = Agent(**backend.get_args(agent_id="<agent-id>"))
 
 # Agent uses the model configured in Workbench
 agno_agent.print_response(input='What is xpander?')
 ```
 
-```python Override with OpenAI (Optional)
-from xpander_sdk import Backend
-from agno.agent import Agent
-from agno.models.openai import OpenAI
-
-backend = Backend()
-agno_agent = Agent(**backend.get_args())
-
-# Override to use a specific OpenAI model
-agno_agent.model = OpenAI('gpt-4o')
-
-agno_agent.print_response(input='Explain quantum computing')
-```
-
-```python Override with Anthropic (Optional)
-from xpander_sdk import Backend
-from agno.agent import Agent
-from agno.models.anthropic import Anthropic
-
-backend = Backend()
-agno_agent = Agent(**backend.get_args())
-
-# Override to use Claude
-agno_agent.model = Anthropic('claude-3-5-sonnet-20241022')
-
-agno_agent.print_response(input='Write a haiku about AI')
-```
-
 ```python Override with Ollama (Optional)
-from xpander_sdk import Backend
+from xpander_sdk import Backend, Configuration
 from agno.agent import Agent
 from agno.models.ollama import Ollama
 
-backend = Backend()
-agno_agent = Agent(**backend.get_args())
+backend = Backend(configuration=Configuration(api_key="<your-xpander-key>"))
+agno_agent = Agent(**backend.get_args(agent_id="<agent-id>"))
 
 # Override to use self-hosted model
 agno_agent.model = Ollama('llama3:8b')
@@ -126,5 +248,71 @@ Override the model in your code only when you need to:
 - Run local models (Ollama) for development
 
 <Warning>
-When you override `agno_agent.model` in your code, you're responsible for providing the API keys for that model. The platform vault credentials only apply to the default Workbench configuration.
+When you override `agent.model` in your code, you're responsible for providing the API keys for that model. The platform vault credentials only apply to the default Workbench configuration.
 </Warning>
+
+### How to use SDK model overrides in production
+
+When running the agent in production, you will use the [`on_task`](/api-reference/on-task) decorator to stream events to the agent. Learn more about the [`Backend`](https://docs.xpander.ai/api-reference/backend) class in the API reference
+
+```python xpander_handler.py
+from dotenv import load_dotenv
+load_dotenv()
+
+from xpander_sdk import Task, on_task, Backend, Tokens
+from agno.agent import Agent
+
+@on_task
+async def my_agent_handler(task: Task):
+    # Get xpander agent details
+    backend = Backend(configuration=task.configuration)
+
+    # Create Agno agent instance
+    agno_args = await backend.aget_args(task=task)
+    agno_agent = Agent(**agno_args)
+
+    # Run the agent
+    result = await agno_agent.arun(input=task.to_message(), files=task.get_files(), images=task.get_images())
+
+    task.result = result.content
+
+    # report execution metrics
+    task.tokens = Tokens(prompt_tokens=result.metrics.input_tokens, completion_tokens=result.metrics.output_tokens)
+    task.used_tools = [tool.tool_name for tool in result.tools]
+
+    return task
+```
+
+When you invoke the agent from the API, the `task` object will come with the AI Model configured inside it. You can override the parameters in two ways:
+
+**Option 1: Override the model directly after agent creation**
+
+```python
+agno_agent = Agent(**agno_args)
+agno_agent.model = Ollama('llama3:8b')
+```
+
+**Option 2: Use the override parameter in `aget_args()`**
+
+```python
+# Define custom overrides
+custom_overrides = {
+    'model': 'gpt-4',
+    'temperature': 0.7,
+    'max_tokens': 2000,
+    'show_tool_calls': False
+}
+
+# Resolve arguments with overrides
+agno_args = await backend.aget_args(
+    task=task,
+    override=custom_overrides
+)
+agno_agent = Agent(**agno_args)
+```
+
+When running your agent handler locally, you can trigger it through the Workbench UI, API, or SDK. The `task` object automatically includes the configured LLM client with credentials from your Workbench settings.
+
+<Frame>![LLM Configuration in Task Object](/static/images/screenshots/2025-12-17-19-45-32.png)</Frame>
+
+This enables you to dynamically adjust model parameters based on runtime conditions, task requirements, or user preferences without hardcoding credentials.

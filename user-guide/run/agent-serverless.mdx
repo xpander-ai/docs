@@ -1,0 +1,190 @@
+---
+title: "Agent Serverless"
+description: "Deploy agents from Workbench without managing code or infrastructure"
+icon: "bolt"
+---
+
+Serverless is the default deployment mode when you build agents entirely in **Workbench** without customizing code. Your agent runs on agent-workers (xpander cloud or self-hosted) without you managing containers or code files.
+
+<Note>
+**When you customize agent code** (write your own `xpander_handler.py`), your agent automatically becomes containerized when you run `xpander deploy`. See [Agent Containers](/user-guide/run/agent-containers) for the code-first workflow.
+</Note>
+
+---
+
+## How It Works
+
+Build your agent visually in Workbench:
+
+1. **Configure in UI**: Set LLM model, system prompt, tools, knowledge bases
+2. **Click Deploy**: Agent runs serverlessly on agent-workers
+3. **Invoke**: Use REST API, SDK, Slack, webhooks, or any integration
+
+**No code required.** The platform handles everything.
+
+**Agent-worker architecture:**
+
+- **xpander Cloud**: Managed agent-workers that auto-scale
+- **Self-Hosted**: Deploy agent-workers to your own Kubernetes cluster
+
+<Steps>
+  <Step title="Build Agent in Workbench">
+    Configure your agent using the visual interface:
+
+    - **LLM Settings**: Choose model (GPT-5, Claude Sonnet 4.5, etc.)
+    - **Instructions**: Define agent role, goals, and behavior
+    - **Connectors**: Add tools (Slack, GitHub, Google, etc.)
+    - **Knowledge Bases**: Upload documents for RAG
+    - **Memory**: Enable user memories and session storage
+  </Step>
+
+  <Step title="Deploy from Workbench">
+    Click **Deploy** in Workbench.
+
+    Your agent automatically runs serverlessly on agent-workers.
+
+    No Dockerfile, no CLI commands, no code files needed.
+  </Step>
+
+  <Step title="Invoke from Anywhere">
+    Call your agent via REST API, SDK, Slack, webhooks, or any integration:
+
+    ```python
+    from xpander_sdk import Backend, Configuration
+
+    backend = Backend(configuration=Configuration(api_key="<your-key>"))
+
+    result = backend.invoke_agent(
+        agent_id="<agent-id>",
+        input="Your message",
+        user_id="user@example.com",
+        session_id="session-123"
+    )
+    ```
+  </Step>
+</Steps>
+
+---
+
+## Benefits
+
+<CardGroup cols={2}>
+  <Card title="Zero Code" icon="wand-magic-sparkles">
+    Build agents visually without writing code
+  </Card>
+  <Card title="Zero Infrastructure" icon="server">
+    No containers, servers, or Kubernetes to manage
+  </Card>
+  <Card title="Instant Deployment" icon="rocket">
+    Deploy from Workbench in seconds
+  </Card>
+  <Card title="Auto-Scaling" icon="arrows-up-down">
+    Agent-workers automatically scale based on load
+  </Card>
+</CardGroup>
+
+---
+
+## Serverless vs Containers
+
+| Feature | Serverless (No Code) | Containers (Code-First) |
+|---------|---------------------|------------|
+| **How you build** | Workbench UI only | Write `xpander_handler.py` code |
+| **Deployment** | Click Deploy in Workbench | Run `xpander deploy` CLI |
+| **Infrastructure** | Agent-workers (managed or self-hosted) | Docker containers + registry |
+| **Complexity** | Zero code, zero configuration | Write code, manage Dockerfile |
+| **Flexibility** | Pre-configured runtime | Full control over environment |
+| **Use case** | Most agents | Custom dependencies, advanced logic |
+
+---
+
+## Where Agent-Workers Run
+
+### xpander Cloud (Default)
+
+Your agent runs on xpander's managed agent-workers:
+
+- Automatic scaling
+- Pay-as-you-go pricing
+- No infrastructure to manage
+- Data processed in xpander cloud
+
+### Self-Hosted
+
+Deploy agent-workers to your own Kubernetes:
+
+- Full data control
+- Runs in your infrastructure
+- Deploy once, use for all serverless agents
+- See [Self-Hosted Deployment](/user-guide/run/self-hosted-deployment)
+
+---
+
+## Configuration
+
+### Environment Variables
+
+Set environment variables in Workbench **Settings** → **Environment Variables**:
+
+```bash
+# Custom configuration
+DATABASE_URL=postgresql://...
+API_ENDPOINT=https://api.example.com
+```
+
+### Resource Limits
+
+Configure in Workbench **Settings** → **Resources**:
+
+- **CPU**: 0.25 - 4 vCPUs
+- **Memory**: 512MB - 8GB
+- **Timeout**: 30s - 15min
+
+---
+
+## Monitoring
+
+View execution metrics in **Monitor** tab:
+
+- Request count and latency
+- Memory and CPU usage
+- Error rates
+- Token usage
+- Thread history and logs
+
+See [Observability](/user-guide/manage/observability) for detailed monitoring.
+
+---
+
+## When to Use
+
+**Use Serverless (no code) when:**
+
+- ✅ Building agents with Workbench UI
+- ✅ Don't need custom code logic
+- ✅ Standard connectors and tools are sufficient
+- ✅ Want zero infrastructure management
+
+**Use Containers (code-first) when:**
+
+- ❌ Need to write custom agent logic
+- ❌ Require custom system dependencies
+- ❌ Need specific Python packages or base images
+- ❌ Want full control over agent behavior
+
+<Note>
+**Taking over agent code?** Once you customize the agent code with `xpander agent new`, your agent automatically becomes containerized when you run `xpander deploy`. See [Agent Containers](/user-guide/run/agent-containers).
+</Note>
+
+---
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Agent Containers" icon="box" href="/user-guide/run/agent-containers">
+    Package agents as Docker containers
+  </Card>
+  <Card title="Self-Hosted Deployment" icon="server" href="/user-guide/run/self-hosted-deployment">
+    Run agent-workers on your infrastructure
+  </Card>
+</CardGroup>

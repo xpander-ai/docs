@@ -28,35 +28,180 @@ Use the Instructions tab to configure your agent's system prompt with 4 componen
 
 Once configured in the UI, the system prompt is automatically built and applied to your agent.
 
-```python myagent.py
-from xpander_sdk import Backend
-from agno.agent import Agent 
+---
 
-backend = Backend()
-agno_agent = Agent(**backend.get_args())
-agno_agent.print_response(message="Can you help me install the printer?")
-```
+## Anatomy of the System Prompt
 
-The `agno_agent.run_response.messages[0].content` will contain the following system prompt:
+The system prompt is constructed differently depending on where your agent runs:
 
-```txt Generated System Prompt
-I am the Support AI Engineer, dedicated to providing precise, technical assistance and solutions within an organizational context.
+### Local Development
 
-<your_goal>
-Solve user problems
-Suggest new ideas
-</your_goal>
+When running locally, the system prompt includes only your configured components:
+
+1. **Agent Description** - Your configured role/personality
+2. **Instructions** - Your configured instructions list
+3. **Goals** - Your configured goals
+4. **Expected Output** - Your configured output format
+
+**Local example:**
+
+```txt Local System Prompt
+I am AI agent designed as a foundational starting point for new agents
+within the xpander.ai platform and encourage the user to add more tools
+and functionality to achieve more business goals.
 
 <instructions>
-Always escalate to human agent when the user is requesting
+    ['Utilize available tools to run code, search the web, and
+extract website data to provide comprehensive and accurate responses.',
+'Provide guidance on how to use xpander.ai using the connector to
+xpander.ai docs powered by Mintlify', 'Use emojis', 'Show images with
+markdown so they will be displayed']
+</instructions>
+
+<goals>
+    Understand the user request and provide the most accurate
+answer using your tools
+</goals>
+```
+
+### Production (with @on_task)
+
+When running in production using the `@on_task` decorator, the platform automatically injects additional context:
+
+5. **Additional Information** - Auto-injected metadata (current time, markdown formatting)
+6. **User Details** - User ID, name, email, and custom attributes
+7. **Timezone Info** - User timezone with conversion rules
+8. **User Memories** - Personal facts from previous interactions (if enabled)
+9. **Agent Memories** - Shared knowledge across all users (if configured)
+10. **Memory Management Tools** - Instructions for `update_user_memory` and `create_or_update_cultural_knowledge`
+
+**Production example:**
+
+```txt Real System Prompt
+I am AI agent designed as a foundational starting point for new agents
+within the xpander.ai platform and encourage the user to add more tools
+and functionality to achieve more business goals.
+
+<instructions>
+    <instructions>
+        ['Utilize available tools to run code, search the web, and
+extract website data to provide comprehensive and accurate responses.',
+'Provide guidance on how to use xpander.ai using the connector to
+xpander.ai docs powered by Mintlify', 'Use emojis', 'Show images with
+markdown so they will be displayed']
+    </instructions>
+    <goals>
+        Understand the user request and provide the most accurate
+answer using your tools
+    </goals>
 </instructions>
 
 <additional_information>
 - Use markdown to format your answers.
-- The current time is 2025-08-04 18:52:30.891007.
+- The current time is 2025-12-18 04:35:04.269148.
 </additional_information>
 
 <expected_output>
-Format suitable for chatbots like Slack and WhatsApp
+
 </expected_output>
+
+User details:
+{"id":"71f495e5-c67a-4b36-a4b4-e9cce3513c5b","first_name":"David","last_name":"Twizer","email":"david+production@xpander.ai"}
+
+<USER_TIME_ZONE>America/Los_Angeles</USER_TIME_ZONE>
+
+<memories_from_previous_interactions>
+- User likes emojis in responses.
+- User's favorite color is now gold; it used to be blue.
+</memories_from_previous_interactions>
+
+<updating_user_memories>
+- You have access to the `update_user_memory` tool that you can use to add new memories, update existing memories, delete memories, or clear all memories.
+</updating_user_memories>
+
+<contributing_to_culture>
+When you discover an insight, pattern, rule, or best practice that will help future agents, use the `create_or_update_cultural_knowledge` tool to add or update entries in the shared cultural knowledge.
+</contributing_to_culture>
 ```
+
+---
+
+## Using the SDK
+
+<CodeGroup>
+
+```python Local Development
+from xpander_sdk import Backend, Configuration
+from agno.agent import Agent
+
+backend = Backend(configuration=Configuration(api_key="<your-xpander-key>"))
+agno_agent = Agent(**backend.get_args(agent_id="<agent-id>"))
+
+# View configured instructions
+print(agno_agent.instructions)
+
+# Override instructions if needed
+agno_agent.instructions = [
+    "Always respond in JSON format",
+    "Use technical language",
+    "Include code examples"
+]
+
+agno_agent.print_response(input="Explain async/await")
+```
+
+```python Production (@on_task)
+from dotenv import load_dotenv
+load_dotenv()
+
+from xpander_sdk import Task, on_task, Backend, Tokens
+from agno.agent import Agent
+
+@on_task
+async def my_agent_handler(task: Task):
+    # Backend automatically injects:
+    # - User details (user_id, name, email)
+    # - Timezone info
+    # - User memories (if enabled)
+    # - Agent memories (if configured)
+
+    backend = Backend(configuration=task.configuration)
+    agno_args = await backend.aget_args(task=task)
+    agno_agent = Agent(**agno_args)
+
+    # Run agent with full production system prompt
+    result = await agno_agent.arun(
+        input=task.to_message(),
+        user_id=task.user_id,
+        session_id=task.session_id
+    )
+
+    task.result = result.content
+    task.tokens = Tokens(
+        prompt_tokens=result.metrics.input_tokens,
+        completion_tokens=result.metrics.output_tokens
+    )
+
+    return task
+```
+
+</CodeGroup>
+
+---
+
+## How to View System Prompt
+
+Enable debug mode to see the full system prompt in logs:
+
+<Tabs>
+  <Tab title="Local">
+    ```python
+    agent.debug_mode = True
+    ```
+  </Tab>
+  <Tab title="Kubernetes">
+    ```bash
+    kubectl logs -f <agent-worker-pod-name> | grep "system"
+    ```
+  </Tab>
+</Tabs>

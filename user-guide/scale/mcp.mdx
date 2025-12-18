@@ -1,222 +1,274 @@
 ---
-title: "Model Context Protocol (MCP) Integration"
-description: "Use your favorite MCP client with xpander.ai's Agentic Interfaces and AI Agents"
+title: "Model Context Protocol (MCP)"
+description: "Connect Claude Desktop, ChatGPT, and other MCP clients to xpander agents with OAuth authentication"
 icon: "bridge"
 ---
 
-The xpander.ai platform supports three flavors of MCP use:
+xpander provides an MCP server that exposes your agents to any MCP-compatible client (Claude Desktop, ChatGPT, etc.) with secure OAuth authentication.
 
-<CardGroup cols={3}>
-<Card title="MCP Composition" icon="puzzle-piece">
-Pick-and-choose tools from multiple connectors and connect your MCP clients to a fine-grained, controlled list of tools.
-</Card>
+---
 
-<Card title="MCP to AI Agents" icon="robot">
-You can trigger AI Agents running on the xpander.ai platform from your MCP clients.
-</Card>
+## How It Works
 
-<Card title="Specific Connectors" icon="plug">
-You can connect individual Connectors to MCP clients.
-</Card>
+xpander's MCP server provides tools to:
+
+1. **List Agents**: Browse all agents in your organization
+2. **Run Tasks**: Invoke agents and get results
+3. **Get Thread History**: Retrieve conversation history from agent sessions
+
+**Authentication**: OAuth flow redirects you to xpander platform to obtain API key automatically.
+
+---
+
+## MCP Endpoints
+
+xpander provides two MCP endpoint formats:
+
+<CardGroup cols={2}>
+  <Card title="Standard HTTP" icon="globe">
+    `api.xpander.ai/mcp`
+
+    Standard HTTP transport for MCP clients
+  </Card>
+  <Card title="Server-Sent Events" icon="satellite-dish">
+    `api.xpander.ai/mcp/sse`
+
+    SSE transport for streaming responses
+  </Card>
 </CardGroup>
 
-See below for walkthroughs of these three usage patterns.
+Both endpoints redirect to the xpander platform for OAuth authentication on first use.
 
-### Using the xpander.ai MCP Servers hosting solution with Claude Desktop
+---
 
-<Tabs>
-<Tab title="MCP Composition">
-In this option, you can select individual tools from multiple connectors, thus composing a list of tools in various systems that will be available to your MCP client.
+## Setup with Claude Desktop
+
 <Steps>
-  <Step title="Open the MCP Servers menu">
-    In the xpander.ai console (https://app.xpander.ai), go to the MCP Servers section
-    <Frame>
-    ![alt text](/static/images/screenshots/mcp-servers1.png)
-    </Frame>
-  </Step>
-  <Step title="Create a new MCP Server">
-    Click on "New MCP Server", and provide a name and description for your MCP Server
-    <Frame>
-    ![alt text](/static/images/screenshots/mcp-server-name.png)
-    </Frame>
-  </Step>
-  <Step title="Select tools">
-    In this step, you can select tools from one or more connectors, which will be composed in your MCP server, and available to your MCP clients. 
-    <Frame>
-    ![alt text](/static/images/screenshots/mcp-server-selection.png)
-    </Frame>
-  </Step>
-  <Step title="Add the MCP Server to Claude">
-    After selecting your tools, copy the MCP Server address from the page, and add it to your MCP Client. For example:
+  <Step title="Configure Claude Desktop">
+    Add xpander MCP server to your Claude Desktop configuration:
+
+    **File location:** `~/Library/Application Support/Claude/claude_desktop_config.json`
 
     ```json
     {
-      "globalShortcut": "Alt+Space",
       "mcpServers": {
-        "slack": {
+        "xpander": {
           "command": "npx",
           "args": [
-            "xpander-mcp-remote",
-            "https://mcp.xpander.ai/your-mcp-url/"
+            "-y",
+            "@modelcontextprotocol/server-fetch",
+            "https://api.xpander.ai/mcp"
           ]
         }
       }
     }
     ```
   </Step>
-  
-</Steps>
-</Tab>
 
+  <Step title="Restart Claude Desktop">
+    Close and reopen Claude Desktop to load the new configuration.
+  </Step>
 
-<Tab title="Single connector">
-In this option, you create an MCP server for an entire Connector and connect it to Claude Desktop. For example, Github, Jira, Asana.
-<Steps>
-  <Step title="Access Connector Settings">
-    Open https://app.xpander.ai
-    In the settings menu, click on "Connectors".
-    <Frame>
-    ![alt text](/static/images/screenshots/agentic-interfaces.png)
-    </Frame>
-  </Step>
-  <Step title="Select a specific Connector">
-    In the Connectors panel, select the specific application (e.g., Slack, HubSpot)
-    <Frame>
-    ![alt text](/static/images/screenshots/specific-interface.png)
-    </Frame>
-  </Step>
-  <Step title="Click on MCP Configuration">
-    Find and click on the "MCP Configuration" option.
-    <Frame>![alt text](/static/images/screenshots/mcp-configuration.png)</Frame>
-  </Step>
-  <Step title="Add the MCP Server to Claude">
-    Add a configuration snippet like the following, replacing the URL with your specific xpander MCP endpoint: (The file is located at '~/Library/Application Support/Claude/claude_desktop_config.json')
+  <Step title="Authenticate">
+    When Claude first tries to use xpander tools, you'll be redirected to the xpander platform to authenticate and obtain your API key.
 
-    ```json
-    {
-      "globalShortcut": "Alt+Space",
-      "mcpServers": {
-        "slack": {
-          "command": "npx",
-          "args": [
-            "xpander-mcp-remote",
-            "https://mcp.xpander.ai/your-mcp-url/"
-          ]
-        }
-      }
-    }
-    ```
+    The OAuth flow happens automatically - just log in when prompted.
+  </Step>
+
+  <Step title="Use xpander Agents">
+    After authentication, Claude can access all your xpander agents:
+
+    - "List all my xpander agents"
+    - "Run my customer-support agent with input: How do I reset my password?"
+    - "Get the conversation history for thread abc-123"
   </Step>
 </Steps>
 
-</Tab>
+---
 
-<Tab title="Agents as MCP Servers">
-In this option, you trigger AI Agents on the xpander.ai platform from your MCP Client.
-<Steps>
-  <Step title="Access Agent Settings">
-    Open https://app.xpander.ai and go to the `Task sources` tab, enable the MCP toggle
-      <Frame>
-    ![alt text](/static/images/screenshots/workbench-settings-mcp.png)
-    </Frame>
-  </Step>
-  <Step title="MCP Server url">
-    Copy the MCP configuration and add it in your MCP-compatible client (Claude Dekstop etc')
+## Available MCP Tools
 
-    <Frame>
-    ![alt text](/static/images/screenshots/agent-mcp-server.png)
-    </Frame>
-  </Step>
+### list_agents
 
-</Steps>
+Lists all agents in your organization.
 
-<Tip>
-  When using an agent as MCP, Claude can:
-  - Send tasks to the agent for execution
-  - Query the agent's status for long-running tasks
-  - Access all agent capabilities through a single MCP server
-  - Each team member gets their own MCP URL with their specific API key and permissions
-</Tip>
+**Parameters:**
+- None
 
-</Tab>
+**Returns:**
+- Array of agent objects with `id`, `name`, `description`, and metadata
 
+**Example in Claude:**
+> "Show me all my xpander agents"
 
-</Tabs>
+---
 
-# Other considerations
+### run_task
 
-<Warning>
-  The MCP URL contains your API key, so never share it publicly. Treat it as a sensitive credential.
-</Warning>
+Invokes an agent and waits for the result.
 
-You can add multiple MCP servers to your configuration file by adding them to the `mcpServers` object. Each server should have a unique key:
+**Parameters:**
+- `agent_id` (string, required): The ID of the agent to invoke
+- `input` (string, required): The message to send to the agent
+- `user_id` (string, optional): User identifier for session tracking
+- `session_id` (string, optional): Session identifier for conversation continuity
+
+**Returns:**
+- Task result with agent response, tokens used, and execution metadata
+
+**Example in Claude:**
+> "Run agent abc-123 with input: What's the weather in San Francisco?"
+
+---
+
+### get_thread_history
+
+Retrieves conversation history for a specific thread/session.
+
+**Parameters:**
+- `thread_id` (string, required): The thread/session ID to retrieve
+
+**Returns:**
+- Array of messages with user/agent exchanges, tool calls, and timestamps
+
+**Example in Claude:**
+> "Get the conversation history for thread sess-456"
+
+---
+
+## Using with ChatGPT
+
+ChatGPT also supports MCP. Add the xpander MCP server to your ChatGPT configuration:
 
 ```json
 {
-  "globalShortcut": "Alt+Space",
   "mcpServers": {
-    "linkedin": {
+    "xpander": {
+      "url": "https://api.xpander.ai/mcp",
+      "transport": "http"
+    }
+  }
+}
+```
+
+The OAuth flow works the same way - authenticate once, then ChatGPT can invoke your agents.
+
+---
+
+## Using SSE Transport
+
+For streaming responses, use the SSE endpoint:
+
+```json
+{
+  "mcpServers": {
+    "xpander-sse": {
       "command": "npx",
       "args": [
-        "xpander-mcp-remote",
-        "https://mcp.xpander.ai/your-linkedin-mcp-url/"
-      ]
-    },
-    "gmail": {
-      "command": "npx",
-      "args": [
-        "xpander-mcp-remote",
-        "https://mcp.xpander.ai/your-gmail-mcp-url/"
+        "-y",
+        "@modelcontextprotocol/server-fetch",
+        "https://api.xpander.ai/mcp/sse"
       ]
     }
   }
 }
 ```
 
-<Tip>
-  Instead of manually editing the configuration file, you can use the MCP installer by adding this to your configuration file at '~/Library/Application Support/Claude/claude_desktop_config.json':
-  ```json
-  "mcp-installer": {
-    "command": "npx",
-    "args": [
-      "@anaisbetts/mcp-installer"
-    ]
-  }
-  ```
-  Then simply ask Claude to install your MCP URL, and it will handle the installation automatically.
-</Tip>
+This provides real-time streaming for long-running agent tasks.
 
-### Working with Authenticated Connectors
+---
 
-If you've already configured authentication for connectors in xpander.ai (such as Gmail, LinkedIn, or other services), they will work automatically with the provided MCP URL without requiring additional authentication steps in Claude.
+## Authentication Flow
 
-For example, if you've already connected your Gmail account in xpander.ai:
+1. **First Request**: MCP client calls xpander endpoint
+2. **OAuth Redirect**: You're redirected to `app.xpander.ai` to authenticate
+3. **API Key Obtained**: xpander platform generates and returns your API key
+4. **Cached Locally**: MCP client caches the API key for future requests
+5. **Subsequent Requests**: API key is automatically included in headers
 
-1. Add the xpander MCP configuration to Claude as shown above
-2. You can immediately use Gmail capabilities in Claude through natural language
-3. No additional authentication steps are needed in Claude
+<Warning>
+Your API key is cached locally by the MCP client. Keep your machine secure and don't share your Claude/ChatGPT configuration files.
+</Warning>
 
+---
 
-### Testing Your MCP Integration
+## Example Workflows
 
-Once configured, you can test your integration by asking Claude to perform actions using the connected service:
+### Customer Support Agent
 
-1. For LinkedIn: "Can you search for AI Product Managers on LinkedIn?"
-2. For Gmail: "Could you check my recent unread emails?"
-3. For Weather: "What's the weather like in San Francisco today?"
+```
+User: "List my agents"
+Claude: [Shows agent list including "customer-support-bot"]
 
-Claude will seamlessly connect to the xpander MCP server and utilize its agentic interfaces to fulfill your requests. 
+User: "Run customer-support-bot with: How do I reset my password?"
+Claude: [Invokes agent, shows response: "To reset your password..."]
 
-### Demo (single connector MCP server)
+User: "Get the thread history for that conversation"
+Claude: [Shows full conversation with timestamps and tool calls]
+```
 
-<Frame>
-<video
-  muted
-  loop
-  playsInline
-  controls
-  allowFullScreen
-  className="w-full aspect-video"
-  src="https://assets.xpanderai.io/vidoes/release-notes/mcp-support.mp4"
-></video>
-</Frame>
+### Financial Analysis Agent
+
+```
+User: "Run financial-analyst agent with: Analyze AAPL stock performance"
+Claude: [Agent uses Alpha Vantage MCP to fetch data, performs analysis]
+
+User: "Show me the thread history"
+Claude: [Displays tool calls to Alpha Vantage, analysis steps, final report]
+```
+
+---
+
+## Troubleshooting
+
+### MCP Server Not Showing in Claude
+
+- Verify `claude_desktop_config.json` syntax is valid JSON
+- Check file location: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- Restart Claude Desktop completely
+- Check Claude logs: `~/Library/Logs/Claude/mcp.log`
+
+### Authentication Fails
+
+- Clear cached credentials and try again
+- Verify you're logged into `app.xpander.ai`
+- Check organization permissions (some agents may be restricted)
+
+### Agent Invocation Fails
+
+- Verify agent is deployed (check Workbench)
+- Ensure agent is not stopped or in error state
+- Check agent logs in Monitor tab
+
+---
+
+## Security
+
+**OAuth Authentication**: API keys are obtained through secure OAuth flow, not embedded in configuration files.
+
+**Scoped Access**: Each API key is scoped to your user account and organization.
+
+**Revocation**: Revoke access anytime from `app.xpander.ai` → Settings → API Keys
+
+<Warning>
+Never share your `claude_desktop_config.json` file after authentication - it contains your cached API key.
+</Warning>
+
+---
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Unified API" icon="code" href="/user-guide/scale/unified-api">
+    Direct REST API access to agents
+  </Card>
+  <Card title="Agent Containers" icon="box" href="/user-guide/run/agent-containers">
+    Custom MCP integrations in agent code
+  </Card>
+  <Card title="Observability" icon="chart-line" href="/user-guide/manage/observability">
+    Monitor MCP invocations in real-time
+  </Card>
+  <Card title="MCP API Reference" icon="book" href="/api-reference/mcp">
+    Complete MCP API documentation
+  </Card>
+</CardGroup>

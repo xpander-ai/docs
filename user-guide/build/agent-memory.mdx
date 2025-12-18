@@ -1,72 +1,162 @@
 ---
 title: "Agent Memory"
-description: "Configure session storage, user memories, and conversation summaries" 
+description: "Configure how your agent remembers conversations and learns about users"
 icon: "brain-circuit"
-mode: "wide"
 ---
 
-Configure your agent's memory settings in the Workbench to control how it stores and recalls information.
+Agent memory controls what your agent remembers across conversations. Configure these settings in the **Memory** tab of your agent's Workbench.
 
-<Frame>
-![Agent Memory Configuration](/static/images/screenshots/agent-memory-color.png)
-</Frame>
+<Frame>![Agent Memory Settings](/static/images/screenshots/2025-12-17-20-10-59.png)</Frame>
 
-## Memory Types
+## Three Types of Memory
 
-Each agent includes a PostgreSQL database for persistent storage. Configure which memory types your agent supports using the toggles in the Workbench UI:
+1. **Session Storage** - Conversation history within a thread (`session_id`). Multiple users can share the same thread.
+2. **User Memories** - Personal facts about each user (`user_id`) that persist across all conversations.
+3. **Agent Memories** - Global knowledge that applies to all users.
 
-<CardGroup cols={3}>
-  <Card title="Session Storage" icon="database">
-    Automatic conversation history and state persistence (always enabled)
-  </Card>
-  <Card title="User Memories" icon="user">
-    Long-term facts and preferences about users ("ChatGPT-style" memory)
-  </Card>
-  <Card title="Agent Memories" icon="robot">
-    Agent-specific memory storage for persistent agent state
-  </Card>
-  <Card title="Agentic Memory" icon="sparkles">
-    Advanced memory capabilities with contextual understanding
-  </Card>
-  <Card title="Agentic Culture" icon="users-gear">
-    Cultural context and team dynamics for multi-agent systems
-  </Card>
-  <Card title="Session Summaries" icon="message">
-    Automatically summarizes long conversations for future reference
-  </Card>
-</CardGroup>
+<Tip>
+**Recommended setup:** Session Storage (3-5 runs) + User Memories with agentic management enabled.
+</Tip>
 
-For advanced use cases, the storage is accessible programmatically via `agno_agent.get_db()`.
+---
 
-## Memory Features Explained
+## Session Storage
 
-### Session Storage
-Automatically enabled for all agents. Stores conversation history and maintains context across messages within a session.
+Controls how many conversation exchanges the agent sees.
 
-### User Memories
-Long-term memory about individual users that persists across sessions. Similar to ChatGPT's memory feature, the agent remembers facts, preferences, and context about each user.
+- **3 runs** = Last 3 back-and-forth exchanges (6 messages)
+- **10 runs** = Last 10 exchanges (20 messages)
 
-### Agent Memories
-Persistent storage specific to the agent itself. Useful for maintaining agent state, learned patterns, or configuration that should persist across all conversations.
+<Note>
+**Terminology:** "No. of history runs" (UI) = `num_history_responses` (code) = `max_runs` (override)
+</Note>
 
-### Agentic Memory
-Advanced memory capabilities that enable contextual understanding and intelligent recall. The agent can reason about what information is relevant and when to recall it.
+---
 
-### Agentic Culture
-Enables cultural context for multi-agent systems. Agents can share knowledge, maintain team dynamics, and coordinate based on shared understanding.
+## User Memories
 
-### Session Summaries
-Automatically generates summaries of long conversations to maintain context efficiently without using excessive tokens.
+Stores personal facts about each user across all conversations.
 
-## Using Memory in Your Code
+**Agentic managed:**
+- ✅ **Enabled** - Agent automatically creates/updates memories
+- ❌ **Disabled** - You manually create memories via API
 
-The memory configuration from the Workbench UI is automatically applied to your agent. Use the `user_id` parameter to access user-specific memories and conversation history:
+<Warning>
+**Privacy:** User memories store personal data. Never store passwords, API keys, SSNs, or credit cards. Memories persist until explicitly deleted.
+</Warning>
 
-```python
-from xpander_sdk import Backend
+---
+
+## Agent Memories
+
+Stores global knowledge that affects all users.
+
+**Agentic managed:**
+- ✅ **Enabled** - Agent learns patterns automatically
+- ❌ **Disabled (Recommended for Production)** - Only admins create memories
+
+<Warning>
+**Risk:** One user's interaction can change behavior for everyone. Not recommended for production, compliance-heavy, or multi-tenant systems without weekly review and rollback strategy.
+</Warning>
+
+---
+
+## Max Tool Calls from History
+
+Limits tool calls in context. Set to 0 (disabled) for most cases. Enable only when hitting token limits.
+
+---
+
+## Session Summaries
+
+Generates metadata for monitoring/observability dashboards. Does NOT affect context window size.
+
+---
+
+## Tool Calls Compression
+
+Compresses verbose tool outputs after N calls. Set threshold to 3-5 for tool-heavy agents.
+
+---
+
+## Usage
+
+Memory settings from Workbench are applied automatically.
+
+<CodeGroup>
+
+```python Basic
+from xpander_sdk import Backend, Configuration
 from agno.agent import Agent
 
-backend = Backend()
-agno_agent = Agent(**backend.get_args())  # Memory settings applied from UI
-agno_agent.print_response(message="What did we talk about yesterday?", user_id="user123")
+backend = Backend(configuration=Configuration(api_key="<your-key>"))
+agent = Agent(**backend.get_args(agent_id="<agent-id>"))
+
+agent.run(
+    "Your message",
+    user_id="user@example.com",     # User memories
+    session_id="thread-123"          # Session history (thread)
+)
 ```
+
+```python Production
+from xpander_sdk import Task, on_task, Backend
+from agno.agent import Agent
+
+@on_task
+async def my_agent_handler(task: Task):
+    backend = Backend(configuration=task.configuration)
+    agno_args = await backend.aget_args(task=task)
+    agent = Agent(**agno_args)
+
+    result = await agent.arun(
+        input=task.to_message(),
+        user_id=task.user_id,
+        session_id=task.session_id
+    )
+
+    task.result = result.content
+    return task
+```
+
+</CodeGroup>
+
+<Info>
+**Multi-user threads:** Multiple users can share the same `session_id` (e.g., support tickets). Each user keeps their own memories, but sees the same thread history.
+</Info>
+
+---
+
+## Debug Logs
+
+Enable debug mode to see memory behavior:
+
+<Tabs>
+  <Tab title="Local">
+    ```python
+    agent.debug_mode = True
+    ```
+  </Tab>
+  <Tab title="Kubernetes">
+    ```bash
+    kubectl logs -f <agent-worker-pod-name>
+    ```
+  </Tab>
+</Tabs>
+
+You'll see:
+```bash
+DEBUG Added tool update_user_memory
+DEBUG Getting messages from previous runs: 6
+DEBUG Adding 6 messages from history
+```
+
+---
+
+## Troubleshooting
+
+| Issue | Fix |
+|-------|-----|
+| Agent doesn't remember previous messages | Pass same `session_id` for all messages. Increase history runs to 3+. |
+| User memories not working | Pass `user_id` consistently. Enable User Memories toggle. |
+| Hitting token limits | Reduce history runs, enable tool compression, or manage memory programmatically. |

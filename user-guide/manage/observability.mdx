@@ -1,247 +1,326 @@
 ---
-title: "Full Observability"
-description: "End-to-end tracing, logging, and metrics for complete visibility into agent execution"
+title: "Observability"
+description: "Monitor agent threads, tasks, metrics, and logs in real-time"
 icon: "chart-line"
 ---
 
-xpander provides comprehensive observability for your agents, including distributed tracing, structured logging, and real-time metrics. Understand exactly what your agents are doing and why.
+Navigate to **Monitor** tab to view all agent executions, threads, tasks, and performance metrics.
 
-## Overview
+<Frame>![Monitoring Dashboard](/static/images/screenshots/2025-12-17-20-58-30.png)</Frame>
 
-<CardGroup cols={2}>
-  <Card title="Distributed Tracing" icon="route">
-    End-to-end request tracing across all agent operations
+---
+
+## Three Views
+
+<CardGroup cols={3}>
+  <Card title="Threads" icon="messages">
+    Conversation history grouped by session_id
   </Card>
-  <Card title="Structured Logging" icon="list">
-    Searchable logs with context, timestamps, and severity levels
+  <Card title="Metrics" icon="chart-bar">
+    Token usage, latency, and throughput
   </Card>
-  <Card title="Real-time Metrics" icon="gauge">
-    Live dashboards for latency, throughput, and error rates
-  </Card>
-  <Card title="Activity Log" icon="clock-rotate-left">
-    Complete history of messages, tool calls, and reasoning steps
+  <Card title="Tasks" icon="list-check">
+    Individual executions with status and logs
   </Card>
 </CardGroup>
 
-## Activity Log
+---
 
-Every agent execution generates a detailed activity log containing:
+## Threads
 
-- **Messages** - User inputs and agent responses
-- **Tool Calls** - Every tool invocation with inputs and outputs
-- **Reasoning Steps** - Chain-of-thought and decision points
-- **Sub-agent Triggers** - Multi-agent orchestration events
+View all conversation threads (grouped by `session_id`). Each thread shows:
 
-### Accessing Activity Logs
+- User information (name, email, ID)
+- Last interaction timestamp
+- Created timestamp
+- Input/output token counts
+- Thread ID
 
-```python
-from xpander_sdk import Task
+Click any thread to see full conversation history with messages, tool calls, and AI insights.
 
-# Load a completed task
-task = Task.load("task-456")
+### Thread Details
 
-# Get detailed activity log
-activity_log = task.get_activity_log()
+When you open a thread, you see:
 
-for message in activity_log.messages:
-    print(f"{message.type}: {message.content}")
-```
+**Logs Panel:**
+- Log time and execution duration
+- Downloadable JSON with full conversation
+- Message timeline with user/agent exchanges
+- Tool calls with payloads and responses
 
-### Activity Types
+**AI Insights Panel:**
+- Goal Achievement Metric (%)
+- Summary of conversation
+- Re-evaluate button to refresh analysis
 
-```python
-from xpander_sdk.models.activity import (
-    AgentActivityThreadMessage,
-    AgentActivityThreadToolCall,
-    AgentActivityThreadReasoning,
-    AgentActivityThreadSubAgentTrigger
-)
-
-for item in activity_log.messages:
-    if isinstance(item, AgentActivityThreadMessage):
-        print(f"[{item.role}] {item.content.text}")
-
-    elif isinstance(item, AgentActivityThreadToolCall):
-        print(f"[TOOL] {item.tool_name}")
-        print(f"  Input: {item.input}")
-        print(f"  Output: {item.result}")
-
-    elif isinstance(item, AgentActivityThreadReasoning):
-        print(f"[THINKING] {item.thought}")
-
-    elif isinstance(item, AgentActivityThreadSubAgentTrigger):
-        print(f"[SUB-AGENT] Triggered {item.agent_id}")
-```
-
-## Distributed Tracing
-
-Every request is assigned a unique trace ID that follows it through:
-
-- API gateway
-- Agent runtime
-- Tool invocations
-- External API calls
-- Sub-agent executions
-
-### Trace Structure
+**Example from logs:**
 
 ```
-Trace: abc123
-├── Agent Invocation (250ms)
-│   ├── LLM Call #1 (180ms)
-│   │   └── Token usage: 1,234 in / 567 out
-│   ├── Tool: github-issues-list (45ms)
-│   │   └── API call to api.github.com
-│   └── LLM Call #2 (120ms)
-│       └── Token usage: 890 in / 234 out
-└── Response (total: 595ms)
+20:34:43  User Message
+          Message content
+
+20:34:51  Agent Final Response (11.516s)
+          Message content
+
+20:35:10  Search knowledge base (3.471s)
+          Request Payload
+          Response
 ```
 
-### Viewing Traces
+### Download Thread JSON
 
-Access traces in the Workbench under **Agent > Activity** or via API:
+Click **Download Log** to get full thread data:
 
-```python
-from xpander_sdk import Tasks
+<CodeGroup>
 
-tasks = Tasks()
-task = tasks.get("task-456")
-
-# Get trace information
-print(f"Trace ID: {task.trace_id}")
-print(f"Duration: {task.duration_ms}ms")
-print(f"Tool calls: {len(task.tool_calls)}")
-```
-
-## Metrics Dashboard
-
-Real-time metrics available in the Workbench:
-
-### Latency Metrics
-
-| Metric | Description |
-|--------|-------------|
-| P50 Latency | Median response time |
-| P95 Latency | 95th percentile response time |
-| P99 Latency | 99th percentile response time |
-| Time to First Token | Streaming start latency |
-
-### Throughput Metrics
-
-| Metric | Description |
-|--------|-------------|
-| Requests/min | Total invocations per minute |
-| Tokens/min | Total tokens processed |
-| Tool calls/min | External tool invocations |
-| Concurrent tasks | Active simultaneous executions |
-
-### Error Metrics
-
-| Metric | Description |
-|--------|-------------|
-| Error Rate | Percentage of failed requests |
-| Timeout Rate | Requests exceeding time limit |
-| Tool Failures | Failed external API calls |
-| Rate Limits | Throttled requests |
-
-## Logging
-
-### Log Levels
-
-```python
-import logging
-from xpander_sdk import Backend
-
-# Configure log level
-backend = Backend(log_level=logging.DEBUG)
-
-# Logs automatically captured:
-# DEBUG - Detailed execution flow
-# INFO - Key events and milestones
-# WARNING - Recoverable issues
-# ERROR - Failures requiring attention
-```
-
-### Log Format
-
-```json
+```json Thread Structure
 {
-  "timestamp": "2024-01-15T10:30:00.123Z",
-  "level": "INFO",
-  "trace_id": "abc123",
-  "agent_id": "agent-456",
-  "task_id": "task-789",
-  "message": "Tool invocation completed",
-  "tool": "github-issues-list",
-  "duration_ms": 45,
-  "status": "success"
+  "id": "6ebc5351-bfc4-4742-9640-db4127ca1396",
+  "created_at": "2025-12-18T04:34:43.666452Z",
+  "messages": [
+    {
+      "id": "6ebc5351-..._user_97873529-...",
+      "created_at": "2025-12-18T04:34:43.666452Z",
+      "role": "user",
+      "content": {
+        "text": "what's in your kb?",
+        "files": []
+      }
+    },
+    {
+      "id": "6ebc5351-..._agent_f280af66-...",
+      "created_at": "2025-12-18T04:34:51.406157Z",
+      "role": "agent",
+      "content": {
+        "text": "Awesome question...",
+        "files": []
+      }
+    },
+    {
+      "id": "47812cbf-8e55-497c-8494-90a180605ce8",
+      "created_at": "2025-12-18T04:35:10.139827Z",
+      "tool_name": "search_knowledge_base",
+      "payload": {
+        "query": "xpander.ai knowledge base overview"
+      },
+      "is_error": false,
+      "result": "[{\"content\": \"...\", \"score\": 78.13}]"
+    }
+  ],
+  "user": {
+    "id": "71f495e5-c67a-4b36-a4b4-e9cce3513c5b",
+    "first_name": "David",
+    "last_name": "Twizer",
+    "display_name": "David Twizer"
+  }
 }
 ```
 
-### Log Search
+</CodeGroup>
 
-Search logs in the Workbench or via API:
+---
 
-```python
-from xpander_sdk import Logs
+## Tasks
 
-logs = Logs()
-results = logs.search(
-    agent_id="agent-456",
-    level="ERROR",
-    start_time="2024-01-15T00:00:00Z",
-    end_time="2024-01-15T23:59:59Z"
+View all agent executions (individual task runs). Multiple tasks can belong to the same thread.
+
+**Task List Columns:**
+
+| Column | Description |
+|--------|-------------|
+| ID | Unique task identifier (8 characters) |
+| Created At | Task creation timestamp |
+| Updated At | Last update timestamp |
+| Status | `Completed`, `Stopped`, or `Running` |
+| Internal Status | Internal execution state |
+
+**Task Status:**
+
+- **Completed** - Task finished successfully
+- **Stopped** - Task was interrupted or failed
+- **Running** - Task currently executing
+
+### Multiple Tasks Per Thread
+
+A single thread (conversation) can have multiple task executions:
+
+```
+Thread: 6ebc5351 (session_id)
+├── Task: 6ebc5351 (20:34:44 - 20:35:13) ✓ Completed
+├── Task: 80632cde (20:01:22 - 20:01:25) ✓ Completed
+└── Task: 179873c (19:59:44 - 20:00:01) ✓ Completed
+```
+
+Each task represents one agent invocation, but they share the same conversation context (`session_id`).
+
+---
+
+## Metrics
+
+Real-time performance metrics for your agent:
+
+**Token Usage:**
+
+- Input tokens per thread
+- Output tokens per thread
+- Total tokens across all executions
+
+**Performance:**
+
+- Average execution duration
+- Actions/tool calls per thread
+- Success rate
+
+---
+
+## Using the SDK
+
+<CodeGroup>
+
+```python Get Chat History
+from xpander_sdk import Configuration, Backend
+from agno.agent import Agent
+import json
+from datetime import datetime
+
+config = Configuration(
+    api_key="<your-key>",
+    organization_id="<your-org>"
 )
 
-for log in results:
-    print(f"{log.timestamp} - {log.message}")
+backend = Backend(configuration=config)
+agno_agent = Agent(**backend.get_args(agent_id="<agent-id>"))
+
+# Run conversation
+agno_agent.print_response(input='Hi')
+
+# Get chat history
+chat_history = agno_agent.get_chat_history()
+
+# Serialize and save to JSON
+serialized_history = []
+for interaction in chat_history:
+    if hasattr(interaction, 'model_dump'):
+        serialized_history.append(interaction.model_dump())
+    elif hasattr(interaction, '__dict__'):
+        serialized_history.append(interaction.__dict__)
+    else:
+        serialized_history.append(str(interaction))
+
+history_data = {
+    'timestamp': datetime.now().isoformat(),
+    'session_id': agno_agent.session_id,
+    'chat_history': serialized_history
+}
+
+with open('chat_history.json', 'w') as f:
+    json.dump(history_data, f, indent=2, default=str)
 ```
 
-## Alerting
+```python Get Task Activity Log
+from xpander_sdk import Task
 
-Configure alerts for critical conditions:
+# Load task and get activity log
+task = await Task.aload("task-123")
+activity_log = await task.aget_activity_log()
 
-```yaml
-alerts:
-  - name: "High Error Rate"
-    condition: error_rate > 5%
-    window: 5m
-    notify: slack://alerts-channel
+# Activity log includes:
+# - User/agent conversation messages
+# - Tool invocations and results
+# - Agent reasoning steps
+# - Sub-agent triggers
 
-  - name: "Latency Spike"
-    condition: p95_latency > 10s
-    window: 1m
-    notify: email://oncall@company.com
-
-  - name: "Tool Failures"
-    condition: tool_failure_rate > 10%
-    window: 5m
-    notify: pagerduty://service-key
+for activity in activity_log:
+    print(f"Type: {activity.type}")
+    print(f"Content: {activity.content}")
 ```
 
-## Integration with External Tools
+```python Session Management
+from agno.agent import Agent
 
-Export telemetry to your existing observability stack:
+# Load agent
+agent = await Agent.aload("agent-123")
 
-<CardGroup cols={3}>
-  <Card title="Datadog" icon="chart-area">
-    APM and log aggregation
-  </Card>
-  <Card title="Grafana" icon="chart-line">
-    Custom dashboards
-  </Card>
-  <Card title="OpenTelemetry" icon="signal">
-    Vendor-neutral export
-  </Card>
-</CardGroup>
+# Get all sessions for a user
+sessions = await agent.aget_user_sessions(user_id="user_123")
+
+for session in sessions:
+    print(f"Session: {session.id}")
+    print(f"Created: {session.created_at}")
+
+# Get specific session
+session = await agent.aget_session(session_id="sess_456")
+
+# Delete session
+await agent.adelete_session(session_id="sess_456")
+```
+
+</CodeGroup>
+
+**API References:**
+
+- [Task Activity Monitoring](https://docs.xpander.ai/api-reference/tasks#task-activity-monitoring)
+- [Session Management](https://docs.xpander.ai/api-reference/agents#session-management)
+
+---
+
+## Debug Mode
+
+Enable debug mode to see detailed logs during development:
+
+<Tabs>
+  <Tab title="Local">
+    ```python
+    from xpander_sdk import Backend, Configuration
+    from agno.agent import Agent
+
+    backend = Backend(configuration=Configuration(api_key="<your-key>"))
+    agent = Agent(**backend.get_args(agent_id="<agent-id>"))
+
+    # Enable debug logs
+    agent.debug_mode = True
+
+    agent.print_response(input="Test message")
+    ```
+  </Tab>
+  <Tab title="Kubernetes">
+    ```bash
+    # View agent worker logs
+    kubectl logs -f <agent-worker-pod-name>
+
+    # Filter for specific events
+    kubectl logs -f <agent-worker-pod-name> | grep "Tool Calls"
+    kubectl logs -f <agent-worker-pod-name> | grep "DEBUG"
+    ```
+  </Tab>
+</Tabs>
+
+**Example debug output:**
+
+```bash
+DEBUG Tool Calls:
+  - Name: 'search_knowledge_base'
+    Arguments: 'query: Thai recipes overview'
+
+DEBUG Time to get references: 1.0603s
+
+DEBUG [
+  {
+    "content": "Pad Thai Goong Sod - Thai Fried Noodles...",
+    "score": 78.13
+  }
+]
+```
+
+---
 
 ## Related
 
 <CardGroup cols={2}>
-  <Card title="Tasks API" icon="list-check" href="/api-reference/tasks">
-    Task management and monitoring
+  <Card title="Agent Memory" icon="brain-circuit" href="/user-guide/build/agent-memory">
+    Session storage and user memories
   </Card>
-  <Card title="Events API" icon="bolt" href="/api-reference/events">
-    Real-time event streaming
+  <Card title="Tasks API" icon="list-check" href="/api-reference/tasks">
+    Task management API reference
   </Card>
 </CardGroup>

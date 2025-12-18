@@ -83,9 +83,9 @@
           {
             "group": "Run",
             "pages": [
+              "user-guide/run/agent-serverless",
               "user-guide/run/agent-containers",
-              "user-guide/run/self-hosted-deployment",
-              "user-guide/run/k8s-self-deploy"
+              "user-guide/run/self-hosted-deployment"
             ]
           },
           {

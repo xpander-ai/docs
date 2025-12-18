@@ -1,60 +1,28 @@
 ---
-title: "Managed Knowledge Base"
-description: "Built-in RAG with vector storage, document management, and semantic search"
+title: "Knowledge Base"
+description: "Built-in RAG with vector storage, document upload, and semantic search"
 icon: "books"
 ---
 
-The Managed Knowledge Base provides built-in RAG (Retrieval-Augmented Generation) capabilities for your agents. Upload documents, automatically chunk and embed them, and let your agents query relevant context at runtime.
-
-## Overview
-
-<CardGroup cols={2}>
-  <Card title="Vector Storage" icon="database">
-    Automatic embedding and indexing with optimized vector search
-  </Card>
-  <Card title="Document Management" icon="file-lines">
-    Upload, update, and organize documents with metadata
-  </Card>
-  <Card title="Semantic Search" icon="magnifying-glass">
-    Natural language queries return relevant document chunks
-  </Card>
-  <Card title="Multi-format Support" icon="files">
-    PDF, Markdown, HTML, TXT, DOCX, and more
-  </Card>
-</CardGroup>
+Knowledge bases provide retrieval-augmented generation (RAG) for your agents. Upload documents, automatically embed them, and agents search relevant context at runtime.
 
 ## Creating a Knowledge Base
 
-### Via Workbench
+Navigate to **Knowledge Bases** → **Create New**
 
-1. Navigate to **Agent Settings > Knowledge Base**
-2. Click **Create Knowledge Base**
-3. Configure chunking and embedding settings
-4. Upload documents
+1. Enter name and description
+2. Click **Create**
+3. Knowledge base is ready for documents
 
-### Via SDK
+<Frame>![Knowledge Base List](/static/images/screenshots/2025-12-17-20-37-55.png)</Frame>
+---
 
-```python
-from xpander_sdk import KnowledgeBase
+## Uploading Documents
 
-# Create a new knowledge base
-kb = KnowledgeBase.create(
-    name="Product Documentation",
-    description="Technical docs and guides",
-    embedding_model="text-embedding-3-small",
-    chunk_size=512,
-    chunk_overlap=50
-)
+Click **Upload File** to add documents. Supported formats:
 
-print(f"Created knowledge base: {kb.id}")
-```
-
-## Adding Documents
-
-### Supported Formats
-
-| Format | Extension | Notes |
-|--------|-----------|-------|
+| Format | Extension | Processing |
+|--------|-----------|------------|
 | PDF | .pdf | Text extraction with layout preservation |
 | Markdown | .md | Headers preserved as metadata |
 | Plain Text | .txt | Direct chunking |
@@ -62,213 +30,114 @@ print(f"Created knowledge base: {kb.id}")
 | HTML | .html | Tags stripped, content preserved |
 | CSV | .csv | Row-based chunking |
 
-### Upload Documents
+Documents are automatically chunked and embedded when uploaded.
 
-```python
-from xpander_sdk import KnowledgeBase
+---
 
-kb = KnowledgeBase.load("kb-123")
+## Connecting to Agent
 
-# Upload single document
-doc = kb.add_document(
-    file_path="/path/to/document.pdf",
-    metadata={
-        "category": "technical",
-        "version": "2.0",
-        "author": "engineering"
-    }
-)
+Navigate to **Agent Settings** → **Knowledge Bases**
 
-# Upload from URL
-doc = kb.add_document(
-    url="https://example.com/docs/guide.pdf",
-    metadata={"source": "external"}
-)
+1. Select toolkit: **xpander built-in vector database**
+2. Click **Add knowledge base**
+3. Select your knowledge base from dropdown
+4. Click **Add**
 
-# Upload multiple documents
-docs = kb.add_documents([
-    {"file_path": "/path/to/doc1.pdf"},
-    {"file_path": "/path/to/doc2.md"},
-    {"url": "https://example.com/doc3.html"}
-])
+Your agent now has access to search this knowledge base during conversations.
+
+<Frame>![Connect Knowledge Base to Agent](/static/images/screenshots/2025-12-17-20-38-45.png)</Frame>
+
+---
+
+## How It Works
+
+When users send messages, the agent:
+
+1. Receives user query
+2. Searches knowledge base using vector similarity
+3. Retrieves relevant document chunks
+4. Uses retrieved context to generate response
+
+**Example from logs:**
+
+```bash
+DEBUG Tool Calls:
+  - Name: 'search_knowledge_base'
+    Arguments: 'query: Thai recipes overview'
+
+DEBUG Time to get references: 1.0603s
+
+DEBUG [
+  {
+    "content": "Pad Thai Goong Sod - Thai Fried Noodles with Shrimps...",
+    "score": 78.13
+  }
+]
 ```
 
-## Chunking Strategies
+The agent automatically uses `search_knowledge_base` tool when it needs information from your documents.
 
-Configure how documents are split into searchable chunks:
+---
 
-### Fixed Size
+## Testing Knowledge Base
 
-```python
-kb = KnowledgeBase.create(
-    name="My KB",
-    chunk_strategy="fixed",
-    chunk_size=512,        # tokens per chunk
-    chunk_overlap=50       # overlapping tokens
-)
+Navigate to **Agent Preview** → **Tester Chat**
+
+Test queries like:
+- "What information do you have?"
+- "Search for [topic] in your knowledge base"
+- "Tell me about [specific document content]"
+
+<Frame>![Test Knowledge Base in Chat](/static/images/screenshots/2025-12-17-20-37-00.png)</Frame>
+
+---
+
+## API Access
+
+Use REST endpoints for programmatic access:
+
+<CodeGroup>
+
+```bash Create KB
+curl -X POST https://api.xpander.ai/v1/knowledge \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Product Documentation",
+    "description": "Technical docs and guides"
+  }'
 ```
 
-### Semantic
-
-```python
-kb = KnowledgeBase.create(
-    name="My KB",
-    chunk_strategy="semantic",
-    max_chunk_size=1024,   # maximum tokens
-    min_chunk_size=100     # minimum tokens
-)
+```bash Search KB
+curl -X GET "https://api.xpander.ai/v1/knowledge/kb-123/search?search_query=deployment&top_k=5" \
+  -H "x-api-key: YOUR_API_KEY"
 ```
 
-### By Headers (Markdown/HTML)
-
-```python
-kb = KnowledgeBase.create(
-    name="My KB",
-    chunk_strategy="headers",
-    header_levels=[1, 2, 3]  # Split on h1, h2, h3
-)
+```bash Get KB Details
+curl -X GET https://api.xpander.ai/v1/knowledge/kb-123 \
+  -H "x-api-key: YOUR_API_KEY"
 ```
 
-## Querying the Knowledge Base
+</CodeGroup>
 
-### Semantic Search
+**Search Parameters:**
 
-```python
-# Search for relevant documents
-results = kb.search(
-    query="How do I configure authentication?",
-    top_k=5,
-    threshold=0.7
-)
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `search_query` | string | required | Query to search in the vector database |
+| `top_k` | integer | 10 | Number of top results to return |
+| `use_bubble` | boolean | false | Return result capped with padding |
+| `bubble_size` | integer | 1000 | Bubble size (padding + result + margin) |
 
-for result in results:
-    print(f"Score: {result.score}")
-    print(f"Content: {result.content[:200]}...")
-    print(f"Source: {result.metadata['source']}")
-```
-
-### Filtered Search
-
-```python
-# Search with metadata filters
-results = kb.search(
-    query="deployment configuration",
-    top_k=5,
-    filters={
-        "category": "technical",
-        "version": {"$gte": "2.0"}
-    }
-)
-```
-
-## Agent Integration
-
-Connect a knowledge base to your agent for automatic RAG:
-
-### Via Workbench
-
-1. Open agent settings
-2. Navigate to **Knowledge Base**
-3. Select the knowledge base to attach
-4. Configure retrieval settings
-
-### Via SDK
-
-```python
-from xpander_sdk import Backend, Agents
-
-# Attach knowledge base to agent
-agents = Agents()
-agents.update(
-    agent_id="agent-123",
-    knowledge_base_id="kb-456",
-    rag_config={
-        "top_k": 5,
-        "threshold": 0.7,
-        "include_metadata": True
-    }
-)
-
-# Agent automatically retrieves context
-backend = Backend()
-# RAG happens automatically during agent invocation
-```
-
-### Custom RAG in Code
-
-```python
-from xpander_sdk import Backend, KnowledgeBase
-from agno.agent import Agent
-
-backend = Backend()
-kb = KnowledgeBase.load("kb-123")
-
-# Manual RAG flow
-user_query = "How do I deploy to Kubernetes?"
-context = kb.search(user_query, top_k=3)
-
-# Build context string
-context_str = "\n\n".join([
-    f"[Source: {r.metadata['source']}]\n{r.content}"
-    for r in context
-])
-
-# Create agent with context
-agent = Agent(**backend.get_args())
-response = agent.run(
-    f"Context:\n{context_str}\n\nQuestion: {user_query}"
-)
-```
-
-## Document Management
-
-### List Documents
-
-```python
-docs = kb.list_documents(
-    limit=100,
-    offset=0,
-    filters={"category": "technical"}
-)
-
-for doc in docs:
-    print(f"{doc.id}: {doc.name} ({doc.chunk_count} chunks)")
-```
-
-### Update Document
-
-```python
-# Re-process document with new settings
-kb.update_document(
-    document_id="doc-123",
-    metadata={"version": "3.0"},
-    reprocess=True  # Re-chunk and re-embed
-)
-```
-
-### Delete Document
-
-```python
-kb.delete_document("doc-123")
-```
-
-## Embedding Models
-
-Choose from supported embedding models:
-
-| Model | Dimensions | Best For |
-|-------|------------|----------|
-| text-embedding-3-small | 1536 | General purpose, cost-effective |
-| text-embedding-3-large | 3072 | Higher accuracy, technical content |
-| text-embedding-ada-002 | 1536 | Legacy compatibility |
+---
 
 ## Related
 
 <CardGroup cols={2}>
-  <Card title="Knowledge Base API" icon="code" href="/api-reference/knowledge">
-    Full API reference
+  <Card title="Knowledge Base SDK" icon="code" href="/api-reference/knowledge">
+    Python SDK methods
   </Card>
-  <Card title="Tools & Connectors" icon="plug" href="/user-guide/build/connectors">
-    Agentic RAG for tools
+  <Card title="Knowledge Base API" icon="brackets-curly" href="/api-reference/v1/knowledge/list-knowledge-bases">
+    REST API endpoints
   </Card>
 </CardGroup>
