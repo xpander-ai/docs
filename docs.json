@@ -330,8 +330,8 @@
     ]
   },
   "integrations": {
-    "amplitude": {
-      "apiKey": "a217b67ed9af1f3663abbdb97c358d86"
+    "ga4": {
+      "measurementId": "G-MWGK5NWTL1"
     }
   },
   "redirects": [
