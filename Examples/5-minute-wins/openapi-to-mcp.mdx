@@ -1,0 +1,189 @@
+---
+title: "OpenAPI Spec to MCP Tool"
+description: "Transform any OpenAPI specification into a working MCP server with custom authentication and tools selection."
+icon: "file-code"
+mode: "wide"
+---
+
+<Info>
+**Time to complete:** 5 minutes  
+**What you'll get:** A custom MCP server from your OpenAPI spec + MCP client integration ready to use
+</Info>
+
+Turn any OpenAPI/Swagger specification into a fully functional MCP server with AI-optimized tools. Perfect for connecting private APIs and custom services to your MCP clients.
+
+
+## Quick OpenAPI-to-MCP Process
+
+<Steps>
+  <Step title="Upload OpenAPI Specification" titleIcon="upload">
+    Go to the [Connectors page](https://app.xpander.ai/connectors) in the xpander.ai console.
+    
+    1. Click **"+ Create new connector"** 
+    2. Upload your OpenAPI/Swagger specification file (JSON or YAML)
+    3. Provide a name and description for your connector
+    4. Don't forget the server URL, especially if your original spec doesn't have one.
+    
+    <Tip>Your OpenAPI spec gets automatically analyzed by the connector generator agent!</Tip>
+  </Step>
+  
+  <Step title="Configure Authentication" titleIcon="key">
+    Set up authentication for your API:
+    
+    **For API Key authentication:**
+    1. Select **"API Key"** as the authentication method
+    2. Specify the key location (header, query parameter, etc.)
+    3. Enter your API key or leave it for later configuration
+    
+    **Other supported methods:**
+    - OAuth 2.0
+    - Bearer tokens  
+    - Basic authentication
+    - No authentication
+    
+  </Step>
+  
+  <Step title="Review Generated Tools" titleIcon="wrench">
+    The connector generator analyzes your API and creates AI-optimized tools:
+    
+    - **Function descriptions** optimized for LLM understanding
+    - **Parameter validation** based on your schema
+    - **Response formatting** for better AI consumption
+    - **Error handling** built-in
+    
+  </Step>
+  
+  <Step title="Create MCP Server" titleIcon="server">
+    Navigate to **MCP Servers** section in the console:
+    
+    1. Click **"New MCP Server"**
+    2. Give your MCP server a descriptive name
+    3. Go to the **Tools** tab, and click **+ Add tools**
+    3. **Select tools** from your newly generated connector
+    4. Click **Update changes**
+    5. Go to the **Connect** tab to get your MCP Server URL, and one-line commands to hook up your MCP server to your favorite MCP client.
+    
+    <Success>Your MCP server is now live and ready!</Success>
+  </Step>
+  
+  <Step title="Connect MCP Clients" titleIcon="link">
+    Add your MCP server to your favorite MCP client using the connection details provided:
+    
+    <Frame>
+    ![MCP Server Connect](/static/images/screenshots/mcp-server-connect.png)
+    </Frame>
+    
+    **For other MCP clients**: Use the provided URL and authentication details.
+  </Step>
+</Steps>
+
+## What You Just Built
+
+🎉 **A complete MCP integration** with:
+
+<CardGroup cols={2}>
+  <Card title="AI-Optimized Tools" icon="brain">
+    Functions described in LLM-friendly language for better tool selection
+  </Card>
+  <Card title="Automatic Authentication" icon="shield">
+    API keys and auth handled transparently in the background
+  </Card>
+  <Card title="Schema Validation" icon="shield-check">
+    Request/response validation based your OpenAPI specification
+  </Card>
+  <Card title="Instant Availability" icon="bolt">
+    Ready to use in Claude Desktop and other MCP clients immediately
+  </Card>
+</CardGroup>
+
+## Example: Connecting a Weather API
+
+<AccordionGroup>
+  <Accordion title="Sample OpenAPI Spec">
+    Here's a simple weather API spec that would generate weather tools:
+    
+    ```yaml
+    openapi: 3.0.0
+    info:
+      title: Weather API
+      version: 1.0.0
+    servers:
+      - url: https://api.weather.com/v1
+    paths:
+      /current:
+        get:
+          summary: Get current weather
+          parameters:
+            - name: location
+              in: query
+              required: true
+              schema:
+                type: string
+              description: City name or coordinates
+          responses:
+            '200':
+              description: Current weather data
+    security:
+      - apiKey: []
+    components:
+      securitySchemes:
+        apiKey:
+          type: apiKey
+          in: header
+          name: X-API-Key
+    ```
+  </Accordion>
+  
+  <Accordion title="Generated MCP Tools">
+    The connector generator would create:
+    
+    - **get_current_weather(location)** - Gets current weather for a location
+    - **Optimized description**: "Retrieves real-time weather conditions including temperature, humidity, and conditions for any city or coordinates"
+    - **Auto-validation**: Ensures location parameter is provided
+    - **Error handling**: Graceful handling of API errors with helpful messages
+  </Accordion>
+  
+  <Accordion title="Usage in Claude">
+    Once connected, you can ask Claude:
+    
+    - "What's the weather like in San Francisco?"
+    - "Compare the weather in New York vs London"  
+    - "Is it a good day for outdoor activities in Seattle?"
+    
+    Claude will automatically use your weather API through the MCP server!
+  </Accordion>
+</AccordionGroup>
+
+
+## Next Step: Self-Deploy Your MCP Server
+
+Your MCP server runs on xpander.ai's cloud, but you can also deploy it to your own infrastructure:
+
+- **[Self-deploy to K8s Cluster](/Examples/5-minute-wins/k8s-self-deploy)** - Run your MCP servers on your own Kubernetes infrastructure
+- **Full control** over data and scaling
+- **Enterprise security** with your own network policies
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="OpenAPI spec not uploading">
+    - Ensure your spec is valid JSON/YAML
+    - Check for syntax errors with a tool like Swagger Editor
+    - File size should be under 10MB
+    - Make sure all required fields are present
+  </Accordion>
+  
+  <Accordion title="MCP client can't connect">
+    - Verify the MCP URL is copied correctly
+    - Check your MCP client configuration syntax
+    - Restart your MCP client after configuration changes  
+    - Ensure your API keys are properly configured
+  </Accordion>
+  
+  <Accordion title="Tools not working as expected">
+    - Review the generated tool descriptions and edit if needed
+    - Check API authentication is properly configured
+    - Verify your API endpoints are accessible from xpander.ai
+    - Test individual tools in the xpander.ai console first
+  </Accordion>
+</AccordionGroup>

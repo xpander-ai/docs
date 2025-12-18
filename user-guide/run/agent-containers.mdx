@@ -1,0 +1,504 @@
+---
+title: "Agent Containers"
+description: "Package agents as Docker containers with custom dependencies and full environment control"
+icon: "container-storage"
+---
+
+Containerize your agents when you need custom system dependencies, specific base images, or full control over the runtime environment. Unlike serverless agents that run on agent-workers, containerized agents are packaged as Docker images you build and deploy.
+
+---
+
+## When to Use Containers
+
+**Use Containers when:**
+
+- ✅ Need to customize agent code logic (`xpander_handler.py`)
+- ✅ Integrate MCP servers that run locally (not in cloud)
+- ✅ Need custom system dependencies (apt packages, libraries)
+- ✅ Require specific base images or Python versions
+- ✅ Want full control over runtime environment
+- ✅ Need custom tools, models, or integrations
+
+**Use Serverless (Workbench only) when:**
+
+- ❌ Building agents with Workbench UI
+- ❌ Don't need custom code logic
+- ❌ Standard connectors are sufficient
+- ❌ Don't want to manage code or Docker builds
+
+See [Agent Serverless](/user-guide/run/agent-serverless) for the no-code deployment mode.
+
+### Real-World Example: MCP Integration
+
+Here's an example of a containerized agent that integrates Alpha Vantage MCP for financial market analysis:
+
+```python xpander_handler.py
+import os
+import logging
+from typing import Optional
+from dotenv import load_dotenv
+from xpander_sdk import Task, on_task, Backend, Tokens
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+from agno.tools.mcp import MCPTools
+
+load_dotenv()
+
+logger = logging.getLogger(__name__)
+
+@on_task
+async def my_agent_handler(task: Task) -> Task:
+    """
+    Financial Insights Specialist Agent Handler.
+
+    This agent provides comprehensive financial market analysis using:
+    - Alpha Vantage MCP for real-time and historical market data
+    - OpenAI GPT-5.2 with high reasoning effort for deep analysis
+    - Xpander platform for storage, events, and task management
+    """
+    # Get xpander agent details
+    backend = Backend(configuration=task.configuration)
+    agno_args = await backend.aget_args(task=task)
+
+    # Loads Specialized MCP for financial data
+    alpha_api_key: Optional[str] = os.getenv('ALPHAVANTAGE_API_KEY')
+    if not alpha_api_key:
+        logger.error('ALPHAVANTAGE_API_KEY not found in environment variables')
+        task.result = (
+            'Error: ALPHAVANTAGE_API_KEY is required. '
+            'Please set it in your environment variables.'
+        )
+        return task
+
+    server_url = f'https://mcp.alphavantage.co/mcp?apikey={alpha_api_key}'
+    mcp_tools = MCPTools(url=server_url, transport='streamable-http')
+
+    try:
+        await mcp_tools.connect()
+        agno_agent = Agent(**agno_args)
+        agno_agent.tools.append(mcp_tools)
+
+        # Configure reasoning effort for long running agentic tasks
+        agno_agent.model = OpenAIChat(id='gpt-5.2', reasoning_effort='high')
+
+        # Run the agent
+        result = await agno_agent.arun(
+            input=task.to_message(),
+            files=task.get_files(),
+            images=task.get_images()
+        )
+
+        task.result = result.content
+
+        # Report execution metrics
+        task.tokens = Tokens(
+            prompt_tokens=result.metrics.input_tokens,
+            completion_tokens=result.metrics.output_tokens
+        )
+        task.used_tools = [tool.tool_name for tool in result.tools]
+
+    except Exception as e:
+        logger.exception(f'Error processing task: {e}')
+        task.result = f'Error: {str(e)}'
+    finally:
+        await mcp_tools.close()
+
+    return task
+```
+
+**Why this needs containers:**
+
+1. **Custom MCP Integration**: Connects to Alpha Vantage MCP server with custom authentication
+2. **Custom Model Configuration**: Uses OpenAI GPT-5.2 with specific reasoning effort settings
+3. **Custom Error Handling**: Implements specialized logging and error management
+4. **Environment-Specific Logic**: Requires `ALPHAVANTAGE_API_KEY` from environment
+
+This level of customization requires code and containerization - it can't be built with Workbench UI alone.
+
+---
+
+## Quick Start
+
+<Steps>
+  <Step title="Install xpander CLI">
+    ```bash
+    npm install -g xpander-cli && xpander login
+    ```
+  </Step>
+
+  <Step title="Create New Agent Project">
+    ```bash
+    mkdir hello-world && cd hello-world
+    xpander agent new --name "hello-world" --framework agno --folder .
+    ```
+
+    This creates:
+    - `xpander_handler.py` - Agent code
+    - `requirements.txt` - Python dependencies
+    - `Dockerfile` - Container definition
+    - `.env` - Environment variables
+    - `agent.yaml` - Agent configuration
+  </Step>
+
+  <Step title="Setup Virtual Environment">
+    ```bash
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+    ```
+  </Step>
+
+  <Step title="Test Locally">
+    ```bash
+    xpander dev
+    ```
+
+    Runs agent locally without containerization for fast iteration.
+  </Step>
+
+  <Step title="Test Container Locally">
+    ```bash
+    docker build . -t my-agent
+    docker run --env-file .env my-agent
+    ```
+
+    Verify your container builds and runs correctly before deploying.
+  </Step>
+
+  <Step title="Deploy Container">
+    ```bash
+    xpander deploy
+    ```
+
+    Builds Docker image, pushes to registry, and deploys to xpander platform.
+  </Step>
+
+  <Step title="View Logs">
+    ```bash
+    xpander logs
+    ```
+  </Step>
+
+  <Step title="Invoke Agent">
+    ```bash
+    xpander invoke
+    ```
+
+    Or use the SDK, REST API, Slack, webhooks, or any integration.
+  </Step>
+</Steps>
+
+---
+
+## Project Structure
+
+After running `xpander agent new`, your project contains:
+
+```
+hello-world/
+├── xpander_handler.py    # Agent logic with @on_task decorator
+├── requirements.txt       # Python dependencies
+├── Dockerfile            # Container definition
+├── .env                  # Environment variables (API keys)
+├── agent.yaml            # Agent metadata
+└── .venv/                # Virtual environment (created manually)
+```
+
+### xpander_handler.py
+
+```python xpander_handler.py
+from dotenv import load_dotenv
+load_dotenv()
+
+from xpander_sdk import Task, on_task, Backend, Tokens
+from agno.agent import Agent
+
+@on_task
+async def my_agent_handler(task: Task):
+    backend = Backend(configuration=task.configuration)
+    agno_args = await backend.aget_args(task=task)
+    agno_agent = Agent(**agno_args)
+
+    result = await agno_agent.arun(
+        input=task.to_message(),
+        user_id=task.user_id,
+        session_id=task.session_id
+    )
+
+    task.result = result.content
+    task.tokens = Tokens(
+        prompt_tokens=result.metrics.input_tokens,
+        completion_tokens=result.metrics.output_tokens
+    )
+
+    return task
+```
+
+### Dockerfile
+
+```dockerfile Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies if needed
+# RUN apt-get update && apt-get install -y \
+#     build-essential \
+#     && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+CMD ["python", "-m", "xpander_sdk.agent_worker"]
+```
+
+### requirements.txt
+
+```txt requirements.txt
+xpander-sdk
+agno
+python-dotenv
+```
+
+---
+
+## Customizing Your Container
+
+### Add System Dependencies
+
+Edit `Dockerfile` to install OS-level packages:
+
+```dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+CMD ["python", "-m", "xpander_sdk.agent_worker"]
+```
+
+### Use Different Base Image
+
+```dockerfile
+FROM python:3.12-slim
+# or
+FROM nvidia/cuda:12.1-runtime-ubuntu22.04
+# or
+FROM continuumio/miniconda3
+```
+
+### Add Private Dependencies
+
+```dockerfile
+# Copy private package
+COPY ./my-private-package /app/my-private-package
+RUN pip install /app/my-private-package
+
+# Or install from private registry
+ARG PYPI_TOKEN
+RUN pip install --index-url https://${PYPI_TOKEN}@pypi.example.com my-package
+```
+
+---
+
+## Local Development Workflow
+
+### 1. Develop Without Container
+
+```bash
+# Activate virtual environment
+source .venv/bin/activate
+
+# Run agent locally (fast iteration)
+xpander dev
+```
+
+This runs your agent code directly without containerization, making development faster.
+
+### 2. Test Container Locally
+
+```bash
+# Build container
+docker build . -t my-agent
+
+# Run container with environment variables
+docker run --env-file .env my-agent
+
+# Or pass variables directly
+docker run -e XPANDER_API_KEY=xxx -e OPENAI_API_KEY=yyy my-agent
+```
+
+### 3. Deploy to Production
+
+```bash
+xpander deploy
+```
+
+The CLI:
+1. Builds your Docker image
+2. Pushes to container registry
+3. Deploys to xpander platform
+4. Makes agent available via API/SDK/Slack/webhooks
+
+---
+
+## Environment Variables
+
+Store sensitive configuration in `.env` file:
+
+```bash .env
+XPANDER_API_KEY=xpk_xxx
+OPENAI_API_KEY=sk-xxx
+DATABASE_URL=postgresql://...
+CUSTOM_API_ENDPOINT=https://api.example.com
+```
+
+These variables are:
+- Used during local development (`xpander dev`)
+- Loaded into container during local testing (`docker run --env-file .env`)
+- Securely injected during production deployment (`xpander deploy`)
+
+<Warning>
+Never commit `.env` to version control. Add it to `.gitignore`.
+</Warning>
+
+---
+
+## Invoking Containerized Agents
+
+Once deployed, invoke your containerized agent the same way as serverless agents:
+
+<Tabs>
+  <Tab title="CLI">
+    ```bash
+    xpander invoke
+    ```
+  </Tab>
+
+  <Tab title="SDK">
+    ```python
+    from xpander_sdk import Backend, Configuration
+
+    backend = Backend(configuration=Configuration(api_key="<your-key>"))
+
+    result = backend.invoke_agent(
+        agent_id="<agent-id>",
+        input="Your message",
+        user_id="user@example.com",
+        session_id="session-123"
+    )
+
+    print(result)
+    ```
+  </Tab>
+
+  <Tab title="REST API">
+    ```bash
+    curl -X POST https://api.xpander.ai/v1/agents/{agent_id}/invoke \
+      -H "Authorization: Bearer <your-key>" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "input": "Your message",
+        "user_id": "user@example.com",
+        "session_id": "session-123"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+## CLI Commands Reference
+
+| Command | Description |
+|---------|-------------|
+| `xpander login` | Authenticate with xpander platform |
+| `xpander agent new` | Create new agent project with Dockerfile |
+| `xpander dev` | Run agent locally without container |
+| `xpander deploy` | Build, push, and deploy container |
+| `xpander invoke` | Test deployed agent |
+| `xpander logs` | View agent execution logs |
+
+---
+
+## Container vs Serverless
+
+| Feature | Containers | Serverless |
+|---------|-----------|------------|
+| **Use Case** | Custom dependencies, full control | Most agents, standard dependencies |
+| **Deployment** | Build Docker image, push to registry | Automatic via Workbench |
+| **Infrastructure** | Your container registry + orchestration | Agent-workers (managed or self-hosted) |
+| **Complexity** | Docker knowledge required | Zero infrastructure management |
+| **Flexibility** | Full control over environment | Pre-configured runtime |
+| **Setup Time** | Manual Dockerfile configuration | Instant |
+
+---
+
+## Troubleshooting
+
+### Build Fails
+
+```bash
+# View build logs
+docker build . -t my-agent --progress=plain
+
+# Check for missing dependencies
+docker run --rm my-agent pip list
+```
+
+### Container Runs Locally But Fails in Production
+
+- Verify environment variables are set correctly
+- Check logs: `xpander logs`
+- Ensure base image architecture matches deployment target
+- Validate network access to external APIs
+
+### Large Image Size
+
+```dockerfile
+# Use slim base images
+FROM python:3.11-slim
+
+# Clean up apt cache
+RUN apt-get update && apt-get install -y package \
+    && rm -rf /var/lib/apt/lists/*
+
+# Use multi-stage builds
+FROM python:3.11 as builder
+RUN pip install --user -r requirements.txt
+
+FROM python:3.11-slim
+COPY --from=builder /root/.local /root/.local
+```
+
+---
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Agent Serverless" icon="bolt" href="/user-guide/run/agent-serverless">
+    Default deployment mode without containers
+  </Card>
+  <Card title="Self-Hosted Deployment" icon="server" href="/user-guide/run/self-hosted-deployment">
+    Run on your own infrastructure
+  </Card>
+  <Card title="Local Debugging" icon="bug" href="/user-guide/test/local-debugging">
+    Debug agents locally before deployment
+  </Card>
+  <Card title="CLI Reference" icon="terminal" href="/api-reference/cli-reference">
+    Complete CLI command reference
+  </Card>
+</CardGroup>

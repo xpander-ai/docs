@@ -1,0 +1,62 @@
+---
+title: "Agent Versioning"
+description: "Track, rollback, and manage agent versions with full history and audit trail"
+icon: "code-branch"
+---
+
+Agent Versioning provides complete version control for your agents, including configuration, prompts, tools, and code. Track changes, compare versions, and rollback instantly when needed.
+
+## Overview
+
+<CardGroup cols={2}>
+  <Card title="Version History" icon="clock-rotate-left">
+    Complete history of all agent changes with timestamps and authors
+  </Card>
+  <Card title="Instant Rollback" icon="rotate-left">
+    Revert to any previous version with one click
+  </Card>
+  <Card title="Compare Versions" icon="code-compare">
+    Side-by-side diff of configuration changes between versions
+  </Card>
+  <Card title="Audit Trail" icon="list-check">
+    Full audit log of who changed what and when
+  </Card>
+</CardGroup>
+
+## What Gets Versioned
+
+Every aspect of your agent is tracked:
+
+| Component | Tracked Changes |
+|-----------|----------------|
+| System Prompt | Content, parameters, model settings |
+| Tools | Added, removed, or reconfigured tools |
+| Configuration | Model selection, temperature, tokens |
+| Knowledge Base | Document additions and removals |
+| Connections | OAuth and API key changes |
+
+## Version Management
+
+### Creating Versions
+
+Versions are created automatically when you:
+
+- Save changes in the Workbench
+- Deploy via CLI or SDK
+- Import an agent configuration
+
+```bash
+# Deploy creates a new version
+xpander deploy --message "Added GitHub integration"
+```
+
+### Viewing Version History
+
+Access version history in the Workbench under **Agent Settings > Versions**:
+
+```
+v12 (current) - 2 hours ago - "Updated system prompt for clarity"
+v11 - 1 day ago - "Added Slack connector"
+v10 - 3 days ago - "Increased max tokens to 4096"
+v9 - 1 week ago - "Initial production deployment"
+```

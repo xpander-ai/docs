@@ -1,0 +1,162 @@
+---
+title: "Agent Memory"
+description: "Configure how your agent remembers conversations and learns about users"
+icon: "brain-circuit"
+---
+
+Agent memory controls what your agent remembers across conversations. Configure these settings in the **Memory** tab of your agent's Workbench.
+
+<Frame>![Agent Memory Settings](/static/images/screenshots/2025-12-17-20-10-59.png)</Frame>
+
+## Three Types of Memory
+
+1. **Session Storage** - Conversation history within a thread (`session_id`). Multiple users can share the same thread.
+2. **User Memories** - Personal facts about each user (`user_id`) that persist across all conversations.
+3. **Agent Memories** - Global knowledge that applies to all users.
+
+<Tip>
+**Recommended setup:** Session Storage (3-5 runs) + User Memories with agentic management enabled.
+</Tip>
+
+---
+
+## Session Storage
+
+Controls how many conversation exchanges the agent sees.
+
+- **3 runs** = Last 3 back-and-forth exchanges (6 messages)
+- **10 runs** = Last 10 exchanges (20 messages)
+
+<Note>
+**Terminology:** "No. of history runs" (UI) = `num_history_responses` (code) = `max_runs` (override)
+</Note>
+
+---
+
+## User Memories
+
+Stores personal facts about each user across all conversations.
+
+**Agentic managed:**
+- ✅ **Enabled** - Agent automatically creates/updates memories
+- ❌ **Disabled** - You manually create memories via API
+
+<Warning>
+**Privacy:** User memories store personal data. Never store passwords, API keys, SSNs, or credit cards. Memories persist until explicitly deleted.
+</Warning>
+
+---
+
+## Agent Memories
+
+Stores global knowledge that affects all users.
+
+**Agentic managed:**
+- ✅ **Enabled** - Agent learns patterns automatically
+- ❌ **Disabled (Recommended for Production)** - Only admins create memories
+
+<Warning>
+**Risk:** One user's interaction can change behavior for everyone. Not recommended for production, compliance-heavy, or multi-tenant systems without weekly review and rollback strategy.
+</Warning>
+
+---
+
+## Max Tool Calls from History
+
+Limits tool calls in context. Set to 0 (disabled) for most cases. Enable only when hitting token limits.
+
+---
+
+## Session Summaries
+
+Generates metadata for monitoring/observability dashboards. Does NOT affect context window size.
+
+---
+
+## Tool Calls Compression
+
+Compresses verbose tool outputs after N calls. Set threshold to 3-5 for tool-heavy agents.
+
+---
+
+## Usage
+
+Memory settings from Workbench are applied automatically.
+
+<CodeGroup>
+
+```python Basic
+from xpander_sdk import Backend, Configuration
+from agno.agent import Agent
+
+backend = Backend(configuration=Configuration(api_key="<your-key>"))
+agent = Agent(**backend.get_args(agent_id="<agent-id>"))
+
+agent.run(
+    "Your message",
+    user_id="user@example.com",     # User memories
+    session_id="thread-123"          # Session history (thread)
+)
+```
+
+```python Production
+from xpander_sdk import Task, on_task, Backend
+from agno.agent import Agent
+
+@on_task
+async def my_agent_handler(task: Task):
+    backend = Backend(configuration=task.configuration)
+    agno_args = await backend.aget_args(task=task)
+    agent = Agent(**agno_args)
+
+    result = await agent.arun(
+        input=task.to_message(),
+        user_id=task.user_id,
+        session_id=task.session_id
+    )
+
+    task.result = result.content
+    return task
+```
+
+</CodeGroup>
+
+<Info>
+**Multi-user threads:** Multiple users can share the same `session_id` (e.g., support tickets). Each user keeps their own memories, but sees the same thread history.
+</Info>
+
+---
+
+## Debug Logs
+
+Enable debug mode to see memory behavior:
+
+<Tabs>
+  <Tab title="Local">
+    ```python
+    agent.debug_mode = True
+    ```
+  </Tab>
+  <Tab title="Kubernetes">
+    ```bash
+    kubectl logs -f <agent-worker-pod-name>
+    ```
+  </Tab>
+</Tabs>
+
+You'll see:
+```bash
+DEBUG Added tool update_user_memory
+DEBUG Getting messages from previous runs: 6
+DEBUG Adding 6 messages from history
+```
+
+---
+
+## Troubleshooting
+
+| Issue | Fix |
+|-------|-----|
+| Agent doesn't remember previous messages | Pass same `session_id` for all messages. Increase history runs to 3+. |
+| User memories not working | Pass `user_id` consistently. Enable User Memories toggle. |
+| Hitting token limits | Reduce history runs, enable tool compression, or manage memory programmatically. |

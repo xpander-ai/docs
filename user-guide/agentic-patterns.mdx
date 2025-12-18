@@ -1,0 +1,39 @@
+---
+title: "Agentic Patterns"
+description: "Common patterns for building AI agents with xpander.ai"
+icon: "puzzle-piece"
+---
+
+## Multi-model Reasoning Agent
+
+Multimodal agents can process different input types—files, images, and text—in a single conversation. For example, you can upload a CSV file and ask the agent to analyze it, then push the results to Notion. The platform automatically handles format conversion and passes the right data to your agent.
+
+<Frame caption="Multimodal input: the agent processes a CSV file and integrates with Notion">
+  ![Notion multimodal example](/static/images/screenshots/notion-multi-modal.png)
+</Frame>
+
+## Multi-Agent Tasks
+
+Complex workflows often require multiple specialized agents working together. With xpander, you can orchestrate tasks across agents—for example, one agent handles Notion operations while another sends Slack notifications. The platform automatically routes tasks to the right agent and coordinates the workflow.
+
+<Frame caption="Multi-agent orchestration: Notion and Slack agents working together">
+  ![Multi-agent tasks](/static/images/screenshots/multi-agent-tasks.png)
+</Frame>
+
+## Knowledge Base Agents
+
+Knowledge base agents use vector databases to retrieve relevant documents and context for answering questions. Upload files to a knowledge base, attach it to your agent, and the agent will automatically search and reference the documents when responding. This pattern is ideal for support bots, documentation assistants, and Q&A systems.
+
+<Frame caption="An agent with a knowledge base for document retrieval">
+  ![Knowledge base agent](/static/images/screenshots/knowledge-base-agent.png)
+</Frame>
+
+## Agent as an API
+
+A common pattern is using AI agents as an API that returns structured output on every request. For example, an Invoice Parser agent can use AI to extract all data from any invoice. You can define a contract in the Structured Output tab and build systems that consume this agent as a reliable API.
+
+<Frame caption="Structured output configuration for an Invoice Parser agent">
+  ![Structured output agent](/static/images/screenshots/structured-output-agent.png)
+</Frame>
+
+This feature guarantees that you'll always receive responses matching the API contract defined in the Structured Output tab.

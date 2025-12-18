@@ -15,14 +15,38 @@
     "light": "/logo/logo.png",
     "dark": "/logo/logo-dark-mode.png"
   },
+  "background": {
+    "color": {
+      "dark": "#111113"
+    }
+  },
   "navbar": {
+    "links": [
+      {
+        "label": "Github",
+        "icon": "github",
+        "href": "https://github.com/xpander-ai/xpander.ai"
+      }
+    ],
     "primary": {
-      "type": "github",
-      "href": "https://github.com/xpander-ai/xpander.ai"
+      "type": "button",
+      "label": "Platform Access",
+      "href": "https://app.xpander.ai"
     }
   },
   "navigation": {
     "tabs": [
+      {
+        "tab": "Home",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "index"
+            ]
+          }
+        ]
+      },
       {
         "tab": "User Guide",
         "groups": [
@@ -30,39 +54,56 @@
             "group": "Getting Started",
             "pages": [
               "user-guide/index",
-              "user-guide/quick-start",
-              "user-guide/frameworks",
-              "user-guide/pricing",
-              "user-guide/self-hosted-deployment"
+              "user-guide/agentic-patterns",
+              "user-guide/pricing"
             ]
           },
           {
-            "group": "5 Minute Wins",
+            "group": "Build",
             "pages": [
-              "user-guide/5-minute-wins/index",
-              "user-guide/5-minute-wins/stateful-agents",
-              "user-guide/5-minute-wins/slack-agent-setup",
-              "user-guide/5-minute-wins/visual-agent-to-code",
-              "user-guide/5-minute-wins/openapi-to-mcp",
-              "user-guide/5-minute-wins/k8s-self-deploy"
+              "user-guide/build/ai-model",
+              "user-guide/build/agent-memory",
+              "user-guide/build/agent-db",
+              "user-guide/build/connectors",
+              "user-guide/build/knowledge-base",
+              "user-guide/build/system-prompt",
+              "user-guide/build/tool-calling-editor",
+              "user-guide/build/reasoning-mode",
+              "user-guide/build/frameworks",
+              "user-guide/build/import-agent"
             ]
           },
           {
-            "group": "Backend Configuration",
+            "group": "Test",
             "pages": [
-              "user-guide/backend-configuration/ai-model",
-              "user-guide/backend-configuration/system-prompt",
-              "user-guide/backend-configuration/connectors",
-              "user-guide/backend-configuration/agent-memory"
+              "user-guide/test/chat-interface",
+              "user-guide/test/local-debugging"
             ]
           },
           {
-            "group": "Task Sources",
+            "group": "Run",
             "pages": [
-              "user-guide/task-sources/slack",
-              "user-guide/task-sources/web-ui",
-              "user-guide/task-sources/mcp",
-              "user-guide/task-sources/webhooks"
+              "user-guide/run/agent-serverless",
+              "user-guide/run/agent-containers",
+              "user-guide/run/self-hosted-deployment"
+            ]
+          },
+          {
+            "group": "Manage",
+            "pages": [
+              "user-guide/manage/observability",
+              "user-guide/manage/agent-versioning"
+            ]
+          },
+          {
+            "group": "Scale",
+            "pages": [
+              "user-guide/scale/unified-api",
+              "user-guide/scale/slack",
+              "user-guide/scale/web-ui",
+              "user-guide/scale/mcp",
+              "user-guide/scale/webhooks",
+              "user-guide/scale/scheduled-tasks"
             ]
           }
         ]
@@ -71,13 +112,25 @@
         "tab": "Examples",
         "groups": [
           {
+            "group": "5 Minute Wins",
+            "icon": "stopwatch",
+            "pages": [
+              "Examples/5-minute-wins/index",
+              "Examples/5-minute-wins/stateful-agents",
+              "Examples/5-minute-wins/slack-agent-setup",
+              "Examples/5-minute-wins/visual-agent-to-code",
+              "Examples/5-minute-wins/openapi-to-mcp",
+              "Examples/5-minute-wins/k8s-self-deploy"
+            ]
+          },
+          {
             "group": "Examples",
             "pages": [
               "Examples/index",
               "Examples/00-setup-deployment",
               "Examples/01-simple-hello-world",
               "Examples/04-local-model-integration",
-              "Examples/05-custom-tools-integration", 
+              "Examples/05-custom-tools-integration",
               "Examples/06-async-task-handling",
               "Examples/07-session-management",
               "Examples/08-knowledge-base-rag",
@@ -262,63 +315,7 @@
           }
         ]
       }
-    ],
-    "global": {
-      "dropdowns": [
-        {
-          "dropdown": "User Guide",
-          "icon": { "name": "book", "style": "regular" },
-          "href": "https://docs.xpander.ai/user-guide"
-        },
-        {
-          "dropdown": "Examples",
-          "icon": { "name": "lightbulb", "style": "regular" },
-          "href": "https://docs.xpander.ai/Examples/index"
-        },
-        {
-          "dropdown": "API Reference",
-          "icon": { "name": "code", "style": "regular" },
-          "href": "https://docs.xpander.ai/api-reference/index"
-        },
-        {
-          "dropdown": "Changelog",
-          "icon": { "name": "note", "style": "regular" },
-          "href": "https://docs.xpander.ai/changelog/product-updates"
-        },
-        {
-          "dropdown": "AI Connectors",
-          "icon": { "name": "plug", "style": "regular" },
-          "href": "https://docs.xpander.ai/connectors/index"
-        }
-      ],
-      "anchors": [
-        {
-          "anchor": "xpander.ai Website",
-          "href": "https://xpander.ai",
-          "icon": { "name": "globe-pointer", "style": "regular" }
-        },
-        {
-          "anchor": "xpander.ai Console",
-          "href": "https://app.xpander.ai",
-          "icon": { "name": "code", "style": "regular" }
-        },
-        {
-          "anchor": "SDK Reference",
-          "href": "https://docs.xpander.ai/api-reference/index",
-          "icon": { "name": "code", "style": "regular" }
-        },
-        {
-          "anchor": "Community Slack",
-          "href": "https://join.slack.com/t/xpandercommunity/shared_invite/zt-2mt2xkxkz-omM7f~_h2jcuzFudrYtZQQ",
-          "icon": { "name": "slack", "style": "regular" }
-        },
-        {
-          "anchor": "Developer Discord",
-          "href": "https://discord.gg/CUcp4WWh5g",
-          "icon": { "name": "discord", "style": "regular" }
-        }
-      ]
-    }
+    ]
   },
   "contextual": {
     "options": [

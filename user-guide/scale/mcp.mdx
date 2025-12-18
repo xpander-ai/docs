@@ -1,0 +1,274 @@
+---
+title: "Model Context Protocol (MCP)"
+description: "Connect Claude Desktop, ChatGPT, and other MCP clients to xpander agents with OAuth authentication"
+icon: "bridge"
+---
+
+xpander provides an MCP server that exposes your agents to any MCP-compatible client (Claude Desktop, ChatGPT, etc.) with secure OAuth authentication.
+
+---
+
+## How It Works
+
+xpander's MCP server provides tools to:
+
+1. **List Agents**: Browse all agents in your organization
+2. **Run Tasks**: Invoke agents and get results
+3. **Get Thread History**: Retrieve conversation history from agent sessions
+
+**Authentication**: OAuth flow redirects you to xpander platform to obtain API key automatically.
+
+---
+
+## MCP Endpoints
+
+xpander provides two MCP endpoint formats:
+
+<CardGroup cols={2}>
+  <Card title="Standard HTTP" icon="globe">
+    `api.xpander.ai/mcp`
+
+    Standard HTTP transport for MCP clients
+  </Card>
+  <Card title="Server-Sent Events" icon="satellite-dish">
+    `api.xpander.ai/mcp/sse`
+
+    SSE transport for streaming responses
+  </Card>
+</CardGroup>
+
+Both endpoints redirect to the xpander platform for OAuth authentication on first use.
+
+---
+
+## Setup with Claude Desktop
+
+<Steps>
+  <Step title="Configure Claude Desktop">
+    Add xpander MCP server to your Claude Desktop configuration:
+
+    **File location:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+    ```json
+    {
+      "mcpServers": {
+        "xpander": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "@modelcontextprotocol/server-fetch",
+            "https://api.xpander.ai/mcp"
+          ]
+        }
+      }
+    }
+    ```
+  </Step>
+
+  <Step title="Restart Claude Desktop">
+    Close and reopen Claude Desktop to load the new configuration.
+  </Step>
+
+  <Step title="Authenticate">
+    When Claude first tries to use xpander tools, you'll be redirected to the xpander platform to authenticate and obtain your API key.
+
+    The OAuth flow happens automatically - just log in when prompted.
+  </Step>
+
+  <Step title="Use xpander Agents">
+    After authentication, Claude can access all your xpander agents:
+
+    - "List all my xpander agents"
+    - "Run my customer-support agent with input: How do I reset my password?"
+    - "Get the conversation history for thread abc-123"
+  </Step>
+</Steps>
+
+---
+
+## Available MCP Tools
+
+### list_agents
+
+Lists all agents in your organization.
+
+**Parameters:**
+- None
+
+**Returns:**
+- Array of agent objects with `id`, `name`, `description`, and metadata
+
+**Example in Claude:**
+> "Show me all my xpander agents"
+
+---
+
+### run_task
+
+Invokes an agent and waits for the result.
+
+**Parameters:**
+- `agent_id` (string, required): The ID of the agent to invoke
+- `input` (string, required): The message to send to the agent
+- `user_id` (string, optional): User identifier for session tracking
+- `session_id` (string, optional): Session identifier for conversation continuity
+
+**Returns:**
+- Task result with agent response, tokens used, and execution metadata
+
+**Example in Claude:**
+> "Run agent abc-123 with input: What's the weather in San Francisco?"
+
+---
+
+### get_thread_history
+
+Retrieves conversation history for a specific thread/session.
+
+**Parameters:**
+- `thread_id` (string, required): The thread/session ID to retrieve
+
+**Returns:**
+- Array of messages with user/agent exchanges, tool calls, and timestamps
+
+**Example in Claude:**
+> "Get the conversation history for thread sess-456"
+
+---
+
+## Using with ChatGPT
+
+ChatGPT also supports MCP. Add the xpander MCP server to your ChatGPT configuration:
+
+```json
+{
+  "mcpServers": {
+    "xpander": {
+      "url": "https://api.xpander.ai/mcp",
+      "transport": "http"
+    }
+  }
+}
+```
+
+The OAuth flow works the same way - authenticate once, then ChatGPT can invoke your agents.
+
+---
+
+## Using SSE Transport
+
+For streaming responses, use the SSE endpoint:
+
+```json
+{
+  "mcpServers": {
+    "xpander-sse": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-fetch",
+        "https://api.xpander.ai/mcp/sse"
+      ]
+    }
+  }
+}
+```
+
+This provides real-time streaming for long-running agent tasks.
+
+---
+
+## Authentication Flow
+
+1. **First Request**: MCP client calls xpander endpoint
+2. **OAuth Redirect**: You're redirected to `app.xpander.ai` to authenticate
+3. **API Key Obtained**: xpander platform generates and returns your API key
+4. **Cached Locally**: MCP client caches the API key for future requests
+5. **Subsequent Requests**: API key is automatically included in headers
+
+<Warning>
+Your API key is cached locally by the MCP client. Keep your machine secure and don't share your Claude/ChatGPT configuration files.
+</Warning>
+
+---
+
+## Example Workflows
+
+### Customer Support Agent
+
+```
+User: "List my agents"
+Claude: [Shows agent list including "customer-support-bot"]
+
+User: "Run customer-support-bot with: How do I reset my password?"
+Claude: [Invokes agent, shows response: "To reset your password..."]
+
+User: "Get the thread history for that conversation"
+Claude: [Shows full conversation with timestamps and tool calls]
+```
+
+### Financial Analysis Agent
+
+```
+User: "Run financial-analyst agent with: Analyze AAPL stock performance"
+Claude: [Agent uses Alpha Vantage MCP to fetch data, performs analysis]
+
+User: "Show me the thread history"
+Claude: [Displays tool calls to Alpha Vantage, analysis steps, final report]
+```
+
+---
+
+## Troubleshooting
+
+### MCP Server Not Showing in Claude
+
+- Verify `claude_desktop_config.json` syntax is valid JSON
+- Check file location: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- Restart Claude Desktop completely
+- Check Claude logs: `~/Library/Logs/Claude/mcp.log`
+
+### Authentication Fails
+
+- Clear cached credentials and try again
+- Verify you're logged into `app.xpander.ai`
+- Check organization permissions (some agents may be restricted)
+
+### Agent Invocation Fails
+
+- Verify agent is deployed (check Workbench)
+- Ensure agent is not stopped or in error state
+- Check agent logs in Monitor tab
+
+---
+
+## Security
+
+**OAuth Authentication**: API keys are obtained through secure OAuth flow, not embedded in configuration files.
+
+**Scoped Access**: Each API key is scoped to your user account and organization.
+
+**Revocation**: Revoke access anytime from `app.xpander.ai` → Settings → API Keys
+
+<Warning>
+Never share your `claude_desktop_config.json` file after authentication - it contains your cached API key.
+</Warning>
+
+---
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Unified API" icon="code" href="/user-guide/scale/unified-api">
+    Direct REST API access to agents
+  </Card>
+  <Card title="Agent Containers" icon="box" href="/user-guide/run/agent-containers">
+    Custom MCP integrations in agent code
+  </Card>
+  <Card title="Observability" icon="chart-line" href="/user-guide/manage/observability">
+    Monitor MCP invocations in real-time
+  </Card>
+  <Card title="MCP API Reference" icon="book" href="/api-reference/mcp">
+    Complete MCP API documentation
+  </Card>
+</CardGroup>

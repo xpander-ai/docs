@@ -1,0 +1,263 @@
+---
+title: "Unified Chat Interface"
+description: "Web-based chat UI for testing, debugging, and interacting with agents"
+icon: "comments"
+---
+
+The Unified Chat Interface provides a web-based UI for interacting with your agents. Test prompts, debug behavior, and share access with team members - all without writing code.
+
+## Overview
+
+<CardGroup cols={2}>
+  <Card title="Real-time Chat" icon="message">
+    Interactive conversations with streaming responses
+  </Card>
+  <Card title="Tool Visibility" icon="eye">
+    See tool calls and results as they happen
+  </Card>
+  <Card title="Session History" icon="clock-rotate-left">
+    Browse and resume previous conversations
+  </Card>
+  <Card title="Share Access" icon="share">
+    Generate shareable links for stakeholders
+  </Card>
+</CardGroup>
+
+## Accessing the Chat Interface
+
+### Via Workbench
+
+1. Open your agent in the Workbench
+2. Click **Chat** in the top navigation
+3. Start chatting with your agent
+
+### Direct URL
+
+Access any agent's chat interface directly:
+
+```
+https://app.xpander.ai/chat/{agent-id}
+```
+
+## Features
+
+### Streaming Responses
+
+Watch responses generate in real-time:
+
+```
+User: Summarize today's GitHub issues
+
+Agent: Let me check your GitHub issues...
+       [Calling: github-issues-list]
+       [Result: 12 issues found]
+
+       Here's a summary of today's issues:
+
+       **Critical (2)**
+       - #423: Production database connection timeout
+       - #421: Authentication failing for OAuth users
+       ...
+```
+
+### Tool Call Visibility
+
+See exactly what tools are being invoked:
+
+```
+┌─────────────────────────────────────┐
+│ Tool: github-issues-list            │
+│ Status: ✓ Completed (234ms)         │
+├─────────────────────────────────────┤
+│ Input:                              │
+│   repository: "my-org/my-repo"      │
+│   state: "open"                     │
+│   labels: ["bug", "critical"]       │
+├─────────────────────────────────────┤
+│ Output:                             │
+│   12 issues returned                │
+│   [Expand to see full response]     │
+└─────────────────────────────────────┘
+```
+
+### File Attachments
+
+Upload files directly in chat:
+
+- Documents (PDF, DOCX, TXT)
+- Images (PNG, JPG, GIF)
+- Data files (CSV, JSON)
+
+```
+User: [Attached: quarterly-report.pdf]
+      Summarize the key findings from this report
+
+Agent: I'll analyze the quarterly report...
+```
+
+### Conversation History
+
+Browse and resume previous sessions:
+
+```
+Recent Conversations
+─────────────────────────────────────
+Today
+  • "Debug authentication issue" - 2 hours ago
+  • "Review PR #156" - 4 hours ago
+
+Yesterday
+  • "Generate weekly report" - 1 day ago
+  • "Analyze error logs" - 1 day ago
+
+This Week
+  • "Plan Q2 roadmap" - 3 days ago
+```
+
+## Session Management
+
+### Create New Session
+
+```python
+from xpander_sdk import Chat
+
+chat = Chat(agent_id="agent-123")
+session = chat.create_session(
+    title="Debug Session",
+    metadata={"ticket": "JIRA-456"}
+)
+
+print(f"Session URL: {session.url}")
+```
+
+### Resume Session
+
+```python
+# Resume existing conversation
+session = chat.get_session("session-789")
+response = session.send("Continue from where we left off")
+```
+
+### Export Conversation
+
+```python
+# Export as markdown
+markdown = session.export(format="markdown")
+
+# Export as JSON
+data = session.export(format="json")
+```
+
+## Sharing & Access Control
+
+### Generate Share Link
+
+Create shareable links with configurable permissions:
+
+```python
+from xpander_sdk import Chat
+
+chat = Chat(agent_id="agent-123")
+share_link = chat.create_share_link(
+    session_id="session-789",
+    permissions="read_only",  # or "interactive"
+    expires_in="7d"
+)
+
+print(f"Share URL: {share_link.url}")
+```
+
+### Permission Levels
+
+| Permission    | Description                    |
+| ------------- | ------------------------------ |
+| `read_only`   | View conversation history only |
+| `interactive` | Can send new messages          |
+| `full`        | Full access including settings |
+
+### Embed in Your App
+
+Embed the chat interface in your application:
+
+```html
+<iframe
+  src="https://app.xpander.ai/embed/chat/{agent-id}"
+  width="400"
+  height="600"
+  frameborder="0"
+></iframe>
+```
+
+## Customization
+
+### Theme
+
+```python
+chat = Chat(
+    agent_id="agent-123",
+    theme={
+        "primary_color": "#4F46E5",
+        "background": "#F9FAFB",
+        "font_family": "Inter"
+    }
+)
+```
+
+### Branding
+
+Add custom branding in Workbench:
+
+1. Navigate to **Agent Settings > Chat Interface**
+2. Upload logo and configure colors
+3. Set custom welcome message
+
+### Welcome Message
+
+```python
+chat = Chat(
+    agent_id="agent-123",
+    welcome_message="Hi! I'm your DevOps assistant. How can I help you today?",
+    suggested_prompts=[
+        "Check system status",
+        "Review recent deployments",
+        "Analyze error logs"
+    ]
+)
+```
+
+## Keyboard Shortcuts
+
+| Shortcut      | Action                 |
+| ------------- | ---------------------- |
+| `Enter`       | Send message           |
+| `Shift+Enter` | New line               |
+| `Ctrl+K`      | New conversation       |
+| `Ctrl+/`      | Show shortcuts         |
+| `Esc`         | Cancel current request |
+
+## API Integration
+
+Build custom chat experiences:
+
+```python
+from xpander_sdk import Backend
+from agno.agent import Agent
+
+backend = Backend()
+agent = Agent(**backend.get_args())
+
+# Streaming chat
+for chunk in agent.run_stream("Hello, how can you help?"):
+    print(chunk.content, end="", flush=True)
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Web UI Task Source" icon="globe" href="/user-guide/scale/web-ui">
+    Configure web interface
+  </Card>
+  <Card title="Slack Integration" icon="slack" href="/user-guide/scale/slack">
+    Chat via Slack
+  </Card>
+</CardGroup>

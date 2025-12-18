@@ -1,0 +1,326 @@
+---
+title: "Observability"
+description: "Monitor agent threads, tasks, metrics, and logs in real-time"
+icon: "chart-line"
+---
+
+Navigate to **Monitor** tab to view all agent executions, threads, tasks, and performance metrics.
+
+<Frame>![Monitoring Dashboard](/static/images/screenshots/2025-12-17-20-58-30.png)</Frame>
+
+---
+
+## Three Views
+
+<CardGroup cols={3}>
+  <Card title="Threads" icon="messages">
+    Conversation history grouped by session_id
+  </Card>
+  <Card title="Metrics" icon="chart-bar">
+    Token usage, latency, and throughput
+  </Card>
+  <Card title="Tasks" icon="list-check">
+    Individual executions with status and logs
+  </Card>
+</CardGroup>
+
+---
+
+## Threads
+
+View all conversation threads (grouped by `session_id`). Each thread shows:
+
+- User information (name, email, ID)
+- Last interaction timestamp
+- Created timestamp
+- Input/output token counts
+- Thread ID
+
+Click any thread to see full conversation history with messages, tool calls, and AI insights.
+
+### Thread Details
+
+When you open a thread, you see:
+
+**Logs Panel:**
+- Log time and execution duration
+- Downloadable JSON with full conversation
+- Message timeline with user/agent exchanges
+- Tool calls with payloads and responses
+
+**AI Insights Panel:**
+- Goal Achievement Metric (%)
+- Summary of conversation
+- Re-evaluate button to refresh analysis
+
+**Example from logs:**
+
+```
+20:34:43  User Message
+          Message content
+
+20:34:51  Agent Final Response (11.516s)
+          Message content
+
+20:35:10  Search knowledge base (3.471s)
+          Request Payload
+          Response
+```
+
+### Download Thread JSON
+
+Click **Download Log** to get full thread data:
+
+<CodeGroup>
+
+```json Thread Structure
+{
+  "id": "6ebc5351-bfc4-4742-9640-db4127ca1396",
+  "created_at": "2025-12-18T04:34:43.666452Z",
+  "messages": [
+    {
+      "id": "6ebc5351-..._user_97873529-...",
+      "created_at": "2025-12-18T04:34:43.666452Z",
+      "role": "user",
+      "content": {
+        "text": "what's in your kb?",
+        "files": []
+      }
+    },
+    {
+      "id": "6ebc5351-..._agent_f280af66-...",
+      "created_at": "2025-12-18T04:34:51.406157Z",
+      "role": "agent",
+      "content": {
+        "text": "Awesome question...",
+        "files": []
+      }
+    },
+    {
+      "id": "47812cbf-8e55-497c-8494-90a180605ce8",
+      "created_at": "2025-12-18T04:35:10.139827Z",
+      "tool_name": "search_knowledge_base",
+      "payload": {
+        "query": "xpander.ai knowledge base overview"
+      },
+      "is_error": false,
+      "result": "[{\"content\": \"...\", \"score\": 78.13}]"
+    }
+  ],
+  "user": {
+    "id": "71f495e5-c67a-4b36-a4b4-e9cce3513c5b",
+    "first_name": "David",
+    "last_name": "Twizer",
+    "display_name": "David Twizer"
+  }
+}
+```
+
+</CodeGroup>
+
+---
+
+## Tasks
+
+View all agent executions (individual task runs). Multiple tasks can belong to the same thread.
+
+**Task List Columns:**
+
+| Column | Description |
+|--------|-------------|
+| ID | Unique task identifier (8 characters) |
+| Created At | Task creation timestamp |
+| Updated At | Last update timestamp |
+| Status | `Completed`, `Stopped`, or `Running` |
+| Internal Status | Internal execution state |
+
+**Task Status:**
+
+- **Completed** - Task finished successfully
+- **Stopped** - Task was interrupted or failed
+- **Running** - Task currently executing
+
+### Multiple Tasks Per Thread
+
+A single thread (conversation) can have multiple task executions:
+
+```
+Thread: 6ebc5351 (session_id)
+├── Task: 6ebc5351 (20:34:44 - 20:35:13) ✓ Completed
+├── Task: 80632cde (20:01:22 - 20:01:25) ✓ Completed
+└── Task: 179873c (19:59:44 - 20:00:01) ✓ Completed
+```
+
+Each task represents one agent invocation, but they share the same conversation context (`session_id`).
+
+---
+
+## Metrics
+
+Real-time performance metrics for your agent:
+
+**Token Usage:**
+
+- Input tokens per thread
+- Output tokens per thread
+- Total tokens across all executions
+
+**Performance:**
+
+- Average execution duration
+- Actions/tool calls per thread
+- Success rate
+
+---
+
+## Using the SDK
+
+<CodeGroup>
+
+```python Get Chat History
+from xpander_sdk import Configuration, Backend
+from agno.agent import Agent
+import json
+from datetime import datetime
+
+config = Configuration(
+    api_key="<your-key>",
+    organization_id="<your-org>"
+)
+
+backend = Backend(configuration=config)
+agno_agent = Agent(**backend.get_args(agent_id="<agent-id>"))
+
+# Run conversation
+agno_agent.print_response(input='Hi')
+
+# Get chat history
+chat_history = agno_agent.get_chat_history()
+
+# Serialize and save to JSON
+serialized_history = []
+for interaction in chat_history:
+    if hasattr(interaction, 'model_dump'):
+        serialized_history.append(interaction.model_dump())
+    elif hasattr(interaction, '__dict__'):
+        serialized_history.append(interaction.__dict__)
+    else:
+        serialized_history.append(str(interaction))
+
+history_data = {
+    'timestamp': datetime.now().isoformat(),
+    'session_id': agno_agent.session_id,
+    'chat_history': serialized_history
+}
+
+with open('chat_history.json', 'w') as f:
+    json.dump(history_data, f, indent=2, default=str)
+```
+
+```python Get Task Activity Log
+from xpander_sdk import Task
+
+# Load task and get activity log
+task = await Task.aload("task-123")
+activity_log = await task.aget_activity_log()
+
+# Activity log includes:
+# - User/agent conversation messages
+# - Tool invocations and results
+# - Agent reasoning steps
+# - Sub-agent triggers
+
+for activity in activity_log:
+    print(f"Type: {activity.type}")
+    print(f"Content: {activity.content}")
+```
+
+```python Session Management
+from agno.agent import Agent
+
+# Load agent
+agent = await Agent.aload("agent-123")
+
+# Get all sessions for a user
+sessions = await agent.aget_user_sessions(user_id="user_123")
+
+for session in sessions:
+    print(f"Session: {session.id}")
+    print(f"Created: {session.created_at}")
+
+# Get specific session
+session = await agent.aget_session(session_id="sess_456")
+
+# Delete session
+await agent.adelete_session(session_id="sess_456")
+```
+
+</CodeGroup>
+
+**API References:**
+
+- [Task Activity Monitoring](https://docs.xpander.ai/api-reference/tasks#task-activity-monitoring)
+- [Session Management](https://docs.xpander.ai/api-reference/agents#session-management)
+
+---
+
+## Debug Mode
+
+Enable debug mode to see detailed logs during development:
+
+<Tabs>
+  <Tab title="Local">
+    ```python
+    from xpander_sdk import Backend, Configuration
+    from agno.agent import Agent
+
+    backend = Backend(configuration=Configuration(api_key="<your-key>"))
+    agent = Agent(**backend.get_args(agent_id="<agent-id>"))
+
+    # Enable debug logs
+    agent.debug_mode = True
+
+    agent.print_response(input="Test message")
+    ```
+  </Tab>
+  <Tab title="Kubernetes">
+    ```bash
+    # View agent worker logs
+    kubectl logs -f <agent-worker-pod-name>
+
+    # Filter for specific events
+    kubectl logs -f <agent-worker-pod-name> | grep "Tool Calls"
+    kubectl logs -f <agent-worker-pod-name> | grep "DEBUG"
+    ```
+  </Tab>
+</Tabs>
+
+**Example debug output:**
+
+```bash
+DEBUG Tool Calls:
+  - Name: 'search_knowledge_base'
+    Arguments: 'query: Thai recipes overview'
+
+DEBUG Time to get references: 1.0603s
+
+DEBUG [
+  {
+    "content": "Pad Thai Goong Sod - Thai Fried Noodles...",
+    "score": 78.13
+  }
+]
+```
+
+---
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Agent Memory" icon="brain-circuit" href="/user-guide/build/agent-memory">
+    Session storage and user memories
+  </Card>
+  <Card title="Tasks API" icon="list-check" href="/api-reference/tasks">
+    Task management API reference
+  </Card>
+</CardGroup>

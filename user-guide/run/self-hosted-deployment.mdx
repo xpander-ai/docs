@@ -1,0 +1,474 @@
+---
+title: "Self-Hosted Deployment"
+description: "Deploy xpander.ai on your own infrastructure using Helm charts for Kubernetes"
+icon: "server"
+---
+
+## Overview
+
+xpander.ai can be deployed on your own infrastructure using Helm charts, giving you full control over your AI agent platform.
+
+<CardGroup cols={2}>
+  <Card title="5-Minute Quick Deploy" icon="bolt" href="/Examples/5-minute-wins/k8s-self-deploy">
+    Get started fast with step-by-step K8s deployment tutorial
+  </Card>
+  <Card title="Detailed Configuration" icon="sliders">
+    Complete reference guide (continue reading below)
+  </Card>
+</CardGroup>
+
+<Note>
+Before starting, you'll need to create an environment in the [xpander.ai Console](https://app.xpander.ai/environments) to get your Organization ID and Environment ID.
+</Note>
+
+## Prerequisites
+
+- **Kubernetes** 1.20 or later
+- **Helm** 3.12 or later
+- **Ingress Controller** (e.g., NGINX Ingress Controller)
+- **Storage Class** for persistent volumes
+- **TLS certificates** (manual or cert-manager)
+
+## Network Security & Traffic Flow
+
+<Note>
+**Important**: xpander.ai self-hosted deployment only makes outbound connections. There is **no incoming traffic** from xpander.ai to your cluster.
+</Note>
+
+### Traffic Direction
+- ✅ **Outbound Only**: Your self-hosted deployment connects out to xpander.ai services
+- ❌ **No Inbound**: xpander.ai never initiates connections to your cluster
+- 🔒 **Your Control**: All data stays within your infrastructure
+
+### Required Outbound Access
+
+Your cluster needs outbound (egress) access to these xpander.ai IP addresses:
+
+```
+166.117.85.46
+15.197.85.80
+```
+
+**Firewall Configuration**:
+- **Protocol**: HTTPS (port 443)
+- **Direction**: Outbound/Egress only
+- **Source**: Your Kubernetes cluster
+- **Destination**: The IP addresses above
+
+## Environment Setup
+
+### 1. Create Environment
+
+First, create a new self-hosted environment in the xpander.ai Console:
+
+1. Go to [https://app.xpander.ai/environments](https://app.xpander.ai/environments)
+2. Click **"Add Environment"**
+3. Enter your environment details:
+   - **Name**: e.g., "Production"
+   - **URL**: Your server's FQDN (e.g., `xpander.my-company.com`)
+
+4. Note down the **Organization ID** and **Environment ID** - you'll need these for installation.
+
+### 2. Get Installation Commands
+
+The platform will automatically generate the complete Helm installation commands for you with all the required keys and configuration. You don't need to manually obtain or configure these values.
+
+## Installation
+
+<Note>
+The platform will provide you with the exact Helm installation commands tailored to your environment. The examples below show the format and available options for reference.
+</Note>
+
+### Quick Start
+
+<CodeGroup>
+
+```bash Helm Repository Setup
+# Add the Xpander Helm repository
+helm repo add xpander https://charts.xpander.ai
+helm repo update
+```
+
+```bash Basic Installation
+# Install Xpander with minimal configuration
+helm upgrade --install xpander xpander/xpander \
+  --namespace xpander --create-namespace \
+  --set global.organizationId=6aedc41e-9771-4660-b46e-af51c66d2ea8 \
+  --set global.environmentId=0e308480-f02c-44a9-97ce-e15bb39d94e8 \
+  --set secrets.static.deploymentManagerApiKey=6120718c-ef9b-42e8-93a8-18203d0700a9
+```
+
+```bash With Ingress
+# Install with external access via ingress
+helm upgrade --install xpander xpander/xpander \
+  --namespace xpander --create-namespace \
+  --set ingress.enabled=true \
+  --set domain=xpander.my-company.com \
+  --set global.organizationId=6aedc41e-9771-4660-b46e-af51c66d2ea8 \
+  --set global.environmentId=0e308480-f02c-44a9-97ce-e15bb39d94e8 \
+  --set secrets.static.deploymentManagerApiKey=6120718c-ef9b-42e8-93a8-18203d0700a9
+```
+
+</CodeGroup>
+
+### Production Installation
+
+For production deployments, configure AI service API keys and custom settings:
+
+<CodeGroup>
+
+```bash Complete Installation
+helm upgrade --install xpander xpander/xpander \
+  --namespace xpander --create-namespace \
+  --set ingress.enabled=true \
+  --set domain=xpander.my-company.com \
+  --set global.organizationId=6aedc41e-9771-4660-b46e-af51c66d2ea8 \
+  --set global.environmentId=0e308480-f02c-44a9-97ce-e15bb39d94e8 \
+  --set agent-worker.env.AGENTS_OPENAI_API_KEY=YOUR-OPENAI-KEY \
+  --set agent-worker.env.ANTHROPIC_API_KEY=YOUR-ANTHROPIC-KEY \
+  --set secrets.static.deploymentManagerApiKey=6120718c-ef9b-42e8-93a8-18203d0700a9
+```
+
+```yaml Values File (xpander-values.yaml)
+# Production configuration
+domain: "xpander.production.com"
+
+global:
+  organizationId: "6aedc41e-9771-4660-b46e-af51c66d2ea8"
+  environmentId: "0e308480-f02c-44a9-97ce-e15bb39d94e8"
+  env:
+    LOG_LEVEL: "info"
+    ENVIRONMENT: "production"
+
+secrets:
+  static:
+    deploymentManagerApiKey: "6120718c-ef9b-42e8-93a8-18203d0700a9"
+
+agent-worker:
+  env:
+    AGENTS_OPENAI_API_KEY: "sk-your-openai-key"
+    ANTHROPIC_API_KEY: "sk-ant-your-anthropic-key"
+
+ingress:
+  enabled: true
+  tls:
+    enabled: true
+    source: "cert-manager"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+
+resources:
+  agentController:
+    limits:
+      cpu: "1000m"
+      memory: "1Gi"
+  
+redis:
+  storage:
+    size: "32Gi"
+    storageClass: "fast-ssd"
+```
+
+```bash Install with Values File
+helm upgrade --install xpander xpander/xpander \
+  --namespace xpander --create-namespace \
+  --values xpander-values.yaml
+```
+
+</CodeGroup>
+
+## Architecture
+
+For a detailed overview of the on-premises architecture and how components interact, see:
+
+**[On-Premises Architecture Guide](https://pages.xpander.ai/on-premises-architecture)**
+
+The Helm chart deploys the following components:
+
+- **Agent Controller** - Main API endpoint and orchestration
+- **AI Gateway** - AI service gateway for LLM providers
+- **Agent Worker** - Task execution runtime
+- **Redis** - Cache and state management
+- **PostgreSQL** - Data persistence
+
+### Generated Hostnames
+
+When you set a `domain`, these hostnames are automatically created:
+- `agent-controller.{domain}` - Main API endpoint
+- `ai-gateway.{domain}` - AI service gateway  
+
+## Configuration Options
+
+### Required Parameters
+
+| Parameter                                | Description                     | Example                                |
+| ---------------------------------------- | ------------------------------- | -------------------------------------- |
+| `global.organizationId`                  | Your xpander.ai organization ID | `6aedc41e-9771-4660-b46e-af51c66d2ea8` |
+| `global.environmentId`                   | Your xpander.ai environment ID  | `0e308480-f02c-44a9-97ce-e15bb39d94e8` |
+| `secrets.static.deploymentManagerApiKey` | Deployment manager API key      | `6120718c-ef9b-42e8-93a8-18203d0700a9` |
+
+### Optional Parameters
+
+| Parameter                                | Description                         | Default                 |
+| ---------------------------------------- | ----------------------------------- | ----------------------- |
+| `domain`                                 | Base domain for ingress hosts       | `""` (ingress disabled) |
+| `ingress.enabled`                        | Enable external access via ingress  | `false`                 |
+| `agent-worker.env.AGENTS_OPENAI_API_KEY` | OpenAI API key for GPT models       | `""`                    |
+| `agent-worker.env.ANTHROPIC_API_KEY`     | Anthropic API key for Claude models | `""`                    |
+
+## AI Service Configuration
+
+### OpenAI Integration
+
+To use OpenAI models (GPT-3.5, GPT-4, etc.):
+
+```bash
+helm upgrade xpander xpander/xpander \
+  --namespace xpander \
+  --reuse-values \
+  --set agent-worker.env.AGENTS_OPENAI_API_KEY=sk-your-openai-key
+```
+
+### Anthropic Integration
+
+To use Claude models:
+
+```bash
+helm upgrade xpander xpander/xpander \
+  --namespace xpander \
+  --reuse-values \
+  --set agent-worker.env.ANTHROPIC_API_KEY=sk-ant-your-anthropic-key
+```
+
+### Using Kubernetes Secrets (Recommended)
+
+For production, store API keys in Kubernetes secrets:
+
+<CodeGroup>
+
+```bash Create Secret
+kubectl create secret generic ai-service-keys \
+  --namespace xpander \
+  --from-literal=openai-api-key=sk-your-openai-key \
+  --from-literal=anthropic-api-key=sk-ant-your-anthropic-key
+```
+
+```yaml Values Configuration
+agent-worker:
+  envFromSecretKeys:
+    AGENTS_OPENAI_API_KEY:
+      secretName: "ai-service-keys"
+      key: "openai-api-key"
+    ANTHROPIC_API_KEY:
+      secretName: "ai-service-keys"
+      key: "anthropic-api-key"
+```
+
+</CodeGroup>
+
+## Verification
+
+After installation, verify your deployment:
+
+### Check Pod Status
+
+```bash
+kubectl -n xpander get pods
+```
+
+Expected output:
+```
+NAME                                    READY   STATUS    RESTARTS   AGE
+xpander-agent-controller-xxx            1/1     Running   0          2m
+xpander-ai-gateway-xxx                  1/1     Running   0          2m
+xpander-agent-worker-xxx                1/1     Running   0          2m
+xpander-mcp-xxx                         1/1     Running   0          2m
+xpander-redis-0                         1/1     Running   0          2m
+xpander-postgres-0                      1/1     Running   0          2m
+```
+
+### Test Health Endpoints
+
+<CodeGroup>
+
+```bash Via Port Forward
+# Port forward services for testing
+kubectl -n xpander port-forward service/xpander-agent-controller 9016:9016 &
+kubectl -n xpander port-forward service/xpander-ai-gateway 9018:9018 &
+kubectl -n xpander port-forward service/xpander-mcp 8081:8081 &
+
+# Test endpoints
+curl http://localhost:9016/health
+curl http://localhost:9018/health  
+curl http://localhost:8081/health
+```
+
+```bash Via Ingress (if enabled)
+# Test via ingress hostnames
+curl http://agent-controller.my-company.com/health
+curl http://ai-gateway.xpander.my-company.com/health
+curl http://mcp.xpander.my-company.com/health
+```
+
+</CodeGroup>
+
+## Connecting Your Environment
+
+Once deployed, connect your environment in the xpander.ai Console:
+
+1. Go to [https://app.xpander.ai/environments](https://app.xpander.ai/environments)
+2. Find your environment and click **"Complete setup"**
+3. The status should change to **"Connected"** when the deployment is healthy
+
+## Using Self-Hosted Deployment with xpander SDK
+
+To use your self-hosted deployment with the xpander SDK, configure the `base_url` to point to your Agent Controller endpoint.
+
+<Note>
+**API Key**: When using self-hosted deployment, use the **Agent Controller API key** generated during Helm installation, not your xpander.ai cloud API key.
+</Note>
+
+### Configuration
+
+```python
+from xpander_sdk import Configuration
+
+config = Configuration(
+    api_key="your-agent-controller-api-key",  # From Helm installation
+    organization_id="your-org-id",
+    base_url="https://agent-controller.my-company.com"
+)
+```
+
+### Using with Agno Framework
+
+```python
+from xpander_sdk import Backend, Configuration
+from agno.agent import Agent
+
+config = Configuration(
+    api_key="your-agent-controller-api-key",  # From Helm installation
+    organization_id="your-org-id",
+    base_url="https://agent-controller.my-company.com"
+)
+
+backend = Backend(configuration=config)
+agno_agent = Agent(**backend.get_args(agent_id="agent-123"))
+
+result = await agno_agent.arun(input="What can you help me with?")
+```
+
+<Note>
+**Important**: Make sure your `base_url` points to the Agent Controller endpoint (e.g., `https://agent-controller.{your-domain}`), not the root domain.
+
+For more examples, see the [Self-Hosted Configuration Guide](https://docs.xpander.ai/api-reference/configuration/self-hosted).
+</Note>
+
+## Troubleshooting
+
+### Common Issues
+
+<AccordionGroup>
+
+<Accordion title="Pods stuck in Pending state">
+**Cause**: Storage class or PVC issues
+
+**Solution**: Check storage configuration
+```bash
+kubectl -n xpander get pvc
+kubectl -n xpander describe pvc
+```
+</Accordion>
+
+<Accordion title="Ingress not accessible">
+**Cause**: Ingress controller or DNS issues
+
+**Solution**: Verify ingress configuration
+```bash
+kubectl -n xpander describe ingress
+kubectl -n xpander get ingress
+```
+</Accordion>
+
+<Accordion title="Health checks failing">
+**Cause**: Application startup issues
+
+**Solution**: Check application logs
+```bash
+kubectl -n xpander logs deployment/xpander-agent-controller
+kubectl -n xpander logs deployment/xpander-ai-gateway
+kubectl -n xpander logs deployment/xpander-agent-worker
+kubectl -n xpander logs deployment/xpander-mcp
+```
+</Accordion>
+
+<Accordion title="API key configuration issues">
+**Cause**: Missing or invalid AI service API keys
+
+**Solution**: Verify API key configuration
+```bash
+# Check environment variables in agent-worker
+kubectl -n xpander exec deployment/xpander-agent-worker -- env | grep API_KEY
+```
+</Accordion>
+
+</AccordionGroup>
+
+### Debug Commands
+
+```bash
+# Get all resources
+kubectl -n xpander get all
+
+# Check events
+kubectl -n xpander get events --sort-by=.metadata.creationTimestamp
+
+# Describe problematic pods
+kubectl -n xpander describe pod <pod-name>
+
+# Check service endpoints
+kubectl -n xpander get endpoints
+```
+
+## Upgrading
+
+### Regular Updates
+
+```bash
+helm repo update
+helm upgrade xpander xpander/xpander \
+  --namespace xpander \
+  --reuse-values
+```
+
+### Update with New Configuration
+
+```bash
+helm upgrade xpander xpander/xpander \
+  --namespace xpander \
+  --values xpander-values.yaml
+```
+
+## Uninstalling
+
+```bash
+# Remove the Helm release
+helm uninstall xpander --namespace xpander
+
+# Clean up the namespace (optional)
+kubectl delete namespace xpander
+```
+
+## Next Steps
+
+- **Configure Agents**: Set up your AI agents using the [Quick Start Guide](/user-guide/index)
+- **Connect Slack**: Integrate with Slack using the [Slack Integration Guide](/user-guide/scale/slack)
+- **Add Connectors**: Connect to external services with [AI Connectors](/connectors/index)
+- **Monitor Deployment**: Set up monitoring and observability for your production deployment
+
+## Support
+
+- **Community Slack**: [Join our Slack](https://join.slack.com/t/xpandercommunity/shared_invite/zt-2mt2xkxkz-omM7f~_h2jcuzFudrYtZQQ)
+- **GitHub Issues**: Report issues and contribute
+- **Discord**: [Developer Discord](https://discord.gg/CUcp4WWh5g)

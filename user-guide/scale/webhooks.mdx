@@ -1,0 +1,358 @@
+---
+title: "Webhooks"
+description: "Trigger your agents from any external system with HTTP requests"
+icon: "webhook"
+mode: "wide"
+---
+
+Webhooks allow you to trigger xpander.ai agents from any external system that can make HTTP requests. Perfect for integrating with existing workflows, automation platforms, or custom applications.
+
+<Frame caption="Webhook Configuration Interface">
+<Frame>![Webhook Configuration Interface](/static/images/screenshots/2025-12-17-21-14-07.png)</Frame>
+</Frame>
+
+## Setting Up Your Webhook
+
+To enable webhooks for your agent:
+
+<Steps>
+  <Step title="Access Task Sources">
+    In the Workbench, navigate to your agent and click the **Task Sources** tab.
+  </Step>
+  <Step title="Enable Webhooks">
+    Toggle the **Webhook** task source and click **Configure and test**.
+  </Step>
+  <Step title="Get Your Webhook URL">
+    Copy the provided webhook URL and API key from the configuration panel.
+  </Step>
+  <Step title="Test Your Webhook">
+    Use the built-in test interface or the provided curl snippet to verify your setup.
+  </Step>
+</Steps>
+
+## Making Requests
+
+All webhook requests use `POST` to the root endpoint with your authentication and agent configuration.
+
+### Basic Request Structure
+
+<CodeGroup>
+```bash JSON Request
+curl --location 'https://webhook.xpander.ai/?agent_id=YOUR_AGENT_ID' \
+  --header 'Content-Type: application/json' \
+  --header 'x-api-key: YOUR_API_KEY' \
+  --data '{
+    "prompt": "Analyze this data",
+    "custom_field": "any value"
+  }'
+```
+
+```bash Form Data
+curl --location 'https://webhook.xpander.ai/?agent_id=YOUR_AGENT_ID' \
+  --header 'x-api-key: YOUR_API_KEY' \
+  --header 'Content-Type: application/x-www-form-urlencoded' \
+  --data 'prompt=Process this data&category=analysis'
+```
+
+```bash File Upload
+curl --location 'https://webhook.xpander.ai/?agent_id=YOUR_AGENT_ID' \
+  --header 'x-api-key: YOUR_API_KEY' \
+  --form 'prompt="Analyze this document"' \
+  --form 'file=@document.pdf' \
+  --form 'metadata="important document"'
+```
+</CodeGroup>
+
+## Parameters
+
+### Required Parameters
+
+| Parameter | Type | Location | Description |
+|-----------|------|----------|-------------|
+| `agent_id` | string | Query or Body | Your agent's unique identifier |
+| `x-api-key` | string | Header or Query | Your API key for authentication |
+
+### Optional Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `prompt` | string | "" | Text prompt to send to your agent |
+| `asynchronous` | boolean | `false` | Process in background and return immediately |
+| `task_id` | string | - | Associate request with specific task ID |
+| `getter` | string | - | Extract specific data from response (e.g., `"result.summary"`) |
+
+<Info>
+You can include any additional fields in your request - they'll all be passed to your agent for processing. This gives you complete flexibility for custom data structures.
+</Info>
+
+## Input Formats
+
+Webhooks support multiple content types to fit your integration needs:
+
+<Tabs>
+  <Tab title="JSON">
+    Perfect for structured data and API integrations.
+    
+    ```bash
+    curl --location 'https://webhook.xpander.ai/?agent_id=YOUR_AGENT_ID' \
+      --header 'Content-Type: application/json' \
+      --header 'x-api-key: YOUR_API_KEY' \
+      --data '{
+        "prompt": "Process this order",
+        "order_data": {
+          "id": 12345,
+          "items": ["item1", "item2"],
+          "total": 99.99
+        }
+      }'
+    ```
+  </Tab>
+  
+  <Tab title="Form Data">
+    Simple key-value pairs, great for HTML forms.
+    
+    ```bash
+    curl --location 'https://webhook.xpander.ai/?agent_id=YOUR_AGENT_ID' \
+      --header 'x-api-key: YOUR_API_KEY' \
+      --header 'Content-Type: application/x-www-form-urlencoded' \
+      --data 'prompt=Analyze feedback&rating=5&comment=Great service'
+    ```
+  </Tab>
+  
+  <Tab title="File Upload">
+    Upload files along with additional form data.
+    
+    ```bash
+    curl --location 'https://webhook.xpander.ai/?agent_id=YOUR_AGENT_ID' \
+      --header 'x-api-key: YOUR_API_KEY' \
+      --form 'prompt="Extract data from these documents"' \
+      --form 'file1=@contract.pdf' \
+      --form 'file2=@invoice.png' \
+      --form 'priority="high"'
+    ```
+  </Tab>
+</Tabs>
+
+## Execution Modes
+
+<CardGroup cols={2}>
+  <Card title="Synchronous" icon="clock">
+    **Best for:** Immediate responses, short tasks, interactive workflows
+    
+    - Waits for agent to complete processing
+    - Returns full results in the response
+    - Request remains open until finished
+  </Card>
+  
+  <Card title="Asynchronous" icon="rocket">
+    **Best for:** Long-running tasks, file processing, background jobs
+    
+    - Returns immediately with task started confirmation
+    - Agent processes in the background
+    - Prevents timeouts for long operations
+  </Card>
+</CardGroup>
+
+### Synchronous Response
+
+```json
+{
+  "id": "task-123",
+  "agent_id": "your-agent-id", 
+  "status": "completed",
+  "result": "Agent's response here",
+  "created_at": "2024-01-01T12:00:00Z",
+  "completed_at": "2024-01-01T12:00:05Z"
+}
+```
+
+### Asynchronous Response
+
+```json
+{
+  "status": "Started"
+}
+```
+
+## File Processing
+
+<Warning>
+Files must be uploaded directly using `multipart/form-data`. URLs to external files are not supported - the webhook service needs the actual file content.
+</Warning>
+
+### Supported File Types
+
+- **Documents**: PDF, DOC, DOCX, TXT
+- **Images**: PNG, JPEG, GIF, WEBP, SVG
+- **Spreadsheets**: XLS, XLSX, CSV
+- **Archives**: ZIP (contents extracted automatically)
+
+### Multiple File Upload
+
+```bash
+curl --location 'https://webhook.xpander.ai/?agent_id=YOUR_AGENT_ID&asynchronous=true' \
+  --header 'x-api-key: YOUR_API_KEY' \
+  --form 'prompt="Process these documents"' \
+  --form 'file1=@document1.pdf' \
+  --form 'file2=@spreadsheet.xlsx' \
+  --form 'file3=@image.png'
+```
+
+<Tip>
+For large file batches (10+ files), use asynchronous mode and consider breaking uploads into smaller batches of 5-10 files for optimal performance.
+</Tip>
+
+## Advanced Features
+
+### Data Extraction with Getter
+
+Use the `getter` parameter to extract specific data from your agent's response:
+
+```bash
+# Extract just the summary from a complex response
+curl --location 'https://webhook.xpander.ai/?agent_id=YOUR_AGENT_ID&getter=result.summary' \
+  --header 'x-api-key: YOUR_API_KEY' \
+  --data '{"prompt": "Analyze quarterly report"}'
+```
+
+**Instead of full response:**
+```json
+{
+  "result": {
+    "analysis": {...},
+    "summary": "Q4 revenue increased 15%",
+    "details": {...}
+  }
+}
+```
+
+**Returns just:**
+```json
+"Q4 revenue increased 15%"
+```
+
+### Parameter Priority
+
+When the same parameter appears in multiple places:
+
+1. **Query parameters** (highest priority)
+2. **Request body parameters**
+3. **Default values**
+
+```bash
+# The query parameter 'prompt' will override the body 'prompt'
+curl --location 'https://webhook.xpander.ai/?agent_id=YOUR_AGENT_ID&prompt=From query' \
+  --header 'x-api-key: YOUR_API_KEY' \
+  --data '{"prompt": "From body", "data": "additional info"}'
+# Agent receives: prompt="From query", data="additional info"
+```
+
+## Integration Examples
+
+<CardGroup cols={2}>
+  <Card title="Zapier Integration" icon="bars-staggered">
+    Connect any Zapier trigger to your agent for automated workflows.
+  </Card>
+  
+  <Card title="Form Processing" icon="square-check">
+    Process contact forms, surveys, and user submissions automatically.
+  </Card>
+  
+  <Card title="Document Analysis" icon="file-magnifying-glass">
+    Extract data from uploaded documents, invoices, and contracts.
+  </Card>
+  
+  <Card title="API Integration" icon="code">
+    Integrate agents into your existing applications and services.
+  </Card>
+</CardGroup>
+
+### JavaScript Example
+
+```javascript
+const response = await fetch('https://webhook.xpander.ai/?agent_id=YOUR_AGENT_ID', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'x-api-key': 'YOUR_API_KEY'
+  },
+  body: JSON.stringify({
+    prompt: 'Process customer inquiry',
+    customer_data: {
+      name: 'John Doe',
+      email: 'john@example.com',
+      message: 'I need help with my order'
+    }
+  })
+});
+
+const result = await response.json();
+console.log('Agent response:', result.result);
+```
+
+### Python Example
+
+```python
+import requests
+
+response = requests.post(
+    'https://webhook.xpander.ai/',
+    params={'agent_id': 'YOUR_AGENT_ID'},
+    headers={'x-api-key': 'YOUR_API_KEY'},
+    json={
+        'prompt': 'Analyze sales data',
+        'data': {
+            'month': 'January',
+            'sales': [1000, 1200, 1500]
+        }
+    }
+)
+
+result = response.json()
+print(f"Analysis: {result['result']}")
+```
+
+## Error Handling
+
+<AccordionGroup>
+  <Accordion title="400 Bad Request">
+    ```json
+    {"detail": "agent_id is required"}
+    ```
+    Ensure you provide the `agent_id` parameter in your request.
+  </Accordion>
+  
+  <Accordion title="401 Unauthorized">
+    ```json
+    {"detail": "API key not specified"}
+    ```
+    Add your API key using the `x-api-key` header or query parameter.
+  </Accordion>
+  
+  <Accordion title="403 Forbidden">
+    ```json
+    {"detail": "Invalid API key"}
+    ```
+    Verify your API key is correct and has access to the specified agent.
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use Async for Large Tasks" icon="timer">
+    Set `asynchronous=true` for file processing, complex analysis, or any task taking >30 seconds.
+  </Card>
+  
+  <Card title="Implement Retry Logic" icon="arrow-rotate-right">
+    Add exponential backoff retry for transient failures (5xx errors).
+  </Card>
+  
+  <Card title="Validate Responses" icon="shield-check">
+    Always check the HTTP status code and handle error responses appropriately.
+  </Card>
+  
+  <Card title="Use Getter for Large Responses" icon="filter">
+    Extract only the data you need to reduce response size and improve performance.
+  </Card>
+</CardGroup>
