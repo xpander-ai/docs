@@ -8,13 +8,13 @@ rss: true
 
 ## New Features:
 
-- **Agent planning and enforcement:** Added deep planning capabilities with execution plans, plan updates, enforcement controls, and an ask-for-information flow to gate execution until required details are provided.
-- **Self-hosted API deployment support:** Enabled running the API as a self-hosted container with supporting metadata and environment settings endpoints and execution history operations.
-- **Activity timeline with AI Insights:** Introduced a unified, thread-based activity timeline with an AI Insights evaluation flow and optional reasoning-effort controls for supported models.
+- **Agent planning and enforcement:** Added deep planning capabilities with execution plans, plan updates, enforcement controls, and an ask-for-information flow to gate execution until required details are provided. 
+- **Self-hosted API deployment support:** Enabled running the xpander platform API as a self-hosted container, for increased data privacy. More details here: https://docs.xpander.ai/api-reference/rest-api
+- **Planning activities in Activity:** The monitoring view in the Agent Workbench now shows a detailed view of the Planning steps that the agent took.
 
 ## Improvements:
 
-- **Workbench planning configuration:** Added consolidated UI controls for planning, reasoning toolkit toggles, and advanced tool-call configuration, including checklist enforcement.
+- **Workbench planning configuration:** Added consolidated UI controls for planning, reasoning toolkit toggles, and advanced tool-call configuration, including checklist enforcement. Agent planning and enforcement configuration is available under the Tools tab in the Agent workbench.
 - **Self-hosted Agent Controller integrations:** Improved support for fetching activity logs and evaluations from remote/self-hosted Agent Controllers, with secure key syncing and cloud fallback.
 - **Execution plan visualization:** Enhanced chat and activity views to render execution plans and live plan updates with clearer progress indicators.
 - **Operational reliability:** Improved task/execution synchronization, thread syncing, and queue TTL handling; added automatic agent description generation when missing.
@@ -22,9 +22,9 @@ rss: true
 
 ## Bug Fixes:
 
-- **Deployment and visibility fixes:** Fixed agent deployment error propagation and enforced agent visibility filtering to prevent exposure of other users’ personal agents.
 - **MCP tooling fixes:** Corrected MCP tool-selection modal behavior and hid unsupported selections for OAuth2.
-- **Agent execution stability:** Enforced consistent inactive-agent handling and added automatic Agno schema migrations on agent database connections.
+- **Agent execution stability:** Enforced consistent inactive-agent handling.
+- **Various backend adn UI bug fixes and stability improvements.** 
 
 </Update>
 
