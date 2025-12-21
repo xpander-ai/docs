@@ -4,6 +4,30 @@ mode: 'wide'
 rss: true
 ---
 
+<Update label="2025-12-21" description="Agent planning & enforcement, self-hosted API/Controller support, activity timeline upgrades">
+
+## New Features:
+
+- **Agent planning and enforcement:** Added deep planning capabilities with execution plans, plan updates, enforcement controls, and an ask-for-information flow to gate execution until required details are provided. 
+- **Self-hosted API deployment support:** Enabled running the xpander platform API as a self-hosted container, for increased data privacy. More details here: https://docs.xpander.ai/api-reference/rest-api
+- **Planning activities in Activity:** The monitoring view in the Agent Workbench now shows a detailed view of the Planning steps that the agent took.
+
+## Improvements:
+
+- **Workbench planning configuration:** Added consolidated UI controls for planning, reasoning toolkit toggles, and advanced tool-call configuration, including checklist enforcement. Agent planning and enforcement configuration is available under the Tools tab in the Agent workbench.
+- **Self-hosted Agent Controller integrations:** Improved support for fetching activity logs and evaluations from remote/self-hosted Agent Controllers, with secure key syncing and cloud fallback.
+- **Execution plan visualization:** Enhanced chat and activity views to render execution plans and live plan updates with clearer progress indicators.
+- **Operational reliability:** Improved task/execution synchronization, thread syncing, and queue TTL handling; added automatic agent description generation when missing.
+- **Model catalog and defaults:** Expanded OpenAI model catalog (including GPT-5.2) and added configurable reasoning effort controls.
+
+## Bug Fixes:
+
+- **MCP tooling fixes:** Corrected MCP tool-selection modal behavior and hid unsupported selections for OAuth2.
+- **Agent execution stability:** Enforced consistent inactive-agent handling.
+- **Various backend adn UI bug fixes and stability improvements.** 
+
+</Update>
+
 <Update label="2025-12-14" description="Agent import/export, GPT 5.2 support, SalesForce Hosted MCP, connection flow enhancements">
 
 ## New Features:
