@@ -1,0 +1,256 @@
+---
+title: "Advanced Planning Mode"
+description: "Structured task planning and execution tracking for complex multi-step workflows"
+icon: "list-check"
+---
+
+Advanced Planning Mode enables your agents to create and manage structured execution plans, providing transparent task tracking and systematic progress through complex workflows. When enabled, agents must define a comprehensive plan before execution, ensuring organized and accountable task completion by your agents.
+
+## Overview
+
+<CardGroup cols={2}>
+  <Card title="Structured Tasks" icon="list-check">
+    Break down goals into discrete, trackable tasks
+  </Card>
+  <Card title="Progress Tracking" icon="chart-line">
+    Monitor completion status for each plan item
+  </Card>
+  <Card title="Dynamic Updates" icon="arrows-rotate">
+    Add, modify, or remove tasks as work progresses
+  </Card>
+  <Card title="Automatic Retries" icon="repeat">
+    System retries until all tasks complete (up to 3 attempts)
+  </Card>
+</CardGroup>
+
+## When to Use
+
+Advanced planning is ideal for:
+
+- **Multi-Step Workflows** - Tasks requiring coordinated execution across multiple phases
+- **Complex Implementations** - Feature development, migrations, or system integrations
+- **Audit Requirements** - Scenarios requiring documented execution trails
+
+## Configuration
+
+1. Open agent settings
+2. Navigate to **Agent Configuration**
+3. Enable **Advanced Planning Mode**
+4. Save and deploy
+
+## How It Works
+
+### Execution Lifecycle
+
+When deep planning is enabled:
+
+1. **Execution Blocks** - Agent execution pauses until a plan is created
+2. **Plan Creation** - Agent must use `xpcreate-agent-plan` (a built in xpander tool provided to the agent) to define tasks
+3. **Task Execution** - Agent works through tasks, marking them complete
+4. **Progress Updates** - Plan changes stream to UI in real-time via `PlanUpdated` events
+5. **Automatic Retries** - If tasks remain incomplete, system retries (up to 3 times)
+
+```
+Agent Start → Create Plan → Execute Tasks → Mark Complete → Verify → Done
+                    ↓                                               ↑
+                   Block                                      Auto-Retry
+```
+
+### Plan Structure
+
+Each plan contains a list of tasks:
+
+```json
+{
+  "enabled": true,
+  "tasks": [
+    {
+      "id": "uuid-1234",
+      "title": "Analyze requirements",
+      "completed": false
+    },
+    {
+      "id": "uuid-5678",
+      "title": "Design database schema",
+      "completed": false
+    }
+  ]
+}
+```
+
+## Planning Tools
+
+Advanced Planning provides six built-in tools that agents use to manage their execution plans:
+
+### Create Plan
+
+**Tool**: `xpcreate-agent-plan`
+
+Creates the initial execution plan. Required before any other operations.
+
+```python
+# Agent creates plan at execution start
+{
+    "tasks": [
+        {"title": "Gather user requirements", "completed": false},
+        {"title": "Design database schema", "completed": false},
+        {"title": "Implement API endpoints", "completed": false},
+        {"title": "Write tests", "completed": false},
+        {"title": "Deploy to staging", "completed": false}
+    ]
+}
+```
+
+### Get Current Plan
+
+**Tool**: `xpget-agent-plan`
+
+Retrieves the current execution plan with all task statuses.
+
+```python
+# Agent checks current progress
+current_plan = xpget_agent_plan()
+# Returns full plan object with completion status
+```
+
+### Add New Task
+
+**Tool**: `xpadd-new-agent-plan-item`
+
+Dynamically adds tasks discovered during execution.
+
+```python
+# Agent discovers additional work needed
+{
+    "title": "Handle edge case in authentication flow",
+    "completed": false
+}
+```
+
+### Update Task
+
+**Tool**: `xpupdate-agent-plan-item`
+
+Modifies task title or completion status.
+
+```python
+# Agent refines task description
+{
+    "id": "task-uuid",
+    "title": "Implement OAuth 2.0 endpoints with PKCE flow",
+    "completed": false
+}
+```
+
+### Complete Task
+
+**Tool**: `xpcomplete-agent-plan-item`
+
+Marks a specific task as done.
+
+```python
+# Agent finishes a task
+{
+    "id": "task-uuid"
+}
+# Task updated to completed: true
+```
+
+### Delete Task
+
+**Tool**: `xpdelete-agent-plan-item`
+
+Removes tasks that are no longer relevant.
+
+```python
+# Agent removes unnecessary task
+{
+    "id": "task-uuid"
+}
+```
+
+## Real-Time Updates
+
+The platform UI displays plans with:
+
+- **Progress Indicators** - Visual completion badges for each task
+- **Real-Time Updates** - Live refresh as agents complete tasks
+- **Task Details** - Full task descriptions and IDs
+- **Completion Summary** - Overall progress percentage
+
+## Tracking Execution Plans
+
+The platform provides two ways to view and track execution plans:
+
+### Chat Interface View
+
+When testing your agent in the chat interface, the execution plan appears directly in the conversation, allowing you to monitor progress in real-time as you interact with your agent.
+
+<Frame>![Planning view in chat interface](/static/images/screenshots/planning-view-tester.png)</Frame>
+
+This view shows:
+- Current task status with completion indicators
+- Task list with checkmarks for completed items
+- Real-time updates as the agent progresses through the plan
+
+### Monitoring View
+
+For reviewing past executions, the Workbench monitoring view displays the complete execution plan with full task history. This is useful for auditing, debugging, or reviewing how the agent approached a complex task after completion.
+
+<Frame>![Planning view in monitoring dashboard](/static/images/screenshots/planning-view-monitor.png)</Frame>
+
+This view provides:
+- Complete plan overview with all tasks
+- Final completion status for each task
+- Historical context for understanding agent execution flow
+- Detailed task breakdown for post-execution analysis
+
+## Retry Logic
+
+The system automatically retries executions with incomplete plans:
+
+| Condition | Behavior |
+|-----------|----------|
+| All tasks complete | Execution succeeds |
+| Tasks remain incomplete | Retry execution (max 3 attempts) |
+| Max retries reached | Execution fails with incomplete tasks |
+| Execution timeout | Current attempt ends, retry if attempts remain |
+
+```python
+# Automatic retry flow
+Attempt 1: 3/5 tasks complete → Retry
+Attempt 2: 4/5 tasks complete → Retry
+Attempt 3: 5/5 tasks complete → Success
+```
+
+## Sub-Agent Planning
+
+When agents create sub-tasks, the sub-agent can inherit deep planning settings. Each sub-agent maintains its own independent plan, allowing for nested planning structures in complex workflows.
+
+## Comparison: Reasoning vs Planning
+
+| Feature          | Advanced Reasoning                      | Advanced Planning                        |
+|------------------|-----------------------------------------|------------------------------------------|
+| **Purpose**      | Deeper thinking about problems          | Structured task execution                |
+| **Output**       | Thought process & conclusions           | Task list & progress                     |
+| **Best For**     | Analysis, decisions, complex problems   | Multi-step workflows, implementations    |
+| **Visibility**   | Reasoning steps in logs                 | Task checklist in UI                     |
+| **Completion**   | Single response                         | Multiple tracked tasks                   |
+| **Use Together** | ✓ Combine for complex projects requiring both deep analysis and structured execution |
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Advanced Reasoning" icon="brain-circuit" href="/user-guide/build/reasoning-mode">
+    Extended thinking for complex problems
+  </Card>
+  <Card title="Observability" icon="chart-line" href="/user-guide/manage/observability">
+    View plans in activity logs
+  </Card>
+  <Card title="Agent Memory" icon="database" href="/user-guide/build/agent-memory">
+    Persistent state across executions
+  </Card>
+  <Card title="Tool Calling" icon="wrench" href="/user-guide/build/tool-calling-editor">
+    Custom tool integration
+  </Card>
+</CardGroup>
