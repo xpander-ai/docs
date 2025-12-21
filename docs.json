@@ -69,6 +69,7 @@
               "user-guide/build/system-prompt",
               "user-guide/build/tool-calling-editor",
               "user-guide/build/reasoning-mode",
+              "user-guide/build/planning-mode",
               "user-guide/build/frameworks",
               "user-guide/build/import-agent"
             ]
