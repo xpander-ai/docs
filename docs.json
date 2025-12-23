@@ -103,6 +103,7 @@
               "user-guide/scale/slack",
               "user-guide/scale/web-ui",
               "user-guide/scale/mcp",
+              "user-guide/scale/tool-hooks",
               "user-guide/scale/webhooks",
               "user-guide/scale/scheduled-tasks"
             ]
