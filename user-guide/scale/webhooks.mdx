@@ -249,10 +249,10 @@ curl --location 'https://webhook.xpander.ai/?agent_id=YOUR_AGENT_ID&prompt=From 
 
 ### Dynamic Parameter Mapping
 
-Use `params_mapping` to dynamically extract values from your webhook payload and map them to query parameters. This is especially useful for integrations with Telegram bots, WhatsApp, and other messaging platforms where user/chat identifiers are nested in the payload.
+Use `params_mapping` as a query parameter to dynamically extract values from your webhook payload and map them to other query parameters. This is especially useful for integrations with Telegram bots, WhatsApp, and other messaging platforms where user/chat identifiers are nested in the payload.
 
 ```bash
-curl --location 'https://webhook.xpander.ai/?agent_id=YOUR_AGENT_ID' \
+curl --location 'https://webhook.xpander.ai/?agent_id=YOUR_AGENT_ID&params_mapping={"task_id":"message.chat.id","user_email":"message.from.email","user_first_name":"message.from.first_name","prompt":"message.text"}' \
   --header 'Content-Type: application/json' \
   --header 'x-api-key: YOUR_API_KEY' \
   --data '{
@@ -265,12 +265,6 @@ curl --location 'https://webhook.xpander.ai/?agent_id=YOUR_AGENT_ID' \
         "first_name": "John"
       },
       "text": "Hello agent!"
-    },
-    "params_mapping": {
-      "task_id": "message.chat.id",
-      "user_email": "message.from.email",
-      "user_first_name": "message.from.first_name",
-      "prompt": "message.text"
     }
   }'
 ```
