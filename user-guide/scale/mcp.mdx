@@ -26,14 +26,9 @@ xpander provides two MCP endpoint formats:
 
 <CardGroup cols={2}>
   <Card title="Standard HTTP" icon="globe">
-    `api.xpander.ai/mcp`
+    `api.xpander.ai/mcp/`
 
     Standard HTTP transport for MCP clients
-  </Card>
-  <Card title="Server-Sent Events" icon="satellite-dish">
-    `api.xpander.ai/mcp/sse`
-
-    SSE transport for streaming responses
   </Card>
 </CardGroup>
 
@@ -56,8 +51,8 @@ Both endpoints redirect to the xpander platform for OAuth authentication on firs
           "command": "npx",
           "args": [
             "-y",
-            "@modelcontextprotocol/server-fetch",
-            "https://api.xpander.ai/mcp"
+            "mcp-remote@latest",
+            "https://api.xpander.ai/mcp/"
           ]
         }
       }
@@ -144,7 +139,7 @@ ChatGPT also supports MCP. Add the xpander MCP server to your ChatGPT configurat
 {
   "mcpServers": {
     "xpander": {
-      "url": "https://api.xpander.ai/mcp",
+      "url": "https://api.xpander.ai/mcp/",
       "transport": "http"
     }
   }
@@ -152,29 +147,6 @@ ChatGPT also supports MCP. Add the xpander MCP server to your ChatGPT configurat
 ```
 
 The OAuth flow works the same way - authenticate once, then ChatGPT can invoke your agents.
-
----
-
-## Using SSE Transport
-
-For streaming responses, use the SSE endpoint:
-
-```json
-{
-  "mcpServers": {
-    "xpander-sse": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-fetch",
-        "https://api.xpander.ai/mcp/sse"
-      ]
-    }
-  }
-}
-```
-
-This provides real-time streaming for long-running agent tasks.
 
 ---
 
