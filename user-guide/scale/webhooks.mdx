@@ -247,6 +247,46 @@ curl --location 'https://webhook.xpander.ai/?agent_id=YOUR_AGENT_ID&prompt=From 
 # Agent receives: prompt="From query", data="additional info"
 ```
 
+### Dynamic Parameter Mapping
+
+Use `params_mapping` to dynamically extract values from your webhook payload and map them to query parameters. This is especially useful for integrations with Telegram bots, WhatsApp, and other messaging platforms where user/chat identifiers are nested in the payload.
+
+```bash
+curl --location 'https://webhook.xpander.ai/?agent_id=YOUR_AGENT_ID' \
+  --header 'Content-Type: application/json' \
+  --header 'x-api-key: YOUR_API_KEY' \
+  --data '{
+    "message": {
+      "chat": {
+        "id": 123456789
+      },
+      "from": {
+        "email": "user@example.com",
+        "first_name": "John"
+      },
+      "text": "Hello agent!"
+    },
+    "params_mapping": {
+      "task_id": "message.chat.id",
+      "user_email": "message.from.email",
+      "user_first_name": "message.from.first_name",
+      "prompt": "message.text"
+    }
+  }'
+```
+
+**How it works:**
+- Uses dot notation to navigate nested payload fields (e.g., `"message.chat.id"`)
+- Automatically extracts values and overrides the corresponding query parameters
+- Supports all standard query parameters: `task_id`, `user_id`, `user_email`, `user_first_name`, `user_last_name`, `prompt`
+
+<Tip>
+**Use Case Example:** Telegram bot integration
+- Map `message.chat.id` to `task_id` to track conversations per chat
+- Map `message.from.username` to `user_id` to identify users
+- Map `message.text` to `prompt` to use the message content as the agent prompt
+</Tip>
+
 ## Integration Examples
 
 <CardGroup cols={2}>
