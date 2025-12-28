@@ -4,6 +4,31 @@ mode: 'wide'
 rss: true
 ---
 
+<Update label="2025-12-28" description="API trigger enhancements, new agent tools, PDF layout options, and reliability fixes">
+
+## New Features:
+
+- **API trigger support and testing modal:** Added an API trigger option alongside Webhook, with a unified modal to test sync/async/stream invocations, generate curl commands, and view expanded responses.
+- **Deploy comparison before deploy:** Added a pre-deploy comparison flow that shows staged vs deployed changes (added/removed/updated items and configuration diffs) before confirming deployment.
+- **Web search and text-to-speech tools:** Added built-in web search and text-to-speech capabilities (including voice listing), with UI icons and lifecycle pairing to keep related tools in sync.
+- **Markdown-to-PDF layout modes:** Added multiple PDF layout modes (e.g., whitepaper, invoice, order form, letter), with optional logo, header/footer text, and title support.
+
+## Improvements:
+
+- **Agent reasoning visibility:** Improved reasoning step generation by deriving steps directly from activity threads and enhancing activity timeline rendering for JSON/Markdown with better duration formatting.
+- **Planning tooling standardization:** Standardized planning tool identifiers to snake_case and introduced multi-complete support for plan tasks.
+- **Webhook parameter mapping:** Added path-based parameter mapping for webhooks, with improved task ID parsing for UI rendering and clearer error handling.
+- **Container execution reliability:** Increased Docker runner memory limits and hardened log streaming and exit-code retrieval when containers are auto-removed.
+
+## Bug Fixes:
+
+- **Hosted assistants UI rendering:** Fixed rendering of structured (JSON) sub-task descriptions and improved task step update stability.
+- **MCP OAuth and token flow stability:** Improved MCP OAuth discovery and tightened token exchange validation to prevent invalid credential paths.
+- **CI preflight robustness:** Prevented preflight checks from failing on deleted Python files.
+- **Custom functions reliability:** Stabilized custom functions typing/serialization and made analysis asynchronous for improved correctness.
+
+</Update>
+
 <Update label="2025-12-21" description="Agent planning & enforcement, self-hosted API/Controller support, activity timeline upgrades">
 
 ## New Features:
