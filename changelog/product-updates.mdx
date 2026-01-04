@@ -4,24 +4,28 @@ mode: 'wide'
 rss: true
 ---
 
-<Update label="2026-01-04" description="PDF layout templates, deploy review, locations UX, and connector safety fixes">
-
+<Update label="2026-01-04" description="Pre-deploy change review, PDF layout templates, various bug fixes">
 ## New Features:
 
-- **PDF document layout templates:** Added multiple PDF layout modes (whitepaper, invoice, letter, and order form with signature support) for markdown-to-PDF generation.
 - **Pre-deploy change review:** Added a deployment comparison step that lets users review visual and JSON diffs between the staged and currently deployed agent before deploying.
-- **Locations management (renamed from Environments):** Renamed “Environments” to “Locations” and moved location management into Admin Settings.
+- **API trigger support and testing modal:** Added an API trigger option alongside Webhook, with a unified modal to test sync/async/stream invocations, generate curl commands, and view expanded responses.
+- **PDF document layout templates:** Added multiple PDF layout modes (whitepaper, invoice, letter, and order form with signature support) for markdown-to-PDF generation.
+- **Web search and text-to-speech tools:** Added built-in web search and text-to-speech tools. Enable them from the Tools tab in the AI Workbench.
+- **Agent reasoning visibility:** Improved reasoning step generation by deriving steps directly from activity threads and enhancing activity timeline rendering for JSON/Markdown with better duration formatting.
 
 ## Improvements:
 
 - **Webhook lifecycle hooks:** Added webhook lifecycle hooks (e.g., before, on-task-created, on-tool-call, on-error, after) with event streaming for richer integrations.
 - **User attribution via MCP auth:** Propagated MCP OAuth user context into agent invocations for more accurate user attribution.
+- **Locations management (renamed from Environments):** Renamed “Environments” to “Locations” and moved location management into Admin Settings.
+- **Webhook parameter mapping:** Added path-based parameter mapping for webhooks, with improved task ID parsing for UI rendering and clearer error handling.
+- **Container execution reliability:** Increased Docker runner memory limits and hardened log streaming and exit-code retrieval when containers are auto-removed.
 
 ## Bug Fixes:
 
 - **PDF rendering reliability and security:** Improved PDF typography and spacing, ensured reliable logo rendering by inlining images, and added URL validation/allowlisting and size limits for safer logo embedding.
-- **Connector disconnect safety:** Prevented unintended deletion of organization-scoped connector records when disconnecting connectors.
-- **Frontend deployment stability:** Fixed a deployment issue in the frontend.
+- **Hosted assistants UI rendering:** Fixed rendering of structured (JSON) sub-task descriptions and improved task step update stability.
+- **Custom functions reliability:** Stabilized custom functions typing/serialization and made analysis asynchronous for improved correctness.
 
 </Update>
 
