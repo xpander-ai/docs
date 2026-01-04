@@ -4,6 +4,33 @@ mode: 'wide'
 rss: true
 ---
 
+<Update label="2026-01-04" description="PDF layout templates, deploy review, locations UX, and connector safety fixes">
+
+## New Features:
+
+- **PDF document layout templates:** Added multiple PDF layout modes (whitepaper, invoice, letter, and order form with signature support) for markdown-to-PDF generation.
+- **Pre-deploy change review:** Added a deployment comparison step that lets users review visual and JSON diffs between the staged and currently deployed agent before deploying.
+- **Locations management (renamed from Environments):** Renamed “Environments” to “Locations” and moved location management into Admin Settings.
+
+## Improvements:
+
+- **Webhook lifecycle hooks:** Added webhook lifecycle hooks (e.g., before, on-task-created, on-tool-call, on-error, after) with event streaming for richer integrations.
+- **User attribution via MCP auth:** Propagated MCP OAuth user context into agent invocations for more accurate user attribution.
+
+## Bug Fixes:
+
+- **PDF rendering reliability and security:** Improved PDF typography and spacing, ensured reliable logo rendering by inlining images, and added URL validation/allowlisting and size limits for safer logo embedding.
+- **Connector disconnect safety:** Prevented unintended deletion of organization-scoped connector records when disconnecting connectors.
+- **Frontend deployment stability:** Fixed a deployment issue in the frontend.
+
+</Update>
+
+---
+title: 'Product Updates'
+mode: 'wide'
+rss: true
+---
+
 <Update label="2025-12-21" description="Agent planning & enforcement, self-hosted API/Controller support, activity timeline upgrades">
 
 ## New Features:
